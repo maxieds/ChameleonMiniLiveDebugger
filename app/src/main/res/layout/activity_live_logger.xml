@@ -6,6 +6,18 @@
     android:layout_height="match_parent"
     tools:context="com.maxieds.chameleonminilivedebugger.LiveLoggerActivity">
 
+    <Toolbar
+        android:id="@+id/app_toolbar"
+        android:title="@string/app_name"
+        android:subtitle="Portable logging interface for the ChameleonMini rev. g boards"
+        android:logo="@drawable/chameleonicon64"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:maxHeight="50dp"
+        android:visible="true"
+        android:orientation="horizontal"
+        />
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -28,7 +40,7 @@
                 android:id="@+id/tab_layout"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
+                android:background="@color/colorAccent"
                 android:visibility="visible"
                 app:tabGravity="fill"
                 app:tabIndicatorColor="@color/colorPrimaryDark"
@@ -73,11 +85,16 @@
 
         </TabHost>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorPrimaryDark" />
+
         <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/tab_pager"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="500dp"
             android:layout_weight="1.0"
             tools:context="net.voidynullness.android.tabitytabs.TabLayoutActivity">
 

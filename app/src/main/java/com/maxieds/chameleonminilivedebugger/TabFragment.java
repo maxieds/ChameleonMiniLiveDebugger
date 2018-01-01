@@ -19,25 +19,27 @@ public class TabFragment extends Fragment {
     public static final int TAB_SEARCH = 3;
 
     private int tabNumber;
-    private static int layoutResRef;
+    private int layoutResRef;
+    private View inflatedView;
 
     public static TabFragment newInstance(int page) {
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE, page);
         TabFragment fragment = new TabFragment();
+        fragment.tabNumber = page;
         fragment.setArguments(args);
         switch(page) {
             case TAB_LOG:
-                layoutResRef = R.layout.logging_tab;
+                fragment.layoutResRef = R.layout.logging_tab;
                 break;
             case TAB_TOOLS:
-                layoutResRef = R.layout.tools_menu_tab;
+                fragment.layoutResRef = R.layout.tools_menu_tab;
                 break;
             case TAB_EXPORT:
-                layoutResRef = R.layout.export_tab;
+                fragment.layoutResRef = R.layout.export_tab;
                 break;
             case TAB_SEARCH:
-                layoutResRef = R.layout.search_tab;
+                fragment.layoutResRef = R.layout.search_tab;
                 break;
             default:
                 break;
@@ -52,10 +54,16 @@ public class TabFragment extends Fragment {
     }
 
     @Override
+    public View getView() {
+        return inflatedView;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(layoutResRef, container, false);
-        return view;
+        inflatedView = view;
+        return inflatedView;
     }
 
 

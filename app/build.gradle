@@ -29,5 +29,5 @@ dependencies {
     //compile 'com.github.felHR85:UsbSerial:4.5'
     compile 'com.android.support:support-v4:25.0.0'
     compile 'com.android.support:design:25.4.0'
-    compile project(':usb-serial-for-android:usbSerialForAndroid')
+    //compile project(':usb-serial-for-android:usbSerialForAndroid')
 }

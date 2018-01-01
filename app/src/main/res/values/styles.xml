@@ -1,9 +1,12 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar" />
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:windowActionBar">true</item>
+    </style>
 
-    <style name="LogDataUITheme" parent="android:Theme.Holo.Light.DarkActionBar">
+
+    <style name="LogDataUITheme" parent="AppTheme">
         <item name="android:background">#75a72c</item>
         <item name="android:colorPrimary">#75a72c</item>
         <item name="android:colorPrimaryDark">#3d5717</item>

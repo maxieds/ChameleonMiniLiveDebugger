@@ -1,10 +1,16 @@
 package com.maxieds.chameleonminilivedebugger;
 
+import com.hoho.android.usbserial.*;
+import com.hoho.android.usbserial.driver.UsbSerialPort;
+
 import android.util.Log;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.OK;
 
 /**
  * Created by mschmidt34 on 12/31/2017.
@@ -14,6 +20,7 @@ public class ChameleonIO {
 
     private static final String TAG = ChameleonIO.class.getSimpleName();
     public static final int RESP_BUFFER_SIZE = 256;
+    public static final int TIMEOUT = 1000;
 
     public enum SerialRespCode {
 
@@ -47,7 +54,7 @@ public class ChameleonIO {
 
     }
 
-    public static SerialRespCode setLoggerConfigMode(UsbSerialPort cmPort, int timeout) {
+    public static SerialRespCode setLoggerConfigMode(UsbSerialPort cmPort, int timeout) throws IOException {
         String deviceConfigCmd = "CONFIG=ISO14443A_SNIFF";
         byte[] sendBuf = deviceConfigCmd.getBytes(StandardCharsets.UTF_8);
         cmPort.write(sendBuf, timeout);
@@ -59,14 +66,13 @@ public class ChameleonIO {
         return rc;
     }
 
-    public static SerialRespCode setReaderConfigMode(UsbSerialPort cmPort) {
+    public static SerialRespCode setReaderConfigMode(UsbSerialPort cmPort) throws IOException {
         String deviceConfigCmd = "CONFIG=ISO14443A_READER";
-
+        return OK;
     }
 
-    public static SerialRespCode enableLiveDebugging(UsbSerialPort cmPort) {
-
-
+    public static SerialRespCode enableLiveDebugging(UsbSerialPort cmPort) throws IOException {
+        return OK;
     }
 
 
