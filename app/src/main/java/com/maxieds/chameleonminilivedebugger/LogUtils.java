@@ -40,7 +40,8 @@ public class LogUtils {
         LOG_ERR_APP_NOT_AUTHED(0xC2, "Application is not authenticated."),
         /* Other Chameleon-specific */
         LOG_INFO_SYSTEM_BOOT(0xFF, "Chameleon boots"),
-        LOG_EMPTY(0x00, "Empty Log Entry. This is not followed by a length byte nor the two systick bytes nor any data.");
+        LOG_EMPTY(0x00, "Empty Log Entry. This is not followed by a length byte nor the two systick bytes nor any data."),
+        LOG_CODE_DNE(0xff, "This is a dummy log code entry for matching where the input code does not exist.");
 
         private static final Map<Integer, LogCode> LOG_CODE_MAP = new HashMap<>();
 
@@ -63,9 +64,14 @@ public class LogUtils {
         public int toInteger() {
             return logCode;
         }
+        public String getDesc() { return logDesc; }
 
         public static LogCode lookupByLogCode(int lcode) {
-            return LOG_CODE_MAP.get(lcode);
+            LogCode lc = LOG_CODE_MAP.get(lcode);
+            if(lc == null)
+                return LOG_CODE_DNE;
+            else
+                return lc;
         }
 
         public static String getShortCodeName(int lcode) {

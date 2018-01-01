@@ -16,7 +16,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    buildToolsVersion '26.0.2'
+    buildToolsVersion '27.0.2'
 }
 
 dependencies {
@@ -26,8 +26,19 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     //compile 'com.google.android.things:androidthings:+'
-    //compile 'com.github.felHR85:UsbSerial:4.5'
-    compile 'com.android.support:support-v4:25.0.0'
+    compile 'com.github.felHR85:UsbSerial:4.5'
+    compile 'com.android.support:support-v4:25.4.0'
+    compile 'com.android.support:appcompat-v7:25.4.0'
     compile 'com.android.support:design:25.4.0'
+    compile 'com.android.support:gridlayout-v7:25.4.0'
     //compile project(':usb-serial-for-android:usbSerialForAndroid')
+}
+
+repositories {
+    jcenter()
+    google()
+    maven {
+        url "https://maven.google.com"
+    }
+    maven { url "https://jitpack.io" }
 }

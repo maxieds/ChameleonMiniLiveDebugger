@@ -1,5 +1,7 @@
 package com.maxieds.chameleonminilivedebugger;
 
+import android.text.format.Time;
+
 /**
  * Created by mschmidt34 on 12/31/2017.
  */
@@ -69,6 +71,12 @@ public class Utils {
             revBytes[b] = reverseBits(revBytes[b]);
         }
         return revBytes;
+    }
+
+    public static String getTimestamp() {
+        Time currentTime = new Time();
+        currentTime.setToNow();
+        return currentTime.format("%Y-%m-%d-%T");
     }
 
 

@@ -22,9 +22,7 @@ public class LogEntryMetadataRecord extends LogEntryBase {
     public LogEntryMetadataRecord(LayoutInflater inflater, String title, String text) {
         recordTitle = title;
         recordText = text;
-        Time currentTime = new Time();
-        currentTime.setToNow();
-        recordTimestamp = currentTime.format("%Y.%m.%d:%T");
+        recordTimestamp = Utils.getTimestamp();
         //LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         recordContainer = (LinearLayout) inflater.inflate(R.layout.log_metadata_record, null);
         TextView tvRecTitle = (TextView) recordContainer.findViewById(R.id.record_title_text);

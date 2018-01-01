@@ -1,7 +1,6 @@
 package com.maxieds.chameleonminilivedebugger;
 
-import com.hoho.android.usbserial.*;
-import com.hoho.android.usbserial.driver.UsbSerialPort;
+import com.felhr.usbserial.UsbSerialDevice;
 
 import android.util.Log;
 
@@ -19,8 +18,12 @@ import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.O
 public class ChameleonIO {
 
     private static final String TAG = ChameleonIO.class.getSimpleName();
+
     public static final int RESP_BUFFER_SIZE = 256;
     public static final int TIMEOUT = 1000;
+    public static boolean PAUSED = true;
+    public static final int CMUSB_VENDORID = 0x16d0;
+    public static final int CMUSB_PRODUCTID = 0x04b2;
 
     public enum SerialRespCode {
 
@@ -54,24 +57,24 @@ public class ChameleonIO {
 
     }
 
-    public static SerialRespCode setLoggerConfigMode(UsbSerialPort cmPort, int timeout) throws IOException {
-        String deviceConfigCmd = "CONFIG=ISO14443A_SNIFF";
+    public static SerialRespCode setLoggerConfigMode(UsbSerialDevice cmPort, int timeout) {
+        String deviceConfigCmd = "CONFIG=ISO14443A_SNIFF\n\r";
         byte[] sendBuf = deviceConfigCmd.getBytes(StandardCharsets.UTF_8);
-        cmPort.write(sendBuf, timeout);
-        byte[] respBuf = new byte[RESP_BUFFER_SIZE];
-        int numBytesRead = cmPort.read(respBuf, timeout);
-        int respCode = Integer.parseInt(String.valueOf(respBuf));
-        SerialRespCode rc = SerialRespCode.lookupByResponseCode(respCode);
-        Log.w(TAG, "Read " + numBytesRead + "bytes from device ... " + rc.name());
-        return rc;
-    }
-
-    public static SerialRespCode setReaderConfigMode(UsbSerialPort cmPort) throws IOException {
-        String deviceConfigCmd = "CONFIG=ISO14443A_READER";
+        cmPort.write(sendBuf);
         return OK;
     }
 
-    public static SerialRespCode enableLiveDebugging(UsbSerialPort cmPort) throws IOException {
+    public static SerialRespCode setReaderConfigMode(UsbSerialDevice cmPort, int timeout) {
+        String deviceConfigCmd = "CONFIG=ISO14443A_READER\n\r";
+        byte[] sendBuf = deviceConfigCmd.getBytes(StandardCharsets.UTF_8);
+        cmPort.write(sendBuf);
+        return OK;
+    }
+
+    public static SerialRespCode enableLiveDebugging(UsbSerialDevice cmPort, int timeout) {
+        String deviceConfigCmd = "LOGMODE=LIVE\n\r";
+        byte[] sendBuf = deviceConfigCmd.getBytes(StandardCharsets.UTF_8);
+        cmPort.write(sendBuf);
         return OK;
     }
 

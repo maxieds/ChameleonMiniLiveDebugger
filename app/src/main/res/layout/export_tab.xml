@@ -1,6 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-</android.support.constraint.ConstraintLayout>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="fill"
+        app:columnCount="3"
+        app:orientation="horizontal"
+        app:rowCount="2">
+
+        <Button
+            android:id="@+id/export_xml_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/xmlfile24"
+            android:onClick="actionButtonExportFile"
+            android:text="Export XML"
+            android:textSize="8sp"
+            android:textStyle="bold"
+            android:visible="true"
+            />
+
+        <Button
+            android:id="@+id/export_bin_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/binfile24"
+            android:onClick="actionButtonExportFile"
+            android:text="Export BIN"
+            android:textSize="8sp"
+            android:textStyle="bold"
+            android:visible="true"
+            />
+
+        <Button
+            android:id="@+id/export_ascii_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/textfile24"
+            android:onClick="actionButtonExportFile"
+            android:text="Export Ascii"
+            android:textSize="8sp"
+            android:textStyle="bold"
+            android:visible="true"
+            />
+
+    </android.support.v7.widget.GridLayout>
+
+    <RadioGroup
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/radio_save_storage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:drawableLeft="@drawable/sdcard16"
+            android:drawablePadding="5dp"
+            android:text="Save" />
+
+        <RadioButton
+            android:id="@+id/radio_save_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/mailicon16"
+            android:drawablePadding="5dp"
+            android:text="Email" />
+
+        <RadioButton
+            android:id="@+id/radio_save_share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/shareicon16"
+            android:drawablePadding="5dp"
+            android:text="Share" />
+    </RadioGroup>
+
+
+</LinearLayout>

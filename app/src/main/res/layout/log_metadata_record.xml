@@ -26,6 +26,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorAccentLog"
-        android:textStyle="normal|italic" />
+        android:textSize="12sp"
+        android:textStyle="normal" />
 
 </LinearLayout>
