@@ -1,0 +1,13 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar" />
+
+    <style name="LogDataUITheme" parent="android:Theme.Holo.Light.DarkActionBar">
+        <item name="android:background">#75a72c</item>
+        <item name="android:colorPrimary">#75a72c</item>
+        <item name="android:colorPrimaryDark">#3d5717</item>
+        <item name="android:colorAccent">#91cb3b</item>
+    </style>
+
+</resources>
