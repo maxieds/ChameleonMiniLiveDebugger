@@ -2,6 +2,7 @@ package com.maxieds.chameleonminilivedebugger;
 
 import com.felhr.usbserial.UsbSerialDevice;
 
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.io.IOException;
@@ -58,21 +59,23 @@ public class ChameleonIO {
     }
 
     public static SerialRespCode setLoggerConfigMode(UsbSerialDevice cmPort, int timeout) {
-        String deviceConfigCmd = "CONFIG=ISO14443A_SNIFF\n\r";
-        byte[] sendBuf = deviceConfigCmd.getBytes(StandardCharsets.UTF_8);
-        cmPort.write(sendBuf);
-        return OK;
+        return executeChameleonMiniCommand(cmPort, "CONFIG=ISO14443A_SNIFF", timeout);
     }
 
     public static SerialRespCode setReaderConfigMode(UsbSerialDevice cmPort, int timeout) {
-        String deviceConfigCmd = "CONFIG=ISO14443A_READER\n\r";
-        byte[] sendBuf = deviceConfigCmd.getBytes(StandardCharsets.UTF_8);
-        cmPort.write(sendBuf);
-        return OK;
+        return executeChameleonMiniCommand(cmPort, "CONFIG=ISO14443A_READER", timeout);
     }
 
     public static SerialRespCode enableLiveDebugging(UsbSerialDevice cmPort, int timeout) {
-        String deviceConfigCmd = "LOGMODE=LIVE\n\r";
+        return executeChameleonMiniCommand(cmPort, "LOGMODE=LIVE", timeout);
+    }
+
+    public static SerialRespCode executeChameleonMiniCommand(UsbSerialDevice cmPort, String rawCmd, int timeout) {
+        if(timeout < 0) {
+            timeout *= -1;
+            SystemClock.sleep(timeout);
+        }
+        String deviceConfigCmd = rawCmd + "\n\r";
         byte[] sendBuf = deviceConfigCmd.getBytes(StandardCharsets.UTF_8);
         cmPort.write(sendBuf);
         return OK;

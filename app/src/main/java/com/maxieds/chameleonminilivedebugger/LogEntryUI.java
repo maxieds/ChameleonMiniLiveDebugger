@@ -28,7 +28,7 @@ public class LogEntryUI extends LogEntryBase {
     private CheckBox entrySelect;
     private ImageView inoutDirIndicator, apduParseStatus;
     private TextView tvLabel, tvNumBytes, tvNumMillis, tvLogType;
-    private TextView tvDataHexBytes, tvDataAscii, tvDataRevhexBytes, tvDataRevhexAscii;
+    private TextView tvDataHexBytes, tvDataAscii;
 
     private int numBytes;
     private int diffTimeMillis;
@@ -80,19 +80,15 @@ public class LogEntryUI extends LogEntryBase {
         tvLabel = (TextView) mainContainerRef.findViewById(R.id.text_label);
         tvLabel.setText(logLabel);
         tvNumBytes = (TextView) mainContainerRef.findViewById(R.id.text_data_num_bytes);
-        tvNumBytes.setText("  " + String.valueOf(numBytes) + "B");
+        tvNumBytes.setText(String.valueOf(numBytes) + "B");
         tvNumMillis = (TextView) mainContainerRef.findViewById(R.id.text_offset_millis);
-        tvNumMillis.setText("  +" + String.valueOf(diffTimeMillis) + "ms");
+        tvNumMillis.setText((diffTimeMillis >=0 ? "+" : "") + String.valueOf(diffTimeMillis) + "ms");
         tvLogType = (TextView) mainContainerRef.findViewById(R.id.text_log_type);
         tvLogType.setText(LogUtils.LogCode.lookupByLogCode(logType).getShortCodeName(logType));
         tvDataHexBytes = (TextView) mainContainerRef.findViewById(R.id.text_logdata_hex);
         tvDataHexBytes.setText(Utils.bytes2Hex(entryData));
         tvDataAscii = (TextView) mainContainerRef.findViewById(R.id.text_logdata_ascii);
         tvDataAscii.setText(Utils.bytes2Ascii(entryData));
-        tvDataRevhexBytes = (TextView) mainContainerRef.findViewById(R.id.text_logdata_revhex);
-        tvDataRevhexBytes.setText(Utils.bytes2Hex(Utils.reverseBits(entryData)));
-        tvDataRevhexAscii = (TextView) mainContainerRef.findViewById(R.id.text_logdata_revhex_ascii);
-        tvDataRevhexAscii.setText(Utils.bytes2Hex(Utils.reverseBits(entryData)));
     }
 
     public boolean isSelected() {

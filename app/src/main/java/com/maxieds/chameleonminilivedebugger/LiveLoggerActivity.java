@@ -1,18 +1,23 @@
 package com.maxieds.chameleonminilivedebugger;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.support.v7.app.AppCompatActivity;
@@ -137,14 +142,86 @@ public class LiveLoggerActivity extends AppCompatActivity {
         public void onReceivedData(byte[] liveLogData) {
             if(ChameleonIO.PAUSED) {
                 appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB RESPONSE: ", Utils.bytes2Hex(liveLogData) + " | " + Utils.bytes2Ascii(liveLogData)));
+                ChameleonIO.PAUSED = false;
                 return;
             }
-            LogEntryUI nextLogEntry = LogEntryUI.newInstance(liveLogData, "");
-            if(nextLogEntry != null)
-                appendNewLog(nextLogEntry);
-            else
-                appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB ERROR: ", "Invalid raw log data sent by device."));
+            final LogEntryUI nextLogEntry = LogEntryUI.newInstance(liveLogData, "");
+            if(nextLogEntry != null) {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        appendNewLog(nextLogEntry);
+                    }
+                });
+            }
+            //else
+            //    appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB ERROR: ", "Invalid raw log data sent by device."));
         }
 
     };
+
+    public void actionButtonCreateNewEvent(View view) {
+        String createCmd = ((Button) view).getText().toString();
+        String msgParam = "";
+        if(createCmd.equals("READER")) {
+            ChameleonIO.setReaderConfigMode(serialPort, ChameleonIO.TIMEOUT);
+            return;
+        }
+        else if(createCmd.equals("SNIFFER")) {
+            ChameleonIO.setLoggerConfigMode(serialPort, ChameleonIO.TIMEOUT);
+            return;
+        }
+        else if(createCmd.equals("STATUS") || createCmd.equals("NEW EVENT") ||
+                createCmd.equals("ERROR") || createCmd.equals("LOCATION") ||
+                createCmd.equals("CARD INFO")) {
+            try {
+                displayUserInputPrompt("Description of the new event? ");
+                Looper.loop();
+            }
+            catch(RuntimeException msgReady) {}
+            msgParam = userInputStack;
+            userInputStack = null;
+        }
+        else if(createCmd.equals("LOCAL UID")) {
+            ChameleonIO.executeChameleonMiniCommand(serialPort, "GETUID", ChameleonIO.TIMEOUT);
+        }
+        else if(createCmd.equals("CHARGING")) {
+            ChameleonIO.executeChameleonMiniCommand(serialPort, "CHARGING?", ChameleonIO.TIMEOUT);
+        }
+        else if(createCmd.equals("STRENGTH")) {
+            ChameleonIO.executeChameleonMiniCommand(serialPort, "RSSI?", ChameleonIO.TIMEOUT);
+        }
+        else if(createCmd.equals("LOCAL UID")) {
+            ChameleonIO.executeChameleonMiniCommand(serialPort, "GETUID", ChameleonIO.TIMEOUT);
+        }
+        else if(createCmd.equals("FIRMWARE")) {
+            ChameleonIO.executeChameleonMiniCommand(serialPort, "VERSION?", ChameleonIO.TIMEOUT);
+        }
+        else if(createCmd.equals("IDENTIFY")) {
+            ChameleonIO.executeChameleonMiniCommand(serialPort, "IDENTIFY", ChameleonIO.TIMEOUT);
+        }
+        appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord(createCmd, msgParam));
+    }
+
+    private String userInputStack;
+
+    public void displayUserInputPrompt(String promptMsg) {
+        final EditText userInput = new EditText(this);
+        userInput.setHint("What is the event description?");
+        new AlertDialog.Builder(this)
+                .setTitle(promptMsg)
+                //.setMessage("Enter annotation for the current log.")
+                .setView(userInput)
+                .setPositiveButton("Submit Message", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        userInputStack = userInput.getText().toString();
+                        throw new RuntimeException("The user input is ready.");
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                    }
+                })
+                .show();
+    }
+
 }

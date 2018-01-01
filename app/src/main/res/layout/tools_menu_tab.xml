@@ -1,9 +1,166 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_margin="2dp"
+        android:orientation="vertical"
+        android:padding="2dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDarkLog"
+            android:singleLine="true"
+            android:text="Insert commands and annotate events:"
+            android:textAllCaps="true"
+            android:textStyle="bold|italic"
+            android:drawableLeft="@drawable/hashmark16"
+            android:drawablePadding="5dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/colorPrimaryDark" />
+
+        <GridLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccentLog"
+            android:padding="2dp"
+            android:layout_margin="1dp"
+            android:columnCount="3"
+            android:rowCount="10">
+
+            <Button
+                style="@style/GridButtons"
+                android:drawableLeft="@drawable/binarymobile24"
+                android:text="READER"
+                android:onClick="actionButtonCreateNewEvent" />
+
+            <Button
+                style="@style/GridButtons"
+                android:drawableLeft="@drawable/binarysearch24"
+                android:text="SNIFFER"
+                android:onClick="actionButtonCreateNewEvent" />
+
+            <Button
+                style="@style/GridButtons"
+                android:drawableLeft="@drawable/msgbubble24"
+                android:text="STATUS"
+                android:onClick="actionButtonCreateNewEvent" />
+
+            <Button
+                style="@style/GridButtons"
+                android:drawableLeft="@drawable/statusicon24"
+                android:text="NEW EVENT"
+                android:onClick="actionButtonCreateNewEvent" />
+
+            <Button
+                style="@style/GridButtons"
+                android:drawableLeft="@drawable/erroricon24"
+                android:text="ERROR"
+                android:onClick="actionButtonCreateNewEvent" />
+
+            <Button
+                style="@style/GridButtons"
+                android:drawableLeft="@drawable/cardicon24"
+                android:text="CARD INFO"
+                android:onClick="actionButtonCreateNewEvent" />
+
+            <Button
+                style="@style/GridButtons"
+                android:drawableLeft="@drawable/usericon24"
+                android:text="LOCAL UID"
+                android:onClick="actionButtonCreateNewEvent" />
+
+            <Button
+                style="@style/GridButtons"
+                android:drawableLeft="@drawable/signalicon24"
+                android:text="STRENGTH"
+                android:onClick="actionButtonCreateNewEvent" />
+
+            <Button
+                style="@style/GridButtons"
+                android:drawableLeft="@drawable/batteryicon24"
+                android:text="CHARGING"
+                android:onClick="actionButtonCreateNewEvent" />
+
+            <Button
+                style="@style/GridButtons"
+                android:drawableLeft="@drawable/firmwareicon24"
+                android:text="FIRMWARE"
+                android:onClick="actionButtonCreateNewEvent" />
+
+            <Button
+                style="@style/GridButtons"
+                android:drawableLeft="@drawable/voltageicon24"
+                android:text="RSSI"
+                android:onClick="actionButtonCreateNewEvent" />
+
+            <Button
+                style="@style/GridButtons"
+                android:drawableLeft="@drawable/location24"
+                android:text="LOCATION"
+                android:onClick="actionButtonCreateNewEvent" />
+
+            <Button
+                style="@style/GridButtons"
+                android:drawableLeft="@drawable/dooricon24"
+                android:text="DOOR"
+                android:onClick="actionButtonCreateNewEvent" />
+
+            <Button
+                style="@style/GridButtons"
+                android:drawableLeft="@drawable/vending24"
+                android:text="VENDING"
+                android:onClick="actionButtonCreateNewEvent" />
+
+            <Button
+                style="@style/GridButtons"
+                android:drawableLeft="@drawable/phone24"
+                android:text="PHONE"
+                android:onClick="actionButtonCreateNewEvent" />
 
 
+            <Button
+                style="@style/GridButtons"
+                android:drawableLeft="@drawable/powaction24"
+                android:text="ONCLICK"
+                android:onClick="actionButtonCreateNewEvent" />
 
-</android.support.constraint.ConstraintLayout>
+            <Button
+                style="@style/GridButtons"
+                android:drawableLeft="@drawable/questionsearch24"
+                android:text="IDENTIFY"
+                android:onClick="actionButtonCreateNewEvent" />
+
+        </GridLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/colorPrimaryDark" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDarkLog"
+            android:singleLine="true"
+            android:text="Apply to all selected:"
+            android:textAllCaps="true"
+            android:textStyle="bold|italic"
+            android:drawableLeft="@drawable/checkbox16"
+            android:drawablePadding="5dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/colorPrimaryDark" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:drawableLeft="@drawable/msgbubble24"
         android:drawablePadding="5dp"
-        android:background="@color/colorPrimaryDarkLog"
+        android:background="#98fb98"
         android:textAllCaps="true"
         android:textStyle="bold" />
 
@@ -28,5 +28,10 @@
         android:background="@color/colorAccentLog"
         android:textSize="12sp"
         android:textStyle="normal" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorPrimaryDark" />
 
 </LinearLayout>

@@ -77,10 +77,10 @@ public class LogUtils {
         public static String getShortCodeName(int lcode) {
             LogCode lc = lookupByLogCode(lcode);
             String longName = lc.name();
-            longName.replace("LOG_INFO_", "");
-            longName.replace("LOG_INFO_CODEC_", "");
-            longName.replace("LOG_INFO_APP_", "");
-            longName.replace("LOG_ERR_APP_", "");
+            longName = longName.replace("LOG_INFO_", "");
+            longName = longName.replace("LOG_INFO_CODEC_", "");
+            longName = longName.replace("LOG_INFO_APP_", "");
+            longName = longName.replace("LOG_ERR_APP_", "");
             return longName;
         }
 

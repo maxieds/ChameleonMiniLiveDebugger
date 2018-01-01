@@ -7,13 +7,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v7.widget.GridLayout
-        android:layout_width="match_parent"
+    <GridLayout
+        android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_gravity="fill"
-        app:columnCount="3"
-        app:orientation="horizontal"
-        app:rowCount="2">
+        android:columnCount="3"
+        android:orientation="horizontal"
+        android:rowCount="2">
 
         <Button
             android:id="@+id/export_xml_button"
@@ -51,7 +51,7 @@
             android:visible="true"
             />
 
-    </android.support.v7.widget.GridLayout>
+    </GridLayout>
 
     <RadioGroup
         android:layout_width="fill_parent"

@@ -1,141 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-style="@style/LogDataUITheme"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:orientation="horizontal">
+    style="@style/LogDataUITheme"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-<CheckBox
-    android:id="@+id/entrySelect"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_centerInParent="true"
-    android:layout_gravity="center_vertical"
-    android:gravity="center_horizontal" />
-
-<ImageView
-    android:id="@+id/inputDirIndicatorImg"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_centerInParent="true"
-    android:layout_gravity="center_vertical"
-    android:gravity="center_horizontal"
-    android:src="@drawable/xfer16" />
-
-<ImageView
-    android:id="@+id/apduParseStatusImg"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_centerInParent="true"
-    android:layout_gravity="center_vertical"
-    android:gravity="center_horizontal"
-    android:src="@drawable/question16" />
-
-<TextView
-    android:id="@+id/text_label"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_centerInParent="true"
-    android:layout_gravity="center_vertical"
-    android:gravity="center_horizontal"
-    android:singleLine="true"
-    android:text="LBLXXXXX"
-    android:textSize="12sp"
-    android:textStyle="bold|italic" />
-
-<TextView
-    android:id="@+id/text_log_type"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_centerInParent="true"
-    android:layout_gravity="center_vertical"
-    android:gravity="center_horizontal"
-    android:singleLine="true"
-    android:text="LOG_TYPE"
-    android:textSize="12sp"
-    android:textStyle="bold|italic" />
-
-<TextView
-    android:id="@+id/text_data_num_bytes"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_centerInParent="true"
-    android:layout_gravity="center_vertical"
-    android:gravity="center_horizontal"
-    android:singleLine="true"
-    android:text="XXB"
-    android:textSize="12sp"
-    android:textStyle="bold|italic" />
-
-<TextView
-    android:id="@+id/text_offset_millis"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_centerInParent="true"
-    android:layout_gravity="center_vertical"
-    android:gravity="center_horizontal"
-    android:singleLine="true"
-    android:text="+XXX ms"
-    android:textSize="12sp"
-    android:textStyle="bold|italic" />
-
-<GridLayout
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_weight="1.0"
-    android:columnCount="1"
-    android:rowCount="4">
-
-    <TextView
-        android:id="@+id/text_logdata_hex"
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center_vertical"
-        android:gravity="center_horizontal"
-        android:hint=":LOG DATA PAYLOAD HEX BYTES:"
-        android:singleLine="true"
-        android:textSize="6sp"
-        android:textStyle="bold|normal" />
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/text_logdata_ascii"
+        <CheckBox
+            android:id="@+id/entrySelect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_horizontal" />
+
+        <ImageView
+            android:id="@+id/inputDirIndicatorImg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_columnWeight="0.15"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_horizontal"
+            android:src="@drawable/xfer16" />
+
+        <ImageView
+            android:id="@+id/apduParseStatusImg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_columnWeight="0.15"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_horizontal"
+            android:src="@drawable/question16" />
+
+        <TextView
+            android:id="@+id/text_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_columnWeight="0.0"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_horizontal"
+            android:singleLine="true"
+            android:text="LBLXXXXX"
+            android:textSize="12sp"
+            android:textStyle="bold|italic" />
+
+        <TextView
+            android:id="@+id/text_log_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_columnWeight="0.45"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_horizontal"
+            android:singleLine="true"
+            android:text="LOG_TYPE"
+            android:textSize="12sp"
+            android:textStyle="bold|italic"
+            android:paddingLeft="5dp"/>
+
+        <TextView
+            android:id="@+id/text_data_num_bytes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_columnWeight="0.10"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_horizontal"
+            android:singleLine="true"
+            android:text="XXB"
+            android:textSize="12sp"
+            android:textStyle="bold|italic"
+            android:paddingLeft="5dp"/>
+
+        <TextView
+            android:id="@+id/text_offset_millis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_columnWeight="0.15"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_horizontal"
+            android:singleLine="true"
+            android:text="+XXX ms"
+            android:textSize="12sp"
+            android:textStyle="bold|italic"
+            android:paddingLeft="5dp"/>
+    </LinearLayout>
+
+    <GridLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center_vertical"
-        android:gravity="center_horizontal"
-        android:hint=":LOG DATA PAYLOAD ASCII TEXT:"
-        android:singleLine="true"
-        android:textSize="6sp"
-        android:textStyle="bold|normal" />
+        android:layout_weight="1.0"
+        android:columnCount="1"
+        android:rowCount="2">
 
-    <TextView
-        android:id="@+id/text_logdata_revhex"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center_vertical"
-        android:gravity="center_horizontal"
-        android:hint=":LOG DATA PAYLOAD REVHEX BYTES:"
-        android:singleLine="true"
-        android:textSize="6sp"
-        android:textStyle="bold|normal" />
+        <TextView
+            android:id="@+id/text_logdata_hex"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center_vertical"
+            android:gravity="left"
+            android:hint=":LOG DATA PAYLOAD HEX BYTES:"
+            android:paddingLeft="35dp"
+            android:singleLine="true"
+            android:textSize="8sp"
+            android:textStyle="bold|normal" />
 
-    <TextView
-        android:id="@+id/text_logdata_revhex_ascii"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center_vertical"
-        android:gravity="center_horizontal"
-        android:hint=":LOG DATA PAYLOAD REVHEX BYTES ASCII TEXT:"
-        android:singleLine="true"
-        android:textSize="6sp"
-        android:textStyle="bold|normal" />
+        <TextView
+            android:id="@+id/text_logdata_ascii"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center_vertical"
+            android:gravity="left"
+            android:hint=":LOG DATA PAYLOAD ASCII TEXT:"
+            android:paddingLeft="35dp"
+            android:singleLine="true"
+            android:textSize="8sp"
+            android:textStyle="bold|normal" />
 
-</GridLayout>
+    </GridLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorPrimaryDark" />
 
 
 </LinearLayout>

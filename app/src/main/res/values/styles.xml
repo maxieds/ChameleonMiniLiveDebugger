@@ -8,7 +8,7 @@
 
 
     <style name="LogDataUITheme" parent="AppTheme">
-        <item name="android:background">#75a72c</item>
+        <item name="android:background">@color/colorPrimaryDarkLog</item>
         <item name="android:colorPrimary">#75a72c</item>
         <item name="android:colorPrimaryDark">#3d5717</item>
         <item name="android:colorAccent">#91cb3b</item>
@@ -25,6 +25,17 @@
         <item name="android:contentInsetStart">0dp</item>
         <item name="android:contentInsetLeft">5dp</item>
         <item name="android:titleMarginStart">5dp</item>
+    </style>
+
+    <style name="GridButtons">
+        <item name="android:background">#e4e4e4</item>
+        <item name="android:maxButtonHeight">8dp</item>
+        <item name="android:layout_columnWeight">0.25</item>
+        <item name="android:layout_width">100dp</item>
+        <item name="android:maxHeight">40dp</item>
+        <item name="android:layout_weight">0.29</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">normal|bold</item>
     </style>
 
 </resources>

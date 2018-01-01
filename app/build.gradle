@@ -30,7 +30,7 @@ dependencies {
     compile 'com.android.support:support-v4:25.4.0'
     compile 'com.android.support:appcompat-v7:25.4.0'
     compile 'com.android.support:design:25.4.0'
-    compile 'com.android.support:gridlayout-v7:25.4.0'
+    //compile 'com.android.support:gridlayout-v7:25.4.0'
     //compile project(':usb-serial-for-android:usbSerialForAndroid')
 }
 
