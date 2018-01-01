@@ -2,6 +2,8 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
@@ -17,7 +19,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.support.v7.app.AppCompatActivity;
@@ -45,6 +49,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public static Context defaultContext;
     public static LinearLayout logDataFeed;
     public static List<LogEntryBase> logDataEntries = new ArrayList<LogEntryBase>();
+    public static int RECORDID = 0;
     public static boolean logDataFeedConfigured = false;
     UsbSerialDevice serialPort;
 
@@ -83,6 +88,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
         tabLayout.getTabAt(TAB_SEARCH).setIcon(R.drawable.searchicon24);
 
         configureSerialPort(true);
+        if(serialPort == null)
+            return;
         ChameleonIO.setLoggerConfigMode(serialPort, ChameleonIO.TIMEOUT);
         //ChameleonIO.setReaderConfigMode(serialPort, ChameleonIO.TIMEOUT);
         ChameleonIO.enableLiveDebugging(serialPort, ChameleonIO.TIMEOUT);
@@ -97,9 +104,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
         UsbDevice device = null;
         UsbDeviceConnection connection = null;
         HashMap<String, UsbDevice> usbDevices = usbManager.getDeviceList();
-        if(!usbDevices.isEmpty()) {
+        if(usbDevices != null && !usbDevices.isEmpty()) {
             for(Map.Entry<String, UsbDevice> entry : usbDevices.entrySet()) {
                 device = entry.getValue();
+                if(device == null)
+                    continue;
                 int deviceVID = device.getVendorId();
                 int devicePID = device.getProductId();
                 if(deviceVID == ChameleonIO.CMUSB_VENDORID && devicePID == ChameleonIO.CMUSB_PRODUCTID) {
@@ -110,6 +119,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
         if((device == null || connection == null) && appendErrorLogs) {
             appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB STATUS: ", "Connection to device unavailable."));
+            serialPort = null;
+            return false;
         }
         serialPort = UsbSerialDevice.createUsbSerialDevice(device, connection);
         if(serialPort != null && serialPort.open()) {
@@ -200,6 +211,77 @@ public class LiveLoggerActivity extends AppCompatActivity {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "IDENTIFY", ChameleonIO.TIMEOUT);
         }
         appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord(createCmd, msgParam));
+    }
+
+    public void actionButtonSelectedHighlight(View view) {
+        int highlightColor = Color.parseColor(((Button) view).getTag().toString());
+        for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
+            View logEntryView = logDataFeed.getChildAt(vi);
+            if (logDataEntries.get(vi) instanceof LogEntryUI) {
+                boolean isChecked = ((CheckBox) logEntryView.findViewById(R.id.entrySelect)).isChecked();
+                if (isChecked)
+                    logEntryView.setBackgroundColor(highlightColor);
+            }
+        }
+    }
+
+    public void actionButtonUncheckAll(View view) {
+        for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
+            View logEntryView = logDataFeed.getChildAt(vi);
+            if (logDataEntries.get(vi) instanceof LogEntryUI) {
+                ((CheckBox) logEntryView.findViewById(R.id.entrySelect)).setChecked(false);
+            }
+        }
+    }
+
+    public void actionButtonSetSelectedXFer(View view) {
+
+        int directionFlag = Integer.parseInt(((Button) view).getTag().toString());
+        Drawable dirArrowIcon = getResources().getDrawable(R.drawable.xfer16);
+        if(directionFlag == 1)
+            dirArrowIcon = getResources().getDrawable(R.drawable.incoming16v2);
+        else if(directionFlag == 2)
+            dirArrowIcon = getResources().getDrawable(R.drawable.outgoing16v2);
+
+        for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
+            View logEntryView = logDataFeed.getChildAt(vi);
+            if (logDataEntries.get(vi) instanceof LogEntryUI) {
+                boolean isChecked = ((CheckBox) logEntryView.findViewById(R.id.entrySelect)).isChecked();
+                if (isChecked) {
+                    ImageView xferMarker = (ImageView) logEntryView.findViewById(R.id.inputDirIndicatorImg);
+                    xferMarker.setImageDrawable(dirArrowIcon);
+                }
+            }
+        }
+
+    }
+
+    public void actionButtonProcessBatch(View view) {
+        String actionFlag = ((Button) view).getTag().toString();
+        if(actionFlag.equals("PARSE_APDU")) {
+            appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "Parsing of APDU commands and status codes not yet supported."));
+            return;
+        }
+        for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
+            View logEntryView = logDataFeed.getChildAt(vi);
+            if (logDataEntries.get(vi) instanceof LogEntryUI) {
+                boolean isChecked = ((CheckBox) logEntryView.findViewById(R.id.entrySelect)).isChecked();
+                if (isChecked && actionFlag.equals("SEND")) {
+                    String byteString = ((LogEntryUI) logDataEntries.get(vi)).getPayloadData();
+                    appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("CARD INFO", "Sending: " + byteString + "..."));
+                    ChameleonIO.executeChameleonMiniCommand(serialPort, "SEND " + byteString, ChameleonIO.TIMEOUT);
+                }
+                else if(isChecked && actionFlag.equals("SEND_RAW")) {
+                    String byteString = ((LogEntryUI) logDataEntries.get(vi)).getPayloadData();
+                    appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("CARD INFO", "Sending: " + byteString + "..."));
+                    ChameleonIO.executeChameleonMiniCommand(serialPort, "SEND_RAW " + byteString, ChameleonIO.TIMEOUT);
+                }
+            }
+        }
+    }
+
+    public void actionButtonWriteFile(View view) {
+        appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "Saving of live logs is not yet supported."));
     }
 
     private String userInputStack;

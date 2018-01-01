@@ -6,6 +6,6 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TODO / Search for bitstrings" />
+        android:text="Search for bitstrings, APDU codes, and display a pocket list of handy status flags." />
 
 </android.support.constraint.ConstraintLayout>

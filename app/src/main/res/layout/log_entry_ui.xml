@@ -19,6 +19,21 @@
             android:layout_gravity="center_vertical"
             android:gravity="center_horizontal" />
 
+        <TextView
+            android:id="@+id/text_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_columnWeight="0.0"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_horizontal"
+            android:singleLine="true"
+            android:text="LBLXXXXX"
+            android:textSize="12sp"
+            android:textStyle="bold|italic"
+            android:paddingLeft="0dp"
+            android:paddingRight="5dp" />
+
         <ImageView
             android:id="@+id/inputDirIndicatorImg"
             android:layout_width="wrap_content"
@@ -38,19 +53,6 @@
             android:layout_gravity="center_vertical"
             android:gravity="center_horizontal"
             android:src="@drawable/question16" />
-
-        <TextView
-            android:id="@+id/text_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_columnWeight="0.0"
-            android:layout_gravity="center_vertical"
-            android:gravity="center_horizontal"
-            android:singleLine="true"
-            android:text="LBLXXXXX"
-            android:textSize="12sp"
-            android:textStyle="bold|italic" />
 
         <TextView
             android:id="@+id/text_log_type"

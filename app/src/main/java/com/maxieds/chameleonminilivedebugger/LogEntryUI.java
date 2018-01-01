@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import static android.content.ContentValues.TAG;
+import static java.lang.Math.abs;
 
 /**
  * Created by maxie on 12/31/17.
@@ -23,6 +24,7 @@ public class LogEntryUI extends LogEntryBase {
 
     public static final float ENTRY_UIWEIGHT = (float) 0.10;
     public static int curSystickTimestamp = -1; // milliseconds
+    public static long lastSystemMillis = System.currentTimeMillis();
 
     private LinearLayout mainEntryContainer;
     private CheckBox entrySelect;
@@ -45,10 +47,15 @@ public class LogEntryUI extends LogEntryBase {
         int payloadNumBytes = (int) rawLogBytes[1];
         int timestamp = (((int) rawLogBytes[2]) << 8) | ((int) rawLogBytes[3]);
         int diffTimeMs = curSystickTimestamp == -1 ? timestamp : timestamp - curSystickTimestamp;
+        long systemTimeMillis = System.currentTimeMillis();
+        if(diffTimeMs < 0) {
+            diffTimeMs = (int) (lastSystemMillis - systemTimeMillis);
+        }
         curSystickTimestamp = timestamp;
+        lastSystemMillis = systemTimeMillis;
         byte[] payloadBytes = new byte[rawLogBytes.length - 4];
         if(payloadBytes.length < payloadNumBytes) {
-            Log.w(TAG, "Ihnvalid payload bytes sent.");
+            Log.w(TAG, "Invalid payload bytes sent.");
         }
         else
             System.arraycopy(rawLogBytes, 4, payloadBytes, 0, payloadBytes.length);
@@ -78,11 +85,11 @@ public class LogEntryUI extends LogEntryBase {
         inoutDirIndicator = (ImageView) mainContainerRef.findViewById(R.id.inputDirIndicatorImg);
         apduParseStatus = (ImageView) mainContainerRef.findViewById(R.id.apduParseStatusImg);
         tvLabel = (TextView) mainContainerRef.findViewById(R.id.text_label);
-        tvLabel.setText(logLabel);
+        tvLabel.setText(logLabel + String.format("%06d", ++LiveLoggerActivity.RECORDID));
         tvNumBytes = (TextView) mainContainerRef.findViewById(R.id.text_data_num_bytes);
         tvNumBytes.setText(String.valueOf(numBytes) + "B");
         tvNumMillis = (TextView) mainContainerRef.findViewById(R.id.text_offset_millis);
-        tvNumMillis.setText((diffTimeMillis >=0 ? "+" : "") + String.valueOf(diffTimeMillis) + "ms");
+        tvNumMillis.setText((diffTimeMillis >=0 ? "+" : "~") + String.valueOf(abs(diffTimeMillis)) + "ms");
         tvLogType = (TextView) mainContainerRef.findViewById(R.id.text_log_type);
         tvLogType.setText(LogUtils.LogCode.lookupByLogCode(logType).getShortCodeName(logType));
         tvDataHexBytes = (TextView) mainContainerRef.findViewById(R.id.text_logdata_hex);
@@ -93,6 +100,11 @@ public class LogEntryUI extends LogEntryBase {
 
     public boolean isSelected() {
         return entrySelect.isSelected();
+    }
+
+    public String getPayloadData() {
+        String hexBytes = Utils.bytes2Hex(entryData);
+        return hexBytes.replace(" ", "");
     }
 
     @Override
