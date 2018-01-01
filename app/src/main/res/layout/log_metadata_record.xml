@@ -1,39 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:padding="5px"
-        android:background="@color/colorPrimaryDark"
-        android:layout_height="wrap_content"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="5px">
+
+    <TextView
+        android:id="@+id/record_title_text"
         android:layout_width="fill_parent"
-        >
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/msgbubble24"
+        android:drawablePadding="5dp"
+        android:background="@color/colorPrimaryDarkLog"
+        android:textAllCaps="true"
+        android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/record_title_text"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/msgbubble24"
-            android:textStyle="bold"
-            android:textAllCaps="true"
-            />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorPrimaryDark" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/colorPrimaryDark" />
+    <TextView
+        android:id="@+id/record_data_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccentLog"
+        android:textStyle="normal|italic" />
 
-        <TextView
-            android:id="@+id/record_data_text"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/msgbubble24"
-            android:textStyle="normal|italic"
-            android:background="@color/colorAccent"
-            />
-
-    </LinearLayout>
-
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

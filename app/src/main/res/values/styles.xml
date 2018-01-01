@@ -3,6 +3,7 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:windowActionBar">true</item>
+        <item name="android:actionBarStyle">@style/ActionBarTheme</item>
     </style>
 
 
@@ -11,6 +12,19 @@
         <item name="android:colorPrimary">#75a72c</item>
         <item name="android:colorPrimaryDark">#3d5717</item>
         <item name="android:colorAccent">#91cb3b</item>
+    </style>
+
+    <style name="ActionBarTheme" parent="Base.ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:background">#6cb00a</item>
+        <item name="android:colorPrimary">#75a72c</item>
+        <item name="android:colorPrimaryDark">#6cb00a</item>
+        <item name="android:colorAccent">#91cb3b</item>
+        <item name="logo">@drawable/chameleonicon64</item>
+        <item name="displayOptions">useLogo|showHome</item>
+        <item name="android:contentInsetEnd">0dp</item>
+        <item name="android:contentInsetStart">0dp</item>
+        <item name="android:contentInsetLeft">5dp</item>
+        <item name="android:titleMarginStart">5dp</item>
     </style>
 
 </resources>

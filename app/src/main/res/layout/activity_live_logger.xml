@@ -13,9 +13,9 @@
         android:logo="@drawable/chameleonicon64"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:maxHeight="50dp"
         android:visible="true"
         android:orientation="horizontal"
+        android:background="@color/colorPrimaryDark"
         />
 
     <LinearLayout
@@ -96,6 +96,8 @@
             android:layout_width="match_parent"
             android:layout_height="500dp"
             android:layout_weight="1.0"
+            android:background="@color/colorPrimary"
+            android:padding="8dp"
             tools:context="net.voidynullness.android.tabitytabs.TabLayoutActivity">
 
         </android.support.v4.view.ViewPager>

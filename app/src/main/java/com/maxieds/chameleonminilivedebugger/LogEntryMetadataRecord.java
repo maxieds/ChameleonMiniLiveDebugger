@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.text.format.Time;
 
 /**
  * Created by mschmidt34 on 12/31/2017.
@@ -18,16 +19,18 @@ public class LogEntryMetadataRecord extends LogEntryBase {
 
     private LinearLayout recordContainer;
 
-    public LogEntryMetadataRecord(Context context, String title, String text) {
+    public LogEntryMetadataRecord(LayoutInflater inflater, String title, String text) {
         recordTitle = title;
         recordText = text;
-        recordTimestamp = "@TODO";
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        Time currentTime = new Time();
+        currentTime.setToNow();
+        recordTimestamp = currentTime.format("%Y.%m.%d:%T");
+        //LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         recordContainer = (LinearLayout) inflater.inflate(R.layout.log_metadata_record, null);
         TextView tvRecTitle = (TextView) recordContainer.findViewById(R.id.record_title_text);
         tvRecTitle.setText(recordTitle + " -- " + recordTimestamp);
         TextView tvRecData = (TextView) recordContainer.findViewById(R.id.record_data_text);
-        tvRecTitle.setText(recordText);
+        tvRecData.setText(recordText);
     }
 
     public String writeXMLFragment(int indentLevel) {

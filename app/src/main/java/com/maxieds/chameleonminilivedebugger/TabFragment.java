@@ -5,6 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
 /**
  * Created by mschmidt34 on 12/31/2017.
@@ -63,6 +66,15 @@ public class TabFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(layoutResRef, container, false);
         inflatedView = view;
+        LiveLoggerActivity.defaultInflater = inflater;
+        if(tabNumber == TAB_LOG && !LiveLoggerActivity.logDataFeedConfigured) {
+            ScrollView logScroller = (ScrollView) view.findViewById(R.id.log_scroll_view);
+            LinearLayout logDataFeed = LiveLoggerActivity.logDataFeed;
+            logDataFeed.setOrientation(LinearLayout.VERTICAL);
+            logScroller.addView(logDataFeed);
+            LiveLoggerActivity.logDataFeed = logDataFeed;
+            LiveLoggerActivity.logDataFeedConfigured = true;
+        }
         return inflatedView;
     }
 
