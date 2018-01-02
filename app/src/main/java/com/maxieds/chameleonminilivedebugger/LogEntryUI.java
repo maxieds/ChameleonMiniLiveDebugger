@@ -104,6 +104,10 @@ public class LogEntryUI extends LogEntryBase {
         return entrySelect.isSelected();
     }
 
+    public byte[] getEntryData() {
+        return entryData;
+    }
+
     public String getPayloadData() {
         String hexBytes = Utils.bytes2Hex(entryData);
         return hexBytes.replace(" ", "");

@@ -102,18 +102,14 @@ public class LiveLoggerActivity extends AppCompatActivity {
         };
         requestPermissions(permissions, 200);
 
-        configureSerialPort(true);
-        if(serialPort == null)
-            return;
-        ChameleonIO.setLoggerConfigMode(serialPort, ChameleonIO.TIMEOUT);
-        //ChameleonIO.setReaderConfigMode(serialPort, ChameleonIO.TIMEOUT);
-        ChameleonIO.enableLiveDebugging(serialPort, ChameleonIO.TIMEOUT);
-        ChameleonIO.PAUSED = false;
-        appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB STATUS: ", "Successfully configured the device in passive logging mode."));
+        configureSerialPort(null);
 
     }
 
-    private boolean configureSerialPort(boolean appendErrorLogs) {
+    private void configureSerialPort(View view) {
+
+        if(serialPort != null)
+            closeSerialPort();
 
         UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         UsbDevice device = null;
@@ -133,10 +129,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
             }
         }
         if(device == null || connection == null) {
-            if(appendErrorLogs)
-                appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB STATUS: ", "Connection to device unavailable."));
+            appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB STATUS: ", "Connection to device unavailable."));
             serialPort = null;
-            return false;
+            return;
         }
         serialPort = UsbSerialDevice.createUsbSerialDevice(device, connection);
         if(serialPort != null && serialPort.open()) {
@@ -146,13 +141,17 @@ public class LiveLoggerActivity extends AppCompatActivity {
             serialPort.setParity(UsbSerialInterface.PARITY_NONE);
             serialPort.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF);
             serialPort.read(usbReaderCallback);
-            return true;
         }
-        else if(appendErrorLogs) {
+        else {
             appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB ERROR: ", "Unable to configure serial device."));
-            return false;
+            return;
         }
-        return false;
+
+        ChameleonIO.setLoggerConfigMode(serialPort, ChameleonIO.TIMEOUT);
+        //ChameleonIO.setReaderConfigMode(serialPort, ChameleonIO.TIMEOUT);
+        ChameleonIO.enableLiveDebugging(serialPort, ChameleonIO.TIMEOUT);
+        ChameleonIO.PAUSED = false;
+        appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB STATUS: ", "Successfully configured the device in passive logging mode."));
 
     }
 
@@ -197,6 +196,28 @@ public class LiveLoggerActivity extends AppCompatActivity {
             ChameleonIO.setLoggerConfigMode(serialPort, ChameleonIO.TIMEOUT);
             return;
         }
+        else if(createCmd.equals("MF_ULTRALIGHT")) {
+            ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_ULTRLIGHT", ChameleonIO.TIMEOUT);
+            return;
+        }
+        else if(createCmd.equals("MF_CLASSIC_1K")) {
+            ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_1K", ChameleonIO.TIMEOUT);
+            return;
+        }
+        else if(createCmd.equals("MF_CLASSIC_4K")) {
+            ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_4K", ChameleonIO.TIMEOUT);
+            return;
+        }
+        else if(createCmd.equals("MF_CLASSIC_4K_7B")) {
+            ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_4K_7B", ChameleonIO.TIMEOUT);
+            return;
+        }
+        else if(createCmd.equals("RESET")) {
+            closeSerialPort();
+            ChameleonIO.executeChameleonMiniCommand(serialPort, "RESET", ChameleonIO.TIMEOUT);
+            configureSerialPort(null);
+            return;
+        }
         else if(createCmd.equals("STATUS") || createCmd.equals("NEW EVENT") ||
                 createCmd.equals("ERROR") || createCmd.equals("LOCATION") ||
                 createCmd.equals("CARD INFO")) {
@@ -225,6 +246,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
         else if(createCmd.equals("IDENTIFY")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "IDENTIFY", ChameleonIO.TIMEOUT);
+        }
+        else if(createCmd.equals("ONCLICK")) {
+            msgParam = "SYSTICK Millis = : ";
+            ChameleonIO.executeChameleonMiniCommand(serialPort, "SYSTICK?", ChameleonIO.TIMEOUT);
         }
         appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord(createCmd, msgParam));
     }
@@ -292,8 +317,24 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("CARD INFO", "Sending: " + byteString + "..."));
                     ChameleonIO.executeChameleonMiniCommand(serialPort, "SEND_RAW " + byteString, ChameleonIO.TIMEOUT);
                 }
+                else if(isChecked && actionFlag.equals("CLONE_UID")) {
+                    String uid = ((LogEntryUI) logDataEntries.get(vi)).getPayloadData();
+                    ChameleonIO.executeChameleonMiniCommand(serialPort, "UID=" + uid, ChameleonIO.TIMEOUT);
+                }
+                else if(isChecked && actionFlag.equals("PRINT")) {
+                    byte[] rawBytes = ((LogEntryUI) logDataEntries.get(vi)).getEntryData();
+                    LogEntryMetadataRecord.createDefaultEventRecord("PRINT", Utils.bytes2Hex(rawBytes) + "\n------\n" + Utils.bytes2Ascii(rawBytes));
+                }
+                else if(isChecked && actionFlag.equals("HIDE")) {
+                    logEntryView.setVisibility(View.GONE);
+                }
             }
         }
+    }
+
+    public void actionButtonRunCommand(View view) {
+        String cmCmd = ((Button) view).getTag().toString();
+        ChameleonIO.executeChameleonMiniCommand(serialPort, cmCmd, ChameleonIO.TIMEOUT);
     }
 
     public void actionButtonWriteFile(View view) {

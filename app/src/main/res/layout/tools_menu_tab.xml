@@ -21,7 +21,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/colorPrimaryDarkLog"
-                android:drawableLeft="@drawable/switchright16"
+                android:drawableLeft="@drawable/settings16"
                 android:drawablePadding="5dp"
                 android:singleLine="true"
                 android:text="Set configurations and de-select:"
@@ -56,9 +56,45 @@
 
                 <Button
                     style="@style/GridButtons"
+                    android:drawableLeft="@drawable/chip24v3"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="ULTRALIGHT" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/card24v8"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="CLASSIC-1K" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/card24v9"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="CLASSIC-4K" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/chip24v4"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="CLASSIC-4K7B" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/usbcable24"
+                    android:onClick="configSerialPort"
+                    android:text="CFGUSB" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/copy24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="RESET" />
+
+                <Button
+                    style="@style/GridButtons"
                     android:drawableLeft="@drawable/uncheckicon24"
                     android:onClick="actionButtonUncheckAll"
-                    android:text="UNCHECK" />
+                    android:text="UNCHECK ALL" />
 
             </GridLayout>
 
@@ -210,6 +246,27 @@
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="IDENTIFY" />
 
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/af24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="FIELD?"
+                    android:text="FIELD?" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/calibrate24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="AUTOCALIBRATE"
+                    android:text="AUTOCAL" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/dumpfile24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="DUMP_MFU"
+                    android:text="DUMP_MFU" />
+
             </GridLayout>
 
             <View
@@ -280,13 +337,34 @@
                     android:tag="SEND_RAW"
                     android:text="SEND_RAW" />
 
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/clone24"
+                    android:onClick="actionButtonProcessBatch"
+                    android:tag="CLONE_UID"
+                    android:text="Clone UID" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/dotdotdotbubble24"
+                    android:onClick="actionButtonProcessBatch"
+                    android:tag="PRINT"
+                    android:text="Print Full" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/hide24"
+                    android:onClick="actionButtonProcessBatch"
+                    android:tag="HIDE"
+                    android:text="Collapse" />
+
             </GridLayout>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/colorPrimaryDarkLog"
-                android:drawableLeft="@drawable/checkbox16"
+                android:drawableLeft="@drawable/highlight16"
                 android:drawablePadding="5dp"
                 android:singleLine="true"
                 android:text="Highlight selected:"
