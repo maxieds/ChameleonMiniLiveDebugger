@@ -107,6 +107,23 @@ public class LogEntryUI extends LogEntryBase {
         return hexBytes.replace(" ", "");
     }
 
+    public short getNextOffsetTime(short offsetTimeMillis) {
+        return (short) (offsetTimeMillis + abs(diffTimeMillis));
+    }
+
+    public byte[] packageBinaryLogData(short offsetTimeMillis) {
+        byte[] headerBytes = {
+                (byte) LogUtils.LogCode.lookupByLogCode(logType).toInteger(),
+                (byte) entryData.length,
+                (byte) ((offsetTimeMillis & 0x0000ff00) >>> 8),
+                (byte) (offsetTimeMillis & 0x000000ff),
+        };
+        byte[] fullBytes = new byte[entryData.length + 4];
+        System.arraycopy(headerBytes, 0, fullBytes, 0, 4);
+        System.arraycopy(entryData, 0, fullBytes, 4, entryData.length);
+        return fullBytes;
+    }
+
     @Override
     public String writeXMLFragment(int indentLevel) {
         return null;

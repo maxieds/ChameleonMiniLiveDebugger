@@ -372,10 +372,14 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     public static boolean writeBinaryLogFile(File fd) throws Exception {
         FileOutputStream fout = new FileOutputStream(fd);
+        short localTicks = 0;
         for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
             View logEntryView = logDataFeed.getChildAt(vi);
             if (logDataEntries.get(vi) instanceof LogEntryUI) {
-                //fout.write(bytes);
+                LogEntryUI logEntry = (LogEntryUI) logDataEntries.get(vi);
+                byte[] entryBytes = logEntry.packageBinaryLogData(localTicks);
+                localTicks = logEntry.getNextOffsetTime(localTicks);
+                fout.write(entryBytes);
             }
         }
         fout.close();
