@@ -351,7 +351,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
         for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
             View logEntryView = logDataFeed.getChildAt(vi);
             if (logDataEntries.get(vi) instanceof LogEntryUI) {
-                //fout.write(bytes);
+                fout.write(logDataEntries.get(vi).toString().getBytes());
+            }
+            else {
+                String lineStr = "\n## " + logDataEntries.get(vi).toString() + "\n";
+                fout.write(lineStr.getBytes());
             }
         }
         fout.close();
@@ -360,10 +364,18 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     public static boolean writeHTMLLogFile(File fd) throws Exception {
         FileOutputStream fout = new FileOutputStream(fd);
+        String htmlHeader = "<html><head><title>Chameleon Mini Live Debugger -- Logging Output</title></head><body>\n\n";
+        String htmlFooter = "</body></html>";
         for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
             View logEntryView = logDataFeed.getChildAt(vi);
             if (logDataEntries.get(vi) instanceof LogEntryUI) {
-                //fout.write(bytes);
+                String bgColor = String.format("#%06X", (0xFFFFFF & logEntryView.getDrawingCacheBackgroundColor()));
+                String lineData = "<code bgcolor='" + bgColor + "'>" + logDataEntries.get(vi).toString() + "</code><br/>\n";
+                fout.write(lineData.getBytes());
+            }
+            else {
+                String lineData = "<b><code>" + logDataEntries.get(vi).toString() + "</code></b><br/>\n";
+                fout.write(lineData.getBytes());
             }
         }
         fout.close();

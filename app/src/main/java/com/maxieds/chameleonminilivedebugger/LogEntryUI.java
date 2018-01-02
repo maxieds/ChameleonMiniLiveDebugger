@@ -32,6 +32,7 @@ public class LogEntryUI extends LogEntryBase {
     private TextView tvLabel, tvNumBytes, tvNumMillis, tvLogType;
     private TextView tvDataHexBytes, tvDataAscii;
 
+    private int recordID;
     private int numBytes;
     private int diffTimeMillis;
     private int logType;
@@ -85,7 +86,8 @@ public class LogEntryUI extends LogEntryBase {
         inoutDirIndicator = (ImageView) mainContainerRef.findViewById(R.id.inputDirIndicatorImg);
         apduParseStatus = (ImageView) mainContainerRef.findViewById(R.id.apduParseStatusImg);
         tvLabel = (TextView) mainContainerRef.findViewById(R.id.text_label);
-        tvLabel.setText(logLabel + String.format("%06d", ++LiveLoggerActivity.RECORDID));
+        recordID = ++LiveLoggerActivity.RECORDID;
+        tvLabel.setText(logLabel + String.format("%06d", LiveLoggerActivity.RECORDID));
         tvNumBytes = (TextView) mainContainerRef.findViewById(R.id.text_data_num_bytes);
         tvNumBytes.setText(String.valueOf(numBytes) + "B");
         tvNumMillis = (TextView) mainContainerRef.findViewById(R.id.text_offset_millis);
@@ -131,7 +133,11 @@ public class LogEntryUI extends LogEntryBase {
 
     @Override
     public String toString() {
-        return null;
+        LogUtils.LogCode logCode = LogUtils.LogCode.lookupByLogCode(logType);
+        String recordFmt = String.format("  %06d -- %32s [% 3 bytes] (%c% 6 ms) [%s]\n", recordID, logCode.name(),
+                entryData.length, diffTimeMillis >= 0 ? '+' : '~', abs(diffTimeMillis),
+                Utils.bytes2Hex(entryData));
+        return recordFmt;
     }
 
     @Override

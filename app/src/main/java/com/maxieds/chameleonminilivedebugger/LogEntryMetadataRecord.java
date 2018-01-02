@@ -45,7 +45,7 @@ public class LogEntryMetadataRecord extends LogEntryBase {
     }
 
     public String toString() {
-        return recordTitle + ": " + recordText + " (" + recordTimestamp + ")";
+        return recordTitle + ": " + recordText + " (@" + recordTimestamp + ")";
     }
 
     public View getLayoutContainer() {
