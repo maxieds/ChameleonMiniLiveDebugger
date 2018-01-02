@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.FALSE;
 import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.OK;
 
 /**
@@ -71,6 +72,8 @@ public class ChameleonIO {
     }
 
     public static SerialRespCode executeChameleonMiniCommand(UsbSerialDevice cmPort, String rawCmd, int timeout) {
+        if(cmPort == null)
+            return FALSE;
         if(timeout < 0) {
             timeout *= -1;
             SystemClock.sleep(timeout);

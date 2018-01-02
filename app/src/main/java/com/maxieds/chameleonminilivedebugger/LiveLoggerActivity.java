@@ -1,5 +1,6 @@
 package com.maxieds.chameleonminilivedebugger;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Looper;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentActivity;
@@ -36,6 +38,7 @@ import com.felhr.usbserial.UsbSerialInterface;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -91,6 +94,13 @@ public class LiveLoggerActivity extends AppCompatActivity {
         tabLayout.getTabAt(TAB_TOOLS).setIcon(R.drawable.tools24);
         tabLayout.getTabAt(TAB_EXPORT).setIcon(R.drawable.insertbinary24);
         tabLayout.getTabAt(TAB_SEARCH).setIcon(R.drawable.searchicon24);
+
+        String[] permissions = {
+                "android.permission.READ_EXTERNAL_STORAGE",
+                "android.permission.WRITE_EXTERNAL_STORAGE",
+                "android.permission.INTERNET"
+        };
+        requestPermissions(permissions, 200);
 
         configureSerialPort(true);
         if(serialPort == null)
@@ -287,10 +297,21 @@ public class LiveLoggerActivity extends AppCompatActivity {
     }
 
     public void actionButtonWriteFile(View view) {
-        //appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "Saving of live logs is not yet supported."));
         String fileType = ((Button) view).getTag().toString(), mimeType = "message/rfc822";
-        String outfilePath = getFilesDir() + "/logdata-" + Utils.getTimestamp() + "." + fileType;
-        File outfile = new File(outfilePath);
+        String outfilePath = "logdata-" + Utils.getTimestamp().replace(":", "") + "." + fileType;
+        File downloadsFolder = new File("//sdcard//Download//");
+        File outfile = new File(downloadsFolder, outfilePath);
+        boolean docsFolderExists = true;
+        if (!downloadsFolder.exists()) {
+            docsFolderExists = downloadsFolder.mkdir();
+        }
+        if (docsFolderExists) {
+            outfile = new File(downloadsFolder.getAbsolutePath(),outfilePath);
+        }
+        else {
+            appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to save output in Downloads folder."));
+            return;
+        }
         try {
             outfile.createNewFile();
             if (fileType.equals("out")) {
@@ -310,6 +331,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
             ioe.printStackTrace();
             return;
         }
+        DownloadManager downloadManager = (DownloadManager) defaultContext.getSystemService(DOWNLOAD_SERVICE);
+        downloadManager.addCompletedDownload(outfile.getName(), outfile.getName(), true, "text/plain",
+                outfile.getAbsolutePath(), outfile.length(),true);
+
         boolean saveFileChecked = ((RadioButton) findViewById(R.id.radio_save_storage)).isChecked();
         boolean emailFileChecked = ((RadioButton) findViewById(R.id.radio_save_email)).isChecked();
         boolean shareFileChecked = ((RadioButton) findViewById(R.id.radio_save_share)).isChecked();
@@ -319,6 +344,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
             i.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(outfile));
             i.putExtra(Intent.EXTRA_SUBJECT, "Chameleon Mini Log Data Output (Log Attached)");
             i.putExtra(Intent.EXTRA_TEXT, "See subject.");
+            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivity(Intent.createChooser(i, "Share the file ... "));
         }
         appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "Saved log file to \"" + outfilePath + "\"."));
@@ -347,15 +373,18 @@ public class LiveLoggerActivity extends AppCompatActivity {
     }
 
     public static boolean writeFormattedLogFile(File fd) throws Exception {
+        Log.i(TAG, String.valueOf("00".getBytes(StandardCharsets.US_ASCII)));
+
         FileOutputStream fout = new FileOutputStream(fd);
         for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
             View logEntryView = logDataFeed.getChildAt(vi);
             if (logDataEntries.get(vi) instanceof LogEntryUI) {
-                fout.write(logDataEntries.get(vi).toString().getBytes());
+                String dataLine = ((LogEntryUI) logDataEntries.get(vi)).toString() + "\n";
+                fout.write(dataLine.getBytes(StandardCharsets.US_ASCII));
             }
             else {
-                String lineStr = "\n## " + logDataEntries.get(vi).toString() + "\n";
-                fout.write(lineStr.getBytes());
+                String lineStr = "\n## " + ((LogEntryMetadataRecord) logDataEntries.get(vi)).toString() + "\n";
+                fout.write(lineStr.getBytes(StandardCharsets.US_ASCII));
             }
         }
         fout.close();
@@ -365,21 +394,24 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public static boolean writeHTMLLogFile(File fd) throws Exception {
         FileOutputStream fout = new FileOutputStream(fd);
         String htmlHeader = "<html><head><title>Chameleon Mini Live Debugger -- Logging Output</title></head><body>\n\n";
-        fout.write(htmlHeader.getBytes());
+        fout.write(htmlHeader.getBytes(StandardCharsets.US_ASCII));
+        String defaultBgColor = String.format("#%06X", (0xFFFFFF & R.color.colorPrimaryDarkLog));
         for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
             View logEntryView = logDataFeed.getChildAt(vi);
             if (logDataEntries.get(vi) instanceof LogEntryUI) {
                 String bgColor = String.format("#%06X", (0xFFFFFF & logEntryView.getDrawingCacheBackgroundColor()));
-                String lineData = "<code bgcolor='" + bgColor + "'>" + logDataEntries.get(vi).toString() + "</code><br/>\n";
-                fout.write(lineData.getBytes());
+                if(bgColor.equals(defaultBgColor))
+                    bgColor = "#ffffff";
+                String lineData = "<code bgcolor='" + bgColor + "'>" + ((LogEntryUI) logDataEntries.get(vi)).toString() + "</code><br/>\n";
+                fout.write(lineData.getBytes(StandardCharsets.US_ASCII));
             }
             else {
-                String lineData = "<b><code>" + logDataEntries.get(vi).toString() + "</code></b><br/>\n";
-                fout.write(lineData.getBytes());
+                String lineData = "<b><code>" + ((LogEntryMetadataRecord) logDataEntries.get(vi)).toString() + "</code></b><br/>\n";
+                fout.write(lineData.getBytes(StandardCharsets.US_ASCII));
             }
         }
         String htmlFooter = "</body></html>";
-        fout.write(htmlFooter.getBytes());
+        fout.write(htmlFooter.getBytes(StandardCharsets.US_ASCII));
         fout.close();
         return true;
     }

@@ -134,8 +134,8 @@ public class LogEntryUI extends LogEntryBase {
     @Override
     public String toString() {
         LogUtils.LogCode logCode = LogUtils.LogCode.lookupByLogCode(logType);
-        String recordFmt = String.format("  %06d -- %32s [% 3 bytes] (%c% 6 ms) [%s]\n", recordID, logCode.name(),
-                entryData.length, diffTimeMillis >= 0 ? '+' : '~', abs(diffTimeMillis),
+        String recordFmt = String.format("%06d -- %-32s [%-3s bytes] (%s%-6s ms) [%s]", recordID, logCode.name(),
+                String.valueOf(entryData.length), diffTimeMillis >= 0 ? "+" : "~", String.valueOf(abs(diffTimeMillis)),
                 Utils.bytes2Hex(entryData));
         return recordFmt;
     }
