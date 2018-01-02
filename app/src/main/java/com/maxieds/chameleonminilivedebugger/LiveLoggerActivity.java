@@ -2,11 +2,13 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.design.widget.TabLayout;
@@ -23,6 +25,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.ScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toolbar;
@@ -30,6 +33,8 @@ import android.widget.Toolbar;
 import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -117,8 +122,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 }
             }
         }
-        if((device == null || connection == null) && appendErrorLogs) {
-            appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB STATUS: ", "Connection to device unavailable."));
+        if(device == null || connection == null) {
+            if(appendErrorLogs)
+                appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB STATUS: ", "Connection to device unavailable."));
             serialPort = null;
             return false;
         }
@@ -281,7 +287,41 @@ public class LiveLoggerActivity extends AppCompatActivity {
     }
 
     public void actionButtonWriteFile(View view) {
-        appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "Saving of live logs is not yet supported."));
+        //appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "Saving of live logs is not yet supported."));
+        String fileType = ((Button) view).getTag().toString(), mimeType = "message/rfc822";
+        String outfilePath = getFilesDir() + "/logdata-" + Utils.getTimestamp() + "." + fileType;
+        File outfile = new File(outfilePath);
+        try {
+            outfile.createNewFile();
+            if (fileType.equals("out")) {
+                mimeType = "plain/text";
+                writeFormattedLogFile(outfile);
+            }
+            else if (fileType.equals("html")) {
+                mimeType = "text/html";
+                writeHTMLLogFile(outfile);
+            }
+            else if (fileType.equals("bin")) {
+                mimeType = "application/octet-stream";
+                writeBinaryLogFile(outfile);
+            }
+        } catch(Exception ioe) {
+            appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
+            ioe.printStackTrace();
+            return;
+        }
+        boolean saveFileChecked = ((RadioButton) findViewById(R.id.radio_save_storage)).isChecked();
+        boolean emailFileChecked = ((RadioButton) findViewById(R.id.radio_save_email)).isChecked();
+        boolean shareFileChecked = ((RadioButton) findViewById(R.id.radio_save_share)).isChecked();
+        if(emailFileChecked || shareFileChecked) {
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.setType(mimeType);
+            i.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(outfile));
+            i.putExtra(Intent.EXTRA_SUBJECT, "Chameleon Mini Log Data Output (Log Attached)");
+            i.putExtra(Intent.EXTRA_TEXT, "See subject.");
+            startActivity(Intent.createChooser(i, "Share the file ... "));
+        }
+        appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "Saved log file to \"" + outfilePath + "\"."));
     }
 
     private String userInputStack;
@@ -304,6 +344,42 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     }
                 })
                 .show();
+    }
+
+    public static boolean writeFormattedLogFile(File fd) throws Exception {
+        FileOutputStream fout = new FileOutputStream(fd);
+        for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
+            View logEntryView = logDataFeed.getChildAt(vi);
+            if (logDataEntries.get(vi) instanceof LogEntryUI) {
+                //fout.write(bytes);
+            }
+        }
+        fout.close();
+        return true;
+    }
+
+    public static boolean writeHTMLLogFile(File fd) throws Exception {
+        FileOutputStream fout = new FileOutputStream(fd);
+        for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
+            View logEntryView = logDataFeed.getChildAt(vi);
+            if (logDataEntries.get(vi) instanceof LogEntryUI) {
+                //fout.write(bytes);
+            }
+        }
+        fout.close();
+        return true;
+    }
+
+    public static boolean writeBinaryLogFile(File fd) throws Exception {
+        FileOutputStream fout = new FileOutputStream(fd);
+        for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
+            View logEntryView = logDataFeed.getChildAt(vi);
+            if (logDataEntries.get(vi) instanceof LogEntryUI) {
+                //fout.write(bytes);
+            }
+        }
+        fout.close();
+        return true;
     }
 
 }

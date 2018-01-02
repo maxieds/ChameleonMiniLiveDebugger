@@ -21,10 +21,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/colorPrimaryDarkLog"
-                android:drawableLeft="@drawable/hashmark16"
+                android:drawableLeft="@drawable/switchright16"
                 android:drawablePadding="5dp"
                 android:singleLine="true"
-                android:text="Insert commands and annotate events:"
+                android:text="Set configurations and de-select:"
                 android:textAllCaps="true"
                 android:textStyle="bold|italic" />
 
@@ -56,6 +56,44 @@
 
                 <Button
                     style="@style/GridButtons"
+                    android:drawableLeft="@drawable/uncheckicon24"
+                    android:onClick="actionButtonUncheckAll"
+                    android:text="UNCHECK" />
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/colorPrimaryDark" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/infobubble16"
+                android:drawablePadding="5dp"
+                android:singleLine="true"
+                android:text="Annotate logs:"
+                android:textAllCaps="true"
+                android:textStyle="bold|italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="@color/colorAccentLog"
+                android:columnCount="3"
+                android:padding="2dp"
+                android:rowCount="10">
+
+                <Button
+                    style="@style/GridButtons"
                     android:drawableLeft="@drawable/msgbubble24"
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="STATUS" />
@@ -77,6 +115,64 @@
                     android:drawableLeft="@drawable/cardicon24"
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="CARD INFO" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/location24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="LOCATION" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/dooricon24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="DOOR" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/vending24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="VENDING" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/phone24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="PHONE" />
+
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/powaction24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="ONCLICK" />
+
+            </GridLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/hashmark16"
+                android:drawablePadding="5dp"
+                android:singleLine="true"
+                android:text="Run device commands:"
+                android:textAllCaps="true"
+                android:textStyle="bold|italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="@color/colorAccentLog"
+                android:columnCount="3"
+                android:padding="2dp"
+                android:rowCount="10">
 
                 <Button
                     style="@style/GridButtons"
@@ -110,46 +206,9 @@
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/location24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="LOCATION" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/dooricon24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="DOOR" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/vending24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="VENDING" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/phone24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="PHONE" />
-
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/powaction24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="ONCLICK" />
-
-                <Button
-                    style="@style/GridButtons"
                     android:drawableLeft="@drawable/questionsearch24"
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="IDENTIFY" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/uncheckicon24"
-                    android:onClick="actionButtonUncheckAll"
-                    android:text="UNCHECK" />
 
             </GridLayout>
 
@@ -166,6 +225,71 @@
                 android:drawablePadding="5dp"
                 android:singleLine="true"
                 android:text="Apply to selected: (scroll for menu)"
+                android:textAllCaps="true"
+                android:textStyle="bold|italic" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="@color/colorAccentLog"
+                android:columnCount="3"
+                android:orientation="horizontal"
+                android:padding="2dp"
+                android:rowCount="2">
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/incoming16v2"
+                    android:onClick="actionButtonSetSelectedXFer"
+                    android:tag="1"
+                    android:text="Incoming" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/outgoing16v2"
+                    android:onClick="actionButtonSetSelectedXFer"
+                    android:tag="2"
+                    android:text="Outgoing" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/xfer16"
+                    android:onClick="actionButtonSetSelectedXFer"
+                    android:tag="0"
+                    android:text="Set xFer" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/xferbubble24"
+                    android:onClick="actionButtonProcessBatch"
+                    android:tag="PARSE_APDU"
+                    android:text="Parse APDU" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/wifibc24"
+                    android:onClick="actionButtonProcessBatch"
+                    android:tag="SEND"
+                    android:text="SEND Data" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/broadcastantenna24"
+                    android:onClick="actionButtonProcessBatch"
+                    android:tag="SEND_RAW"
+                    android:text="SEND_RAW" />
+
+            </GridLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/checkbox16"
+                android:drawablePadding="5dp"
+                android:singleLine="true"
+                android:text="Highlight selected:"
                 android:textAllCaps="true"
                 android:textStyle="bold|italic" />
 
@@ -261,61 +385,6 @@
                     android:background="#ffca2b"
                     android:onClick="actionButtonSelectedHighlight"
                     android:tag="#ffca2b" />
-
-            </GridLayout>
-
-            <GridLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="1dp"
-                android:background="@color/colorAccentLog"
-                android:columnCount="3"
-                android:orientation="horizontal"
-                android:padding="2dp"
-                android:rowCount="2">
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/incoming16v2"
-                    android:onClick="actionButtonSetSelectedXFer"
-                    android:tag="1"
-                    android:text="Incoming" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/outgoing16v2"
-                    android:onClick="actionButtonSetSelectedXFer"
-                    android:tag="2"
-                    android:text="Outgoing" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/xfer16"
-                    android:onClick="actionButtonSetSelectedXFer"
-                    android:tag="0"
-                    android:text="Set xFer" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/xferbubble24"
-                    android:onClick="actionButtonProcessBatch"
-                    android:tag="PARSE_APDU"
-                    android:text="Parse APDU" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/wifibc24"
-                    android:onClick="actionButtonProcessBatch"
-                    android:tag="SEND"
-                    android:text="SEND Data" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/broadcastantenna24"
-                    android:onClick="actionButtonProcessBatch"
-                    android:tag="SEND_RAW"
-                    android:text="SEND_RAW" />
-
 
             </GridLayout>
 
