@@ -365,7 +365,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public static boolean writeHTMLLogFile(File fd) throws Exception {
         FileOutputStream fout = new FileOutputStream(fd);
         String htmlHeader = "<html><head><title>Chameleon Mini Live Debugger -- Logging Output</title></head><body>\n\n";
-        String htmlFooter = "</body></html>";
+        fout.write(htmlHeader.getBytes());
         for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
             View logEntryView = logDataFeed.getChildAt(vi);
             if (logDataEntries.get(vi) instanceof LogEntryUI) {
@@ -378,6 +378,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 fout.write(lineData.getBytes());
             }
         }
+        String htmlFooter = "</body></html>";
+        fout.write(htmlFooter.getBytes());
         fout.close();
         return true;
     }
