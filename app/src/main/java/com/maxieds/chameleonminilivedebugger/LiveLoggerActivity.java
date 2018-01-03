@@ -22,6 +22,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -30,6 +32,9 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.ScrollView;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.SimpleAdapter;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Toolbar;
 
 import com.felhr.usbserial.UsbSerialDevice;
@@ -59,7 +64,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public static List<LogEntryBase> logDataEntries = new ArrayList<LogEntryBase>();
     public static int RECORDID = 0;
     public static boolean logDataFeedConfigured = false;
-    UsbSerialDevice serialPort;
+    public static UsbSerialDevice serialPort;
+    public static SpinnerAdapter spinnerRButtonLongAdapter;
+    public static SpinnerAdapter spinnerLEDRedAdapter;
+    public static SpinnerAdapter spinnerLogModeAdapter;
 
     public static void appendNewLog(LogEntryBase logEntry) {
         logDataFeed.addView(logEntry.getLayoutContainer());
@@ -390,6 +398,26 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
         appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "Saved log file to \"" + outfilePath + "\"."));
     }
+
+    public static void actionSpinnerSetCommand(View view) {
+        String sopt = ((Spinner) view).getSelectedItem().toString();
+        if(sopt.substring(0, 2).equals("--"))
+            sopt = "NONE";
+        String cmCmd = ((Spinner) view).getTag().toString() + sopt;
+        ChameleonIO.executeChameleonMiniCommand(serialPort, cmCmd, ChameleonIO.TIMEOUT);
+    }
+
+    public static AdapterView.OnItemSelectedListener itemSelectedListener = new AdapterView.OnItemSelectedListener() {
+
+        @Override
+        public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+            actionSpinnerSetCommand(arg1);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> arg0) {}
+
+    };
 
     private String userInputStack;
 

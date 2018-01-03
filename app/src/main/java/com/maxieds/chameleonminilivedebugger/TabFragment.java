@@ -5,8 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 /**
@@ -74,6 +77,24 @@ public class TabFragment extends Fragment {
             logScroller.addView(logDataFeed);
             LiveLoggerActivity.logDataFeed = logDataFeed;
             LiveLoggerActivity.logDataFeedConfigured = true;
+        }
+        else if(tabNumber == TAB_TOOLS && LiveLoggerActivity.spinnerRButtonLongAdapter == null) {
+
+            String[] spinnerRButtonLongList = getResources().getStringArray(R.array.RButtonLongOptions);
+            LiveLoggerActivity.spinnerRButtonLongAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, spinnerRButtonLongList);
+            Spinner spinnerRButtonLong = (Spinner) view.findViewById(R.id.RButtonLongSpinner);
+            spinnerRButtonLong.setAdapter(LiveLoggerActivity.spinnerRButtonLongAdapter);
+
+            String[] spinnerLEDRedList = getResources().getStringArray(R.array.LEDRedOptions);
+            LiveLoggerActivity.spinnerLEDRedAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, spinnerLEDRedList);
+            Spinner spinnerLEDRed = (Spinner) view.findViewById(R.id.LEDRedSpinner);
+            spinnerLEDRed.setAdapter(LiveLoggerActivity.spinnerLEDRedAdapter);
+
+            String[] spinnerLogModeList = getResources().getStringArray(R.array.LogModeOptions);
+            LiveLoggerActivity.spinnerLogModeAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, spinnerLogModeList);
+            Spinner spinnerLogMode = (Spinner) view.findViewById(R.id.LogModeSpinner);
+            spinnerLogMode.setAdapter(LiveLoggerActivity.spinnerLogModeAdapter);
+
         }
         return inflatedView;
     }
