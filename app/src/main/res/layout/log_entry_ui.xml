@@ -97,30 +97,6 @@
             android:textStyle="bold|italic"
             android:paddingLeft="5dp"/>
 
-        <Button
-            android:id="@+id/copyButton"
-            android:background="@color/colorPrimaryDarkLog"
-            android:paddingRight="0dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_columnWeight="0.15"
-            android:layout_gravity="center_vertical"
-            android:gravity="right"
-            android:drawableRight="@drawable/copy16v2"
-            android:onClick="actionButtonCopyHex" />
-
-        <Button
-            android:id="@+id/hideEntryButton"
-            android:background="@color/colorPrimaryDarkLog"
-            android:paddingRight="5dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_columnWeight="0.15"
-            android:layout_gravity="center_vertical"
-            android:gravity="right"
-            android:drawableRight="@drawable/x16"
-            android:onClick="actionButtonHideRecord" />
-
     </LinearLayout>
 
     <GridLayout
@@ -166,8 +142,8 @@
             android:hint=":APDU INS / SW1 / SW2:"
             android:paddingLeft="35dp"
             android:singleLine="false"
-            android:textSize="10sp"
-            android:textStyle="bold|normal" />
+            android:textSize="8sp"
+            android:textStyle="bold|normal|italic" />
 
     </GridLayout>
 

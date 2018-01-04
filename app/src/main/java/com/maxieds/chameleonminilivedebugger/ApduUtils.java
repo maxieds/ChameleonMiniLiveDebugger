@@ -65,7 +65,7 @@ public class ApduUtils {
             String[] csvLine = csvLines.get(i);
             byte ins = Utils.hexString2Byte(csvLine[0]);
             String apduLabel = csvLine[1];
-            if(dataBytes.length >= 2 && dataBytes[INS] == ins || (dataBytes.length == 1 || dataBytes.length == 2 && dataBytes[CLS] == ins))
+            if(dataBytes.length >= 2 && dataBytes[INS] == ins || ((dataBytes.length == 1 || dataBytes.length == 2) && dataBytes[CLS] == ins))
                 insList.add(apduLabel);
         }
         return insList;
@@ -81,7 +81,10 @@ public class ApduUtils {
             sbApduList.append(", ");
         }
         String apduList = sbApduList.toString();
-        return apduList.substring(0, apduList.length() - 2);
+        if(apduList.length() >= 2)
+             return apduList.substring(0, apduList.length() - 2);
+        else
+            return "NONE";
     }
 
 }

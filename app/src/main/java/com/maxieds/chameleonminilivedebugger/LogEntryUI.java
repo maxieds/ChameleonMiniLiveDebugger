@@ -100,6 +100,8 @@ public class LogEntryUI extends LogEntryBase {
         tvDataAscii.setText(Utils.bytes2Ascii(entryData));
         tvApdu = (TextView) mainContainerRef.findViewById(R.id.text_apdu);
         tvApdu.setText(ApduUtils.classifyApdu(entryData));
+        if(tvApdu.getText().toString().equals("NONE"))
+            tvApdu.setVisibility(TextView.GONE);
     }
 
     public boolean isSelected() {
