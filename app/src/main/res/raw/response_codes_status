@@ -1,0 +1,208 @@
+62,00,WARNING: No information given (NV-Ram not changed)
+62,01,WARNING: NV-Ram not changed 1.
+62,81,WARNING: Part of returned data may be corrupted
+62,82,WARNING: End of file/record reached before reading Le bytes
+62,83,WARNING: Selected file invalidated
+62,84,WARNING: Selected file is not valid. FCI not formated according to ISO
+62,85,WARNING: No input data available from a sensor on the card. No Purse Engine enslaved for R3bc
+62,A2,WARNING: Wrong R-MAC
+62,A4,WARNING: Card locked (during reset( ))
+62,CX,WARNING: Counter with value x (command dependent)
+62,F1,WARNING: Wrong C-MAC
+62,F3,WARNING: Internal reset
+62,F5,WARNING: Default agent locked
+62,F7,WARNING: Cardholder locked
+62,F8,WARNING: Basement is current agent
+62,F9,WARNING: CALC Key Set not unblocked
+62,FX,WARNING: State of non-volatile memory unchanged -
+63,00,WARNING: No information given (NV-Ram changed)
+63,81,WARNING: File filled up by the last write. Loading/updating is not allowed.
+63,82,WARNING: Card key not supported.
+63,83,WARNING: Reader key not supported.
+63,84,WARNING: Plaintext transmission not supported.
+63,85,WARNING: Secured transmission not supported.
+63,86,WARNING: Volatile memory is not available.
+63,87,WARNING: Non-volatile memory is not available.
+63,88,WARNING: Key number not valid.
+63,89,WARNING: Key length is not correct.
+63,C0,WARNING: Verify fail, no try left.
+63,C1,WARNING: Verify fail, 1 try left.
+63,C2,WARNING: Verify fail, 2 tries left.
+63,C3,WARNING: Verify fail, 3 tries left.
+63,CX,WARNING: The counter has reached the value 'x' (0 = x = 15) (command dependent).
+63,F1,WARNING: More data expected.
+63,F2,WARNING: More data expected and proactive command pending.
+63,FX,WARNING: State of non-volatile memory changed -
+64,00,ERROR: No information given (NV-Ram not changed)
+64,01,ERROR: Command timeout. Immediate response required by the card.
+65,00,ERROR: No information given
+65,01,ERROR: Write error. Memory failure. There have been problems in writing or reading the EEPROM. Other hardware problems may also bring this error.
+65,81,ERROR: Memory failure
+65,FX,ERROR: State of non-volatile memory changed -
+66,00,SECURITY: Error while receiving (timeout)
+66,01,SECURITY: Error while receiving (character parity error)
+66,02,SECURITY: Wrong checksum
+66,03,SECURITY: The current DF file without FCI
+66,04,SECURITY: No SF or KF under the current DF
+66,69,SECURITY: Incorrect Encryption/Decryption Padding
+67,00,ERROR: Wrong length
+68,00,ERROR: No information given (The request function is not supported by the card)
+68,81,ERROR: Logical channel not supported
+68,82,ERROR: Secure messaging not supported
+68,83,ERROR: Last command of the chain expected
+68,84,ERROR: Command chaining not supported
+68,FX,ERROR: Functions in CLA not supported -
+69,00,ERROR: No information given (Command not allowed)
+69,01,ERROR: Command not accepted (inactive state)
+69,81,ERROR: Command incompatible with file structure
+69,82,ERROR: Security condition not satisfied.
+69,83,ERROR: Authentication method blocked
+69,84,ERROR: Referenced data reversibly blocked (invalidated)
+69,85,ERROR: Conditions of use not satisfied.
+69,86,ERROR: Command not allowed (no current EF)
+69,87,ERROR: Expected secure messaging (SM) object missing
+69,88,ERROR: Incorrect secure messaging (SM) data object
+69,8D,RESP: Reserved
+69,96,ERROR: Data must be updated again
+69,E1,ERROR: POL1 of the currently Enabled Profile prevents this action.
+69,F0,ERROR: Permission Denied
+69,F1,ERROR: Permission Denied - Missing Privilege
+69,FX,ERROR: Command not allowed -
+6A,00,ERROR: No information given (Bytes P1 and/or P2 are incorrect)
+6A,80,ERROR: The parameters in the data field are incorrect.
+6A,81,ERROR: Function not supported
+6A,82,ERROR: File not found
+6A,83,ERROR: Record not found
+6A,84,ERROR: There is insufficient memory space in record or file
+6A,85,ERROR: Lc inconsistent with TLV structure
+6A,86,ERROR: Incorrect P1 or P2 parameter.
+6A,87,ERROR: Lc inconsistent with P1-P2
+6A,88,ERROR: Referenced data not found
+6A,89,ERROR: File already exists
+6A,8A,ERROR: DF name already exists.
+6A,F0,ERROR: Wrong parameter value
+6A,FX,ERROR: Wrong parameter(s) P1-P2 -
+6B,00,ERROR: Wrong parameter(s) P1-P2
+6C,00,ERROR: Incorrect P3 length.
+6D,00,ERROR: Instruction code not supported or invalid
+6E,00,ERROR: Class not supported
+6F,00,ERROR: Command aborted - more exact diagnosis not possible (e.g., operating system error).
+6F,FF,ERROR: Card dead (overuse, …)
+90,00,INFO: Command successfully executed (OK).
+90,04,WARNING: PIN not succesfully verified, 3 or more PIN tries left
+90,08,RESP: Key/file not found
+90,80,WARNING: Unblock Try Counter has reached zero
+91,00,RESP: OK
+91,01,RESP: States.activity, States.lock Status or States.lockable has wrong value
+91,02,RESP: Transaction number reached its limit
+91,0C,RESP: No changes
+91,0E,RESP: Insufficient NV-Memory to complete command
+91,1C,RESP: Command code not supported
+91,1E,RESP: CRC or MAC does not match data
+91,40,RESP: Invalid key number specified
+91,7E,RESP: Length of command string invalid
+91,9D,RESP: Not allow the requested command
+91,9E,RESP: Value of the parameter invalid
+91,A0,RESP: Requested AID not present on PICC
+91,A1,RESP: Unrecoverable error within application
+91,AE,RESP: Authentication status does not allow the requested command
+91,AF,RESP: Additional data frame is expected to be sent
+91,BE,RESP: Out of boundary
+91,C1,RESP: Unrecoverable error within PICC
+91,CA,RESP: Previous Command was not fully completed
+91,CD,RESP: PICC was disabled by an unrecoverable error
+91,CE,RESP: Number of Applications limited to 28
+91,DE,RESP: File or application already exists
+91,EE,RESP: Could not complete NV-write operation due to loss of power
+91,F0,RESP: Specified file number does not exist
+91,F1,RESP: Unrecoverable error within file
+92,10,ERROR: Insufficient memory. No more storage available.
+92,40,ERROR: Writing to EEPROM not successful.
+93,01,RESP: Integrity error
+93,02,RESP: Candidate S2 invalid
+93,03,ERROR: Application is permanently locked
+94,00,ERROR: No EF selected.
+94,01,RESP: Candidate currency code does not match purse currency
+94,02,RESP: Candidate amount too high
+94,02,ERROR: Address range exceeded.
+94,03,RESP: Candidate amount too low
+94,04,ERROR: FID not found, record not found or comparison pattern not found.
+94,05,RESP: Problems in the data field
+94,06,ERROR: Required MAC unavailable
+94,07,RESP: Bad currency : purse engine has no slot with R3bc currency
+94,08,RESP: R3bc currency not supported in purse engine
+94,08,ERROR: Selected file type does not match command.
+95,80,RESP: Bad sequence
+96,81,RESP: Slave not found
+97,00,RESP: PIN blocked and Unblock Try Counter is 1 or 2
+97,02,RESP: Main keys are blocked
+97,04,RESP: PIN not succesfully verified, 3 or more PIN tries left
+97,84,RESP: Base key
+97,85,RESP: Limit exceeded - C-MAC key
+97,86,RESP: SM error - Limit exceeded - R-MAC key
+97,87,RESP: Limit exceeded - sequence counter
+97,88,RESP: Limit exceeded - R-MAC length
+97,89,RESP: Service not available
+98,02,ERROR: No PIN defined.
+98,04,ERROR: Access conditions not satisfied, authentication failed.
+98,35,ERROR: ASK RANDOM or GIVE RANDOM not executed.
+98,40,ERROR: PIN verification not successful.
+98,50,ERROR: INCREASE or DECREASE could not be executed because a limit has been reached.
+98,62,ERROR: Authentication Error, application specific (incorrect MAC)
+99,00,RESP: 1 PIN try left
+99,04,RESP: PIN not succesfully verified, 1 PIN try left
+99,85,RESP: Wrong status - Cardholder lock
+99,86,ERROR: Missing privilege
+99,87,RESP: PIN is not installed
+99,88,RESP: Wrong status - R-MAC state
+9A,00,RESP: 2 PIN try left
+9A,04,RESP: PIN not succesfully verified, 2 PIN try left
+9A,71,RESP: Wrong parameter value - Double agent AID
+9A,72,RESP: Wrong parameter value - Double agent Type
+9D,05,ERROR: Incorrect certificate type
+9D,07,ERROR: Incorrect session data size
+9D,08,ERROR: Incorrect DIR file record size
+9D,09,ERROR: Incorrect FCI record size
+9D,0A,ERROR: Incorrect code size
+9D,10,ERROR: Insufficient memory to load application
+9D,11,ERROR: Invalid AID
+9D,12,ERROR: Duplicate AID
+9D,13,ERROR: Application previously loaded
+9D,14,ERROR: Application history list full
+9D,15,ERROR: Application not open
+9D,17,ERROR: Invalid offset
+9D,18,ERROR: Application already loaded
+9D,19,ERROR: Invalid certificate
+9D,1A,ERROR: Invalid signature
+9D,1B,ERROR: Invalid KTU
+9D,1D,ERROR: MSM controls not set
+9D,1E,ERROR: Application signature does not exist
+9D,1F,ERROR: KTU does not exist
+9D,20,ERROR: Application not loaded
+9D,21,ERROR: Invalid Open command data length
+9D,30,ERROR: Check data parameter is incorrect (invalid start address)
+9D,31,ERROR: Check data parameter is incorrect (invalid length)
+9D,32,ERROR: Check data parameter is incorrect (illegal memory check area)
+9D,40,ERROR: Invalid MSM Controls ciphertext
+9D,41,ERROR: MSM controls already set
+9D,42,ERROR: Set MSM Controls data length less than 2 bytes
+9D,43,ERROR: Invalid MSM Controls data length
+9D,44,ERROR: Excess MSM Controls ciphertext
+9D,45,ERROR: Verification of MSM Controls data failed
+9D,50,ERROR: Invalid MCD Issuer production ID
+9D,51,ERROR: Invalid MCD Issuer ID
+9D,52,ERROR: Invalid set MSM controls data date
+9D,53,ERROR: Invalid MCD number
+9D,54,ERROR: Reserved field error
+9D,55,ERROR: Reserved field error
+9D,56,ERROR: Reserved field error
+9D,57,ERROR: Reserved field error
+9D,60,ERROR: MAC verification failed
+9D,61,ERROR: Maximum number of unblocks reached
+9D,62,ERROR: Card was not blocked
+9D,63,ERROR: Crypto functions not available
+9D,64,ERROR: No application loaded
+9E,00,RESP: PIN not installed
+9E,04,RESP: PIN not succesfully verified, PIN not installed
+9F,00,RESP: PIN blocked and Unblock Try Counter is 3
+9F,04,RESP: PIN not succesfully verified, PIN blocked and Unblock Try Counter is 3
