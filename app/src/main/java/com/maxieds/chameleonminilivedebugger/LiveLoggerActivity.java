@@ -167,7 +167,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
     }
 
     private boolean closeSerialPort() {
-        serialPort.close();
+        if(serialPort != null)
+            serialPort.close();
         ChameleonIO.PAUSED = true;
         return true;
     }
