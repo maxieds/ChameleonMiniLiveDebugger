@@ -1,6 +1,8 @@
 package com.maxieds.chameleonminilivedebugger;
 
 import android.app.DownloadManager;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -114,7 +116,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     }
 
-    private void configureSerialPort(View view) {
+    public void configureSerialPort(View view) {
 
         if(serialPort != null)
             closeSerialPort();
@@ -152,6 +154,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
         else {
             appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB ERROR: ", "Unable to configure serial device."));
+            serialPort = null;
             return;
         }
 
@@ -204,24 +207,23 @@ public class LiveLoggerActivity extends AppCompatActivity {
             ChameleonIO.setLoggerConfigMode(serialPort, ChameleonIO.TIMEOUT);
             return;
         }
-        else if(createCmd.equals("MF_ULTRALIGHT")) {
-            ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_ULTRLIGHT", ChameleonIO.TIMEOUT);
+        else if(createCmd.equals("ULTRALIGHT")) {
+            ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_ULTRLAIGHT", ChameleonIO.TIMEOUT);
             return;
         }
-        else if(createCmd.equals("MF_CLASSIC_1K")) {
+        else if(createCmd.equals("CLASSIC-1K")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_1K", ChameleonIO.TIMEOUT);
             return;
         }
-        else if(createCmd.equals("MF_CLASSIC_4K")) {
+        else if(createCmd.equals("CLASSIC-4K")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_4K", ChameleonIO.TIMEOUT);
             return;
         }
-        else if(createCmd.equals("MF_CLASSIC_4K_7B")) {
+        else if(createCmd.equals("CLASSIC-4K7B")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_4K_7B", ChameleonIO.TIMEOUT);
             return;
         }
         else if(createCmd.equals("RESET")) {
-            closeSerialPort();
             ChameleonIO.executeChameleonMiniCommand(serialPort, "RESET", ChameleonIO.TIMEOUT);
             configureSerialPort(null);
             return;
@@ -239,24 +241,30 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
         else if(createCmd.equals("LOCAL UID")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "GETUID", ChameleonIO.TIMEOUT);
+            return;
         }
         else if(createCmd.equals("CHARGING")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CHARGING?", ChameleonIO.TIMEOUT);
+            return;
         }
         else if(createCmd.equals("STRENGTH")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "RSSI?", ChameleonIO.TIMEOUT);
+            return;
         }
         else if(createCmd.equals("LOCAL UID")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "GETUID", ChameleonIO.TIMEOUT);
+            return;
         }
         else if(createCmd.equals("FIRMWARE")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "VERSION?", ChameleonIO.TIMEOUT);
+            return;
         }
         else if(createCmd.equals("IDENTIFY")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "IDENTIFY", ChameleonIO.TIMEOUT);
+            return;
         }
         else if(createCmd.equals("ONCLICK")) {
-            msgParam = "SYSTICK Millis = : ";
+            msgParam = "SYSTICK Millis := ";
             ChameleonIO.executeChameleonMiniCommand(serialPort, "SYSTICK?", ChameleonIO.TIMEOUT);
         }
         appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord(createCmd, msgParam));
@@ -272,6 +280,20 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     logEntryView.setBackgroundColor(highlightColor);
             }
         }
+    }
+
+    public void actionButtonHideRecord(View view) {
+        LinearLayout mainContainer = (LinearLayout) ((Button) view).getParent().getParent();
+        mainContainer.setVisibility(LinearLayout.GONE);
+    }
+
+    public void actionButtonCopyHex(View view) {
+        LinearLayout mainContainer = (LinearLayout) ((Button) view).getParent().getParent();
+        int recordIndex = Integer.parseInt(mainContainer.getTag().toString());
+        String hexBytes = Utils.bytes2Hex(((LogEntryUI) logDataEntries.get(recordIndex)).getEntryData());
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData copyClip = ClipData.newPlainText("Log #" + String.format("%06d", recordIndex), hexBytes);
+        clipboard.setPrimaryClip(copyClip);
     }
 
     public void actionButtonUncheckAll(View view) {

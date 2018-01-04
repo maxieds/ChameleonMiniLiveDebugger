@@ -81,7 +81,7 @@
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/usbcable24"
-                    android:onClick="configSerialPort"
+                    android:onClick="configureSerialPort"
                     android:text="CFGUSB" />
 
                 <Button
