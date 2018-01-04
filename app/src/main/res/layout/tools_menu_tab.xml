@@ -8,7 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:verticalScrollbarPosition="right">
+        android:verticalScrollbarPosition="right"
+        android:fadeScrollbars="false" >
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -309,7 +310,8 @@
                     android:layout_height="30dp"
                     android:entries="@array/LEDRedOptions"
                     android:tag="LEDRED="
-                    android:spinnerMode="dialog" />
+                    android:spinnerMode="dialog"
+                    android:popupBackground="#98fb98" />
 
                 <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/rbutton24" />
                 <Spinner
@@ -319,7 +321,8 @@
                     android:layout_height="30dp"
                     android:entries="@array/RButtonLongOptions"
                     android:tag="RBUTTON_LONG="
-                    android:spinnerMode="dialog" />
+                    android:spinnerMode="dialog"
+                    android:popupBackground="#98fb98" />
 
                 <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/log24" />
                 <Spinner
@@ -329,7 +332,8 @@
                     android:layout_height="30dp"
                     android:entries="@array/LogModeOptions"
                     android:tag="LOGMODE="
-                    android:spinnerMode="dialog" />
+                    android:spinnerMode="dialog"
+                    android:popupBackground="#98fb98" />
 
             </GridLayout>
 

@@ -4,8 +4,12 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:windowActionBar">true</item>
         <item name="android:actionBarStyle">@style/ActionBarTheme</item>
+        <item name="android:popupTheme">@style/SpinnerTheme</item>
     </style>
 
+    <style name="SpinnerTheme" parent="@style/Theme.AppCompat.Light.Dialog">
+        <item name="android:background">#98fb98</item>
+    </style>
 
     <style name="LogDataUITheme" parent="AppTheme">
         <item name="android:background">@color/colorPrimaryDarkLog</item>
