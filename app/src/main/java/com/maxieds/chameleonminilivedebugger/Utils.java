@@ -2,11 +2,26 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.text.format.Time;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by mschmidt34 on 12/31/2017.
  */
 
 public class Utils {
+
+    public static byte hexString2Byte(String byteStr) {
+        if (byteStr.length() != 2)
+            return 0x00;
+        int lsb = Character.digit(byteStr.charAt(0), 16);
+        int msb = Character.digit(byteStr.charAt(1), 16);
+        return (byte) (lsb | msb << 4);
+    }
 
     public static char byte2Ascii(byte b) {
 
@@ -79,7 +94,17 @@ public class Utils {
         return currentTime.format("%Y-%m-%d-%T");
     }
 
-
+    public static List readCSVFile(InputStream fdStream) throws IOException {
+        List csvLines = new ArrayList();
+        BufferedReader br = new BufferedReader(new InputStreamReader(fdStream));
+        String csvLine;
+        while((csvLine = br.readLine()) != null) {
+            String[] parsedRow = csvLine.split(",");
+            csvLines.add(parsedRow);
+        }
+        fdStream.close();
+        return csvLines;
+    }
 
 
 }
