@@ -22,6 +22,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -37,6 +38,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.TabHost;
 import android.widget.Toolbar;
 
 import com.felhr.usbserial.UsbSerialDevice;
@@ -70,6 +72,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public static SpinnerAdapter spinnerRButtonLongAdapter;
     public static SpinnerAdapter spinnerLEDRedAdapter;
     public static SpinnerAdapter spinnerLogModeAdapter;
+    private static ViewPager viewPager;
 
     public static void appendNewLog(LogEntryBase logEntry) {
         logDataFeed.addView(logEntry.getLayoutContainer());
@@ -93,7 +96,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         actionBar.setIcon(R.drawable.chameleonlogo24);
         actionBar.setDisplayShowHomeEnabled(true);
 
-        ViewPager viewPager = (ViewPager) findViewById(R.id.tab_pager);
+        viewPager = (ViewPager) findViewById(R.id.tab_pager);
         viewPager.setAdapter(new TabFragmentPagerAdapter(getSupportFragmentManager(), LiveLoggerActivity.this));
         viewPager.setOffscreenPageLimit(TabFragmentPagerAdapter.TAB_COUNT - 1);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
@@ -103,7 +106,26 @@ public class LiveLoggerActivity extends AppCompatActivity {
         tabLayout.getTabAt(TAB_LOG).setIcon(R.drawable.nfc24v1);
         tabLayout.getTabAt(TAB_TOOLS).setIcon(R.drawable.tools24);
         tabLayout.getTabAt(TAB_EXPORT).setIcon(R.drawable.insertbinary24);
-        tabLayout.getTabAt(TAB_SEARCH).setIcon(R.drawable.searchicon24);
+        //tabLayout.getTabAt(TAB_SEARCH).setIcon(R.drawable.searchicon24);
+        tabLayout.getTabAt(TAB_SEARCH).setIcon(R.drawable.searchdisabled24);
+        LinearLayout tabStrip = ((LinearLayout)tabLayout.getChildAt(0));
+        tabStrip.getChildAt(TAB_SEARCH).setClickable(false); // disable search tab for now
+        viewPager.setOnTouchListener(new View.OnTouchListener() {
+                                         private float xdown;
+                                         @Override
+                                         public boolean onTouch(View v, MotionEvent event) {
+                                             if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                                                 xdown = event.getX();
+                                                 return true;
+                                             }
+                                             else if (LiveLoggerActivity.viewPager.getCurrentItem() == TAB_EXPORT && event.getAction() == MotionEvent.ACTION_MOVE && event.getX() - xdown < 0) {
+                                                 LiveLoggerActivity.viewPager.setCurrentItem(TAB_EXPORT - 1, false);
+                                                 LiveLoggerActivity.viewPager.setCurrentItem(TAB_EXPORT, false);
+                                                 return true;
+                                             }
+                                             return false;
+                                         }
+                                     });
 
         String[] permissions = {
                 "android.permission.READ_EXTERNAL_STORAGE",

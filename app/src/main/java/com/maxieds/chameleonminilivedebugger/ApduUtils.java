@@ -53,5 +53,35 @@ public class ApduUtils {
         return insList;
     }
 
+    public static List<String> parseCommonInstructions(byte[] dataBytes) {
+        List<String> insList = new ArrayList<String>();
+        List<String[]> csvLines;
+        try {
+            csvLines = Utils.readCSVFile(LiveLoggerActivity.defaultContext.getResources().openRawResource(R.raw.common_ins));
+        } catch(IOException ioe) {
+            return insList;
+        }
+        for(int i = 0; i < csvLines.size(); i++) {
+            String[] csvLine = csvLines.get(i);
+            byte ins = Utils.hexString2Byte(csvLine[0]);
+            String apduLabel = csvLine[1];
+            if(dataBytes.length >= 2 && dataBytes[INS] == ins || (dataBytes.length == 1 || dataBytes.length == 2 && dataBytes[CLS] == ins))
+                insList.add(apduLabel);
+        }
+        return insList;
+    }
+
+    public static String classifyApdu(byte[] dataBytes) {
+        List<String> apduClassifications = parseDesfireInstructions(dataBytes);
+        apduClassifications.addAll(parseDesfireStatusCodes(dataBytes));
+        apduClassifications.addAll(parseCommonInstructions(dataBytes));
+        StringBuilder sbApduList = new StringBuilder();
+        for(String apdu : apduClassifications){
+            sbApduList.append(apdu);
+            sbApduList.append(", ");
+        }
+        String apduList = sbApduList.toString();
+        return apduList.substring(0, apduList.length() - 2);
+    }
 
 }

@@ -30,7 +30,7 @@ public class LogEntryUI extends LogEntryBase {
     private CheckBox entrySelect;
     private ImageView inoutDirIndicator, apduParseStatus;
     private TextView tvLabel, tvNumBytes, tvNumMillis, tvLogType;
-    private TextView tvDataHexBytes, tvDataAscii;
+    private TextView tvDataHexBytes, tvDataAscii, tvApdu;
 
     private int recordID;
     private int numBytes;
@@ -98,6 +98,8 @@ public class LogEntryUI extends LogEntryBase {
         tvDataHexBytes.setText(Utils.bytes2Hex(entryData));
         tvDataAscii = (TextView) mainContainerRef.findViewById(R.id.text_logdata_ascii);
         tvDataAscii.setText(Utils.bytes2Ascii(entryData));
+        tvApdu = (TextView) mainContainerRef.findViewById(R.id.text_apdu);
+        tvApdu.setText(ApduUtils.classifyApdu(entryData));
     }
 
     public boolean isSelected() {

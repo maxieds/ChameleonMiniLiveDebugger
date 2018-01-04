@@ -79,7 +79,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Search"
-                    android:icon="@drawable/searchicon24" />
+                    android:textColor="#dcdcdc"
+                    android:icon="@drawable/searchdisabled24" />
 
             </android.support.design.widget.TabLayout>
 
