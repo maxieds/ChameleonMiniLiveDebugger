@@ -100,7 +100,7 @@ public class LogEntryUI extends LogEntryBase {
         tvDataAscii.setText(Utils.bytes2Ascii(entryData));
         tvApdu = (TextView) mainContainerRef.findViewById(R.id.text_apdu);
         tvApdu.setText(ApduUtils.classifyApdu(entryData));
-        if(tvApdu.getText().toString().equals("NONE"))
+        if(tvApdu.getText().toString().equals("APDU: NONE RECOGNIZED"))
             tvApdu.setVisibility(TextView.GONE);
         else
             apduParseStatus.setImageDrawable(LiveLoggerActivity.defaultContext.getResources().getDrawable(R.drawable.known16));
@@ -144,9 +144,9 @@ public class LogEntryUI extends LogEntryBase {
     @Override
     public String toString() {
         LogUtils.LogCode logCode = LogUtils.LogCode.lookupByLogCode(logType);
-        String recordFmt = String.format("%06d -- %-32s [%-3s bytes] (%s%-6s ms) [%s]", recordID, logCode.name(),
+        String recordFmt = String.format("%06d -- %-32s [%-3s bytes] (%s%-6s ms) [%s] {%s}", recordID, logCode.name(),
                 String.valueOf(entryData.length), diffTimeMillis >= 0 ? "+" : "~", String.valueOf(abs(diffTimeMillis)),
-                Utils.bytes2Hex(entryData));
+                Utils.bytes2Hex(entryData), tvApdu.getText().toString());
         return recordFmt;
     }
 
