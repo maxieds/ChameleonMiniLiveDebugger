@@ -102,6 +102,8 @@ public class LogEntryUI extends LogEntryBase {
         tvApdu.setText(ApduUtils.classifyApdu(entryData));
         if(tvApdu.getText().toString().equals("NONE"))
             tvApdu.setVisibility(TextView.GONE);
+        else 
+            apduParseStatus.setImageDrawable(LiveLoggerActivity.defaultContext.getResources().getDrawable(R.drawable.known16));
     }
 
     public boolean isSelected() {
