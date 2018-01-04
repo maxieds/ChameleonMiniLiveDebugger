@@ -12,6 +12,7 @@
         android:orientation="horizontal">
 
         <CheckBox
+            android:theme="@style/CheckBoxTheme"
             android:id="@+id/entrySelect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

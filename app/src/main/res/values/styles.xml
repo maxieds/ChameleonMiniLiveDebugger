@@ -52,4 +52,9 @@
         <item name="android:textStyle">normal|bold</item>
     </style>
 
+    <style name="CheckBoxTheme" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">@color/colorPrimaryDark</item>
+        <item name="colorControlActivated">@color/colorPrimaryDark</item>
+    </style>
+
 </resources>
