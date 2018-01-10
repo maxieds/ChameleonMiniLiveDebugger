@@ -57,6 +57,7 @@ public class LogEntryUI extends LogEntryBase {
         byte[] payloadBytes = new byte[rawLogBytes.length - 4];
         if(payloadBytes.length < payloadNumBytes) {
             Log.w(TAG, "Invalid payload bytes sent.");
+            //System.arraycopy(rawLogBytes, 4, payloadBytes, 0, payloadBytes.length);
         }
         else
             System.arraycopy(rawLogBytes, 4, payloadBytes, 0, payloadBytes.length);
@@ -136,6 +137,24 @@ public class LogEntryUI extends LogEntryBase {
         System.arraycopy(headerBytes, 0, fullBytes, 0, 4);
         System.arraycopy(entryData, 0, fullBytes, 4, entryData.length);
         return fullBytes;
+    }
+
+    public void trimCommandText() {
+        String commandAscii = tvDataAscii.getText().toString();
+        if(commandAscii.length() < 2)
+            return;
+        int colonPos = commandAscii.indexOf(":");
+        int dotdotPos = commandAscii.substring(2).indexOf("..");
+        if(colonPos > -1 && dotdotPos > -1 && colonPos < dotdotPos) {
+            int substrStart = dotdotPos + 4;
+            tvDataAscii.setText(commandAscii.substring(substrStart));
+            byte[] nextEntryData = new byte[commandAscii.length() - substrStart];
+            System.arraycopy(entryData, substrStart, nextEntryData, 0, commandAscii.length() - substrStart);
+            entryData = nextEntryData;
+            tvDataHexBytes.setText(Utils.bytes2Hex(nextEntryData).replace(":", " "));
+        }
+
+
     }
 
     @Override

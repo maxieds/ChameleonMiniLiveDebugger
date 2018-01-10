@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentManager;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
@@ -45,9 +47,7 @@ public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
         }
 
         @Override
-        public Fragment getItem(int tabid) {
-            return tabFragments[tabid];
-        }
+        public Fragment getItem(int tabid) { return tabFragments[tabid]; }
 
         @Override
         public CharSequence getPageTitle(int position) {

@@ -3,4 +3,5 @@
 <resources>
     <!--ChameleonMini Rev. G Board Firmware Device Specs -->
     <usb-device vendor-id="16d0" product-id="04b2" />
+    <usb-device vendor-id="5840" product-id="1202" />
 </resources>

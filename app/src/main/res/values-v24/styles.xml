@@ -7,7 +7,7 @@
         <item name="android:popupTheme">@style/SpinnerTheme</item>
     </style>
 
-    <style name="SpinnerTheme" parent="@style/Theme.AppCompat.Light.Dialog">
+    <style name="SpinnerTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="android:background">#98fb98</item>
     </style>
 
@@ -18,7 +18,7 @@
         <item name="android:colorAccent">#91cb3b</item>
     </style>
 
-    <style name="ActionBarTheme" parent="Base.ThemeOverlay.AppCompat.Dark.ActionBar">
+    <style name="ActionBarTheme" parent="Base.Theme.AppCompat.Light.DarkActionBar">
         <item name="android:background">#6cb00a</item>
         <item name="android:colorPrimary">#75a72c</item>
         <item name="android:colorPrimaryDark">#6cb00a</item>

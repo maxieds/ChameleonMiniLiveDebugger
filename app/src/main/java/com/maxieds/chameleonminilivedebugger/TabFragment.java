@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 /**
@@ -23,6 +24,7 @@ public class TabFragment extends Fragment {
     public static final int TAB_TOOLS = 1;
     public static final int TAB_EXPORT = 2;
     public static final int TAB_SEARCH = 3;
+    public static boolean CFG_SPINNERS = false;
 
     private int tabNumber;
     private int layoutResRef;
@@ -64,6 +66,13 @@ public class TabFragment extends Fragment {
         return inflatedView;
     }
 
+    private void connectSpinnerAdapter(View view, int spinnerID, int spinnerStringList, SpinnerAdapter spinnerAdapter) {
+        String[] spinnerList = getResources().getStringArray(spinnerStringList);
+        spinnerAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, spinnerList);
+        Spinner spinner = (Spinner) view.findViewById(spinnerID);
+        spinner.setAdapter(spinnerAdapter);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -79,22 +88,14 @@ public class TabFragment extends Fragment {
             LiveLoggerActivity.logDataFeedConfigured = true;
         }
         else if(tabNumber == TAB_TOOLS && LiveLoggerActivity.spinnerRButtonLongAdapter == null) {
-
-            String[] spinnerRButtonLongList = getResources().getStringArray(R.array.RButtonLongOptions);
-            LiveLoggerActivity.spinnerRButtonLongAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, spinnerRButtonLongList);
-            Spinner spinnerRButtonLong = (Spinner) view.findViewById(R.id.RButtonLongSpinner);
-            spinnerRButtonLong.setAdapter(LiveLoggerActivity.spinnerRButtonLongAdapter);
-
-            String[] spinnerLEDRedList = getResources().getStringArray(R.array.LEDRedOptions);
-            LiveLoggerActivity.spinnerLEDRedAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, spinnerLEDRedList);
-            Spinner spinnerLEDRed = (Spinner) view.findViewById(R.id.LEDRedSpinner);
-            spinnerLEDRed.setAdapter(LiveLoggerActivity.spinnerLEDRedAdapter);
-
-            String[] spinnerLogModeList = getResources().getStringArray(R.array.LogModeOptions);
-            LiveLoggerActivity.spinnerLogModeAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, spinnerLogModeList);
-            Spinner spinnerLogMode = (Spinner) view.findViewById(R.id.LogModeSpinner);
-            spinnerLogMode.setAdapter(LiveLoggerActivity.spinnerLogModeAdapter);
-
+            // first connect the spinners to their resp. adapters so something will happen when a new option is selected:
+            connectSpinnerAdapter(view, R.id.RButtonSpinner, R.array.RButtonOptions, LiveLoggerActivity.spinnerRButtonAdapter);
+            connectSpinnerAdapter(view, R.id.RButtonLongSpinner, R.array.RButtonLongOptions, LiveLoggerActivity.spinnerRButtonLongAdapter);
+            connectSpinnerAdapter(view, R.id.LButtonSpinner, R.array.LButtonOptions, LiveLoggerActivity.spinnerLButtonAdapter);
+            connectSpinnerAdapter(view, R.id.LButtonLongSpinner, R.array.LButtonLongOptions, LiveLoggerActivity.spinnerLButtonLongAdapter);
+            connectSpinnerAdapter(view, R.id.LEDRedSpinner, R.array.LEDRedOptions, LiveLoggerActivity.spinnerLEDRedAdapter);
+            connectSpinnerAdapter(view, R.id.LEDGreenSpinner, R.array.LEDGreenOptions, LiveLoggerActivity.spinnerLEDGreenAdapter);
+            connectSpinnerAdapter(view, R.id.LogModeSpinner, R.array.LogModeOptions, LiveLoggerActivity.spinnerLogModeAdapter);
         }
         return inflatedView;
     }

@@ -1,11 +1,14 @@
 package com.maxieds.chameleonminilivedebugger;
 
 import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.hardware.usb.UsbDevice;
@@ -61,6 +64,7 @@ import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS;
 public class LiveLoggerActivity extends AppCompatActivity {
 
     private static final String TAG = LiveLoggerActivity.class.getSimpleName();
+    public static LiveLoggerActivity runningActivity;
 
     public static LayoutInflater defaultInflater;
     public static Context defaultContext;
@@ -69,8 +73,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public static int RECORDID = 0;
     public static boolean logDataFeedConfigured = false;
     public static UsbSerialDevice serialPort;
+    public static SpinnerAdapter spinnerRButtonAdapter;
     public static SpinnerAdapter spinnerRButtonLongAdapter;
+    public static SpinnerAdapter spinnerLButtonAdapter;
+    public static SpinnerAdapter spinnerLButtonLongAdapter;
     public static SpinnerAdapter spinnerLEDRedAdapter;
+    public static SpinnerAdapter spinnerLEDGreenAdapter;
     public static SpinnerAdapter spinnerLogModeAdapter;
     private static ViewPager viewPager;
 
@@ -82,9 +90,23 @@ public class LiveLoggerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        runningActivity = this;
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.activity_live_logger);
+
+        // fix bug where the tabs are blank when the application is relaunched:
+        if(!isTaskRoot()) {
+            final Intent intent = getIntent();
+            final String intentAction = intent.getAction();
+            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && intentAction != null && intentAction.equals(Intent.ACTION_MAIN)) {
+                Log.w(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead of re-launching.");
+                finish();
+                configureSerialPort(null);
+                return;
+            }
+        }
+
         logDataFeed = new LinearLayout(getApplicationContext());
         defaultInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         defaultContext = getApplicationContext();
@@ -132,10 +154,52 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 "android.permission.WRITE_EXTERNAL_STORAGE",
                 "android.permission.INTERNET"
         };
-        requestPermissions(permissions, 200);
+        if(android.os.Build.VERSION.SDK_INT >= 23)
+            requestPermissions(permissions, 200);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR); // keep app from crashing when the screen rotates
 
         configureSerialPort(null);
+        //configureSerialPortSyncronous(null);
 
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
+            configureSerialPort(null);
+        }
+        else if(intent.getAction().equals(ChameleonIO.DEVICE_RESPONSE_INTENT)) {
+            String respData = intent.getStringExtra(Intent.EXTRA_TEXT);
+            Log.i(TAG, "Received response from the chameleon device: " + respData);
+            throw new RuntimeException(respData);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        BroadcastReceiver rec = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(intent.getAction().equals(ChameleonIO.DEVICE_RESPONSE_INTENT)) {
+                    String respData = intent.getStringExtra(Intent.EXTRA_TEXT);
+                    Log.i(TAG, "Received response from the chameleon device: " + respData);
+                    throw new RuntimeException(respData);
+                }
+            }
+        };
+        IntentFilter ifilter = new IntentFilter(ChameleonIO.DEVICE_RESPONSE_INTENT);
+        registerReceiver(rec, ifilter);
+    }
+
+    public static String getSettingFromDevice(UsbSerialDevice cmPort, String query) {
+        ChameleonIO.WAITING_FOR_RESPONSE = true;
+        ChameleonIO.SerialRespCode rcode = ChameleonIO.executeChameleonMiniCommand(cmPort, query, ChameleonIO.TIMEOUT);
+        while(ChameleonIO.WAITING_FOR_RESPONSE) {}
+        appendNewLog(new LogEntryMetadataRecord(defaultInflater, "INFO: Device query of " + query + " returned status " + ChameleonIO.DEVICE_RESPONSE_CODE, ChameleonIO.DEVICE_RESPONSE));
+        return ChameleonIO.DEVICE_RESPONSE;
     }
 
     public void configureSerialPort(View view) {
@@ -200,7 +264,14 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
         @Override
         public void onReceivedData(byte[] liveLogData) {
-            if(ChameleonIO.PAUSED) {
+            if(ChameleonIO.WAITING_FOR_RESPONSE) {
+                String strLogData = new String(liveLogData);
+                ChameleonIO.DEVICE_RESPONSE_CODE = strLogData.split("[\n\r]+")[0];
+                ChameleonIO.DEVICE_RESPONSE = strLogData.split("[\n\r]+")[1];
+                ChameleonIO.WAITING_FOR_RESPONSE = false;
+                return;
+            }
+            else if(ChameleonIO.PAUSED) {
                 appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB RESPONSE: ", Utils.bytes2Hex(liveLogData) + " | " + Utils.bytes2Ascii(liveLogData)));
                 ChameleonIO.PAUSED = false;
                 return;
@@ -218,6 +289,35 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
 
     };
+
+    public void actionButtonRestorePeripheralDefaults(View view) {
+            if (LiveLoggerActivity.serialPort != null) {
+                // next, query the defaults from the device to get accurate settings (if the device is connected):
+                int[] spinnerIDs = {
+                        R.id.RButtonSpinner,
+                        R.id.RButtonLongSpinner,
+                        R.id.LButtonSpinner,
+                        R.id.LButtonLongSpinner,
+                        R.id.LEDRedSpinner,
+                        R.id.LEDGreenSpinner
+                };
+                String[] queryCmds = {
+                        "RBUTTON?",
+                        "RBUTTON_LONG?",
+                        "LBUTTON?",
+                        "LBUTTON_LONG?",
+                        "LEDRED?",
+                        "LEDGREEN?"
+                };
+                for (int i = 0; i < spinnerIDs.length; i++) {
+                    Log.i(TAG, queryCmds[i]);
+                    Spinner curSpinner = (Spinner) LiveLoggerActivity.runningActivity.findViewById(spinnerIDs[i]);
+                    String deviceSetting = getSettingFromDevice(LiveLoggerActivity.serialPort, queryCmds[i]);
+                    curSpinner.setSelection(((ArrayAdapter<String>) curSpinner.getAdapter()).getPosition(deviceSetting));
+                }
+        }
+
+    }
 
     public void actionButtonCreateNewEvent(View view) {
         String createCmd = ((Button) view).getText().toString();
@@ -310,15 +410,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
         mainContainer.setVisibility(LinearLayout.GONE);
     }
 
-    public void actionButtonCopyHex(View view) {
-        LinearLayout mainContainer = (LinearLayout) ((Button) view).getParent().getParent();
-        int recordIndex = Integer.parseInt(mainContainer.getTag().toString());
-        String hexBytes = Utils.bytes2Hex(((LogEntryUI) logDataEntries.get(recordIndex)).getEntryData());
-        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData copyClip = ClipData.newPlainText("Log #" + String.format("%06d", recordIndex), hexBytes);
-        clipboard.setPrimaryClip(copyClip);
-    }
-
     public void actionButtonUncheckAll(View view) {
         for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
             View logEntryView = logDataFeed.getChildAt(vi);
@@ -352,10 +443,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     public void actionButtonProcessBatch(View view) {
         String actionFlag = ((Button) view).getTag().toString();
-        if(actionFlag.equals("PARSE_APDU")) {
-            appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "Parsing of APDU commands and status codes not yet supported."));
-            return;
-        }
+        //if(actionFlag.equals("PARSE_APDU")) {
+        //    appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "Parsing of APDU commands and status codes not yet supported."));
+        //    return;
+        //}
         for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
             View logEntryView = logDataFeed.getChildAt(vi);
             if (logDataEntries.get(vi) instanceof LogEntryUI) {
@@ -376,10 +467,13 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 }
                 else if(isChecked && actionFlag.equals("PRINT")) {
                     byte[] rawBytes = ((LogEntryUI) logDataEntries.get(vi)).getEntryData();
-                    LogEntryMetadataRecord.createDefaultEventRecord("PRINT", Utils.bytes2Hex(rawBytes) + "\n------\n" + Utils.bytes2Ascii(rawBytes));
+                    appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("PRINT", Utils.bytes2Hex(rawBytes) + "\n------\n" + Utils.bytes2Ascii(rawBytes)));
                 }
                 else if(isChecked && actionFlag.equals("HIDE")) {
                     logEntryView.setVisibility(View.GONE);
+                }
+                else if(isChecked && actionFlag.equals("TRIM_CMD")) {
+                    ((LogEntryUI) logDataEntries.get(vi)).trimCommandText();
                 }
             }
         }

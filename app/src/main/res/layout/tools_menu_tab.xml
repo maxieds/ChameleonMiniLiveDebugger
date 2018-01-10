@@ -276,17 +276,32 @@
                 android:layout_height="2dp"
                 android:background="@color/colorPrimaryDark" />
 
-            <TextView
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:background="@color/colorPrimaryDarkLog"
                 android:drawableLeft="@drawable/peripheral16"
                 android:drawablePadding="5dp"
                 android:singleLine="true"
-                android:text="Configure minimal peripherals: "
+                android:text="Peripherals and log mode: "
                 android:textAllCaps="true"
-                android:textStyle="bold|italic"
-                android:drawableRight="@drawable/scrollmore16"/>
+                android:textStyle="bold|italic" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:layout_height="20dp"
+                    android:layout_width="wrap_content"
+                    android:drawableLeft="@drawable/querydefaults16"
+                    android:text="[QueryDev]"
+                    android:onClick="actionButtonRestorePeripheralDefaults"
+                    android:background="@color/colorPrimaryDarkLog" />
+
+            </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
@@ -302,7 +317,7 @@
                 android:padding="2dp"
                 android:rowCount="10">
 
-                <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ledred24" />
+                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/ledred24" />
                 <Spinner
                     android:id="@+id/LEDRedSpinner"
                     android:layout_width="300dp"
@@ -311,9 +326,34 @@
                     android:entries="@array/LEDRedOptions"
                     android:tag="LEDRED="
                     android:spinnerMode="dialog"
+                    android:gravity="right|center_vertical"
                     android:popupBackground="#98fb98" />
 
-                <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/rbutton24" />
+                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/ledgreen24" />
+                <Spinner
+                    android:id="@+id/LEDGreenSpinner"
+                    android:layout_width="300dp"
+                    android:layout_weight="1"
+                    android:layout_height="30dp"
+                    android:entries="@array/LEDGreenOptions"
+                    android:tag="LEDGREEN="
+                    android:spinnerMode="dialog"
+                    android:gravity="right|center_vertical"
+                    android:popupBackground="#98fb98" />
+
+                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/rbutton24" />
+                <Spinner
+                    android:id="@+id/RButtonSpinner"
+                    android:layout_width="300dp"
+                    android:layout_weight="1"
+                    android:layout_height="30dp"
+                    android:entries="@array/RButtonOptions"
+                    android:tag="RBUTTON="
+                    android:spinnerMode="dialog"
+                    android:gravity="right|center_vertical"
+                    android:popupBackground="#98fb98" />
+
+                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/rightbutton24" />
                 <Spinner
                     android:id="@+id/RButtonLongSpinner"
                     android:layout_width="300dp"
@@ -322,9 +362,34 @@
                     android:entries="@array/RButtonLongOptions"
                     android:tag="RBUTTON_LONG="
                     android:spinnerMode="dialog"
+                    android:gravity="right|center_vertical"
                     android:popupBackground="#98fb98" />
 
-                <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/log24" />
+                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/lbutton24" />
+                <Spinner
+                    android:id="@+id/LButtonSpinner"
+                    android:layout_width="300dp"
+                    android:layout_weight="1"
+                    android:layout_height="30dp"
+                    android:entries="@array/LButtonOptions"
+                    android:tag="LBUTTON="
+                    android:spinnerMode="dialog"
+                    android:gravity="right|center_vertical"
+                    android:popupBackground="#98fb98" />
+
+                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/leftbutton24" />
+                <Spinner
+                    android:id="@+id/LButtonLongSpinner"
+                    android:layout_width="300dp"
+                    android:layout_weight="1"
+                    android:layout_height="30dp"
+                    android:entries="@array/LButtonLongOptions"
+                    android:tag="LBUTTON_LONG="
+                    android:spinnerMode="dialog"
+                    android:gravity="right|center_vertical"
+                    android:popupBackground="#98fb98" />
+
+                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/log24" />
                 <Spinner
                     android:id="@+id/LogModeSpinner"
                     android:layout_width="300dp"
@@ -333,6 +398,7 @@
                     android:entries="@array/LogModeOptions"
                     android:tag="LOGMODE="
                     android:spinnerMode="dialog"
+                    android:gravity="right|center_vertical"
                     android:popupBackground="#98fb98" />
 
             </GridLayout>
@@ -387,10 +453,10 @@
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/xferbubble24"
+                    android:drawableLeft="@drawable/trimicon24"
                     android:onClick="actionButtonProcessBatch"
-                    android:tag="PARSE_APDU"
-                    android:text="Parse APDU" />
+                    android:tag="TRIM"
+                    android:text="TRIM_CMD" />
 
                 <Button
                     style="@style/GridButtons"

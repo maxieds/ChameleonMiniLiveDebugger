@@ -1,8 +1,54 @@
 <resources>
     <string name="app_name">Chameleon Mini Live Debugger</string>
 
+    <string-array name="RButtonOptions">
+        <item>-- RBUTTON</item>
+        <item>NONE</item>
+        <item>UID_RANDOM</item>
+        <item>UID_LEFT_INCREMENT</item>
+        <item>UID_RIGHT_INCREMENT</item>
+        <item>UID_LEFT_DECREMENT</item>
+        <item>UID_RIGHT_DECREMENT</item>
+        <item>CYCLE_SETTINGS</item>
+        <item>STORE_MEM</item>
+        <item>RECALL_MEM</item>
+        <item>TOGGLE_FIELD</item>
+        <item>STORE_LOG</item>
+    </string-array>
+
     <string-array name="RButtonLongOptions">
-        <item>-- RBUTTON_LONG --</item>
+        <item>-- RBUTTON_LONG</item>
+        <item>NONE</item>
+        <item>UID_RANDOM</item>
+        <item>UID_LEFT_INCREMENT</item>
+        <item>UID_RIGHT_INCREMENT</item>
+        <item>UID_LEFT_DECREMENT</item>
+        <item>UID_RIGHT_DECREMENT</item>
+        <item>CYCLE_SETTINGS</item>
+        <item>STORE_MEM</item>
+        <item>RECALL_MEM</item>
+        <item>TOGGLE_FIELD</item>
+        <item>STORE_LOG</item>
+    </string-array>
+
+    <string-array name="LButtonOptions">
+        <item>-- LBUTTON</item>
+        <item>NONE</item>
+        <item>UID_RANDOM</item>
+        <item>UID_LEFT_INCREMENT</item>
+        <item>UID_RIGHT_INCREMENT</item>
+        <item>UID_LEFT_DECREMENT</item>
+        <item>UID_RIGHT_DECREMENT</item>
+        <item>CYCLE_SETTINGS</item>
+        <item>STORE_MEM</item>
+        <item>RECALL_MEM</item>
+        <item>TOGGLE_FIELD</item>
+        <item>STORE_LOG</item>
+    </string-array>
+
+    <string-array name="LButtonLongOptions">
+        <item>-- LBUTTON_LONG</item>
+        <item>NONE</item>
         <item>UID_RANDOM</item>
         <item>UID_LEFT_INCREMENT</item>
         <item>UID_RIGHT_INCREMENT</item>
@@ -16,7 +62,23 @@
     </string-array>
 
     <string-array name="LEDRedOptions">
-        <item>-- LEDRED --</item>
+        <item>-- LEDRED</item>
+        <item>NONE</item>
+        <item>POWERED</item>
+        <item>TERMINAL_CONN</item>
+        <item>TERMINAL_RXTX</item>
+        <item>SETTING_CHANGE</item>
+        <item>MEMORY_STORED</item>
+        <item>MEMORY_CHANGED</item>
+        <item>CODEC_RX</item>
+        <item>CODEC_TX</item>
+        <item>FIELD_DETECTED</item>
+        <item>LOGMEM_FULL</item>
+    </string-array>
+
+    <string-array name="LEDGreenOptions">
+        <item>-- LEDGREEN</item>
+        <item>NONE</item>
         <item>POWERED</item>
         <item>TERMINAL_CONN</item>
         <item>TERMINAL_RXTX</item>

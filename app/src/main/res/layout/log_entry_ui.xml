@@ -129,7 +129,7 @@
             android:gravity="left"
             android:hint=":LOG DATA PAYLOAD ASCII TEXT:"
             android:paddingLeft="35dp"
-            android:singleLine="true"
+            android:singleLine="false"
             android:textSize="8sp"
             android:textStyle="bold|normal" />
 

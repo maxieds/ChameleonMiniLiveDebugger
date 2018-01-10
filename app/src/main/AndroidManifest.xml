@@ -10,9 +10,10 @@
         android:theme="@style/AppTheme"
         android:icon="@drawable/chameleonicon64"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/chameleonicon64">
+        android:roundIcon="@drawable/chameleonicon64"
+        android:launchMode="singleTop" >
 
-        <activity android:name=".LiveLoggerActivity">
+        <activity android:name=".LiveLoggerActivity" android:screenOrientation="portrait">
 
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
@@ -20,6 +21,11 @@
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/usb_device_filter" />
+
+            <intent-filter>
+                <action android:name="ChameleonIO.device.CMD_QUERY_RESPONSE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
