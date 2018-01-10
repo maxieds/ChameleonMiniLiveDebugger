@@ -55,6 +55,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
@@ -163,41 +167,20 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        setIntent(intent);
-        if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
-            configureSerialPort(null);
-        }
-        else if(intent.getAction().equals(ChameleonIO.DEVICE_RESPONSE_INTENT)) {
-            String respData = intent.getStringExtra(Intent.EXTRA_TEXT);
-            Log.i(TAG, "Received response from the chameleon device: " + respData);
-            throw new RuntimeException(respData);
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        BroadcastReceiver rec = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if(intent.getAction().equals(ChameleonIO.DEVICE_RESPONSE_INTENT)) {
-                    String respData = intent.getStringExtra(Intent.EXTRA_TEXT);
-                    Log.i(TAG, "Received response from the chameleon device: " + respData);
-                    throw new RuntimeException(respData);
-                }
-            }
-        };
-        IntentFilter ifilter = new IntentFilter(ChameleonIO.DEVICE_RESPONSE_INTENT);
-        registerReceiver(rec, ifilter);
-    }
-
     public static String getSettingFromDevice(UsbSerialDevice cmPort, String query) {
         ChameleonIO.WAITING_FOR_RESPONSE = true;
         ChameleonIO.SerialRespCode rcode = ChameleonIO.executeChameleonMiniCommand(cmPort, query, ChameleonIO.TIMEOUT);
-        while(ChameleonIO.WAITING_FOR_RESPONSE) {}
+        final Lock lock = new ReentrantLock();
+        final Condition waitingForResponse  = lock.newCondition();
+        for(int i = 1; i < 15; i++) {
+            if(!ChameleonIO.WAITING_FOR_RESPONSE)
+                break;
+            try {
+                Thread.sleep(50);
+            } catch(InterruptedException ie) {
+                break;
+            }
+        }
         appendNewLog(new LogEntryMetadataRecord(defaultInflater, "INFO: Device query of " + query + " returned status " + ChameleonIO.DEVICE_RESPONSE_CODE, ChameleonIO.DEVICE_RESPONSE));
         return ChameleonIO.DEVICE_RESPONSE;
     }

@@ -297,7 +297,8 @@
                     android:layout_height="20dp"
                     android:layout_width="wrap_content"
                     android:drawableLeft="@drawable/querydefaults16"
-                    android:text="[QueryDev]"
+                    android:text="[Query Device]"
+                    android:textSize="10sp"
                     android:onClick="actionButtonRestorePeripheralDefaults"
                     android:background="@color/colorPrimaryDarkLog" />
 
