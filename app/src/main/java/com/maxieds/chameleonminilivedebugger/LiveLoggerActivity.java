@@ -249,7 +249,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
             if(ChameleonIO.WAITING_FOR_RESPONSE) {
                 String strLogData = new String(liveLogData);
                 ChameleonIO.DEVICE_RESPONSE_CODE = strLogData.split("[\n\r]+")[0];
-                ChameleonIO.DEVICE_RESPONSE = strLogData.split("[\n\r]+")[1];
+                ChameleonIO.DEVICE_RESPONSE = strLogData.replace(ChameleonIO.DEVICE_RESPONSE_CODE, "");
                 ChameleonIO.WAITING_FOR_RESPONSE = false;
                 return;
             }
@@ -299,6 +299,14 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 }
         }
 
+    }
+
+    public void actionButtonClearAllLogs(View view) {
+        if(RECORDID > 0) {
+            logDataEntries.clear();
+            RECORDID = 0;
+            logDataFeed.removeAllViewsInLayout();
+        }
     }
 
     public void actionButtonCreateNewEvent(View view) {

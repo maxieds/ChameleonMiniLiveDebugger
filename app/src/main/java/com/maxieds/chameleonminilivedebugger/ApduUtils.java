@@ -71,6 +71,36 @@ public class ApduUtils {
         return insList;
     }
 
+    public static List<String> parseDetailedInstructions(byte[] dataBytes) {
+        List<String> insList = new ArrayList<String>();
+        List<String[]> csvLines;
+        try {
+            csvLines = Utils.readCSVFile(LiveLoggerActivity.defaultContext.getResources().openRawResource(R.raw.detailed_common_ins));
+        } catch(IOException ioe) {
+            return insList;
+        }
+        for(int i = 0; i < csvLines.size(); i++) {
+            String[] csvLine = csvLines.get(i);
+            int checkNumBytes = csvLine.length - 1;
+            String apduLabel = csvLine[checkNumBytes];
+            if(dataBytes.length < checkNumBytes)
+                continue;
+            boolean tagApplies = true;
+            for(int b = 0; b < checkNumBytes; b++) {
+                if(csvLine[b].equalsIgnoreCase("xx"))
+                    continue;
+                else if(dataBytes[b] != Utils.hexString2Byte(csvLine[b])) {
+                    tagApplies = false;
+                    break;
+                }
+            }
+            if(tagApplies)
+                insList.add(apduLabel);
+        }
+        return insList;
+
+    }
+
     public static List<String> parseStatusCodes(byte[] dataBytes) {
         List<String> insList = new ArrayList<String>();
         List<String[]> csvLines;
@@ -97,6 +127,7 @@ public class ApduUtils {
         apduClassifications.addAll(parseDesfireStatusCodes(dataBytes));
         apduClassifications.addAll(parseCommonInstructions(dataBytes));
         apduClassifications.addAll(parseStatusCodes(dataBytes));
+        apduClassifications.addAll(parseDetailedInstructions(dataBytes));
         StringBuilder sbApduList = new StringBuilder();
         for(String apdu : apduClassifications){
             sbApduList.append(apdu);

@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Chameleon Mini Live Debugger</string>
-    <string name="aboutapp">This application is copyright (© 2017-2018) and developed in the free time of its author Maxie D. Schmidt (maxieds@gmail.com). For all intensive reasonable non-commercial applications this app is free to use and modify provided a link to the original project webpage and the author information remain intact in the revisions: https://github.com/maxieds/ChameleonMiniLiveDebugger (Call it GPL-like). Documentation for the app is found on the project webpage, though most of the buttons are self explanatory after some mild tinkering. The pretty freeware icons used by the app were obtained from iconfinder.com and their lovely sized transparent PNG conversions of these images. If you find this application particularly useful, the author requests donations in the form of more Chameleon Mini and other related hardware in place of cash transactions (see issue #3).</string>
+    <string name="aboutapp">This application is copyright (© 2017-2018) and developed in the free time of its author Maxie D. Schmidt (maxieds@gmail.com). \n\n
+                            For all intensive reasonable non-commercial applications this app is free to use and modify provided a link to the original project webpage and the author information remain intact in the revisions: https://github.com/maxieds/ChameleonMiniLiveDebugger (Call it GPL-like).
+                            Documentation for the app is found on the project webpage, though most of the buttons are self explanatory after some mild tinkering. \n\n
+                            Credits: The pretty freeware icons used by the app were obtained from flaticon.com and their lovely sized transparent PNG conversions of these images. \n\n
+                            Donations: If you find this application particularly useful, the author requests donations in the form of more Chameleon Mini and other related hardware in place of cash transactions (see issue #3).</string>
 
     <string-array name="RButtonOptions">
         <item>-- RBUTTON</item>
@@ -107,7 +111,7 @@
         <item>CONFIG?</item>
         <item>CONFIG=MF_CLASSIC_1K_7B</item>
         <item>CONFIG=NONE</item>
-        <item>TODO: DOWNLOAD</item>
+        <item>-TODO: DOWNLOAD</item>
         <item>DUMP_MFU</item>
         <item>FIELD=0</item>
         <item>FIELD=1</item>

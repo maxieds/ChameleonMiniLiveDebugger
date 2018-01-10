@@ -81,9 +81,9 @@
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/usbcable24"
-                    android:onClick="configureSerialPort"
-                    android:text="CFGUSB" />
+                    android:drawableLeft="@drawable/clearicon24"
+                    android:onClick="actionButtonClearAllLogs"
+                    android:text="Clear All" />
 
                 <Button
                     style="@style/GridButtons"
