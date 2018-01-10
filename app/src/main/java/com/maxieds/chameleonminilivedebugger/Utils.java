@@ -1,6 +1,7 @@
 package com.maxieds.chameleonminilivedebugger;
 
 import android.text.format.Time;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,6 +10,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.content.ContentValues.TAG;
+
 /**
  * Created by mschmidt34 on 12/31/2017.
  */
@@ -16,10 +19,12 @@ import java.util.List;
 public class Utils {
 
     public static byte hexString2Byte(String byteStr) {
-        if (byteStr.length() != 2)
+        if (byteStr.length() != 2) {
+            Log.e(TAG, "Invalid Byte String: " + byteStr);
             return 0x00;
-        int lsb = Character.digit(byteStr.charAt(0), 16);
-        int msb = Character.digit(byteStr.charAt(1), 16);
+        }
+        int lsb = Character.digit(byteStr.charAt(1), 16);
+        int msb = Character.digit(byteStr.charAt(0), 16);
         return (byte) (lsb | msb << 4);
     }
 
@@ -94,8 +99,8 @@ public class Utils {
         return currentTime.format("%Y-%m-%d-%T");
     }
 
-    public static List readCSVFile(InputStream fdStream) throws IOException {
-        List csvLines = new ArrayList();
+    public static List<String[]> readCSVFile(InputStream fdStream) throws IOException {
+        List<String[]> csvLines = new ArrayList<String[]>();
         BufferedReader br = new BufferedReader(new InputStreamReader(fdStream));
         String csvLine;
         while((csvLine = br.readLine()) != null) {

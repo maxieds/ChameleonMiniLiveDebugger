@@ -11,9 +11,9 @@
         android:icon="@drawable/chameleonicon64"
         android:label="@string/app_name"
         android:roundIcon="@drawable/chameleonicon64"
-        android:launchMode="singleTop" >
+        android:launchMode="standard" >
 
-        <activity android:name=".LiveLoggerActivity" android:screenOrientation="portrait">
+        <activity android:name=".LiveLoggerActivity" android:screenOrientation="portrait" android:alwaysRetainTaskState="true">
 
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />

@@ -95,11 +95,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        runningActivity = this;
-        super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_ACTION_BAR);
-        setContentView(R.layout.activity_live_logger);
-
         // fix bug where the tabs are blank when the application is relaunched:
         if(!isTaskRoot()) {
             final Intent intent = getIntent();
@@ -111,6 +106,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 return;
             }
         }
+
+        runningActivity = this;
+        super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_ACTION_BAR);
+        setContentView(R.layout.activity_live_logger);
 
         logDataFeed = new LinearLayout(getApplicationContext());
         defaultInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);

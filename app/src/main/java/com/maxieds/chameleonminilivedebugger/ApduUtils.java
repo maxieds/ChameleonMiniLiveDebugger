@@ -1,8 +1,12 @@
 package com.maxieds.chameleonminilivedebugger;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by maxie on 1/4/18.
@@ -83,13 +87,12 @@ public class ApduUtils {
             String[] csvLine = csvLines.get(i);
             int checkNumBytes = csvLine.length - 1;
             String apduLabel = csvLine[checkNumBytes];
-            if(dataBytes.length < checkNumBytes)
+            if(dataBytes.length < checkNumBytes) {
                 continue;
+            }
             boolean tagApplies = true;
             for(int b = 0; b < checkNumBytes; b++) {
-                if(csvLine[b].equalsIgnoreCase("xx"))
-                    continue;
-                else if(dataBytes[b] != Utils.hexString2Byte(csvLine[b])) {
+                if(!csvLine[b].equals("xx") && dataBytes[b] != Utils.hexString2Byte(csvLine[b])) {
                     tagApplies = false;
                     break;
                 }
