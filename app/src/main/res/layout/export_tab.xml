@@ -7,6 +7,23 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:drawableLeft="@drawable/filesystem16"
+        android:drawablePadding="5dp"
+        android:singleLine="true"
+        android:text="Export Live Logging Data to File:"
+        android:textSize="14sp"
+        android:textAllCaps="true"
+        android:textStyle="bold|italic" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorPrimaryDark" />
+
     <GridLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -73,6 +90,59 @@
             android:drawablePadding="5dp"
             android:text="Share" />
     </RadioGroup>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorPrimaryDark" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:drawableLeft="@drawable/modemplug16"
+        android:drawablePadding="5dp"
+        android:singleLine="true"
+        android:text="Download Binary Data via ~XMODEM~:"
+        android:textSize="14sp"
+        android:textAllCaps="true"
+        android:textStyle="bold|italic" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorPrimaryDark" />
+
+    <GridLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="1dp"
+        android:background="@color/colorAccentLog"
+        android:columnCount="13"
+        android:orientation="horizontal"
+        android:padding="2dp"
+        android:rowCount="1">
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/logdownload"
+            android:tag="LOGDOWNLOAD"
+            android:text="LogDL to File" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/logdownload2"
+            android:tag="LOGDOWNLOAD2LIVE"
+            android:text="LogDL to Live" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/uploaddownload24"
+            android:tag="DOWNLOAD"
+            android:text="DL Card" />
+
+    </GridLayout>
 
 
 </LinearLayout>

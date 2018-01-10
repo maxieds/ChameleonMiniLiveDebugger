@@ -9,7 +9,8 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:verticalScrollbarPosition="right"
-        android:fadeScrollbars="false" >
+        android:fadeScrollbars="false"
+        android:scrollbarSize="25dp">
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -57,15 +58,15 @@
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/chip24v3"
+                    android:drawableLeft="@drawable/replay24"
                     android:onClick="actionButtonCreateNewEvent"
-                    android:text="ULTRALIGHT" />
+                    android:text="Log Replay" />
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/card24v8"
+                    android:drawableLeft="@drawable/chip24v3"
                     android:onClick="actionButtonCreateNewEvent"
-                    android:text="CLASSIC-1K" />
+                    android:text="ULTRALIGHT" />
 
                 <Button
                     style="@style/GridButtons"
@@ -481,10 +482,10 @@
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/trimicon24"
+                    android:drawableLeft="@drawable/copy24"
                     android:onClick="actionButtonProcessBatch"
-                    android:tag="TRIM"
-                    android:text="TRIM_CMD" />
+                    android:tag="COPY"
+                    android:text="Copy" />
 
                 <Button
                     style="@style/GridButtons"

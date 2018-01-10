@@ -56,7 +56,7 @@ public class LogEntryMetadataRecord extends LogEntryBase {
     static {
         prefixIconMap.put("READER", Integer.valueOf(R.drawable.binarymobile24));
         prefixIconMap.put("SNIFFER", R.drawable.binarysearch24);
-        prefixIconMap.put("STATUS", R.drawable.msgbubble24);
+        prefixIconMap.put("STATUS", R.drawable.phonebubble24);
         prefixIconMap.put("NEW EVENT", R.drawable.statusicon24);
         prefixIconMap.put("ERROR", R.drawable.erroricon24);
         prefixIconMap.put("CARD INFO", R.drawable.cardicon24);

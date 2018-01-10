@@ -23,6 +23,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -96,7 +97,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         // fix bug where the tabs are blank when the application is relaunched:
-        if(!isTaskRoot()) {
+        /*if(!isTaskRoot()) {
             final Intent intent = getIntent();
             final String intentAction = intent.getAction();
             if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && intentAction != null && intentAction.equals(Intent.ACTION_MAIN)) {
@@ -105,7 +106,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 configureSerialPort(null);
                 return;
             }
-        }
+        }*/
 
         runningActivity = this;
         super.onCreate(savedInstanceState);
@@ -249,7 +250,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
             if(ChameleonIO.WAITING_FOR_RESPONSE) {
                 String strLogData = new String(liveLogData);
                 ChameleonIO.DEVICE_RESPONSE_CODE = strLogData.split("[\n\r]+")[0];
-                ChameleonIO.DEVICE_RESPONSE = strLogData.replace(ChameleonIO.DEVICE_RESPONSE_CODE, "");
+                ChameleonIO.DEVICE_RESPONSE = strLogData.replace(ChameleonIO.DEVICE_RESPONSE_CODE, "").replaceAll("[\n\r\t]*", "");
                 ChameleonIO.WAITING_FOR_RESPONSE = false;
                 return;
             }
@@ -471,7 +472,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     public void actionButtonAboutTheApp(View view) {
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this, R.style.SpinnerTheme);
-        builder1.setMessage(getResources().getString(R.string.aboutapp));
+        builder1.setMessage(Html.fromHtml(getString(R.string.aboutapp), Html.FROM_HTML_MODE_LEGACY));
         builder1.setCancelable(true);
         builder1.setTitle("About the Application:");
         builder1.setIcon(R.drawable.olben64);

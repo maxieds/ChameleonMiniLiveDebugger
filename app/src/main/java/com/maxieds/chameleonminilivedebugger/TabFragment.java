@@ -15,6 +15,10 @@ import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
+import java.util.Arrays;
+
+import static android.content.ContentValues.TAG;
+
 /**
  * Created by mschmidt34 on 12/31/2017.
  */
@@ -70,6 +74,7 @@ public class TabFragment extends Fragment {
         spinner.setAdapter(spinnerAdapter);
         if(queryCmd != null) {
             String deviceSetting = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, queryCmd);
+            Log.i(TAG, "Returned deviceSetting: " + deviceSetting);
             spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(deviceSetting));
         }
         final Spinner localSpinnerRef = spinner;
@@ -77,6 +82,8 @@ public class TabFragment extends Fragment {
             Spinner localSpinner = localSpinnerRef;
             String[] localSpinnerList = spinnerList;
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if(i == 0)
+                    return;
                 String setCmd = localSpinner.getTag().toString() + localSpinnerList[i];
                 ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, setCmd, ChameleonIO.TIMEOUT);
             }
@@ -131,7 +138,7 @@ public class TabFragment extends Fragment {
             connectPeripheralSpinnerAdapter(view, R.id.LEDRedSpinner, R.array.LEDRedOptions, LiveLoggerActivity.spinnerLEDRedAdapter, "LEDRED?");
             connectPeripheralSpinnerAdapter(view, R.id.LEDGreenSpinner, R.array.LEDGreenOptions, LiveLoggerActivity.spinnerLEDGreenAdapter, "LEDGREEN?");
             connectPeripheralSpinnerAdapter(view, R.id.LogModeSpinner, R.array.LogModeOptions, LiveLoggerActivity.spinnerLogModeAdapter, "LOGMODE?");
-            connectCommandListSpinnerAdapter(view, R.id.FullCmdListSpinner, R.array.FullCommandList, LiveLoggerActivity.spinnerCmdShellAdapter, null);
+            connectCommandListSpinnerAdapter(view, R.id.FullCmdListSpinner, R.array.FullCommandList, LiveLoggerActivity.spinnerCmdShellAdapter, "");
         }
         return inflatedView;
     }

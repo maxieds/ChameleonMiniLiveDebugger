@@ -89,15 +89,4 @@ public class ChameleonIO {
         return OK;
     }
 
-    /*public static String getSettingFromDevice(UsbSerialDevice cmPort, String query, int timeout) {
-        if(cmPort == null)
-            return null;
-        String deviceConfigCmd = query + "\n\r";
-        byte[] sendBuf = deviceConfigCmd.getBytes(StandardCharsets.UTF_8);
-        cmPort.syncWrite(sendBuf, timeout);
-        byte[] recvBuf = new byte[RESP_BUFFER_SIZE];
-        cmPort.syncRead(recvBuf, timeout);
-        return new String(recvBuf);
-    }*/
-
 }

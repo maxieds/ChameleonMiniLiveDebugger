@@ -1,13 +1,13 @@
 <resources>
     <string name="app_name">Chameleon Mini Live Debugger</string>
-    <string name="aboutapp">This application is copyright (© 2017-2018) and developed in the free time of its author Maxie D. Schmidt (maxieds@gmail.com). \n\n
-                            For all intensive reasonable non-commercial applications this app is free to use and modify provided a link to the original project webpage and the author information remain intact in the revisions: https://github.com/maxieds/ChameleonMiniLiveDebugger (Call it GPL-like).
-                            Documentation for the app is found on the project webpage, though most of the buttons are self explanatory after some mild tinkering. \n\n
-                            Credits: The pretty freeware icons used by the app were obtained from flaticon.com and their lovely sized transparent PNG conversions of these images. \n\n
-                            Donations: If you find this application particularly useful, the author requests donations in the form of more Chameleon Mini and other related hardware in place of cash transactions (see issue #3).</string>
+    <string name="aboutapp">This application is copyright (&lt;i>© 2017-2018&lt;/i>) and developed in the free time of its author Maxie D. Schmidt (&lt;a href="mailto:maxieds@gmail.com">maxieds@gmail.com&lt;/a>). &lt;br/>&lt;br/>
+        For all intensive reasonable non-commercial applications this app is free to use and modify provided a link to the original project webpage and the author information remain intact in the revisions: &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger">https://github.com/maxieds/ChameleonMiniLiveDebugger&lt;/a> (Call it GPL-like).&lt;br/>&lt;br/>
+        Documentation for the app is found on the project webpage, though most of the buttons are self explanatory after some mild tinkering (which is of course encouraged in this sort of application). Testing data, feedback, and future feature requests can all be issued &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger/issues">here&lt;/a> in official form.&lt;br/>&lt;br/>
+        &lt;b>&lt;u>Credits&lt;/u>&lt;/b>: The pretty freeware icons used by the app were obtained from &lt;a href="flaticon.com">flaticon.com&lt;/a> and their lovely sized transparent PNG conversions of these images. &lt;br/>&lt;br/>
+        &lt;b>&lt;u>Donations&lt;/u>&lt;/b>: If you find this application particularly useful, the author requests donations in the form of more Chameleon Mini and other related hardware in place of cash transactions (see &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger/issues/3">issue #3&lt;/a>).</string>
 
     <string-array name="RButtonOptions">
-        <item>-- RBUTTON</item>
+        <item>RBUTTON</item>
         <item>NONE</item>
         <item>UID_RANDOM</item>
         <item>UID_LEFT_INCREMENT</item>
@@ -22,7 +22,7 @@
     </string-array>
 
     <string-array name="RButtonLongOptions">
-        <item>-- RBUTTON_LONG</item>
+        <item>RBUTTON_LONG</item>
         <item>NONE</item>
         <item>UID_RANDOM</item>
         <item>UID_LEFT_INCREMENT</item>
@@ -37,7 +37,7 @@
     </string-array>
 
     <string-array name="LButtonOptions">
-        <item>-- LBUTTON</item>
+        <item>LBUTTON</item>
         <item>NONE</item>
         <item>UID_RANDOM</item>
         <item>UID_LEFT_INCREMENT</item>
@@ -52,7 +52,7 @@
     </string-array>
 
     <string-array name="LButtonLongOptions">
-        <item>-- LBUTTON_LONG</item>
+        <item>LBUTTON_LONG</item>
         <item>NONE</item>
         <item>UID_RANDOM</item>
         <item>UID_LEFT_INCREMENT</item>
@@ -67,7 +67,7 @@
     </string-array>
 
     <string-array name="LEDRedOptions">
-        <item>-- LEDRED</item>
+        <item>LEDRED</item>
         <item>NONE</item>
         <item>POWERED</item>
         <item>TERMINAL_CONN</item>
@@ -82,7 +82,7 @@
     </string-array>
 
     <string-array name="LEDGreenOptions">
-        <item>-- LEDGREEN</item>
+        <item>LEDGREEN</item>
         <item>NONE</item>
         <item>POWERED</item>
         <item>TERMINAL_CONN</item>
@@ -103,15 +103,15 @@
     </string-array>
 
     <string-array name="FullCommandList">
-        <item>-- (Almost) Complete Shell</item>
+        <item>-- Complete Chameleon Shell</item>
         <item>AUTOCALIBRATE</item>
         <item>CHARGING?</item>
         <item>CLEAR</item>
         <item>CONFIG=?</item>
         <item>CONFIG?</item>
+        <item>CONFIG=MF_CLASSIC_1K</item>
         <item>CONFIG=MF_CLASSIC_1K_7B</item>
         <item>CONFIG=NONE</item>
-        <item>-TODO: DOWNLOAD</item>
         <item>DUMP_MFU</item>
         <item>FIELD=0</item>
         <item>FIELD=1</item>
@@ -128,7 +128,6 @@
         <item>LEDRED=?</item>
         <item>LEDRED?</item>
         <item>LOGCLEAR</item>
-        <item>-TODO: LOGDOWNLOAD</item>
         <item>LOGMEM?</item>
         <item>LOGMODE=?</item>
         <item>LOGMODE?</item>
@@ -161,10 +160,10 @@
         <item>THRESHOLD?</item>
         <item>TIMEOUT=?</item>
         <item>TIMEOUT?</item>
+        <item>-TODO: UID=...</item>
         <item>UID?</item>
         <item>UIDSIZE?</item>
         <item>UPGRADE</item>
-        <item>-TODO: UPLOAD</item>
         <item>VERSION</item>
     </string-array>
 

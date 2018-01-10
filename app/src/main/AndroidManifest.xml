@@ -11,7 +11,7 @@
         android:icon="@drawable/chameleonicon64"
         android:label="@string/app_name"
         android:roundIcon="@drawable/chameleonicon64"
-        android:launchMode="standard" >
+        android:launchMode="singleInstance" >
 
         <activity android:name=".LiveLoggerActivity" android:screenOrientation="portrait" android:alwaysRetainTaskState="true">
 
