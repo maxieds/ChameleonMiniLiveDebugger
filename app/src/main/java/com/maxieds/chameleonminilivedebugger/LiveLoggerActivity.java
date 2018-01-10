@@ -84,6 +84,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public static SpinnerAdapter spinnerLEDRedAdapter;
     public static SpinnerAdapter spinnerLEDGreenAdapter;
     public static SpinnerAdapter spinnerLogModeAdapter;
+    public static SpinnerAdapter spinnerCmdShellAdapter;
     private static ViewPager viewPager;
 
     public static void appendNewLog(LogEntryBase logEntry) {
@@ -170,8 +171,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public static String getSettingFromDevice(UsbSerialDevice cmPort, String query) {
         ChameleonIO.WAITING_FOR_RESPONSE = true;
         ChameleonIO.SerialRespCode rcode = ChameleonIO.executeChameleonMiniCommand(cmPort, query, ChameleonIO.TIMEOUT);
-        final Lock lock = new ReentrantLock();
-        final Condition waitingForResponse  = lock.newCondition();
         for(int i = 1; i < 15; i++) {
             if(!ChameleonIO.WAITING_FOR_RESPONSE)
                 break;
@@ -181,7 +180,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 break;
             }
         }
-        appendNewLog(new LogEntryMetadataRecord(defaultInflater, "INFO: Device query of " + query + " returned status " + ChameleonIO.DEVICE_RESPONSE_CODE, ChameleonIO.DEVICE_RESPONSE));
+        //appendNewLog(new LogEntryMetadataRecord(defaultInflater, "INFO: Device query of " + query + " returned status " + ChameleonIO.DEVICE_RESPONSE_CODE, ChameleonIO.DEVICE_RESPONSE));
         return ChameleonIO.DEVICE_RESPONSE;
     }
 
@@ -460,6 +459,23 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    public void actionButtonAboutTheApp(View view) {
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(this, R.style.SpinnerTheme);
+        builder1.setMessage(getResources().getString(R.string.aboutapp));
+        builder1.setCancelable(true);
+        builder1.setTitle("About the Application:");
+        builder1.setIcon(R.drawable.olben64);
+        builder1.setPositiveButton(
+                "Done",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
     }
 
     public void actionButtonRunCommand(View view) {

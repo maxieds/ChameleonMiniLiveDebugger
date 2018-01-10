@@ -1,10 +1,12 @@
 package com.maxieds.chameleonminilivedebugger;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -61,16 +63,49 @@ public class TabFragment extends Fragment {
         tabNumber = getArguments().getInt(ARG_PAGE);
     }
 
-    @Override
-    public View getView() {
-        return inflatedView;
-    }
-
-    private void connectSpinnerAdapter(View view, int spinnerID, int spinnerStringList, SpinnerAdapter spinnerAdapter) {
-        String[] spinnerList = getResources().getStringArray(spinnerStringList);
+    private void connectPeripheralSpinnerAdapter(View view, int spinnerID, int spinnerStringList, SpinnerAdapter spinnerAdapter, String queryCmd) {
+        final String[] spinnerList = getResources().getStringArray(spinnerStringList);
         spinnerAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, spinnerList);
         Spinner spinner = (Spinner) view.findViewById(spinnerID);
         spinner.setAdapter(spinnerAdapter);
+        if(queryCmd != null) {
+            String deviceSetting = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, queryCmd);
+            spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(deviceSetting));
+        }
+        final Spinner localSpinnerRef = spinner;
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            Spinner localSpinner = localSpinnerRef;
+            String[] localSpinnerList = spinnerList;
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String setCmd = localSpinner.getTag().toString() + localSpinnerList[i];
+                ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, setCmd, ChameleonIO.TIMEOUT);
+            }
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                return;
+            }
+        });
+    }
+
+    private void connectCommandListSpinnerAdapter(View view, int spinnerID, int spinnerStringList, SpinnerAdapter spinnerAdapter, String queryCmd) {
+        final String[] spinnerList = getResources().getStringArray(spinnerStringList);
+        spinnerAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, spinnerList);
+        Spinner spinner = (Spinner) view.findViewById(spinnerID);
+        spinner.setAdapter(spinnerAdapter);
+        final Spinner localSpinnerRef = spinner;
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            Spinner localSpinner = localSpinnerRef;
+            String[] localSpinnerList = spinnerList;
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String setCmd = localSpinnerList[i];
+                if(setCmd.charAt(0) != '-') {
+                    String deviceSetting = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, setCmd);
+                    LiveLoggerActivity.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "INFO: Shell command of " + setCmd + " returned status " + ChameleonIO.DEVICE_RESPONSE_CODE, ChameleonIO.DEVICE_RESPONSE));
+                }
+            }
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                return;
+            }
+        });
     }
 
     @Override
@@ -89,13 +124,14 @@ public class TabFragment extends Fragment {
         }
         else if(tabNumber == TAB_TOOLS && LiveLoggerActivity.spinnerRButtonLongAdapter == null) {
             // first connect the spinners to their resp. adapters so something will happen when a new option is selected:
-            connectSpinnerAdapter(view, R.id.RButtonSpinner, R.array.RButtonOptions, LiveLoggerActivity.spinnerRButtonAdapter);
-            connectSpinnerAdapter(view, R.id.RButtonLongSpinner, R.array.RButtonLongOptions, LiveLoggerActivity.spinnerRButtonLongAdapter);
-            connectSpinnerAdapter(view, R.id.LButtonSpinner, R.array.LButtonOptions, LiveLoggerActivity.spinnerLButtonAdapter);
-            connectSpinnerAdapter(view, R.id.LButtonLongSpinner, R.array.LButtonLongOptions, LiveLoggerActivity.spinnerLButtonLongAdapter);
-            connectSpinnerAdapter(view, R.id.LEDRedSpinner, R.array.LEDRedOptions, LiveLoggerActivity.spinnerLEDRedAdapter);
-            connectSpinnerAdapter(view, R.id.LEDGreenSpinner, R.array.LEDGreenOptions, LiveLoggerActivity.spinnerLEDGreenAdapter);
-            connectSpinnerAdapter(view, R.id.LogModeSpinner, R.array.LogModeOptions, LiveLoggerActivity.spinnerLogModeAdapter);
+            connectPeripheralSpinnerAdapter(view, R.id.RButtonSpinner, R.array.RButtonOptions, LiveLoggerActivity.spinnerRButtonAdapter, "RBUTTON?");
+            connectPeripheralSpinnerAdapter(view, R.id.RButtonLongSpinner, R.array.RButtonLongOptions, LiveLoggerActivity.spinnerRButtonLongAdapter, "RBUTTON_LONG?");
+            connectPeripheralSpinnerAdapter(view, R.id.LButtonSpinner, R.array.LButtonOptions, LiveLoggerActivity.spinnerLButtonAdapter, "LBUTTON?");
+            connectPeripheralSpinnerAdapter(view, R.id.LButtonLongSpinner, R.array.LButtonLongOptions, LiveLoggerActivity.spinnerLButtonLongAdapter, "LBUTTON_LONG?");
+            connectPeripheralSpinnerAdapter(view, R.id.LEDRedSpinner, R.array.LEDRedOptions, LiveLoggerActivity.spinnerLEDRedAdapter, "LEDRED?");
+            connectPeripheralSpinnerAdapter(view, R.id.LEDGreenSpinner, R.array.LEDGreenOptions, LiveLoggerActivity.spinnerLEDGreenAdapter, "LEDGREEN?");
+            connectPeripheralSpinnerAdapter(view, R.id.LogModeSpinner, R.array.LogModeOptions, LiveLoggerActivity.spinnerLogModeAdapter, "LOGMODE?");
+            connectCommandListSpinnerAdapter(view, R.id.FullCmdListSpinner, R.array.FullCommandList, LiveLoggerActivity.spinnerCmdShellAdapter, null);
         }
         return inflatedView;
     }

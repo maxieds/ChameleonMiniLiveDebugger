@@ -87,15 +87,15 @@
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/reset24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="RESET" />
-
-                <Button
-                    style="@style/GridButtons"
                     android:drawableLeft="@drawable/uncheckicon24"
                     android:onClick="actionButtonUncheckAll"
                     android:text="UNCHECK ALL" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/tagwriter24"
+                    android:onClick="actionButtonAboutTheApp"
+                    android:text="ABOUT APP" />
 
             </GridLayout>
 
@@ -268,6 +268,33 @@
                     android:onClick="actionButtonRunCommand"
                     android:tag="DUMP_MFU"
                     android:text="DUMP_MFU" />
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="@color/colorAccentLog"
+                android:columnCount="2"
+                android:padding="2dp"
+                android:rowCount="10">
+
+            <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/cmd24" />
+            <Spinner
+                android:id="@+id/FullCmdListSpinner"
+                android:layout_width="300dp"
+                android:layout_weight="1"
+                android:layout_height="30dp"
+                android:entries="@array/FullCommandList"
+                android:spinnerMode="dialog"
+                android:gravity="right|center_vertical"
+                android:popupBackground="#98fb98" />
 
             </GridLayout>
 

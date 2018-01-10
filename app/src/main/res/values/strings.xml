@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Chameleon Mini Live Debugger</string>
+    <string name="aboutapp">This application is copyright (© 2017-2018) and developed in the free time of its author Maxie D. Schmidt (maxieds@gmail.com). For all intensive reasonable non-commercial applications this app is free to use and modify provided a link to the original project webpage and the author information remain intact in the revisions: https://github.com/maxieds/ChameleonMiniLiveDebugger (Call it GPL-like). Documentation for the app is found on the project webpage, though most of the buttons are self explanatory after some mild tinkering. The pretty freeware icons used by the app were obtained from iconfinder.com and their lovely sized transparent PNG conversions of these images. If you find this application particularly useful, the author requests donations in the form of more Chameleon Mini and other related hardware in place of cash transactions (see issue #3).</string>
 
     <string-array name="RButtonOptions">
         <item>-- RBUTTON</item>
@@ -97,6 +98,71 @@
         <item>OFF</item>
     </string-array>
 
+    <string-array name="FullCommandList">
+        <item>-- (Almost) Complete Shell</item>
+        <item>AUTOCALIBRATE</item>
+        <item>CHARGING?</item>
+        <item>CLEAR</item>
+        <item>CONFIG=?</item>
+        <item>CONFIG?</item>
+        <item>CONFIG=MF_CLASSIC_1K_7B</item>
+        <item>CONFIG=NONE</item>
+        <item>TODO: DOWNLOAD</item>
+        <item>DUMP_MFU</item>
+        <item>FIELD=0</item>
+        <item>FIELD=1</item>
+        <item>FIELD?</item>
+        <item>GETUID</item>
+        <item>HELP</item>
+        <item>IDENTIFY</item>
+        <item>LBUTTON=?</item>
+        <item>LBUTTON?</item>
+        <item>LBUTTON_LONG=?</item>
+        <item>LBUTTON_LONG?</item>
+        <item>LEDGREEN=?</item>
+        <item>LEDGREEN?</item>
+        <item>LEDRED=?</item>
+        <item>LEDRED?</item>
+        <item>LOGCLEAR</item>
+        <item>-TODO: LOGDOWNLOAD</item>
+        <item>LOGMEM?</item>
+        <item>LOGMODE=?</item>
+        <item>LOGMODE?</item>
+        <item>LOGSTORE</item>
+        <item>MEMSIZE?</item>
+        <item>RBUTTON=?</item>
+        <item>RBUTTON?</item>
+        <item>RBUTTON_LONG=?</item>
+        <item>RBUTTON_LONG?</item>
+        <item>READONLY=0</item>
+        <item>READONLY=1</item>
+        <item>READONLY?</item>
+        <item>RECALL</item>
+        <item>RESET</item>
+        <item>RSSI?</item>
+        <item>-TODO: SEND_RAW</item>
+        <item>-TODO: SEND</item>
+        <item>SETTING=1</item>
+        <item>SETTING=2</item>
+        <item>SETTING=3</item>
+        <item>SETTING=4</item>
+        <item>SETTING=5</item>
+        <item>SETTING=6</item>
+        <item>SETTING=7</item>
+        <item>SETTING=8</item>
+        <item>SETTING?</item>
+        <item>STORE</item>
+        <item>SYSTICK?</item>
+        <item>THRESHOLD=?</item>
+        <item>THRESHOLD?</item>
+        <item>TIMEOUT=?</item>
+        <item>TIMEOUT?</item>
+        <item>UID?</item>
+        <item>UIDSIZE?</item>
+        <item>UPGRADE</item>
+        <item>-TODO: UPLOAD</item>
+        <item>VERSION</item>
+    </string-array>
 
 
 </resources>
