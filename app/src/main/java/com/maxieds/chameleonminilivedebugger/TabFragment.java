@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.SimpleAdapter;
@@ -105,6 +106,11 @@ public class TabFragment extends Fragment {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String setCmd = localSpinnerList[i];
                 if(setCmd.charAt(0) != '-') {
+                    if(setCmd.equals("SEND_RAW") || setCmd.equals("SEND") || setCmd.equals("UID=")) {
+                        String userInputBytes = ((EditText) LiveLoggerActivity.runningActivity.findViewById(R.id.userInputFormattedBytes)).getText().toString();
+                        userInputBytes = userInputBytes.replace(" ", ""); // remove pretty printing / spaces formatting
+                        setCmd += userInputBytes;
+                    }
                     String deviceSetting = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, setCmd);
                     LiveLoggerActivity.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "INFO: Shell command of " + setCmd + " returned status " + ChameleonIO.DEVICE_RESPONSE_CODE, ChameleonIO.DEVICE_RESPONSE));
                 }

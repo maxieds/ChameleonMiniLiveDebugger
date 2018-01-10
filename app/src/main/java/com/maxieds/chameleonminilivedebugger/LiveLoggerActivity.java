@@ -463,8 +463,13 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 else if(isChecked && actionFlag.equals("HIDE")) {
                     logEntryView.setVisibility(View.GONE);
                 }
-                else if(isChecked && actionFlag.equals("TRIM_CMD")) {
-                    ((LogEntryUI) logDataEntries.get(vi)).trimCommandText();
+                //else if(isChecked && actionFlag.equals("TRIM_CMD")) {
+                //    ((LogEntryUI) logDataEntries.get(vi)).trimCommandText();
+                //}
+                else if(isChecked && actionFlag.equals("COPY")) {
+                    EditText etUserBytes = (EditText) findViewById(R.id.userInputFormattedBytes);
+                    String appendBytes = Utils.bytes2Hex(((LogEntryUI) logDataEntries.get(vi)).getEntryData());
+                    etUserBytes.append(appendBytes);
                 }
             }
         }

@@ -59,7 +59,6 @@
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/replay24"
-                    android:onClick="actionButtonCreateNewEvent"
                     android:text="Log Replay" />
 
                 <Button
@@ -301,6 +300,22 @@
 
             <View
                 android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:background="@color/colorPrimaryDark" />
+
+            <EditText
+                android:id="@+id/userInputFormattedBytes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/abacus24v2"
+                android:drawablePadding="11dp"
+                android:paddingLeft="5dp"
+                android:layout_marginLeft="0dp"
+                android:background="@color/colorAccentLog"
+                android:hint="01 23 45 67 89 ab cd ef"/>
+
+            <View
+                android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:background="@color/colorPrimaryDark" />
 
@@ -485,7 +500,7 @@
                     android:drawableLeft="@drawable/copy24"
                     android:onClick="actionButtonProcessBatch"
                     android:tag="COPY"
-                    android:text="Copy" />
+                    android:text="COPY" />
 
                 <Button
                     style="@style/GridButtons"

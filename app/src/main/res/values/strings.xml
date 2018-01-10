@@ -143,8 +143,8 @@
         <item>RECALL</item>
         <item>RESET</item>
         <item>RSSI?</item>
-        <item>-TODO: SEND_RAW</item>
-        <item>-TODO: SEND</item>
+        <item>SEND_RAW </item>
+        <item>SEND </item>
         <item>SETTING=1</item>
         <item>SETTING=2</item>
         <item>SETTING=3</item>
@@ -160,7 +160,7 @@
         <item>THRESHOLD?</item>
         <item>TIMEOUT=?</item>
         <item>TIMEOUT?</item>
-        <item>-TODO: UID=...</item>
+        <item>UID=</item>
         <item>UID?</item>
         <item>UIDSIZE?</item>
         <item>UPGRADE</item>
