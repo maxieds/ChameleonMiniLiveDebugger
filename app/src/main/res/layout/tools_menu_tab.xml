@@ -59,6 +59,7 @@
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/replay24"
+                    android:onClick="actionButtonCreateNewEvent"
                     android:text="Log Replay" />
 
                 <Button
@@ -385,10 +386,10 @@
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/xfer16"
-                    android:onClick="actionButtonSetSelectedXFer"
+                    android:drawableLeft="@drawable/convergence24"
+                    android:onClick="actionButtonCollapseSimilar"
                     android:tag="0"
-                    android:text="Set xFer" />
+                    android:text="RM Junk Bits" />
 
                 <Button
                     style="@style/GridButtons"
@@ -428,7 +429,7 @@
                     android:drawableLeft="@drawable/hide24"
                     android:onClick="actionButtonProcessBatch"
                     android:tag="HIDE"
-                    android:text="Collapse" />
+                    android:text="HIDE" />
 
             </GridLayout>
 

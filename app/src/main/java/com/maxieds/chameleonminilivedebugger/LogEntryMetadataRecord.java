@@ -79,7 +79,12 @@ public class LogEntryMetadataRecord extends LogEntryBase {
         if(eventMsg == null)
             eventMsg = "";
 
-        int iconResID = prefixIconMap.get(eventID).intValue();
+        Integer iconResIDInt = prefixIconMap.get(eventID);
+        int iconResID = 0;
+        if(iconResIDInt == null)
+            iconResID = R.drawable.msgbubble24;
+        else
+            iconResID = iconResIDInt.intValue();
         LogEntryMetadataRecord eventRecord = new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, eventID, eventMsg);
         eventRecord.tvRecTitle.setCompoundDrawablesWithIntrinsicBounds(iconResID, 0, 0, 0);
         return eventRecord;

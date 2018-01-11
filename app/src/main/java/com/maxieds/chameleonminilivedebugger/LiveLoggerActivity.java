@@ -58,6 +58,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -178,7 +179,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
             ((ImageView) findViewById(R.id.usbConnectionStatus)).setImageDrawable(getResources().getDrawable(R.drawable.usbunplug24));
         }
 
-        setupLiveDeviceStatsDisplay();
+        // the reader is going to return junk for the settings bar title if we don't pause for a second:
+        try {
+            Thread.sleep(1500);
+        } catch(Exception e) {}
+        setupLiveDeviceStatsDisplay(true);
 
     }
 
@@ -186,11 +191,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
     private Handler statsUpdateHandler = new Handler();
     private Runnable statsUpdateRunnable = new Runnable(){
         public void run() {
-            setupLiveDeviceStatsDisplay();
+            setupLiveDeviceStatsDisplay(true);
         }
     };
 
-    private void setupLiveDeviceStatsDisplay() {
+    private void setupLiveDeviceStatsDisplay(boolean resetTimer) {
         String deviceConfig = getSettingFromDevice(serialPort, "CONFIG?");
         String deviceUID = getSettingFromDevice(serialPort, "UID?");
         if(deviceUID.equals("NO UID.")) {
@@ -201,7 +206,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
         TextView tvDeviceStats = (TextView) findViewById(R.id.deviceConfigText);
         tvDeviceStats.setText(deviceConfig + "\n" + deviceUID);
-        statsUpdateHandler.postDelayed(statsUpdateRunnable, STATS_UPDATE_INTERVAL);
+        if(resetTimer)
+            statsUpdateHandler.postDelayed(statsUpdateRunnable, STATS_UPDATE_INTERVAL);
     }
 
     public static String getSettingFromDevice(UsbSerialDevice cmPort, String query) {
@@ -353,36 +359,72 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
     }
 
+    public void actionButtonCollapseSimilar(View view) {
+        if(RECORDID == 0)
+            return;
+        byte[] curBits = null;
+        boolean newBits = true;
+        for(int v = 0; v < logDataEntries.size(); v++) {
+            LogEntryBase lde = logDataEntries.get(v);
+            if(lde instanceof LogEntryMetadataRecord) {
+                newBits = true;
+                continue;
+            }
+            else if(lde instanceof LogEntryUI && newBits) {
+                byte[] nextDataPattern = ((LogEntryUI) lde).getEntryData();
+                curBits = new byte[nextDataPattern.length];
+                System.arraycopy(nextDataPattern, 0, curBits, 0, nextDataPattern.length);
+                newBits = false;
+            }
+            else if(Arrays.equals(curBits, ((LogEntryUI) lde).getEntryData())) {
+                logDataFeed.getChildAt(v).setVisibility(LinearLayout.GONE);
+            }
+            else {
+                newBits = true;
+            }
+        }
+    }
+
     public void actionButtonCreateNewEvent(View view) {
         String createCmd = ((Button) view).getText().toString();
         String msgParam = "";
         if(createCmd.equals("READER")) {
             ChameleonIO.setReaderConfigMode(serialPort, ChameleonIO.TIMEOUT);
+            setupLiveDeviceStatsDisplay(false);
             return;
         }
         else if(createCmd.equals("SNIFFER")) {
             ChameleonIO.setLoggerConfigMode(serialPort, ChameleonIO.TIMEOUT);
+            setupLiveDeviceStatsDisplay(false);
             return;
         }
         else if(createCmd.equals("ULTRALIGHT")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_ULTRALIGHT", ChameleonIO.TIMEOUT);
+            setupLiveDeviceStatsDisplay(false);
             return;
         }
         else if(createCmd.equals("CLASSIC-1K")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_1K", ChameleonIO.TIMEOUT);
+            setupLiveDeviceStatsDisplay(false);
             return;
         }
         else if(createCmd.equals("CLASSIC-4K")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_4K", ChameleonIO.TIMEOUT);
+            setupLiveDeviceStatsDisplay(false);
             return;
         }
         else if(createCmd.equals("CLASSIC-4K7B")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_4K_7B", ChameleonIO.TIMEOUT);
+            setupLiveDeviceStatsDisplay(false);
             return;
         }
-        else if(createCmd.equals("RESET")) {
-            ChameleonIO.executeChameleonMiniCommand(serialPort, "RESET", ChameleonIO.TIMEOUT);
-            configureSerialPort(null);
+        //else if(createCmd.equals("RESET")) {
+        //    ChameleonIO.executeChameleonMiniCommand(serialPort, "RESET", ChameleonIO.TIMEOUT);
+        //    configureSerialPort(null);
+        //    return;
+        //}
+        else if(createCmd.equals("Log Replay")) {
+            appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "RE: LOG REPLAY: This is a wishlist feature. It might be necessary to add it to the firmware and implement it in hardware. Not currently implemented."));
             return;
         }
         else if(createCmd.equals("STATUS") || createCmd.equals("NEW EVENT") ||
@@ -397,32 +439,23 @@ public class LiveLoggerActivity extends AppCompatActivity {
             userInputStack = null;
         }
         else if(createCmd.equals("LOCAL UID")) {
-            ChameleonIO.executeChameleonMiniCommand(serialPort, "GETUID", ChameleonIO.TIMEOUT);
-            return;
+            String rParam = getSettingFromDevice(serialPort, "GETUID");
+            msgParam = "GETUID: " + rParam.replaceAll("..(?!$)", "$0:") + "(" + rParam + ").";
         }
         else if(createCmd.equals("CHARGING")) {
-            ChameleonIO.executeChameleonMiniCommand(serialPort, "CHARGING?", ChameleonIO.TIMEOUT);
-            return;
+            msgParam = getSettingFromDevice(serialPort, "CHARGING?");
         }
         else if(createCmd.equals("STRENGTH")) {
-            ChameleonIO.executeChameleonMiniCommand(serialPort, "RSSI?", ChameleonIO.TIMEOUT);
-            return;
-        }
-        else if(createCmd.equals("LOCAL UID")) {
-            ChameleonIO.executeChameleonMiniCommand(serialPort, "GETUID", ChameleonIO.TIMEOUT);
-            return;
+            msgParam = getSettingFromDevice(serialPort, "RSSI?");
         }
         else if(createCmd.equals("FIRMWARE")) {
-            ChameleonIO.executeChameleonMiniCommand(serialPort, "VERSION?", ChameleonIO.TIMEOUT);
-            return;
+            msgParam = getSettingFromDevice(serialPort, "VERSION?");
         }
         else if(createCmd.equals("IDENTIFY")) {
-            ChameleonIO.executeChameleonMiniCommand(serialPort, "IDENTIFY", ChameleonIO.TIMEOUT);
-            return;
+            msgParam = getSettingFromDevice(serialPort, "IDENTIFY?");
         }
         else if(createCmd.equals("ONCLICK")) {
-            msgParam = "SYSTICK Millis := ";
-            ChameleonIO.executeChameleonMiniCommand(serialPort, "SYSTICK?", ChameleonIO.TIMEOUT);
+            msgParam = "SYSTICK Millis := " + getSettingFromDevice(serialPort, "SYSTICK?");
         }
         appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord(createCmd, msgParam));
     }
@@ -498,6 +531,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 else if(isChecked && actionFlag.equals("CLONE_UID")) {
                     String uid = ((LogEntryUI) logDataEntries.get(vi)).getPayloadData();
                     ChameleonIO.executeChameleonMiniCommand(serialPort, "UID=" + uid, ChameleonIO.TIMEOUT);
+                    setupLiveDeviceStatsDisplay(false);
                 }
                 else if(isChecked && actionFlag.equals("PRINT")) {
                     byte[] rawBytes = ((LogEntryUI) logDataEntries.get(vi)).getEntryData();
