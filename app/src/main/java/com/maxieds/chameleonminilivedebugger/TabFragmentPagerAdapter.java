@@ -4,12 +4,10 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentManager;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_SEARCH;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_TOOLS;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS;
 
 /**
@@ -22,12 +20,12 @@ public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
         public static TabFragment[] tabFragments = {
                 TabFragment.newInstance(TAB_LOG),
                 TabFragment.newInstance(TAB_TOOLS),
+                TabFragment.newInstance(TAB_LOG_TOOLS),
                 TabFragment.newInstance(TAB_EXPORT),
-                TabFragment.newInstance(TAB_SEARCH),
         };
 
         private String tabTitles[] = new String[] {
-                "Log", "Tools Menu", "Export", "Search",
+                "Log", "Tools Menu", "Log Tools", "Export",
         };
         private Context context;
 

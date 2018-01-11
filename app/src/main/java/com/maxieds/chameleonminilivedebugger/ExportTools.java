@@ -42,6 +42,7 @@ public class ExportTools {
 
     public static boolean EOT = false;
     public static UsbSerialDevice xferSerialPort;
+    public static int fileSize = 0;
 
     public static boolean downloadByZModem(String issueCmd, String outfilePrefix, boolean throwToLive) {
 
@@ -75,6 +76,7 @@ public class ExportTools {
             DataOutputStream streamDest = fout;
             @Override
             public void onReceivedData(byte[] liveLogData) {
+                fileSize += liveLogData.length;
                 Log.i(TAG, "Received XModem data ...");
                 if(liveLogData.length == XMODEM_BLOCK_SIZE) {
                     try {
@@ -92,6 +94,7 @@ public class ExportTools {
         };
 
         try {
+            fileSize = 0;
             ChameleonIO.PAUSED = true;
             xferSerialPort = LiveLoggerActivity.runningActivity.configureSerialPort(null, usbReaderCallback);
             xferSerialPort.write(new byte[]{BYTE_NAK});
@@ -109,7 +112,7 @@ public class ExportTools {
         DownloadManager downloadManager = (DownloadManager) defaultContext.getSystemService(DOWNLOAD_SERVICE);
         downloadManager.addCompletedDownload(outfile.getName(), outfile.getName(), true, "application/octet-stream",
                 outfile.getAbsolutePath(), outfile.length(),true);
-        LiveLoggerActivity.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "NEW EVENT", "Write internal log data to file " + outfilePath + "."));
+        LiveLoggerActivity.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "NEW EVENT", "Write internal log data to file " + outfilePath + "(+" + fileSize + " bytes)."));
         if(throwToLive) {
             throwDeviceLogDataToLive(outfile);
         }

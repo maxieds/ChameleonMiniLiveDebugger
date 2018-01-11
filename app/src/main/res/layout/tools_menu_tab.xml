@@ -26,7 +26,7 @@
                 android:drawableLeft="@drawable/settings16"
                 android:drawablePadding="5dp"
                 android:singleLine="true"
-                android:text="Set configurations and de-select:"
+                android:text="Set configurations:"
                 android:textAllCaps="true"
                 android:textStyle="bold|italic" />
 
@@ -70,15 +70,33 @@
 
                 <Button
                     style="@style/GridButtons"
+                    android:drawableLeft="@drawable/chip24v2"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="CLASSIC-1K" />
+
+                <Button
+                    style="@style/GridButtons"
                     android:drawableLeft="@drawable/card24v9"
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="CLASSIC-4K" />
 
                 <Button
                     style="@style/GridButtons"
+                    android:drawableLeft="@drawable/card24v8"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="CLASSIC-1K7B" />
+
+                <Button
+                    style="@style/GridButtons"
                     android:drawableLeft="@drawable/chip24v4"
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="CLASSIC-4K7B" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/blankchip24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="CFGNONE" />
 
             </GridLayout>
 
@@ -89,10 +107,9 @@
                 android:drawableLeft="@drawable/hashmark16"
                 android:drawablePadding="5dp"
                 android:singleLine="true"
-                android:text="Run device commands: "
+                android:text="Run global device commands: "
                 android:textAllCaps="true"
-                android:textStyle="bold|italic"
-                android:drawableRight="@drawable/scrollmore16" />
+                android:textStyle="bold|italic" />
 
             <View
                 android:layout_width="match_parent"
@@ -110,33 +127,97 @@
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/usericon24"
+                    android:drawableLeft="@drawable/reset24"
                     android:onClick="actionButtonCreateNewEvent"
-                    android:text="LOCAL UID" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/signalicon24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="STRENGTH" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/batteryicon24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="CHARGING" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/firmwareicon24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="FIRMWARE" />
+                    android:text="RESET" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/rssi24"
                     android:onClick="actionButtonCreateNewEvent"
-                    android:text="RSSI" />
+                    android:text="RSSI?" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/systick24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="SYSTICK?" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/firmwareicon24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="VERSION?" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/logclear24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="LOGCLEAR" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/logstore24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="LOGSTORE" />
+
+
+            </GridLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="@color/colorPrimaryDark" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimaryDarkLog"
+                    android:drawableLeft="@drawable/hashmark16"
+                    android:drawablePadding="5dp"
+                    android:singleLine="true"
+                    android:text="Run reader device commands: "
+                    android:textAllCaps="true"
+                    android:textStyle="bold|italic" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="@color/colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="@color/colorAccentLog"
+                android:columnCount="3"
+                android:padding="2dp"
+                android:rowCount="10">
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/wifibc24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="SEND" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/broadcastantenna24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="SEND_RAW" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/usericon24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="GETUID" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/fingerprintq24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="DUMP_MFU"
+                    android:text="DUMP_MFU" />
 
                 <Button
                     style="@style/GridButtons"
@@ -146,30 +227,113 @@
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/af24"
-                    android:onClick="actionButtonRunCommand"
-                    android:tag="FIELD?"
-                    android:text="FIELD?" />
-
-                <Button
-                    style="@style/GridButtons"
                     android:drawableLeft="@drawable/calibrate24"
                     android:onClick="actionButtonRunCommand"
                     android:tag="AUTOCALIBRATE"
                     android:text="AUTOCAL" />
 
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/dumpfile24"
-                    android:onClick="actionButtonRunCommand"
-                    android:tag="DUMP_MFU"
-                    android:text="DUMP_MFU" />
-
             </GridLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="@color/colorPrimaryDark" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimaryDarkLog"
+                    android:drawableLeft="@drawable/hashmark16"
+                    android:drawablePadding="5dp"
+                    android:singleLine="true"
+                    android:text="Misc configuration: "
+                    android:textAllCaps="true"
+                    android:textStyle="bold|italic" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="@color/colorPrimaryDark" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginRight="1dp"
+            android:background="@color/colorAccentLog">
+
+            <Switch android:id="@+id/fieldOnOffSwitch"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:switchMinWidth="65dp"
+                android:checked="true"
+                android:gravity="center"
+                android:showText="false"
+                android:textOn="1"
+                android:textOff="0"
+                android:text="FIELD: "
+                android:textStyle="bold|italic"
+                android:thumbTint="@color/colorPrimaryDark"
+                android:typeface="monospace"
+                android:scrollHorizontally="true" />
+
+            <Switch android:id="@+id/readonlyOnOffSwitch"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:paddingLeft="25dp"
+                android:switchMinWidth="65dp"
+                android:checked="true"
+                android:gravity="center|left"
+                android:showText="false"
+                android:textOn="RO"
+                android:textOff="RW"
+                android:text="READONLY: "
+                android:textStyle="bold|italic"
+                android:thumbTint="@color/colorPrimaryDark"
+                android:typeface="monospace"
+                android:scrollHorizontally="true" />
+
+        </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="2dp"
+                android:layout_height="1dp"
+                android:background="@color/colorPrimaryDark" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginRight="1dp"
+                android:background="@color/colorAccentLog">
+
+                <EditText
+                    android:id="@+id/userInputFormattedBytes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_weight="1"
+                    android:background="@color/colorAccentLog"
+                    android:drawableLeft="@drawable/pitext24"
+                    android:drawablePadding="11dp"
+                    android:hint="01 23 45 67 89 ab cd ef"
+                    android:paddingLeft="5dp" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:layout_width="21dp"
+                    android:layout_height="24dp"
+                    android:background="@color/colorAccentLog"
+                    android:drawableLeft="@drawable/backspace24"
+                    android:paddingRight="1dp"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="right"
+                    android:onClick="actionButtonClearUserText" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
                 android:background="@color/colorPrimaryDark" />
 
             <GridLayout
@@ -193,22 +357,6 @@
                 android:popupBackground="#98fb98" />
 
             </GridLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="6dp"
-                android:background="@color/colorPrimaryDark" />
-
-            <EditText
-                android:id="@+id/userInputFormattedBytes"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/abacus24v2"
-                android:drawablePadding="11dp"
-                android:paddingLeft="5dp"
-                android:layout_marginLeft="0dp"
-                android:background="@color/colorAccentLog"
-                android:hint="01 23 45 67 89 ab cd ef"/>
 
             <View
                 android:layout_width="match_parent"
@@ -340,290 +488,6 @@
                     android:spinnerMode="dialog"
                     android:gravity="right|center_vertical"
                     android:popupBackground="#98fb98" />
-
-            </GridLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/colorPrimaryDark" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimaryDarkLog"
-                android:drawableLeft="@drawable/checkbox16"
-                android:drawablePadding="5dp"
-                android:singleLine="true"
-                android:text="Apply to selected: "
-                android:textAllCaps="true"
-                android:textStyle="bold|italic"
-                android:drawableRight="@drawable/scrollmore16" />
-
-            <GridLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="1dp"
-                android:background="@color/colorAccentLog"
-                android:columnCount="3"
-                android:orientation="horizontal"
-                android:padding="2dp"
-                android:rowCount="2">
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/incoming16v2"
-                    android:onClick="actionButtonSetSelectedXFer"
-                    android:tag="1"
-                    android:text="Incoming" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/outgoing16v2"
-                    android:onClick="actionButtonSetSelectedXFer"
-                    android:tag="2"
-                    android:text="Outgoing" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/convergence24"
-                    android:onClick="actionButtonCollapseSimilar"
-                    android:tag="0"
-                    android:text="RM Junk Bits" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/copy24"
-                    android:onClick="actionButtonProcessBatch"
-                    android:tag="COPY"
-                    android:text="COPY" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/clearicon24"
-                    android:onClick="actionButtonClearAllLogs"
-                    android:text="Clear All" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/uncheckicon24"
-                    android:onClick="actionButtonUncheckAll"
-                    android:text="UNCHECK ALL" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/clone24"
-                    android:onClick="actionButtonProcessBatch"
-                    android:tag="CLONE_UID"
-                    android:text="Clone UID" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/dotdotdotbubble24"
-                    android:onClick="actionButtonProcessBatch"
-                    android:tag="PRINT"
-                    android:text="Print Full" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/hide24"
-                    android:onClick="actionButtonProcessBatch"
-                    android:tag="HIDE"
-                    android:text="HIDE" />
-
-            </GridLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimaryDarkLog"
-                android:drawableLeft="@drawable/highlight16"
-                android:drawablePadding="5dp"
-                android:singleLine="true"
-                android:text="Highlight selected:"
-                android:textAllCaps="true"
-                android:textStyle="bold|italic" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/colorPrimaryDark" />
-
-            <GridLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="1dp"
-                android:background="@color/colorAccentLog"
-                android:columnCount="13"
-                android:orientation="horizontal"
-                android:padding="2dp"
-                android:rowCount="1">
-
-                <Button
-                    style="@style/ColorHighlightButtons"
-                    android:background="#ff5ba5"
-                    android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#ff5ba5" />
-
-                <Button
-                    style="@style/ColorHighlightButtons"
-                    android:background="#c2b4d6"
-                    android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#c2b4d6" />
-
-                <Button
-                    style="@style/ColorHighlightButtons"
-                    android:background="#d3ac26"
-                    android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#d3ac26" />
-
-                <Button
-                    style="@style/ColorHighlightButtons"
-                    android:background="#b07cda"
-                    android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#b07cda" />
-
-                <Button
-                    style="@style/ColorHighlightButtons"
-                    android:background="#3bc6b6"
-                    android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#3bc6b6" />
-
-                <Button
-                    style="@style/ColorHighlightButtons"
-                    android:background="#637a89"
-                    android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#637a89" />
-
-                <Button
-                    style="@style/ColorHighlightButtons"
-                    android:background="#a3c6c4"
-                    android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#a3c6c4" />
-
-                <Button
-                    style="@style/ColorHighlightButtons"
-                    android:background="#f46528"
-                    android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#f46528" />
-
-                <Button
-                    style="@style/ColorHighlightButtons"
-                    android:background="#9f4298"
-                    android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#9f4298" />
-
-                <Button
-                    style="@style/ColorHighlightButtons"
-                    android:background="#a0d3f9"
-                    android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#a0d3f9" />
-
-                <Button
-                    style="@style/ColorHighlightButtons"
-                    android:background="#f4ed6e"
-                    android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#f4ed6e" />
-
-                <Button
-                    style="@style/ColorHighlightButtons"
-                    android:background="#fffee6"
-                    android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#fffee6" />
-
-                <Button
-                    style="@style/ColorHighlightButtons"
-                    android:background="#ffca2b"
-                    android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#ffca2b" />
-
-
-            </GridLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/colorPrimaryDark" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimaryDarkLog"
-                android:drawableLeft="@drawable/infobubble16"
-                android:drawablePadding="5dp"
-                android:singleLine="true"
-                android:text="Annotate logs:"
-                android:textAllCaps="true"
-                android:textStyle="bold|italic" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/colorPrimaryDark" />
-
-            <GridLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="1dp"
-                android:background="@color/colorAccentLog"
-                android:columnCount="3"
-                android:padding="2dp"
-                android:rowCount="10">
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/msgbubble24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="STATUS" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/statusicon24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="NEW EVENT" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/erroricon24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="ERROR" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/cardicon24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="CARD INFO" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/location24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="LOCATION" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/dooricon24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="DOOR" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/vending24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="VENDING" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/phone24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="PHONE" />
-
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/powaction24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="ONCLICK" />
 
             </GridLayout>
 

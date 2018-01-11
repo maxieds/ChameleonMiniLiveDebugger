@@ -103,67 +103,16 @@
     </string-array>
 
     <string-array name="FullCommandList">
-        <item>-- Complete Chameleon Shell</item>
-        <item>AUTOCALIBRATE</item>
-        <item>CHARGING?</item>
+        <item>--Advanced Chameleon Shell--</item>
         <item>CLEAR</item>
-        <item>CONFIG=?</item>
-        <item>CONFIG?</item>
-        <item>CONFIG=MF_CLASSIC_1K</item>
-        <item>CONFIG=MF_CLASSIC_1K_7B</item>
-        <item>CONFIG=NONE</item>
-        <item>DUMP_MFU</item>
-        <item>FIELD=0</item>
-        <item>FIELD=1</item>
-        <item>FIELD?</item>
-        <item>GETUID</item>
-        <item>HELP</item>
-        <item>IDENTIFY</item>
-        <item>LBUTTON=?</item>
-        <item>LBUTTON?</item>
-        <item>LBUTTON_LONG=?</item>
-        <item>LBUTTON_LONG?</item>
-        <item>LEDGREEN=?</item>
-        <item>LEDGREEN?</item>
-        <item>LEDRED=?</item>
-        <item>LEDRED?</item>
-        <item>LOGCLEAR</item>
-        <item>LOGMEM?</item>
-        <item>LOGMODE=?</item>
-        <item>LOGMODE?</item>
-        <item>LOGSTORE</item>
-        <item>MEMSIZE?</item>
-        <item>RBUTTON=?</item>
-        <item>RBUTTON?</item>
-        <item>RBUTTON_LONG=?</item>
-        <item>RBUTTON_LONG?</item>
-        <item>READONLY=0</item>
-        <item>READONLY=1</item>
-        <item>READONLY?</item>
         <item>RECALL</item>
-        <item>RESET</item>
-        <item>RSSI?</item>
-        <item>SEND_RAW </item>
-        <item>SEND </item>
-        <item>SETTING=1</item>
-        <item>SETTING=2</item>
-        <item>SETTING=3</item>
-        <item>SETTING=4</item>
-        <item>SETTING=5</item>
-        <item>SETTING=6</item>
-        <item>SETTING=7</item>
-        <item>SETTING=8</item>
-        <item>SETTING?</item>
+        <item>SETTING=</item>
         <item>STORE</item>
-        <item>SYSTICK?</item>
+        <item>THRESHOLD=</item>
         <item>THRESHOLD=?</item>
-        <item>THRESHOLD?</item>
+        <item>TIMEOUT=</item>
         <item>TIMEOUT=?</item>
-        <item>TIMEOUT?</item>
         <item>UID=</item>
-        <item>UID?</item>
-        <item>UIDSIZE?</item>
-        <item>VERSION?</item>
     </string-array>
 
 

@@ -1,16 +1,10 @@
 package com.maxieds.chameleonminilivedebugger;
 
-import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import android.app.DownloadManager;
-import android.content.BroadcastReceiver;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.hardware.usb.UsbDevice;
@@ -18,17 +12,14 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -41,35 +32,26 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.ScrollView;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
-import android.widget.TabHost;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_SEARCH;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_TOOLS;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS;
 
 public class LiveLoggerActivity extends AppCompatActivity {
@@ -113,7 +95,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 finish();
                 LiveLoggerActivity.runningActivity.closeSerialPort(serialPort);
                 serialPort = LiveLoggerActivity.runningActivity.configureSerialPort(null, usbReaderCallback);
-                LiveLoggerActivity.runningActivity.setupLiveDeviceStatsDisplay(true);
+                ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
                 //LiveLoggerActivity.runningActivity.sendBroadcast(intent); // permission denied!
                 return;
             }
@@ -149,26 +131,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         tabLayout.getTabAt(TAB_LOG).setIcon(R.drawable.nfc24v1);
         tabLayout.getTabAt(TAB_TOOLS).setIcon(R.drawable.tools24);
         tabLayout.getTabAt(TAB_EXPORT).setIcon(R.drawable.insertbinary24);
-        //tabLayout.getTabAt(TAB_SEARCH).setIcon(R.drawable.searchicon24);
-        tabLayout.getTabAt(TAB_SEARCH).setIcon(R.drawable.searchdisabled24);
-        LinearLayout tabStrip = ((LinearLayout)tabLayout.getChildAt(0));
-        tabStrip.getChildAt(TAB_SEARCH).setClickable(false); // disable search tab for now
-        viewPager.setOnTouchListener(new View.OnTouchListener() {
-                                         private float xdown;
-                                         @Override
-                                         public boolean onTouch(View v, MotionEvent event) {
-                                             if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                                                 xdown = event.getX();
-                                                 return true;
-                                             }
-                                             else if (LiveLoggerActivity.viewPager.getCurrentItem() == TAB_EXPORT && event.getAction() == MotionEvent.ACTION_MOVE && event.getX() - xdown < 0) {
-                                                 LiveLoggerActivity.viewPager.setCurrentItem(TAB_EXPORT - 1, false);
-                                                 LiveLoggerActivity.viewPager.setCurrentItem(TAB_EXPORT, false);
-                                                 return true;
-                                             }
-                                             return false;
-                                         }
-                                     });
+        tabLayout.getTabAt(TAB_LOG_TOOLS).setIcon(R.drawable.logtools24);
 
         String[] permissions = {
                 "android.permission.READ_EXTERNAL_STORAGE",
@@ -181,15 +144,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR); // keep app from crashing when the screen rotates
 
         serialPort = configureSerialPort(null, usbReaderCallback);
-        if(serialPort == null) {
-            ((ImageView) findViewById(R.id.usbConnectionStatus)).setImageDrawable(getResources().getDrawable(R.drawable.usbunplug24));
-        }
 
         // the reader is going to return junk for the settings bar title if we don't pause for a second:
         try {
-            Thread.sleep(1000);
+            Thread.sleep(500);
         } catch(Exception e) {}
-        setupLiveDeviceStatsDisplay(true);
+        ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
 
     }
 
@@ -201,37 +161,14 @@ public class LiveLoggerActivity extends AppCompatActivity {
         else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
             closeSerialPort(serialPort);
             serialPort = configureSerialPort(null, usbReaderCallback);
-            setupLiveDeviceStatsDisplay(true);
+            ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
         }
         else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
-            statsUpdateHandler.removeCallbacks(statsUpdateRunnable);
+            ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
             if(ChameleonIO.WAITING_FOR_RESPONSE)
                 ChameleonIO.WAITING_FOR_RESPONSE = false;
             closeSerialPort(serialPort);
         }
-    }
-
-    private final int STATS_UPDATE_INTERVAL = 4500;
-    private Handler statsUpdateHandler = new Handler();
-    private Runnable statsUpdateRunnable = new Runnable(){
-        public void run() {
-            setupLiveDeviceStatsDisplay(true);
-        }
-    };
-
-    private void setupLiveDeviceStatsDisplay(boolean resetTimer) {
-        String deviceConfig = getSettingFromDevice(serialPort, "CONFIG?");
-        String deviceUID = getSettingFromDevice(serialPort, "UID?");
-        if(deviceUID.equals("NO UID.") || deviceUID.equals("")) {
-            deviceUID = "NO DEVICE UID SET";
-        }
-        else {
-            deviceUID = deviceUID.replaceAll("..(?!$)", "$0:");
-        }
-        TextView tvDeviceStats = (TextView) findViewById(R.id.deviceConfigText);
-        tvDeviceStats.setText(deviceConfig + "\n" + deviceUID);
-        if(resetTimer)
-            statsUpdateHandler.postDelayed(statsUpdateRunnable, STATS_UPDATE_INTERVAL);
     }
 
     public static String getSettingFromDevice(UsbSerialDevice cmPort, String query) {
@@ -378,6 +315,16 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     }
 
+    public void actionButtonClearUserText(View view) {
+        TextView userInputText = (TextView) findViewById(R.id.userInputFormattedBytes);
+        userInputText.setText("");
+        userInputText.setHint("01 23 45 67 89 ab cd ef");
+    }
+
+    public void actionButtonRefreshDeviceStatus(View view) {
+        ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+    }
+
     public void actionButtonClearAllLogs(View view) {
         if(RECORDID > 0) {
             logDataEntries.clear();
@@ -417,32 +364,34 @@ public class LiveLoggerActivity extends AppCompatActivity {
         String msgParam = "";
         if(createCmd.equals("READER")) {
             ChameleonIO.setReaderConfigMode(serialPort, ChameleonIO.TIMEOUT);
-            setupLiveDeviceStatsDisplay(false);
             return;
         }
         else if(createCmd.equals("SNIFFER")) {
             ChameleonIO.setLoggerConfigMode(serialPort, ChameleonIO.TIMEOUT);
-            setupLiveDeviceStatsDisplay(false);
             return;
         }
         else if(createCmd.equals("ULTRALIGHT")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_ULTRALIGHT", ChameleonIO.TIMEOUT);
-            setupLiveDeviceStatsDisplay(false);
             return;
         }
         else if(createCmd.equals("CLASSIC-1K")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_1K", ChameleonIO.TIMEOUT);
-            setupLiveDeviceStatsDisplay(false);
             return;
         }
         else if(createCmd.equals("CLASSIC-4K")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_4K", ChameleonIO.TIMEOUT);
-            setupLiveDeviceStatsDisplay(false);
+            return;
+        }
+        else if(createCmd.equals("CLASSIC-1K7B")) {
+            ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_1K_7B", ChameleonIO.TIMEOUT);
             return;
         }
         else if(createCmd.equals("CLASSIC-4K7B")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_4K_7B", ChameleonIO.TIMEOUT);
-            setupLiveDeviceStatsDisplay(false);
+            return;
+        }
+        else if(createCmd.equals("CFGNONE")) {
+            ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=NONE", ChameleonIO.TIMEOUT);
             return;
         }
         //else if(createCmd.equals("RESET")) {
@@ -465,7 +414,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
             msgParam = userInputStack;
             userInputStack = null;
         }
-        else if(createCmd.equals("LOCAL UID")) {
+        else if(createCmd.equals("GETUID")) {
             String rParam = getSettingFromDevice(serialPort, "GETUID");
             msgParam = "GETUID: " + rParam.replaceAll("..(?!$)", "$0:") + "(" + rParam + ").";
         }
@@ -475,7 +424,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         else if(createCmd.equals("STRENGTH")) {
             msgParam = getSettingFromDevice(serialPort, "RSSI?");
         }
-        else if(createCmd.equals("FIRMWARE")) {
+        else if(createCmd.equals("VERSION")) {
             msgParam = getSettingFromDevice(serialPort, "VERSION?");
         }
         else if(createCmd.equals("IDENTIFY")) {
@@ -558,7 +507,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 else if(isChecked && actionFlag.equals("CLONE_UID")) {
                     String uid = ((LogEntryUI) logDataEntries.get(vi)).getPayloadData();
                     ChameleonIO.executeChameleonMiniCommand(serialPort, "UID=" + uid, ChameleonIO.TIMEOUT);
-                    setupLiveDeviceStatsDisplay(false);
                 }
                 else if(isChecked && actionFlag.equals("PRINT")) {
                     byte[] rawBytes = ((LogEntryUI) logDataEntries.get(vi)).getEntryData();

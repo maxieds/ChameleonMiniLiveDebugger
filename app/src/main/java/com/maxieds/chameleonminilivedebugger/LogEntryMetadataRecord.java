@@ -60,10 +60,10 @@ public class LogEntryMetadataRecord extends LogEntryBase {
         prefixIconMap.put("NEW EVENT", R.drawable.statusicon24);
         prefixIconMap.put("ERROR", R.drawable.erroricon24);
         prefixIconMap.put("CARD INFO", R.drawable.cardicon24);
-        prefixIconMap.put("LOCAL UID", R.drawable.usericon24);
+        prefixIconMap.put("GETUID", R.drawable.usericon24);
         prefixIconMap.put("STRENGTH", R.drawable.signalicon24);
         prefixIconMap.put("CHARGING", R.drawable.batteryicon24);
-        prefixIconMap.put("FIRMWARE", R.drawable.firmwareicon24);
+        prefixIconMap.put("VERSION", R.drawable.firmwareicon24);
         prefixIconMap.put("RSSI", R.drawable.voltageicon24);
         prefixIconMap.put("LOCATION", R.drawable.location24);
         prefixIconMap.put("DOOR", R.drawable.dooricon24);

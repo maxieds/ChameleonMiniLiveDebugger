@@ -17,43 +17,122 @@
         android:layout_width="fill_parent"
         android:orientation="horizontal"
         android:background="#555753"
-        android:layout_marginBottom="0dp">
+        android:layout_marginBottom="0dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="4dp">
 
-        <ImageView android:id="@+id/usbConnectionStatus"
+
+        <GridLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:gravity="left|center_vertical"
-            android:src="@drawable/usbplug24"
-            android:paddingRight="15dp"
-            android:paddingLeft="5dp"/>
-
-        <TextView android:id="@+id/deviceConfigText"
-            android:layout_height="wrap_content"
-            android:layout_width="250dp"
+            android:layout_margin="0dp"
             android:layout_weight="1"
-            android:textSize="15sp"
-            android:textColor="#ffffff"
-            android:textStyle="normal|bold"
-            android:text="DEVICE_CONFIG\n00:00:00:00:00:00:00"/>
+            android:background="#555753"
+            android:columnCount="2"
+            android:padding="0dp"
+            android:rowCount="2">
+
+            <TextView
+                android:id="@+id/deviceConfigText"
+                android:minWidth="125dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#555753"
+                android:text="DEVICE CONFIGURATION"
+                android:textColor="#ffffff"
+                android:textSize="12sp"
+                android:layout_weight="0.42"
+                android:paddingRight="10dp"
+                android:textStyle="normal|bold" />
+
+            <TextView
+                android:id="@+id/deviceStats1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#555753"
+                android:text="MEM / LOG / DIP#"
+                android:textColor="#ffffff"
+                android:textSize="10sp"
+                android:gravity="right"
+                android:layout_weight="0.53"
+                android:textStyle="normal|italic" />
+
+            <TextView
+                android:id="@+id/deviceConfigUID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#555753"
+                android:text="DEVICE UID"
+                android:textColor="#ffffff"
+                android:textSize="12sp"
+                android:paddingRight="10dp"
+                android:textStyle="normal|bold" />
+
+            <TextView
+                android:id="@+id/deviceStats2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#555753"
+                android:text="RO / FLD1 / NOCHRG"
+                android:textColor="#ffffff"
+                android:textSize="10sp"
+                android:gravity="right"
+                android:textStyle="normal|italic" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#555753" />
+
+            <TextView
+                android:id="@+id/deviceStats3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#555753"
+                android:text="THRES / TMOUT"
+                android:textColor="#ffffff"
+                android:textSize="10sp"
+                android:gravity="right"
+                android:textStyle="normal|italic" />
+
+        </GridLayout>
 
         <Button
-            android:layout_width="wrap_content"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="25dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:drawableLeft="@drawable/tagwriter24"
-            android:drawablePadding="4dp"
-            android:onClick="actionButtonAboutTheApp"
-            android:gravity="left|center_vertical"
-            android:text="ABOUT" />
+            android:drawableLeft="@drawable/refresh24"
+            android:drawablePadding="10dp"
+            android:layout_marginLeft="5dp"
+            android:onClick="actionButtonRefreshDeviceStatus"
+            android:background="#555753"
+            android:elevation="0dp"
+            android:gravity="left|center_vertical"/>
 
         <Button
-            android:layout_width="50dp"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="25dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:drawableLeft="@drawable/info24"
+            android:drawablePadding="10dp"
+            android:layout_marginLeft="5dp"
+            android:onClick="actionButtonAboutTheApp"
+            android:textColor="#ffffff"
+            android:background="#555753"
+            android:gravity="left|center_vertical" />
+
+        <Button
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="25dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:drawableLeft="@drawable/closeicon24"
-            android:drawablePadding="4dp"
+            android:drawablePadding="6dp"
+            android:layout_marginLeft="5dp"
             android:onClick="actionButtonExit"
+            android:background="#555753"
             android:gravity="left|center_vertical"/>
 
     </LinearLayout>

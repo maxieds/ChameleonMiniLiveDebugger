@@ -8,15 +8,13 @@ import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
-import android.widget.TextView;
-
-import java.util.Arrays;
+import android.widget.Switch;
 
 import static android.content.ContentValues.TAG;
 
@@ -29,8 +27,8 @@ public class TabFragment extends Fragment {
     public static final String ARG_PAGE = "ARG_PAGE";
     public static final int TAB_LOG = 0;
     public static final int TAB_TOOLS = 1;
-    public static final int TAB_EXPORT = 2;
-    public static final int TAB_SEARCH = 3;
+    public static final int TAB_LOG_TOOLS = 2;
+    public static final int TAB_EXPORT = 3;
     public static boolean CFG_SPINNERS = false;
 
     private int tabNumber;
@@ -54,8 +52,8 @@ public class TabFragment extends Fragment {
             case TAB_EXPORT:
                 fragment.layoutResRef = R.layout.export_tab;
                 break;
-            case TAB_SEARCH:
-                fragment.layoutResRef = R.layout.search_tab;
+            case TAB_LOG_TOOLS:
+                fragment.layoutResRef = R.layout.log_tools_tab;
                 break;
             default:
                 break;
@@ -147,6 +145,23 @@ public class TabFragment extends Fragment {
             connectPeripheralSpinnerAdapter(view, R.id.LEDGreenSpinner, R.array.LEDGreenOptions, LiveLoggerActivity.spinnerLEDGreenAdapter, "LEDGREEN?");
             connectPeripheralSpinnerAdapter(view, R.id.LogModeSpinner, R.array.LogModeOptions, LiveLoggerActivity.spinnerLogModeAdapter, "LOGMODE?");
             connectCommandListSpinnerAdapter(view, R.id.FullCmdListSpinner, R.array.FullCommandList, LiveLoggerActivity.spinnerCmdShellAdapter, "");
+
+            Switch fieldSwitch = (Switch) view.findViewById(R.id.fieldOnOffSwitch);
+            fieldSwitch.setChecked(ChameleonIO.deviceStatus.FIELD);
+            fieldSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "FIELD=" + (isChecked ? "1" : "0"), ChameleonIO.TIMEOUT);
+                }
+            });
+
+
+            Switch roSwitch = (Switch) view.findViewById(R.id.readonlyOnOffSwitch);
+            roSwitch.setChecked(ChameleonIO.deviceStatus.READONLY);
+            roSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "READONLY=" + (isChecked ? "1" : "0"), ChameleonIO.TIMEOUT);
+                }
+            });
         }
         fragActive = true;
         return inflatedView;
