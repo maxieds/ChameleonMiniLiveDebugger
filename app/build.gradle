@@ -6,8 +6,8 @@ android {
         applicationId "com.maxieds.chameleonminilivedebugger"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 10
-        versionName "0.1.0"
+        versionCode 11
+        versionName "0.1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -17,6 +17,7 @@ android {
         }
     }
     buildToolsVersion '27.0.3'
+
 }
 
 dependencies {
@@ -29,7 +30,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.4.0'
     compile 'com.android.support:design:25.4.0'
     compile 'com.github.felHR85:UsbSerial:4.5'
-    compile 'com.github.2efPer:Zmodem-in-Java:-SNAPSHOT'
+    //compile 'com.github.aesirot:ymodem:1b4fb33733'
+    //classpath 'com.chaquo.python:gradle:1.2.0'
 }
 
 repositories {
@@ -39,4 +41,5 @@ repositories {
         url "https://maven.google.com"
     }
     maven { url "https://jitpack.io" }
+    maven { url "https://chaquo.com/maven" }
 }

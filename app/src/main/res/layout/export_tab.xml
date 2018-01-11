@@ -128,18 +128,21 @@
             style="@style/GridButtons"
             android:drawableLeft="@drawable/logdownload"
             android:tag="LOGDOWNLOAD"
+            android:onClick="actionButtonExportLogDownload"
             android:text="LogDL to File" />
 
         <Button
             style="@style/GridButtons"
             android:drawableLeft="@drawable/logdownload2"
             android:tag="LOGDOWNLOAD2LIVE"
+            android:onClick="actionButtonExportLogDownload"
             android:text="LogDL to Live" />
 
         <Button
             style="@style/GridButtons"
             android:drawableLeft="@drawable/uploaddownload24"
             android:tag="DOWNLOAD"
+            android:onClick="actionButtonExportLogDownload"
             android:text="DL Card" />
 
     </GridLayout>

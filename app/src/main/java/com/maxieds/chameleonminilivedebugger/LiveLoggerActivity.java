@@ -111,10 +111,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     intentAction.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
                 Log.w(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead of re-launching.");
                 finish();
-                LiveLoggerActivity.runningActivity.closeSerialPort();
-                LiveLoggerActivity.runningActivity.configureSerialPort(null);
+                LiveLoggerActivity.runningActivity.closeSerialPort(serialPort);
+                serialPort = LiveLoggerActivity.runningActivity.configureSerialPort(null, usbReaderCallback);
                 LiveLoggerActivity.runningActivity.setupLiveDeviceStatsDisplay(true);
-                //LiveLoggerActivity.runningActivity.sendBroadcast(intent);
+                //LiveLoggerActivity.runningActivity.sendBroadcast(intent); // permission denied!
                 return;
             }
         }
@@ -180,7 +180,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
             requestPermissions(permissions, 200);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR); // keep app from crashing when the screen rotates
 
-        configureSerialPort(null);
+        serialPort = configureSerialPort(null, usbReaderCallback);
         if(serialPort == null) {
             ((ImageView) findViewById(R.id.usbConnectionStatus)).setImageDrawable(getResources().getDrawable(R.drawable.usbunplug24));
         }
@@ -199,15 +199,15 @@ public class LiveLoggerActivity extends AppCompatActivity {
         if(intent == null)
             return;
         else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
-            closeSerialPort();
-            configureSerialPort(null);
+            closeSerialPort(serialPort);
+            serialPort = configureSerialPort(null, usbReaderCallback);
             setupLiveDeviceStatsDisplay(true);
         }
         else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
             statsUpdateHandler.removeCallbacks(statsUpdateRunnable);
             if(ChameleonIO.WAITING_FOR_RESPONSE)
                 ChameleonIO.WAITING_FOR_RESPONSE = false;
-            closeSerialPort();
+            closeSerialPort(serialPort);
         }
     }
 
@@ -252,10 +252,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
         return ChameleonIO.DEVICE_RESPONSE;
     }
 
-    public void configureSerialPort(View view) {
+    public UsbSerialDevice configureSerialPort(UsbSerialDevice serialPort, UsbSerialInterface.UsbReadCallback readerCallback) {
 
         if(serialPort != null)
-            closeSerialPort();
+            closeSerialPort(serialPort);
 
         UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         UsbDevice device = null;
@@ -277,7 +277,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         if(device == null || connection == null) {
             appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB STATUS: ", "Connection to device unavailable."));
             serialPort = null;
-            return;
+            return serialPort;
         }
         serialPort = UsbSerialDevice.createUsbSerialDevice(device, connection);
         if(serialPort != null && serialPort.open()) {
@@ -286,12 +286,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
             serialPort.setStopBits(UsbSerialInterface.STOP_BITS_1);
             serialPort.setParity(UsbSerialInterface.PARITY_NONE);
             serialPort.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF);
-            serialPort.read(usbReaderCallback);
+            serialPort.read(readerCallback);
         }
         else {
             appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB ERROR: ", "Unable to configure serial device."));
             serialPort = null;
-            return;
+            return serialPort;
         }
 
         ChameleonIO.setLoggerConfigMode(serialPort, ChameleonIO.TIMEOUT);
@@ -299,10 +299,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
         ChameleonIO.enableLiveDebugging(serialPort, ChameleonIO.TIMEOUT);
         ChameleonIO.PAUSED = false;
         appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB STATUS: ", "Successfully configured the device in passive logging mode."));
+        return serialPort;
 
     }
 
-    private boolean closeSerialPort() {
+    private boolean closeSerialPort(UsbSerialDevice serialPort) {
         if(serialPort != null)
             serialPort.close();
         ChameleonIO.PAUSED = true;
@@ -314,16 +315,16 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
         @Override
         public void onReceivedData(byte[] liveLogData) {
-            if(ChameleonIO.WAITING_FOR_RESPONSE) {
+            if(ChameleonIO.PAUSED) {
+                //appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB RESPONSE: ", Utils.bytes2Hex(liveLogData) + " | " + Utils.bytes2Ascii(liveLogData)));
+                //ChameleonIO.PAUSED = false;
+                return;
+            }
+            else if(ChameleonIO.WAITING_FOR_RESPONSE) {
                 String strLogData = new String(liveLogData);
                 ChameleonIO.DEVICE_RESPONSE_CODE = strLogData.split("[\n\r]+")[0];
                 ChameleonIO.DEVICE_RESPONSE = strLogData.replace(ChameleonIO.DEVICE_RESPONSE_CODE, "").replaceAll("[\n\r\t]*", "");
                 ChameleonIO.WAITING_FOR_RESPONSE = false;
-                return;
-            }
-            else if(ChameleonIO.PAUSED) {
-                appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB RESPONSE: ", Utils.bytes2Hex(liveLogData) + " | " + Utils.bytes2Ascii(liveLogData)));
-                ChameleonIO.PAUSED = false;
                 return;
             }
             final LogEntryUI nextLogEntry = LogEntryUI.newInstance(liveLogData, "");
@@ -341,7 +342,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
     };
 
     public void actionButtonExit(View view) {
-        closeSerialPort();
+        closeSerialPort(serialPort);
         Intent intent = new Intent();
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("EXIT", true);
@@ -757,6 +758,16 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
         fout.close();
         return true;
+    }
+
+    public void actionButtonExportLogDownload(View view) {
+        String action = ((Button) view).getTag().toString();
+        if(action.equals("LOGDOWNLOAD"))
+            ExportTools.downloadByZModem("LOGDOWNLOAD", "devicelog", false);
+        else if(action.equals("LOGDOWNLOAD2LIVE"))
+            ExportTools.downloadByZModem("LOGDOWNLOAD", "devicelog", true);
+        else if(action.equals("DOWNLOAD"))
+            ExportTools.downloadByZModem("DOWNLOAD", "carddata", false);
     }
 
 }

@@ -5,4 +5,5 @@
     <color name="colorAccent">#91cb3b</color>
     <color name="colorPrimaryDarkLog">#6eb703</color>
     <color name="colorAccentLog">#cfe8a9</color>
+    <color name="deviceMemoryLogHighlight">#EF2929</color>
 </resources>
