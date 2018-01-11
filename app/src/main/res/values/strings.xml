@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Chameleon Mini Live Debugger</string>
-    <string name="aboutapp">This application is copyright (&lt;i>© 2017-2018&lt;/i>) and developed in the free time of its author Maxie D. Schmidt (&lt;a href="mailto:maxieds@gmail.com">maxieds@gmail.com&lt;/a>). &lt;br/>&lt;br/>
-        For all intensive reasonable non-commercial applications this app is free to use and modify provided a link to the original project webpage and the author information remain intact in the revisions: &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger">https://github.com/maxieds/ChameleonMiniLiveDebugger&lt;/a> (Call it GPL-like).&lt;br/>&lt;br/>
-        Documentation for the app is found on the project webpage, though most of the buttons are self explanatory after some mild tinkering (which is of course encouraged in this sort of application). Testing data, feedback, and future feature requests can all be issued &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger/issues">here&lt;/a> in official form.&lt;br/>&lt;br/>
+    <string name="aboutapp">This application is copyright (&lt;i>© 2017-2018&lt;/i>) and developed in the free time of its author Maxie D. Schmidt (&lt;a href="mailto:maxieds@gmail.com">maxieds@gmail.com&lt;/a>). The current Android version of the application is &lt;b>&lt;i>version %%ANDROID_VERSION_CODE%%&lt;/i>&lt;/b> (&lt;b>&lt;i>revision %%ANDROID_VERSION_NAME%%&lt;/i>&lt;/b>).&lt;br/>&lt;br/>
+        &lt;b>&lt;u>Licensing&lt;/u>&lt;/b>: For all intensive reasonable non-commercial applications this app is free to use and modify provided a link to the original project webpage and the author information remain intact in the revisions: &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger">https://github.com/maxieds/ChameleonMiniLiveDebugger&lt;/a> (Call it GPL-like).&lt;br/>&lt;br/>
+        &lt;b>&lt;u>Support&lt;/u>&lt;/b>: Documentation for the app is found on the project webpage, though most of the buttons are self explanatory after some mild tinkering (which is of course encouraged in this sort of application). Testing data, feedback, and future feature requests can all be issued &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger/issues">here&lt;/a> in official form.&lt;br/>&lt;br/>
         &lt;b>&lt;u>Credits&lt;/u>&lt;/b>: The pretty freeware icons used by the app were obtained from &lt;a href="flaticon.com">flaticon.com&lt;/a> and their lovely sized transparent PNG conversions of these images. &lt;br/>&lt;br/>
         &lt;b>&lt;u>Donations&lt;/u>&lt;/b>: If you find this application particularly useful, the author requests donations in the form of more Chameleon Mini and other related hardware in place of cash transactions (see &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger/issues/3">issue #3&lt;/a>).</string>
 
@@ -163,8 +163,7 @@
         <item>UID=</item>
         <item>UID?</item>
         <item>UIDSIZE?</item>
-        <item>UPGRADE</item>
-        <item>VERSION</item>
+        <item>VERSION?</item>
     </string-array>
 
 

@@ -25,11 +25,11 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    compile 'com.github.felHR85:UsbSerial:4.5'
     compile 'com.android.support:support-v4:25.4.0'
     compile 'com.android.support:appcompat-v7:25.4.0'
     compile 'com.android.support:design:25.4.0'
-    //compile 'com.android.support:gridlayout-v7:25.4.0'
+    compile 'com.github.felHR85:UsbSerial:4.5'
+    compile 'com.github.2efPer:Zmodem-in-Java:-SNAPSHOT'
 }
 
 repositories {

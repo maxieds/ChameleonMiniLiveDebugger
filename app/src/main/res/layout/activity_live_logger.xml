@@ -1,27 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.maxieds.chameleonminilivedebugger.LiveLoggerActivity">
 
-    <Toolbar
-        android:id="@+id/app_toolbar"
-        android:title="@string/app_name"
-        android:subtitle="Portable logging interface for the ChameleonMini rev. g boards"
-        android:logo="@drawable/chameleonicon64"
-        android:layout_width="fill_parent"
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#ffffff" />
+
+    <LinearLayout
         android:layout_height="wrap_content"
-        android:visible="true"
+        android:layout_width="fill_parent"
         android:orientation="horizontal"
-        android:background="@color/colorPrimaryDark"
-        />
+        android:background="#555753"
+        android:layout_marginBottom="0dp">
+
+        <ImageView android:id="@+id/usbConnectionStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="left|center_vertical"
+            android:src="@drawable/usbplug24"
+            android:paddingRight="15dp"
+            android:paddingLeft="5dp"/>
+
+        <TextView android:id="@+id/deviceConfigText"
+            android:layout_height="wrap_content"
+            android:layout_width="250dp"
+            android:layout_weight="1"
+            android:textSize="15sp"
+            android:textColor="#ffffff"
+            android:textStyle="normal|bold"
+            android:text="DEVICE_CONFIG\n00:00:00:00:00:00:00"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:drawableLeft="@drawable/tagwriter24"
+            android:drawablePadding="4dp"
+            android:onClick="actionButtonAboutTheApp"
+            android:gravity="left|center_vertical"
+            android:text="ABOUT" />
+
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:drawableLeft="@drawable/closeicon24"
+            android:drawablePadding="4dp"
+            android:onClick="actionButtonExit"
+            android:gravity="left|center_vertical"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#ffffff" />
 
     <LinearLayout
         style="@style/AppTheme"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="500dp"
+        android:layout_weight="1"
         android:background="@color/colorPrimary"
         android:orientation="vertical">
 
@@ -106,4 +152,4 @@
 
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

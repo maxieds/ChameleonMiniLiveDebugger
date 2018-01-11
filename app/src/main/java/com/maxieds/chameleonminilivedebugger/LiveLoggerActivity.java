@@ -1,5 +1,6 @@
 package com.maxieds.chameleonminilivedebugger;
 
+import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
@@ -9,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.hardware.usb.UsbDevice;
@@ -17,6 +19,7 @@ import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.Looper;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentActivity;
@@ -25,6 +28,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -43,6 +47,7 @@ import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TabHost;
+import android.widget.TextView;
 import android.widget.Toolbar;
 
 import com.felhr.usbserial.UsbSerialDevice;
@@ -97,19 +102,22 @@ public class LiveLoggerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         // fix bug where the tabs are blank when the application is relaunched:
-        /*if(!isTaskRoot()) {
+        if(!isTaskRoot()) {
             final Intent intent = getIntent();
             final String intentAction = intent.getAction();
             if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && intentAction != null && intentAction.equals(Intent.ACTION_MAIN)) {
                 Log.w(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead of re-launching.");
-                finish();
                 configureSerialPort(null);
-                return;
             }
-        }*/
+        }
+
+        super.onCreate(savedInstanceState);
+        if (getIntent().getBooleanExtra("EXIT", false)) {
+            finish();
+            return;
+        }
 
         runningActivity = this;
-        super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.activity_live_logger);
 
@@ -119,7 +127,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle(R.string.app_name);
-        actionBar.setSubtitle("Portable logging interface");
+        actionBar.setSubtitle("Portable logging interface v" + String.valueOf(BuildConfig.VERSION_NAME));
         actionBar.setDisplayUseLogoEnabled(true);
         actionBar.setIcon(R.drawable.chameleonlogo24);
         actionBar.setDisplayShowHomeEnabled(true);
@@ -158,15 +166,42 @@ public class LiveLoggerActivity extends AppCompatActivity {
         String[] permissions = {
                 "android.permission.READ_EXTERNAL_STORAGE",
                 "android.permission.WRITE_EXTERNAL_STORAGE",
-                "android.permission.INTERNET"
+                "android.permission.INTERNET",
+                "com.android.example.USB_PERMISSION"
         };
         if(android.os.Build.VERSION.SDK_INT >= 23)
             requestPermissions(permissions, 200);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR); // keep app from crashing when the screen rotates
 
         configureSerialPort(null);
-        //configureSerialPortSyncronous(null);
+        if(serialPort == null) {
+            ((ImageView) findViewById(R.id.usbConnectionStatus)).setImageDrawable(getResources().getDrawable(R.drawable.usbunplug24));
+        }
 
+        setupLiveDeviceStatsDisplay();
+
+    }
+
+    private final int STATS_UPDATE_INTERVAL = 4500;
+    private Handler statsUpdateHandler = new Handler();
+    private Runnable statsUpdateRunnable = new Runnable(){
+        public void run() {
+            setupLiveDeviceStatsDisplay();
+        }
+    };
+
+    private void setupLiveDeviceStatsDisplay() {
+        String deviceConfig = getSettingFromDevice(serialPort, "CONFIG?");
+        String deviceUID = getSettingFromDevice(serialPort, "UID?");
+        if(deviceUID.equals("NO UID.")) {
+            deviceUID = "NO DEVICE UID SET";
+        }
+        else {
+            deviceUID = deviceUID.replaceAll("..(?!$)", "$0:");
+        }
+        TextView tvDeviceStats = (TextView) findViewById(R.id.deviceConfigText);
+        tvDeviceStats.setText(deviceConfig + "\n" + deviceUID);
+        statsUpdateHandler.postDelayed(statsUpdateRunnable, STATS_UPDATE_INTERVAL);
     }
 
     public static String getSettingFromDevice(UsbSerialDevice cmPort, String query) {
@@ -273,6 +308,14 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     };
 
+    public void actionButtonExit(View view) {
+        closeSerialPort();
+        Intent intent = new Intent();
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("EXIT", true);
+        startActivity(intent);
+    }
+
     public void actionButtonRestorePeripheralDefaults(View view) {
             if (LiveLoggerActivity.serialPort != null) {
                 // next, query the defaults from the device to get accurate settings (if the device is connected):
@@ -322,7 +365,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
             return;
         }
         else if(createCmd.equals("ULTRALIGHT")) {
-            ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_ULTRLAIGHT", ChameleonIO.TIMEOUT);
+            ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_ULTRALIGHT", ChameleonIO.TIMEOUT);
             return;
         }
         else if(createCmd.equals("CLASSIC-1K")) {
@@ -477,7 +520,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     public void actionButtonAboutTheApp(View view) {
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this, R.style.SpinnerTheme);
-        builder1.setMessage(Html.fromHtml(getString(R.string.aboutapp), Html.FROM_HTML_MODE_LEGACY));
+        String rawAboutStr = getString(R.string.aboutapp);
+        rawAboutStr = rawAboutStr.replace("%%ANDROID_VERSION_CODE%%", String.valueOf(BuildConfig.VERSION_CODE));
+        rawAboutStr = rawAboutStr.replace("%%ANDROID_VERSION_NAME%%", String.valueOf(BuildConfig.VERSION_NAME));
+        builder1.setMessage(Html.fromHtml(rawAboutStr, Html.FROM_HTML_MODE_LEGACY));
         builder1.setCancelable(true);
         builder1.setTitle("About the Application:");
         builder1.setIcon(R.drawable.olben64);

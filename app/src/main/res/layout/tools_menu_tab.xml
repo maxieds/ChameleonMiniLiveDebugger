@@ -79,111 +79,6 @@
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="CLASSIC-4K7B" />
 
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/clearicon24"
-                    android:onClick="actionButtonClearAllLogs"
-                    android:text="Clear All" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/uncheckicon24"
-                    android:onClick="actionButtonUncheckAll"
-                    android:text="UNCHECK ALL" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/tagwriter24"
-                    android:onClick="actionButtonAboutTheApp"
-                    android:text="ABOUT APP" />
-
-            </GridLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/colorPrimaryDark" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimaryDarkLog"
-                android:drawableLeft="@drawable/infobubble16"
-                android:drawablePadding="5dp"
-                android:singleLine="true"
-                android:text="Annotate logs:"
-                android:textAllCaps="true"
-                android:textStyle="bold|italic" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/colorPrimaryDark" />
-
-            <GridLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="1dp"
-                android:background="@color/colorAccentLog"
-                android:columnCount="3"
-                android:padding="2dp"
-                android:rowCount="10">
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/msgbubble24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="STATUS" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/statusicon24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="NEW EVENT" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/erroricon24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="ERROR" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/cardicon24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="CARD INFO" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/location24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="LOCATION" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/dooricon24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="DOOR" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/vending24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="VENDING" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/phone24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="PHONE" />
-
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/powaction24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="ONCLICK" />
-
             </GridLayout>
 
             <TextView
@@ -504,17 +399,15 @@
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/wifibc24"
-                    android:onClick="actionButtonProcessBatch"
-                    android:tag="SEND"
-                    android:text="SEND Data" />
+                    android:drawableLeft="@drawable/clearicon24"
+                    android:onClick="actionButtonClearAllLogs"
+                    android:text="Clear All" />
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/broadcastantenna24"
-                    android:onClick="actionButtonProcessBatch"
-                    android:tag="SEND_RAW"
-                    android:text="SEND_RAW" />
+                    android:drawableLeft="@drawable/uncheckicon24"
+                    android:onClick="actionButtonUncheckAll"
+                    android:text="UNCHECK ALL" />
 
                 <Button
                     style="@style/GridButtons"
@@ -643,6 +536,93 @@
                     android:onClick="actionButtonSelectedHighlight"
                     android:tag="#ffca2b" />
 
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/colorPrimaryDark" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/infobubble16"
+                android:drawablePadding="5dp"
+                android:singleLine="true"
+                android:text="Annotate logs:"
+                android:textAllCaps="true"
+                android:textStyle="bold|italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="@color/colorAccentLog"
+                android:columnCount="3"
+                android:padding="2dp"
+                android:rowCount="10">
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/msgbubble24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="STATUS" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/statusicon24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="NEW EVENT" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/erroricon24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="ERROR" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/cardicon24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="CARD INFO" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/location24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="LOCATION" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/dooricon24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="DOOR" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/vending24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="VENDING" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/phone24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="PHONE" />
+
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/powaction24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="ONCLICK" />
 
             </GridLayout>
 
