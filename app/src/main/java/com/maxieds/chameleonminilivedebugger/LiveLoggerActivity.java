@@ -103,16 +103,22 @@ public class LiveLoggerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         // fix bug where the tabs are blank when the application is relaunched:
+        super.onCreate(savedInstanceState);
         if(!isTaskRoot()) {
             final Intent intent = getIntent();
             final String intentAction = intent.getAction();
-            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && intentAction != null && intentAction.equals(Intent.ACTION_MAIN)) {
+            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && intentAction != null && intentAction.equals(Intent.ACTION_MAIN) ||
+                    intentAction.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
                 Log.w(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead of re-launching.");
-                configureSerialPort(null);
+                finish();
+                LiveLoggerActivity.runningActivity.closeSerialPort();
+                LiveLoggerActivity.runningActivity.configureSerialPort(null);
+                LiveLoggerActivity.runningActivity.setupLiveDeviceStatsDisplay(true);
+                //LiveLoggerActivity.runningActivity.sendBroadcast(intent);
+                return;
             }
         }
 
-        super.onCreate(savedInstanceState);
         if (getIntent().getBooleanExtra("EXIT", false)) {
             finish();
             return;
@@ -181,10 +187,28 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
         // the reader is going to return junk for the settings bar title if we don't pause for a second:
         try {
-            Thread.sleep(1500);
+            Thread.sleep(1000);
         } catch(Exception e) {}
         setupLiveDeviceStatsDisplay(true);
 
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if(intent == null)
+            return;
+        else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
+            closeSerialPort();
+            configureSerialPort(null);
+            setupLiveDeviceStatsDisplay(true);
+        }
+        else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
+            statsUpdateHandler.removeCallbacks(statsUpdateRunnable);
+            if(ChameleonIO.WAITING_FOR_RESPONSE)
+                ChameleonIO.WAITING_FOR_RESPONSE = false;
+            closeSerialPort();
+        }
     }
 
     private final int STATS_UPDATE_INTERVAL = 4500;
@@ -198,7 +222,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
     private void setupLiveDeviceStatsDisplay(boolean resetTimer) {
         String deviceConfig = getSettingFromDevice(serialPort, "CONFIG?");
         String deviceUID = getSettingFromDevice(serialPort, "UID?");
-        if(deviceUID.equals("NO UID.")) {
+        if(deviceUID.equals("NO UID.") || deviceUID.equals("")) {
             deviceUID = "NO DEVICE UID SET";
         }
         else {
@@ -212,6 +236,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     public static String getSettingFromDevice(UsbSerialDevice cmPort, String query) {
         ChameleonIO.WAITING_FOR_RESPONSE = true;
+        ChameleonIO.DEVICE_RESPONSE = "";
         ChameleonIO.SerialRespCode rcode = ChameleonIO.executeChameleonMiniCommand(cmPort, query, ChameleonIO.TIMEOUT);
         for(int i = 1; i < 15; i++) {
             if(!ChameleonIO.WAITING_FOR_RESPONSE)
@@ -219,7 +244,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
             try {
                 Thread.sleep(50);
             } catch(InterruptedException ie) {
-                break;
+                ChameleonIO.WAITING_FOR_RESPONSE = false;
+                return "";
             }
         }
         //appendNewLog(new LogEntryMetadataRecord(defaultInflater, "INFO: Device query of " + query + " returned status " + ChameleonIO.DEVICE_RESPONSE_CODE, ChameleonIO.DEVICE_RESPONSE));

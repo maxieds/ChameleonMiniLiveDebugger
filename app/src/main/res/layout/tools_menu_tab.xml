@@ -281,7 +281,7 @@
                     android:gravity="right|center_vertical"
                     android:popupBackground="#98fb98" />
 
-                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/rbutton24" />
+                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/circlebutton32" />
                 <Spinner
                     android:id="@+id/RButtonSpinner"
                     android:layout_width="300dp"
@@ -293,7 +293,7 @@
                     android:gravity="right|center_vertical"
                     android:popupBackground="#98fb98" />
 
-                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/rightbutton24" />
+                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/squarebutton32" />
                 <Spinner
                     android:id="@+id/RButtonLongSpinner"
                     android:layout_width="300dp"
@@ -305,7 +305,7 @@
                     android:gravity="right|center_vertical"
                     android:popupBackground="#98fb98" />
 
-                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/lbutton24" />
+                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/rectbutton32" />
                 <Spinner
                     android:id="@+id/LButtonSpinner"
                     android:layout_width="300dp"
@@ -317,7 +317,7 @@
                     android:gravity="right|center_vertical"
                     android:popupBackground="#98fb98" />
 
-                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/leftbutton24" />
+                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/twocircbutton32" />
                 <Spinner
                     android:id="@+id/LButtonLongSpinner"
                     android:layout_width="300dp"

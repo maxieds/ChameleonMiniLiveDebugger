@@ -36,6 +36,7 @@ public class TabFragment extends Fragment {
     private int tabNumber;
     private int layoutResRef;
     private View inflatedView;
+    private boolean fragActive;
 
     public static TabFragment newInstance(int page) {
         Bundle args = new Bundle();
@@ -59,6 +60,7 @@ public class TabFragment extends Fragment {
             default:
                 break;
         }
+        fragment.fragActive = false;
         return fragment;
     }
 
@@ -146,7 +148,13 @@ public class TabFragment extends Fragment {
             connectPeripheralSpinnerAdapter(view, R.id.LogModeSpinner, R.array.LogModeOptions, LiveLoggerActivity.spinnerLogModeAdapter, "LOGMODE?");
             connectCommandListSpinnerAdapter(view, R.id.FullCmdListSpinner, R.array.FullCommandList, LiveLoggerActivity.spinnerCmdShellAdapter, "");
         }
+        fragActive = true;
         return inflatedView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        fragActive = false;
     }
 
 
