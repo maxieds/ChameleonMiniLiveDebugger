@@ -138,7 +138,7 @@ public class ChameleonIO {
     }
 
     public static SerialRespCode executeChameleonMiniCommand(UsbSerialDevice cmPort, String rawCmd, int timeout) {
-        if(cmPort == null)
+        if(cmPort == null || PAUSED)
             return FALSE;
         if(timeout < 0) {
             timeout *= -1;

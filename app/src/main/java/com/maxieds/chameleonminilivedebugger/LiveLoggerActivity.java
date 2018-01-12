@@ -169,24 +169,20 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 ChameleonIO.WAITING_FOR_RESPONSE = false;
             closeSerialPort(serialPort);
         }
-        else if(intent.getAction().equals("Intent.FLAG_ACTIVITY_CLEAR_TOP") && intent.getBooleanExtra("EXIT", true)) {
-            finish();
-            return;
-        }
     }
 
     public static String getSettingFromDevice(UsbSerialDevice cmPort, String query) {
         ChameleonIO.WAITING_FOR_RESPONSE = true;
-        ChameleonIO.DEVICE_RESPONSE = "";
+        ChameleonIO.DEVICE_RESPONSE = "0";
         ChameleonIO.SerialRespCode rcode = ChameleonIO.executeChameleonMiniCommand(cmPort, query, ChameleonIO.TIMEOUT);
-        for(int i = 1; i < 15; i++) {
+        for(int i = 0; i < ChameleonIO.TIMEOUT / 50; i++) {
             if(!ChameleonIO.WAITING_FOR_RESPONSE)
                 break;
             try {
                 Thread.sleep(50);
             } catch(InterruptedException ie) {
                 ChameleonIO.WAITING_FOR_RESPONSE = false;
-                return "";
+                return null;
             }
         }
         //appendNewLog(new LogEntryMetadataRecord(defaultInflater, "INFO: Device query of " + query + " returned status " + ChameleonIO.DEVICE_RESPONSE_CODE, ChameleonIO.DEVICE_RESPONSE));
@@ -244,7 +240,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     }
 
-    private boolean closeSerialPort(UsbSerialDevice serialPort) {
+    public boolean closeSerialPort(UsbSerialDevice serialPort) {
         if(serialPort != null)
             serialPort.close();
         ChameleonIO.PAUSED = true;
@@ -252,7 +248,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
     }
 
     // this is what's going to get called when the LIVE config spontaneously prints its log data to console:
-    private UsbSerialInterface.UsbReadCallback usbReaderCallback = new UsbSerialInterface.UsbReadCallback() {
+    public UsbSerialInterface.UsbReadCallback usbReaderCallback = new UsbSerialInterface.UsbReadCallback() {
 
         @Override
         public void onReceivedData(byte[] liveLogData) {
@@ -263,6 +259,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
             }
             else if(ChameleonIO.WAITING_FOR_RESPONSE) {
                 String strLogData = new String(liveLogData);
+                Log.i(TAG, strLogData);
                 ChameleonIO.DEVICE_RESPONSE_CODE = strLogData.split("[\n\r]+")[0];
                 ChameleonIO.DEVICE_RESPONSE = strLogData.replace(ChameleonIO.DEVICE_RESPONSE_CODE, "").replaceAll("[\n\r\t]*", "");
                 ChameleonIO.WAITING_FOR_RESPONSE = false;
@@ -276,8 +273,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     }
                 });
             }
-            //else
-            //    appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB ERROR: ", "Invalid raw log data sent by device."));
         }
 
     };
@@ -728,11 +723,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public void actionButtonExportLogDownload(View view) {
         String action = ((Button) view).getTag().toString();
         if(action.equals("LOGDOWNLOAD"))
-            ExportTools.downloadByZModem("LOGDOWNLOAD", "devicelog", false);
+            ExportTools.downloadByXModem("LOGDOWNLOAD", "devicelog", false);
         else if(action.equals("LOGDOWNLOAD2LIVE"))
-            ExportTools.downloadByZModem("LOGDOWNLOAD", "devicelog", true);
+            ExportTools.downloadByXModem("LOGDOWNLOAD", "devicelog", true);
         else if(action.equals("DOWNLOAD"))
-            ExportTools.downloadByZModem("DOWNLOAD", "carddata", false);
+            ExportTools.downloadByXModem("DOWNLOAD", "carddata", false);
     }
 
 }

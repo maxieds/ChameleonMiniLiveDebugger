@@ -159,7 +159,7 @@
         android:drawableLeft="@drawable/todo16"
         android:drawablePadding="5dp"
         android:singleLine="true"
-        android:text="TODO / wishlist features to implement later:"
+        android:text="TODO / wishlist features for later:"
         android:textSize="14sp"
         android:textAllCaps="true"
         android:textStyle="bold|italic" />
