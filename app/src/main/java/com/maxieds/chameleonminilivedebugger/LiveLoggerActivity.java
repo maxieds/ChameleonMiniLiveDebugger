@@ -169,6 +169,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 ChameleonIO.WAITING_FOR_RESPONSE = false;
             closeSerialPort(serialPort);
         }
+        else if(intent.getAction().equals("Intent.FLAG_ACTIVITY_CLEAR_TOP") && intent.getBooleanExtra("EXIT", true)) {
+            finish();
+            return;
+        }
     }
 
     public static String getSettingFromDevice(UsbSerialDevice cmPort, String query) {
@@ -279,11 +283,13 @@ public class LiveLoggerActivity extends AppCompatActivity {
     };
 
     public void actionButtonExit(View view) {
+        ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
         closeSerialPort(serialPort);
-        Intent intent = new Intent();
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra("EXIT", true);
-        startActivity(intent);
+        finish();
+        //Intent intent = new Intent();
+        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //intent.putExtra("EXIT", true);
+        //this.sendBroadcast(intent);
     }
 
     public void actionButtonRestorePeripheralDefaults(View view) {
@@ -394,11 +400,14 @@ public class LiveLoggerActivity extends AppCompatActivity {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=NONE", ChameleonIO.TIMEOUT);
             return;
         }
-        //else if(createCmd.equals("RESET")) {
-        //    ChameleonIO.executeChameleonMiniCommand(serialPort, "RESET", ChameleonIO.TIMEOUT);
-        //    configureSerialPort(null);
-        //    return;
-        //}
+        else if(createCmd.equals("RESET")) { // need to re-establish the usb connection:
+            ChameleonIO.executeChameleonMiniCommand(serialPort, "RESET", ChameleonIO.TIMEOUT);
+            ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
+            closeSerialPort(serialPort);
+            configureSerialPort(null, usbReaderCallback);
+            ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
+            return;
+        }
         else if(createCmd.equals("Log Replay")) {
             appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "RE: LOG REPLAY: This is a wishlist feature. It might be necessary to add it to the firmware and implement it in hardware. Not currently implemented."));
             return;
@@ -414,24 +423,26 @@ public class LiveLoggerActivity extends AppCompatActivity {
             msgParam = userInputStack;
             userInputStack = null;
         }
+        else if(createCmd.equals("ONCLICK")) {
+            msgParam = "SYSTICK Millis := " + getSettingFromDevice(serialPort, "SYSTICK?");
+        }
         else if(createCmd.equals("GETUID")) {
             String rParam = getSettingFromDevice(serialPort, "GETUID");
             msgParam = "GETUID: " + rParam.replaceAll("..(?!$)", "$0:") + "(" + rParam + ").";
         }
-        else if(createCmd.equals("CHARGING")) {
-            msgParam = getSettingFromDevice(serialPort, "CHARGING?");
+        else if(createCmd.equals("SEND") || createCmd.equals("SEND_RAW")) {
+            String bytesToSend = ((TextView) findViewById(R.id.userInputFormattedBytes)).getText().toString().replaceAll(" ", "");
+            if(bytesToSend.length() != 2 || !Utils.stringIsHexadecimal(bytesToSend)) {
+                appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Input to send to card must be a _single hexadecimal_ byte!"));
+                return;
+            }
+            msgParam = "Card Response (if any): " + getSettingFromDevice(serialPort, createCmd + " " + bytesToSend);
         }
-        else if(createCmd.equals("STRENGTH")) {
-            msgParam = getSettingFromDevice(serialPort, "RSSI?");
+        else if(createCmd.equals("AUTOCAL")) {
+            msgParam = getSettingFromDevice(serialPort, "AUTOCALIBRATE");
         }
-        else if(createCmd.equals("VERSION")) {
-            msgParam = getSettingFromDevice(serialPort, "VERSION?");
-        }
-        else if(createCmd.equals("IDENTIFY")) {
-            msgParam = getSettingFromDevice(serialPort, "IDENTIFY?");
-        }
-        else if(createCmd.equals("ONCLICK")) {
-            msgParam = "SYSTICK Millis := " + getSettingFromDevice(serialPort, "SYSTICK?");
+        else {
+            msgParam = getSettingFromDevice(serialPort, createCmd);
         }
         appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord(createCmd, msgParam));
     }
@@ -494,6 +505,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
             View logEntryView = logDataFeed.getChildAt(vi);
             if (logDataEntries.get(vi) instanceof LogEntryUI) {
                 boolean isChecked = ((CheckBox) logEntryView.findViewById(R.id.entrySelect)).isChecked();
+                int recordIdx = ((LogEntryUI) logDataEntries.get(vi)).getRecordIndex();
                 if (isChecked && actionFlag.equals("SEND")) {
                     String byteString = ((LogEntryUI) logDataEntries.get(vi)).getPayloadData();
                     appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("CARD INFO", "Sending: " + byteString + "..."));
@@ -506,7 +518,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 }
                 else if(isChecked && actionFlag.equals("CLONE_UID")) {
                     String uid = ((LogEntryUI) logDataEntries.get(vi)).getPayloadData();
-                    ChameleonIO.executeChameleonMiniCommand(serialPort, "UID=" + uid, ChameleonIO.TIMEOUT);
+                    if(uid.length() != 2 * ChameleonIO.deviceStatus.UIDSIZE) {
+                        appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", String.format("Number of bytes for record #%d != the required %d bytes!", recordIdx, ChameleonIO.deviceStatus.UIDSIZE)));
+                    }
+                    else {
+                        ChameleonIO.executeChameleonMiniCommand(serialPort, "UID=" + uid, ChameleonIO.TIMEOUT);
+                    }
                 }
                 else if(isChecked && actionFlag.equals("PRINT")) {
                     byte[] rawBytes = ((LogEntryUI) logDataEntries.get(vi)).getEntryData();

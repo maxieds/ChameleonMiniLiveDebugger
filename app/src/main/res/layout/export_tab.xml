@@ -147,5 +147,51 @@
 
     </GridLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorPrimaryDark" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:drawableLeft="@drawable/todo16"
+        android:drawablePadding="5dp"
+        android:singleLine="true"
+        android:text="TODO / wishlist features to implement later:"
+        android:textSize="14sp"
+        android:textAllCaps="true"
+        android:textStyle="bold|italic" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorPrimaryDark" />
+
+    <GridLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:background="@color/colorAccentLog"
+        android:columnCount="13"
+        android:orientation="horizontal"
+        android:padding="2dp"
+        android:rowCount="1">
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/dumpmfuchip24"
+            android:tag="DUMP_MFU"
+            android:text="Dump MFU Tag to Bin" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/idcard24"
+            android:tag="UPLOAD"
+            android:text="UPLOAD" />
+
+    </GridLayout>
+
 
 </LinearLayout>

@@ -106,13 +106,28 @@ public class TabFragment extends Fragment {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String setCmd = localSpinnerList[i];
                 if(setCmd.charAt(0) != '-') {
-                    if(setCmd.equals("SEND_RAW") || setCmd.equals("SEND") || setCmd.equals("UID=")) {
-                        String userInputBytes = ((EditText) LiveLoggerActivity.runningActivity.findViewById(R.id.userInputFormattedBytes)).getText().toString();
-                        userInputBytes = userInputBytes.replace(" ", ""); // remove pretty printing / spaces formatting
+                    String userInputBytes = ((EditText) LiveLoggerActivity.runningActivity.findViewById(R.id.userInputFormattedBytes)).getText().toString();
+                    userInputBytes = userInputBytes.replace(" ", "").replace(":", "").replace("-", ""); // remove pretty printing / spaces formatting
+                    boolean errorFlag = false;
+                    if(setCmd.equals("UID=") && (!Utils.stringIsHexadecimal(userInputBytes) || userInputBytes.length() != 2 * ChameleonIO.deviceStatus.UIDSIZE)) {
+                        errorFlag = true;
+                    }
+                    else if(setCmd.equals("SETTING=") && !userInputBytes.matches("-?[0-9]")) {
+                        errorFlag = true;
+                    }
+                    else if((setCmd.equals("THRESHOLD=") || setCmd.equals("TIMEOUT=")) && !Utils.stringIsDecimal(userInputBytes)) {
+                        errorFlag = true;
+                    }
+                    else if(setCmd.equals("UID=") || setCmd.equals("SETTING=") || setCmd.equals("THRESHOLD=") || setCmd.equals("TIMEOUT=")) {
                         setCmd += userInputBytes;
                     }
-                    String deviceSetting = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, setCmd);
-                    LiveLoggerActivity.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "INFO: Shell command of " + setCmd + " returned status " + ChameleonIO.DEVICE_RESPONSE_CODE, ChameleonIO.DEVICE_RESPONSE));
+                    if(!errorFlag) {
+                        String deviceSetting = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, setCmd);
+                        LiveLoggerActivity.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "INFO: Shell command of " + setCmd + " returned status " + ChameleonIO.DEVICE_RESPONSE_CODE, ChameleonIO.DEVICE_RESPONSE));
+                    }
+                    else {
+                        LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Command formatting error: the input user bytes are invalid or not of the correct length"));
+                    }
                 }
             }
             public void onNothingSelected(AdapterView<?> adapterView) {

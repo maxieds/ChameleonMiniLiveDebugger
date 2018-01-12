@@ -111,5 +111,13 @@ public class Utils {
         return csvLines;
     }
 
+    public static boolean stringIsHexadecimal(String str) {
+        return str.matches("-?[0-9a-fA-F]+");
+    }
+
+    public static boolean stringIsDecimal(String str) {
+        return str.matches("-?[0-9]+");
+    }
+
 
 }

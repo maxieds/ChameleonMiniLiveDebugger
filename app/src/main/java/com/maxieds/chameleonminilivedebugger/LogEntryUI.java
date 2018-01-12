@@ -122,6 +122,10 @@ public class LogEntryUI extends LogEntryBase {
         return hexBytes.replace(" ", "");
     }
 
+    public int getRecordIndex() {
+        return recordID;
+    }
+
     public short getNextOffsetTime(short offsetTimeMillis) {
         return (short) (offsetTimeMillis + abs(diffTimeMillis));
     }

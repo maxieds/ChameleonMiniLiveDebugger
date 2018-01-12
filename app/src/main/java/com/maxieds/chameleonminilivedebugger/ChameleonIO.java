@@ -90,7 +90,7 @@ public class ChameleonIO {
             }
         };
 
-        public void updateAllStatus() {
+        private void updateAllStatus() {
             CONFIG = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "CONFIG?");
             UID = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "UID?");
             if(!UID.equals("NO UID."))
@@ -108,6 +108,8 @@ public class ChameleonIO {
         }
 
         public void updateAllStatusAndPost(boolean resetTimer) {
+            if(LiveLoggerActivity.serialPort == null)
+                return;
             updateAllStatus();
             ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceConfigText)).setText(CONFIG);
             ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceConfigUID)).setText(UID);
