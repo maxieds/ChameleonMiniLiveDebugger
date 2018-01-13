@@ -1,6 +1,8 @@
 package com.maxieds.chameleonminilivedebugger;
 
 import android.app.DownloadManager;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Button;
 
@@ -66,9 +68,42 @@ public class ExportTools {
 
     public static int fileSize = 0;
     public static FileOutputStream streamDest;
+    public static File outfile;
+    private static String currentLogMode = "LIVE";
+    private static boolean throwToLive = false;
     public static byte[] frameBuffer = new byte[XMODEM_BLOCK_SIZE];
     public static byte CurrentFrameNumber;
     public static byte Checksum;
+
+    public static Runnable eotSleepRunnable = new Runnable() {
+        public void run() {
+            if (!ExportTools.EOT) {
+                eotSleepHandler.postDelayed(this, 50);
+            } else {
+                try {
+                    streamDest.close();
+                } catch (Exception ioe) {
+                    LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
+                    ioe.printStackTrace();
+                } finally {
+                    ChameleonIO.DOWNLOAD = false;
+                    ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "LOGMODE=" + currentLogMode, ChameleonIO.TIMEOUT);
+                    LiveLoggerActivity.serialPortLock.release();
+                }
+                DownloadManager downloadManager = (DownloadManager) LiveLoggerActivity.defaultContext.getSystemService(DOWNLOAD_SERVICE);
+                downloadManager.addCompletedDownload(outfile.getName(), outfile.getName(), true, "application/octet-stream",
+                        outfile.getAbsolutePath(), outfile.length(), true);
+                String statusMsg = "Write internal log data to file " + outfile.getName() + "(+" + fileSize + " / " + outfile.length() + " bytes).\n";
+                statusMsg += "If you are not seeing the expected output, try running the LOGSTORE command from the tools menu first.";
+                LiveLoggerActivity.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "NEW EVENT", statusMsg));
+                if (throwToLive) {
+                    throwDeviceLogDataToLive(outfile);
+                }
+                LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconUlDl);
+            }
+        }
+    };
+    public static Handler eotSleepHandler = new Handler();
 
     public static byte CalcChecksum(byte[] buffer, short byteCount) {
         byte checksum = CHECKSUM_INIT_VALUE;
@@ -106,7 +141,8 @@ public class ExportTools {
                     ExportTools.EOT = true;
                     e.printStackTrace();
                 }
-            } else {
+            }
+            else {
                 Log.w(TAG, "Sent another NAK");
                 try {
                     LiveLoggerActivity.serialPort.write(new byte[]{ExportTools.BYTE_NAK});
@@ -114,7 +150,8 @@ public class ExportTools {
                     e.printStackTrace();
                 }
             }
-        } else {
+        }
+        else {
             try {
                 LiveLoggerActivity.serialPort.write(new byte[]{ExportTools.BYTE_ACK});
             } catch (Exception ioe) {
@@ -124,11 +161,10 @@ public class ExportTools {
         }
     }
 
-    public static boolean downloadByXModem(String issueCmd, String outfilePrefix, boolean throwToLive) {
+    public static boolean downloadByXModem(String issueCmd, String outfilePrefix, boolean throwToLiveParam) {
         LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
         String outfilePath = outfilePrefix + "-" + Utils.getTimestamp().replace(":", "") + ".bin";
         File downloadsFolder = new File("//sdcard//Download//");
-        File outfile;
         boolean docsFolderExists = true;
         if (!downloadsFolder.exists()) {
             docsFolderExists = downloadsFolder.mkdir();
@@ -152,40 +188,21 @@ public class ExportTools {
             return false;
         }
 
-        String currentLogMode = "LIVE";
-        try {
-            LiveLoggerActivity.serialPortLock.acquireUninterruptibly();
-            ChameleonIO.DOWNLOAD = true;
-            // turn of logging so the transfer doesn't get accidentally logged:
-            currentLogMode = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "LOGMODE?");
-            ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "LOGMODE=OFF", ChameleonIO.TIMEOUT);
-            //ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "LOGSTORE", ChameleonIO.TIMEOUT);
-            LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, issueCmd);
-            fileSize = 0;
-            CurrentFrameNumber = FIRST_FRAME_NUMBER;
-            LiveLoggerActivity.serialPort.write(new byte[]{BYTE_NAK});
-            while (!EOT) {
-                Thread.sleep(50);
-            }
-            streamDest.close();
-        } catch(Exception ioe) {
-            LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
-            ioe.printStackTrace();
-        } finally {
-            ChameleonIO.DOWNLOAD = false;
-            ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "LOGMODE=" + currentLogMode, ChameleonIO.TIMEOUT);
-            LiveLoggerActivity.serialPortLock.release();
-        }
-        DownloadManager downloadManager = (DownloadManager) LiveLoggerActivity.defaultContext.getSystemService(DOWNLOAD_SERVICE);
-        downloadManager.addCompletedDownload(outfile.getName(), outfile.getName(), true, "application/octet-stream",
-                outfile.getAbsolutePath(), outfile.length(),true);
-        String statusMsg = "Write internal log data to file " + outfilePath + "(+" + fileSize + " / " + outfile.length() + " bytes).\n";
-        statusMsg += "If you are not seeing the expected output, try running the LOGSTORE command from the tools menu first.";
-        LiveLoggerActivity.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "NEW EVENT", statusMsg));
-        if(throwToLive) {
-            throwDeviceLogDataToLive(outfile);
-        }
-        LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconUlDl);
+        LiveLoggerActivity.serialPortLock.acquireUninterruptibly();
+        throwToLive = throwToLiveParam;
+        ChameleonIO.DOWNLOAD = true;
+        EOT = false;
+        // turn of logging so the transfer doesn't get accidentally logged:
+        currentLogMode = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "LOGMODE?");
+        ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "LOGMODE=OFF", ChameleonIO.TIMEOUT);
+        LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, issueCmd);
+        fileSize = 0;
+        CurrentFrameNumber = FIRST_FRAME_NUMBER;
+        LiveLoggerActivity.serialPort.write(new byte[]{BYTE_NAK});
+        //while (!EOT) {
+        //    Thread.sleep(500);
+        //}
+        eotSleepHandler.postDelayed(eotSleepRunnable, 50);
         return true;
     }
 
