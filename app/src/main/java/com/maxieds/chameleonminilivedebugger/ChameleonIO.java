@@ -12,7 +12,9 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.FALSE;
 import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.OK;
@@ -27,9 +29,10 @@ public class ChameleonIO {
     private static final String TAG = ChameleonIO.class.getSimpleName();
 
     public static final int RESP_BUFFER_SIZE = 1024;
-    public static final int TIMEOUT = 1000;
+    public static final int TIMEOUT = 1500;
     public static boolean PAUSED = true;
     public static boolean WAITING_FOR_RESPONSE = false;
+    public static boolean DOWNLOAD = false;
     public static final int CMUSB_VENDORID = 0x16d0;
     public static final int CMUSB_PRODUCTID = 0x04b2;
     public static final String DEVICE_RESPONSE_INTENT = "ChameleonIO.device.CMD_QUERY_RESPONSE";
@@ -91,6 +94,11 @@ public class ChameleonIO {
         };
 
         private void updateAllStatus() {
+            try {
+                LiveLoggerActivity.serialPortLock.tryAcquire(ChameleonIO.TIMEOUT, TimeUnit.MILLISECONDS);
+            } catch(InterruptedException ie) {
+                return;
+            }
             CONFIG = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "CONFIG?");
             UID = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "UID?");
             if(!UID.equals("NO UID."))
@@ -105,6 +113,7 @@ public class ChameleonIO {
             CHARGING = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "CHARGING?").equals("TRUE");
             THRESHOLD = Integer.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "THRESHOLD?"));
             TIMEOUT = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "TIMEOUT?");
+            LiveLoggerActivity.serialPortLock.release();
         }
 
         public void updateAllStatusAndPost(boolean resetTimer) {
@@ -113,11 +122,11 @@ public class ChameleonIO {
             updateAllStatus();
             ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceConfigText)).setText(CONFIG);
             ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceConfigUID)).setText(UID);
-            String subStats1 = String.format("MEM-%dK/LOG-%dK/DIP#%d", round(MEMSIZE / 1024), round(LOGSIZE / 1024), DIP_SETTING);
+            String subStats1 = String.format(Locale.ENGLISH,"MEM-%dK/LOG-%dK/DIP#%d", round(MEMSIZE / 1024), round(LOGSIZE / 1024), DIP_SETTING);
             ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceStats1)).setText(subStats1);
-            String subStats2 = String.format("%s/FLD-%d/%sCHRG", READONLY ? "RO" : "RW", FIELD ? 1 : 0, CHARGING ? "" : "NO-");
+            String subStats2 = String.format(Locale.ENGLISH,"%s/FLD-%d/%sCHRG", READONLY ? "RO" : "RW", FIELD ? 1 : 0, CHARGING ? "" : "NO-");
             ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceStats2)).setText(subStats2);
-            String subStats3 = String.format("THRS-%d mv/TMT-%s", THRESHOLD, TIMEOUT);
+            String subStats3 = String.format(Locale.ENGLISH,"THRS-%d mv/TMT-%s", THRESHOLD, TIMEOUT);
             ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceStats3)).setText(subStats3);
             if(resetTimer)
                 statsUpdateHandler.postDelayed(statsUpdateRunnable, STATS_UPDATE_INTERVAL);

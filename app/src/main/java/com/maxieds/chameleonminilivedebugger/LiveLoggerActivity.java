@@ -48,7 +48,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
+import static android.content.ContentValues.TAG;
+import static com.maxieds.chameleonminilivedebugger.ExportTools.BYTE_ACK;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_TOOLS;
@@ -65,7 +70,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public static List<LogEntryBase> logDataEntries = new ArrayList<LogEntryBase>();
     public static int RECORDID = 0;
     public static boolean logDataFeedConfigured = false;
-    public static UsbSerialDevice serialPort;
     public static SpinnerAdapter spinnerRButtonAdapter;
     public static SpinnerAdapter spinnerRButtonLongAdapter;
     public static SpinnerAdapter spinnerLButtonAdapter;
@@ -75,10 +79,29 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public static SpinnerAdapter spinnerLogModeAdapter;
     public static SpinnerAdapter spinnerCmdShellAdapter;
     private static ViewPager viewPager;
+    private static int selectedTab = TAB_LOG;
+
+    public static UsbSerialDevice serialPort;
+    public static final Semaphore serialPortLock = new Semaphore(1, true);
 
     public static void appendNewLog(LogEntryBase logEntry) {
+        if(LiveLoggerActivity.selectedTab != TAB_LOG) {
+            if(logEntry instanceof LogEntryUI)
+                runningActivity.setStatusIcon(R.id.statusIconNewXFer, R.drawable.statusxfer16);
+            else
+                runningActivity.setStatusIcon(R.id.statusIconNewMsg, R.drawable.statusnewmsg16);
+        }
         logDataFeed.addView(logEntry.getLayoutContainer());
         logDataEntries.add(logEntry);
+    }
+
+    public void setStatusIcon(int iconID, int iconDrawable) {
+        ((ImageView) findViewById(iconID)).setAlpha(255);
+        ((ImageView) findViewById(iconID)).setImageDrawable(getResources().getDrawable(iconDrawable));
+    }
+
+    public void clearStatusIcon(int iconID) {
+        ((ImageView) findViewById(iconID)).setAlpha(0);
     }
 
     @Override
@@ -120,10 +143,30 @@ public class LiveLoggerActivity extends AppCompatActivity {
         actionBar.setDisplayUseLogoEnabled(true);
         actionBar.setIcon(R.drawable.chameleonlogo24);
         actionBar.setDisplayShowHomeEnabled(true);
+        clearStatusIcon(R.id.statusIconUlDl);
 
         viewPager = (ViewPager) findViewById(R.id.tab_pager);
         viewPager.setAdapter(new TabFragmentPagerAdapter(getSupportFragmentManager(), LiveLoggerActivity.this));
         viewPager.setOffscreenPageLimit(TabFragmentPagerAdapter.TAB_COUNT - 1);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+            @Override
+            public void onPageSelected(int position) {
+                LiveLoggerActivity.selectedTab = position;
+                switch (position) {
+                    case TAB_LOG:
+                        LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconNewMsg);
+                        LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconNewXFer);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            @Override
+            public void onPageScrollStateChanged(int state) {}
+        });
+
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
 
@@ -150,6 +193,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
             Thread.sleep(500);
         } catch(Exception e) {}
         ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
+        clearStatusIcon(R.id.statusIconNewMsg);
+        clearStatusIcon(R.id.statusIconNewXFer);
 
     }
 
@@ -182,7 +227,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 Thread.sleep(50);
             } catch(InterruptedException ie) {
                 ChameleonIO.WAITING_FOR_RESPONSE = false;
-                return null;
+                break;
             }
         }
         //appendNewLog(new LogEntryMetadataRecord(defaultInflater, "INFO: Device query of " + query + " returned status " + ChameleonIO.DEVICE_RESPONSE_CODE, ChameleonIO.DEVICE_RESPONSE));
@@ -214,6 +259,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         if(device == null || connection == null) {
             appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB STATUS: ", "Connection to device unavailable."));
             serialPort = null;
+            setStatusIcon(R.id.statusIconUSB, R.drawable.usbdisconnected16);
             return serialPort;
         }
         serialPort = UsbSerialDevice.createUsbSerialDevice(device, connection);
@@ -228,6 +274,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         else {
             appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB ERROR: ", "Unable to configure serial device."));
             serialPort = null;
+            setStatusIcon(R.id.statusIconUSB, R.drawable.usbdisconnected16);
             return serialPort;
         }
 
@@ -236,6 +283,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         ChameleonIO.enableLiveDebugging(serialPort, ChameleonIO.TIMEOUT);
         ChameleonIO.PAUSED = false;
         appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB STATUS: ", "Successfully configured the device in passive logging mode."));
+        setStatusIcon(R.id.statusIconUSB, R.drawable.usbconnected16);
         return serialPort;
 
     }
@@ -244,6 +292,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         if(serialPort != null)
             serialPort.close();
         ChameleonIO.PAUSED = true;
+        setStatusIcon(R.id.statusIconUSB, R.drawable.usbconnected16);
         return true;
     }
 
@@ -256,6 +305,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 //appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB RESPONSE: ", Utils.bytes2Hex(liveLogData) + " | " + Utils.bytes2Ascii(liveLogData)));
                 //ChameleonIO.PAUSED = false;
                 return;
+            }
+            else if(ChameleonIO.DOWNLOAD) {
+                ExportTools.performXModemSerialDownload(liveLogData);
             }
             else if(ChameleonIO.WAITING_FOR_RESPONSE) {
                 String strLogData = new String(liveLogData);

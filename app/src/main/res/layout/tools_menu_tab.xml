@@ -262,32 +262,51 @@
             android:layout_marginRight="1dp"
             android:background="@color/colorAccentLog">
 
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/field16" />
+
             <Switch android:id="@+id/fieldOnOffSwitch"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:switchMinWidth="65dp"
+                android:switchMinWidth="50dp"
                 android:checked="true"
                 android:gravity="center"
+                android:layout_gravity="center_vertical"
                 android:showText="false"
                 android:textOn="1"
                 android:textOff="0"
-                android:text="FIELD: "
+                android:text="FIELD:"
                 android:textStyle="bold|italic"
                 android:thumbTint="@color/colorPrimaryDark"
                 android:typeface="monospace"
                 android:scrollHorizontally="true" />
 
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="25dp"
+                android:paddingRight="5dp"
+                android:gravity="left"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/readonly16" />
+
             <Switch android:id="@+id/readonlyOnOffSwitch"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:paddingLeft="25dp"
-                android:switchMinWidth="65dp"
+                android:paddingLeft="0dp"
+                android:switchMinWidth="50dp"
                 android:checked="true"
                 android:gravity="center|left"
+                android:layout_gravity="center_vertical"
                 android:showText="false"
                 android:textOn="RO"
                 android:textOff="RW"
-                android:text="READONLY: "
+                android:text="READONLY:"
                 android:textStyle="bold|italic"
                 android:thumbTint="@color/colorPrimaryDark"
                 android:typeface="monospace"
@@ -345,16 +364,19 @@
                 android:padding="2dp"
                 android:rowCount="10">
 
-            <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/cmd24" />
-            <Spinner
-                android:id="@+id/FullCmdListSpinner"
-                android:layout_width="300dp"
-                android:layout_weight="1"
-                android:layout_height="30dp"
-                android:entries="@array/FullCommandList"
-                android:spinnerMode="dialog"
-                android:gravity="right|center_vertical"
-                android:popupBackground="#98fb98" />
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/cmd24" />
+                <Spinner
+                    android:id="@+id/FullCmdListSpinner"
+                    android:layout_width="300dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:entries="@array/FullCommandList"
+                    android:gravity="right|center_vertical"
+                    android:popupBackground="#98fb98"
+                    android:spinnerMode="dialog" />
 
             </GridLayout>
 
@@ -367,27 +389,28 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@color/colorPrimaryDarkLog"
-                android:drawableLeft="@drawable/peripheral16"
-                android:drawablePadding="5dp"
-                android:singleLine="true"
-                android:text="Peripherals and log mode: "
-                android:textAllCaps="true"
-                android:textStyle="bold|italic" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/colorPrimaryDarkLog"
+                    android:drawableLeft="@drawable/peripheral16"
+                    android:drawablePadding="5dp"
+                    android:singleLine="true"
+                    android:text="Peripherals and log mode: "
+                    android:textAllCaps="true"
+                    android:textStyle="bold|italic" />
 
                 <Button
                     style="@style/GridButtons"
-                    android:layout_height="20dp"
                     android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:background="@color/colorPrimaryDarkLog"
                     android:drawableLeft="@drawable/querydefaults16"
-                    android:text="[Query Device]"
-                    android:textSize="10sp"
                     android:onClick="actionButtonRestorePeripheralDefaults"
-                    android:background="@color/colorPrimaryDarkLog" />
+                    android:text="[Query Device]"
+                    android:textSize="10sp" />
 
             </LinearLayout>
 
@@ -401,14 +424,19 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
                 android:background="@color/colorAccentLog"
-                android:columnCount="2"
+                android:columnCount="3"
                 android:padding="2dp"
                 android:rowCount="10">
 
                 <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/ledred24" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
                 <Spinner
                     android:id="@+id/LEDRedSpinner"
-                    android:layout_width="300dp"
+                    android:layout_width="250dp"
                     android:layout_weight="1"
                     android:layout_height="30dp"
                     android:entries="@array/LEDRedOptions"
@@ -418,9 +446,14 @@
                     android:popupBackground="#98fb98" />
 
                 <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/ledgreen24" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
                 <Spinner
                     android:id="@+id/LEDGreenSpinner"
-                    android:layout_width="300dp"
+                    android:layout_width="250dp"
                     android:layout_weight="1"
                     android:layout_height="30dp"
                     android:entries="@array/LEDGreenOptions"
@@ -430,9 +463,16 @@
                     android:popupBackground="#98fb98" />
 
                 <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/circlebutton32" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:paddingLeft="4dp"
+                    android:text="(RBS)"/>
                 <Spinner
                     android:id="@+id/RButtonSpinner"
-                    android:layout_width="300dp"
+                    android:layout_width="250dp"
                     android:layout_weight="1"
                     android:layout_height="30dp"
                     android:entries="@array/RButtonOptions"
@@ -442,9 +482,16 @@
                     android:popupBackground="#98fb98" />
 
                 <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/squarebutton32" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:paddingLeft="4dp"
+                    android:text="(RBL)"/>
                 <Spinner
                     android:id="@+id/RButtonLongSpinner"
-                    android:layout_width="300dp"
+                    android:layout_width="250dp"
                     android:layout_weight="1"
                     android:layout_height="30dp"
                     android:entries="@array/RButtonLongOptions"
@@ -454,9 +501,16 @@
                     android:popupBackground="#98fb98" />
 
                 <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/rectbutton32" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:paddingLeft="4dp"
+                    android:text="(LBS)"/>
                 <Spinner
                     android:id="@+id/LButtonSpinner"
-                    android:layout_width="300dp"
+                    android:layout_width="250dp"
                     android:layout_weight="1"
                     android:layout_height="30dp"
                     android:entries="@array/LButtonOptions"
@@ -466,9 +520,16 @@
                     android:popupBackground="#98fb98" />
 
                 <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/twocircbutton32" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:paddingLeft="4dp"
+                    android:text="(LBL)"/>
                 <Spinner
                     android:id="@+id/LButtonLongSpinner"
-                    android:layout_width="300dp"
+                    android:layout_width="250dp"
                     android:layout_weight="1"
                     android:layout_height="30dp"
                     android:entries="@array/LButtonLongOptions"
@@ -478,9 +539,14 @@
                     android:popupBackground="#98fb98" />
 
                 <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/log24" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
                 <Spinner
                     android:id="@+id/LogModeSpinner"
-                    android:layout_width="300dp"
+                    android:layout_width="250dp"
                     android:layout_weight="1"
                     android:layout_height="30dp"
                     android:entries="@array/LogModeOptions"

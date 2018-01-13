@@ -45,7 +45,9 @@ public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
         }
 
         @Override
-        public Fragment getItem(int tabid) { return tabFragments[tabid]; }
+        public Fragment getItem(int tabid) {
+            return tabFragments[tabid];
+        }
 
         @Override
         public CharSequence getPageTitle(int position) {

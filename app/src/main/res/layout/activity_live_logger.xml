@@ -13,11 +13,11 @@
         android:background="#ffffff" />
 
     <LinearLayout
-        android:layout_height="wrap_content"
         android:layout_width="fill_parent"
-        android:orientation="horizontal"
-        android:background="#555753"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="0dp"
+        android:background="#555753"
+        android:orientation="horizontal"
         android:paddingLeft="5dp"
         android:paddingRight="4dp">
 
@@ -34,27 +34,27 @@
 
             <TextView
                 android:id="@+id/deviceConfigText"
-                android:minWidth="125dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="0.42"
                 android:background="#555753"
+                android:minWidth="125dp"
+                android:paddingRight="10dp"
                 android:text="DEVICE CONFIGURATION"
                 android:textColor="#ffffff"
                 android:textSize="12sp"
-                android:layout_weight="0.42"
-                android:paddingRight="10dp"
                 android:textStyle="normal|bold" />
 
             <TextView
                 android:id="@+id/deviceStats1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="0.53"
                 android:background="#555753"
+                android:gravity="right"
                 android:text="MEM / LOG / DIP#"
                 android:textColor="#ffffff"
                 android:textSize="10sp"
-                android:gravity="right"
-                android:layout_weight="0.53"
                 android:textStyle="normal|italic" />
 
             <TextView
@@ -62,10 +62,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="#555753"
+                android:paddingRight="10dp"
                 android:text="DEVICE UID"
                 android:textColor="#ffffff"
                 android:textSize="12sp"
-                android:paddingRight="10dp"
                 android:textStyle="normal|bold" />
 
             <TextView
@@ -73,26 +73,61 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="#555753"
+                android:gravity="right"
                 android:text="RO / FLD1 / NOCHRG"
                 android:textColor="#ffffff"
                 android:textSize="10sp"
-                android:gravity="right"
                 android:textStyle="normal|italic" />
 
-            <TextView
+            <GridLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#555753" />
+                android:layout_margin="2dp"
+                android:background="#555753"
+                android:columnCount="4"
+                android:paddingLeft="0dp"
+                android:layout_marginLeft="1dp"
+                android:rowCount="1">
+
+                <ImageView
+                    android:id="@+id/statusIconUSB"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:paddingRight="2dp"
+                    android:src="@drawable/usbconnected16" />
+
+                <ImageView
+                    android:id="@+id/statusIconNewMsg"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:paddingRight="2dp"
+                    android:src="@drawable/statusnewmsg16" />
+
+                <ImageView
+                    android:id="@+id/statusIconNewXFer"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:paddingRight="2dp"
+                    android:src="@drawable/statusxfer16" />
+
+                <ImageView
+                    android:id="@+id/statusIconUlDl"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:paddingRight="2dp"
+                    android:src="@drawable/statusdownload16" />
+
+            </GridLayout>
 
             <TextView
                 android:id="@+id/deviceStats3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="#555753"
+                android:gravity="right"
                 android:text="THRES / TMOUT"
                 android:textColor="#ffffff"
                 android:textSize="10sp"
-                android:gravity="right"
                 android:textStyle="normal|italic" />
 
         </GridLayout>
@@ -102,38 +137,38 @@
             android:layout_width="25dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:background="#555753"
             android:drawableLeft="@drawable/refresh24"
             android:drawablePadding="10dp"
-            android:layout_marginLeft="5dp"
-            android:onClick="actionButtonRefreshDeviceStatus"
-            android:background="#555753"
             android:elevation="0dp"
-            android:gravity="left|center_vertical"/>
+            android:gravity="left|center_vertical"
+            android:onClick="actionButtonRefreshDeviceStatus" />
 
         <Button
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="25dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:background="#555753"
             android:drawableLeft="@drawable/info24"
             android:drawablePadding="10dp"
-            android:layout_marginLeft="5dp"
+            android:gravity="left|center_vertical"
             android:onClick="actionButtonAboutTheApp"
-            android:textColor="#ffffff"
-            android:background="#555753"
-            android:gravity="left|center_vertical" />
+            android:textColor="#ffffff" />
 
         <Button
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="25dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:background="#555753"
             android:drawableLeft="@drawable/closeicon24"
             android:drawablePadding="6dp"
-            android:layout_marginLeft="5dp"
-            android:onClick="actionButtonExit"
-            android:background="#555753"
-            android:gravity="left|center_vertical"/>
+            android:gravity="left|center_vertical"
+            android:onClick="actionButtonExit" />
 
     </LinearLayout>
 
@@ -182,31 +217,31 @@
                     android:id="@+id/main_logger_tab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:icon="@drawable/nfc24v1"
                     android:text="Log"
-                    android:visibility="visible"
-                    android:icon="@drawable/nfc24v1" />
+                    android:visibility="visible" />
 
                 <android.support.design.widget.TabItem
                     android:id="@+id/tools_tab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tools Menu"
-                    android:icon="@drawable/tools24" />
+                    android:icon="@drawable/tools24"
+                    android:text="Tools Menu" />
 
                 <android.support.design.widget.TabItem
                     android:id="@+id/export_tab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Export"
-                    android:icon="@drawable/insertbinary24"/>
+                    android:icon="@drawable/insertbinary24"
+                    android:text="Export" />
 
                 <android.support.design.widget.TabItem
                     android:id="@+id/search_tab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:icon="@drawable/searchdisabled24"
                     android:text="Search"
-                    android:textColor="#dcdcdc"
-                    android:icon="@drawable/searchdisabled24" />
+                    android:textColor="#dcdcdc" />
 
             </android.support.design.widget.TabLayout>
 

@@ -184,6 +184,7 @@ public class TabFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
+        super.onDestroyView();;
         fragActive = false;
     }
 

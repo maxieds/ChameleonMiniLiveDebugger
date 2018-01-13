@@ -19,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static android.content.ContentValues.TAG;
 import static android.content.Context.DOWNLOAD_SERVICE;
@@ -34,26 +35,8 @@ import static com.maxieds.chameleonminilivedebugger.LiveLoggerActivity.logDataFe
 
 public class ExportTools {
 
-
+    public static final long LOCK_TIMEOUT = 2000;
     public static boolean EOT = false;
-    public static UsbSerialDevice xferSerialPort;
-    public static int fileSize = 0;
-
-    public static void pauseMainThreadSerial() {
-        ChameleonIO.PAUSED = true;
-        ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
-        ChameleonIO.deviceStatus = null;
-        LiveLoggerActivity.runningActivity.closeSerialPort(LiveLoggerActivity.serialPort);
-        ChameleonIO.WAITING_FOR_RESPONSE = false;
-    }
-
-    public static void resumeMainThreadSerial() {
-        ChameleonIO.PAUSED = false;
-        LiveLoggerActivity.runningActivity.configureSerialPort(LiveLoggerActivity.serialPort, LiveLoggerActivity.runningActivity.usbReaderCallback);
-        ChameleonIO.deviceStatus = new ChameleonIO.DeviceStatusSettings();
-        //ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
-        ChameleonIO.deviceStatus.statsUpdateHandler.postDelayed(ChameleonIO.deviceStatus.statsUpdateRunnable, ChameleonIO.deviceStatus.STATS_UPDATE_INTERVAL);
-    }
 
     public static final byte BYTE_NAK = (byte) 0x15;
     public static final byte BYTE_SOH = (byte) 0x01;
@@ -81,6 +64,9 @@ public class ExportTools {
     };
     public static State_t State = STATE_OFF;
 
+    public static int fileSize = 0;
+    public static FileOutputStream streamDest;
+    public static byte[] frameBuffer = new byte[XMODEM_BLOCK_SIZE];
     public static byte CurrentFrameNumber;
     public static byte Checksum;
 
@@ -93,10 +79,53 @@ public class ExportTools {
         return checksum;
     }
 
-    public static boolean downloadByXModem(String issueCmd, String outfilePrefix, boolean throwToLive) {
+    public static void performXModemSerialDownload(byte[] liveLogData) {
+        Log.i(TAG, "Received XModem data ..." + Utils.bytes2Hex(liveLogData));
+        if (liveLogData != null && liveLogData.length > 0 && liveLogData[0] != ExportTools.BYTE_EOT) {
+            if (liveLogData[0] == ExportTools.BYTE_SOH && liveLogData[1] == ExportTools.CurrentFrameNumber && liveLogData[2] == (byte) (255 - ExportTools.CurrentFrameNumber)) {
+                Log.i(TAG, "Writing XModem data ...");
+                System.arraycopy(liveLogData, 3, ExportTools.frameBuffer, 0, ExportTools.XMODEM_BLOCK_SIZE);
+                byte checksumByte = liveLogData[liveLogData.length - 1];
+                ExportTools.Checksum = ExportTools.CalcChecksum(ExportTools.frameBuffer, ExportTools.XMODEM_BLOCK_SIZE);
+                if (ExportTools.Checksum != checksumByte) {
+                    Log.w(TAG, "Sent another NAK (invalid checksum)");
+                    try {
+                        LiveLoggerActivity.serialPort.write(new byte[]{ExportTools.BYTE_NAK});
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return;
+                }
+                try {
+                    ExportTools.fileSize += liveLogData.length;
+                    ExportTools.streamDest.write(ExportTools.frameBuffer);
+                    ExportTools.streamDest.flush();
+                    ExportTools.CurrentFrameNumber++;
+                    LiveLoggerActivity.serialPort.write(new byte[]{BYTE_ACK});
+                } catch (Exception e) {
+                    ExportTools.EOT = true;
+                    e.printStackTrace();
+                }
+            } else {
+                Log.w(TAG, "Sent another NAK");
+                try {
+                    LiveLoggerActivity.serialPort.write(new byte[]{ExportTools.BYTE_NAK});
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            try {
+                LiveLoggerActivity.serialPort.write(new byte[]{ExportTools.BYTE_ACK});
+            } catch (Exception ioe) {
+                ioe.printStackTrace();
+            }
+            ExportTools.EOT = true;
+        }
+    }
 
-        ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "LOGSTORE", ChameleonIO.TIMEOUT);
-        LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, issueCmd);
+    public static boolean downloadByXModem(String issueCmd, String outfilePrefix, boolean throwToLive) {
+        LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
         String outfilePath = outfilePrefix + "-" + Utils.getTimestamp().replace(":", "") + ".bin";
         File downloadsFolder = new File("//sdcard//Download//");
         File outfile;
@@ -109,85 +138,54 @@ public class ExportTools {
         }
         else {
             LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to save output in Downloads folder."));
+            LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconUlDl);
             return false;
         }
 
-        final FileOutputStream fout;
         try {
             outfile.createNewFile();
-            fout = new FileOutputStream(outfile);
+            streamDest = new FileOutputStream(outfile);
         } catch(Exception ioe) {
             LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
             ioe.printStackTrace();
+            LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconUlDl);
             return false;
         }
 
-        UsbSerialInterface.UsbReadCallback usbReaderCallback = new UsbSerialInterface.UsbReadCallback() {
-            FileOutputStream streamDest = fout;
-            byte[] frameBuffer = new byte[XMODEM_BLOCK_SIZE];
-            @Override
-            public void onReceivedData(byte[] liveLogData) {
-                Log.i(TAG, "Received XModem data ..." + Utils.bytes2Hex(liveLogData));
-                if(liveLogData != null && liveLogData.length > 0 && liveLogData[0] != BYTE_EOT) {
-                    if(liveLogData[0] == BYTE_SOH && liveLogData[1] == CurrentFrameNumber && liveLogData[2] == (byte) (255 - CurrentFrameNumber)) {
-                        Log.i(TAG, "Writing XModem data ...");
-                        System.arraycopy(liveLogData, 3, frameBuffer, 0, XMODEM_BLOCK_SIZE);
-                        try {
-                            fileSize += liveLogData.length;
-                            streamDest.write(frameBuffer);
-                            streamDest.flush();
-                            CurrentFrameNumber++;
-                            xferSerialPort.write(new byte[]{BYTE_ACK});
-                        } catch (Exception e) {
-                            ExportTools.EOT = true;
-                            e.printStackTrace();
-                        }
-                    }
-                    else {
-                        Log.w(TAG, "Sent another NAK");
-                        try {
-                            xferSerialPort.write(new byte[]{BYTE_NAK});
-                        } catch(Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                else {
-                    try {
-                        streamDest.close();
-                    } catch(Exception ioe) {
-                        ioe.printStackTrace();
-                    }
-                    ExportTools.EOT = true;
-                    xferSerialPort.write(new byte[]{BYTE_ACK});
-                }
-            }
-        };
-
+        String currentLogMode = "LIVE";
         try {
+            LiveLoggerActivity.serialPortLock.acquireUninterruptibly();
+            ChameleonIO.DOWNLOAD = true;
+            // turn of logging so the transfer doesn't get accidentally logged:
+            currentLogMode = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "LOGMODE?");
+            ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "LOGMODE=OFF", ChameleonIO.TIMEOUT);
+            //ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "LOGSTORE", ChameleonIO.TIMEOUT);
+            LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, issueCmd);
             fileSize = 0;
-            pauseMainThreadSerial();
-            xferSerialPort = LiveLoggerActivity.runningActivity.configureSerialPort(null, usbReaderCallback);
             CurrentFrameNumber = FIRST_FRAME_NUMBER;
-            xferSerialPort.write(new byte[]{BYTE_NAK});
+            LiveLoggerActivity.serialPort.write(new byte[]{BYTE_NAK});
             while (!EOT) {
                 Thread.sleep(50);
             }
-            fout.close();
-            xferSerialPort.close();
-            resumeMainThreadSerial();
+            streamDest.close();
         } catch(Exception ioe) {
             LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
             ioe.printStackTrace();
-            return false;
+        } finally {
+            ChameleonIO.DOWNLOAD = false;
+            ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "LOGMODE=" + currentLogMode, ChameleonIO.TIMEOUT);
+            LiveLoggerActivity.serialPortLock.release();
         }
         DownloadManager downloadManager = (DownloadManager) LiveLoggerActivity.defaultContext.getSystemService(DOWNLOAD_SERVICE);
         downloadManager.addCompletedDownload(outfile.getName(), outfile.getName(), true, "application/octet-stream",
                 outfile.getAbsolutePath(), outfile.length(),true);
-        LiveLoggerActivity.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "NEW EVENT", "Write internal log data to file " + outfilePath + "(+" + fileSize + " / " + outfile.length() + " bytes)."));
+        String statusMsg = "Write internal log data to file " + outfilePath + "(+" + fileSize + " / " + outfile.length() + " bytes).\n";
+        statusMsg += "If you are not seeing the expected output, try running the LOGSTORE command from the tools menu first.";
+        LiveLoggerActivity.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "NEW EVENT", statusMsg));
         if(throwToLive) {
             throwDeviceLogDataToLive(outfile);
         }
+        LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconUlDl);
         return true;
     }
 

@@ -9,6 +9,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:verticalScrollbarPosition="right"
+        android:gravity="bottom"
         />
 
 </android.support.constraint.ConstraintLayout>
