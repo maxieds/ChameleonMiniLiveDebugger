@@ -24,6 +24,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -592,23 +594,37 @@ public class LiveLoggerActivity extends AppCompatActivity {
     }
 
     public void actionButtonAboutTheApp(View view) {
-        AlertDialog.Builder builder1 = new AlertDialog.Builder(this, R.style.SpinnerTheme);
+        AlertDialog.Builder adBuilder = new AlertDialog.Builder(this, R.style.SpinnerTheme);
         String rawAboutStr = getString(R.string.aboutapp);
         rawAboutStr = rawAboutStr.replace("%%ANDROID_VERSION_CODE%%", String.valueOf(BuildConfig.VERSION_CODE));
         rawAboutStr = rawAboutStr.replace("%%ANDROID_VERSION_NAME%%", String.valueOf(BuildConfig.VERSION_NAME));
-        builder1.setMessage(Html.fromHtml(rawAboutStr, Html.FROM_HTML_MODE_LEGACY));
-        builder1.setCancelable(true);
-        builder1.setTitle("About the Application:");
-        builder1.setIcon(R.drawable.olben64);
-        builder1.setPositiveButton(
+        //builder1.setMessage(Html.fromHtml(rawAboutStr, Html.FROM_HTML_MODE_LEGACY));
+
+        WebView wv = new WebView(this);
+        wv.getSettings().setJavaScriptEnabled(false);
+        wv.loadDataWithBaseURL(null, rawAboutStr, "text/html", "UTF-8", "");
+        wv.setBackgroundColor(Color.parseColor("#98fb98"));
+        wv.getSettings().setLoadWithOverviewMode(true);
+        wv.getSettings().setUseWideViewPort(true);
+        //wv.getSettings().setBuiltInZoomControls(true);
+        wv.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
+        wv.setInitialScale(10);
+
+        adBuilder.setCancelable(true);
+        adBuilder.setTitle("About the Application:");
+        adBuilder.setIcon(R.drawable.olben64);
+        adBuilder.setPositiveButton(
                 "Done",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
                     }
                 });
-        AlertDialog alert11 = builder1.create();
-        alert11.show();
+        adBuilder.setView(wv);
+        AlertDialog alertDialog = adBuilder.create();
+
+        alertDialog.show();
+
     }
 
     public void actionButtonRunCommand(View view) {
