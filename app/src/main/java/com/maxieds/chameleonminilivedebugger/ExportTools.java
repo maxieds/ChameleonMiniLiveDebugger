@@ -4,6 +4,7 @@ import android.app.DownloadManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 
 import com.felhr.usbserial.SerialInputStream;
@@ -19,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -39,6 +41,7 @@ public class ExportTools {
 
     public static final long LOCK_TIMEOUT = 2000;
     public static boolean EOT = false;
+    public static int MAX_NAK_COUNT = 6;
 
     public static final byte BYTE_NAK = (byte) 0x15;
     public static final byte BYTE_SOH = (byte) 0x01;
@@ -74,12 +77,15 @@ public class ExportTools {
     public static byte[] frameBuffer = new byte[XMODEM_BLOCK_SIZE];
     public static byte CurrentFrameNumber;
     public static byte Checksum;
+    public static int currentNAKCount;
+    public static boolean transmissionErrorOccurred;
 
     public static Runnable eotSleepRunnable = new Runnable() {
         public void run() {
             if (!ExportTools.EOT) {
                 eotSleepHandler.postDelayed(this, 50);
-            } else {
+            }
+            else {
                 try {
                     streamDest.close();
                 } catch (Exception ioe) {
@@ -90,16 +96,22 @@ public class ExportTools {
                     ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "LOGMODE=" + currentLogMode, ChameleonIO.TIMEOUT);
                     LiveLoggerActivity.serialPortLock.release();
                 }
-                DownloadManager downloadManager = (DownloadManager) LiveLoggerActivity.defaultContext.getSystemService(DOWNLOAD_SERVICE);
-                downloadManager.addCompletedDownload(outfile.getName(), outfile.getName(), true, "application/octet-stream",
-                        outfile.getAbsolutePath(), outfile.length(), true);
-                String statusMsg = "Write internal log data to file " + outfile.getName() + "(+" + fileSize + " / " + outfile.length() + " bytes).\n";
-                statusMsg += "If you are not seeing the expected output, try running the LOGSTORE command from the tools menu first.";
-                LiveLoggerActivity.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "NEW EVENT", statusMsg));
-                if (throwToLive) {
-                    throwDeviceLogDataToLive(outfile);
+                if(!ExportTools.transmissionErrorOccurred) {
+                    DownloadManager downloadManager = (DownloadManager) LiveLoggerActivity.defaultContext.getSystemService(DOWNLOAD_SERVICE);
+                    downloadManager.addCompletedDownload(outfile.getName(), outfile.getName(), true, "application/octet-stream",
+                            outfile.getAbsolutePath(), outfile.length(), true);
+                    String statusMsg = "Write internal log data to file " + outfile.getName() + "(+" + fileSize + " / " + outfile.length() + " bytes).\n";
+                    statusMsg += "If you are not seeing the expected output, try running the LOGSTORE command from the tools menu first.";
+                    LiveLoggerActivity.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "NEW EVENT", statusMsg));
+                    if (throwToLive) {
+                        throwDeviceLogDataToLive(outfile);
+                    }
                 }
-                LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconUlDl);
+                else {
+                    outfile.delete();
+                    LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+                    LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Maximum number of NAK errors exceeded. Download of data aborted."));
+                }
             }
         }
     };
@@ -122,13 +134,16 @@ public class ExportTools {
                 System.arraycopy(liveLogData, 3, ExportTools.frameBuffer, 0, ExportTools.XMODEM_BLOCK_SIZE);
                 byte checksumByte = liveLogData[liveLogData.length - 1];
                 ExportTools.Checksum = ExportTools.CalcChecksum(ExportTools.frameBuffer, ExportTools.XMODEM_BLOCK_SIZE);
-                if (ExportTools.Checksum != checksumByte) {
-                    Log.w(TAG, "Sent another NAK (invalid checksum)");
-                    try {
-                        LiveLoggerActivity.serialPort.write(new byte[]{ExportTools.BYTE_NAK});
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                if (ExportTools.Checksum != checksumByte && currentNAKCount < MAX_NAK_COUNT) {
+                    Log.w(TAG, "Sent another NAK (invalid checksum) : # = " + currentNAKCount);
+                    LiveLoggerActivity.serialPort.write(new byte[]{ExportTools.BYTE_NAK});
+                    currentNAKCount++;
+                    return;
+                }
+                else if(ExportTools.Checksum != checksumByte) {
+                    ExportTools.EOT = true;
+                    ExportTools.transmissionErrorOccurred = true;
+                    LiveLoggerActivity.serialPort.write(new byte[] {ExportTools.BYTE_CAN});
                     return;
                 }
                 try {
@@ -143,12 +158,15 @@ public class ExportTools {
                 }
             }
             else {
-                Log.w(TAG, "Sent another NAK");
-                try {
-                    LiveLoggerActivity.serialPort.write(new byte[]{ExportTools.BYTE_NAK});
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if(currentNAKCount >= MAX_NAK_COUNT) {
+                    ExportTools.EOT = true;
+                    ExportTools.transmissionErrorOccurred = true;
+                    LiveLoggerActivity.serialPort.write(new byte[] {ExportTools.BYTE_CAN});
+                    return;
                 }
+                Log.w(TAG, "Sent another NAK (invalid checksum) : # = " + currentNAKCount);
+                LiveLoggerActivity.serialPort.write(new byte[]{ExportTools.BYTE_NAK});
+                currentNAKCount++;
             }
         }
         else {
@@ -198,6 +216,8 @@ public class ExportTools {
         LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, issueCmd);
         fileSize = 0;
         CurrentFrameNumber = FIRST_FRAME_NUMBER;
+        currentNAKCount = 0;
+        transmissionErrorOccurred = false;
         LiveLoggerActivity.serialPort.write(new byte[]{BYTE_NAK});
         //while (!EOT) {
         //    Thread.sleep(500);
@@ -226,9 +246,64 @@ public class ExportTools {
         }
     }
 
+    public static boolean writeFormattedLogFile(File fd) throws Exception {
+        Log.i(TAG, String.valueOf("00".getBytes(StandardCharsets.US_ASCII)));
 
+        FileOutputStream fout = new FileOutputStream(fd);
+        for (int vi = 0; vi < LiveLoggerActivity.logDataFeed.getChildCount(); vi++) {
+            View logEntryView = LiveLoggerActivity.logDataFeed.getChildAt(vi);
+            if (LiveLoggerActivity.logDataEntries.get(vi) instanceof LogEntryUI) {
+                String dataLine = ((LogEntryUI) LiveLoggerActivity.logDataEntries.get(vi)).toString() + "\n";
+                fout.write(dataLine.getBytes(StandardCharsets.US_ASCII));
+            }
+            else {
+                String lineStr = "\n## " + ((LogEntryMetadataRecord) LiveLoggerActivity.logDataEntries.get(vi)).toString() + "\n";
+                fout.write(lineStr.getBytes(StandardCharsets.US_ASCII));
+            }
+        }
+        fout.close();
+        return true;
+    }
 
+    public static boolean writeHTMLLogFile(File fd) throws Exception {
+        FileOutputStream fout = new FileOutputStream(fd);
+        String htmlHeader = "<html><head><title>Chameleon Mini Live Debugger -- Logging Output</title></head><body>\n\n";
+        fout.write(htmlHeader.getBytes(StandardCharsets.US_ASCII));
+        String defaultBgColor = String.format("#%06X", (0xFFFFFF & R.color.colorPrimaryDarkLog));
+        for (int vi = 0; vi < LiveLoggerActivity.logDataFeed.getChildCount(); vi++) {
+            View logEntryView = LiveLoggerActivity.logDataFeed.getChildAt(vi);
+            if (LiveLoggerActivity.logDataEntries.get(vi) instanceof LogEntryUI) {
+                String bgColor = String.format("#%06X", (0xFFFFFF & logEntryView.getDrawingCacheBackgroundColor()));
+                if(bgColor.equals(defaultBgColor))
+                    bgColor = "#ffffff";
+                String lineData = "<code bgcolor='" + bgColor + "'>" + ((LogEntryUI) LiveLoggerActivity.logDataEntries.get(vi)).toString() + "</code><br/>\n";
+                fout.write(lineData.getBytes(StandardCharsets.US_ASCII));
+            }
+            else {
+                String lineData = "<b><code>" + ((LogEntryMetadataRecord) LiveLoggerActivity.logDataEntries.get(vi)).toString() + "</code></b><br/>\n";
+                fout.write(lineData.getBytes(StandardCharsets.US_ASCII));
+            }
+        }
+        String htmlFooter = "</body></html>";
+        fout.write(htmlFooter.getBytes(StandardCharsets.US_ASCII));
+        fout.close();
+        return true;
+    }
 
-
+    public static boolean writeBinaryLogFile(File fd) throws Exception {
+        FileOutputStream fout = new FileOutputStream(fd);
+        short localTicks = 0;
+        for (int vi = 0; vi < LiveLoggerActivity.logDataFeed.getChildCount(); vi++) {
+            View logEntryView = LiveLoggerActivity.logDataFeed.getChildAt(vi);
+            if (LiveLoggerActivity.logDataEntries.get(vi) instanceof LogEntryUI) {
+                LogEntryUI logEntry = (LogEntryUI) LiveLoggerActivity.logDataEntries.get(vi);
+                byte[] entryBytes = logEntry.packageBinaryLogData(localTicks);
+                localTicks = logEntry.getNextOffsetTime(localTicks);
+                fout.write(entryBytes);
+            }
+        }
+        fout.close();
+        return true;
+    }
 
 }

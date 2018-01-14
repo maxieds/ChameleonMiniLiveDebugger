@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.FALSE;
 import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.OK;
+import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.RESP_CODE_TEXT_MAP;
 import static java.lang.Math.round;
 
 /**
@@ -63,12 +64,28 @@ public class ChameleonIO {
             }
         }
 
+        public static final Map<String, SerialRespCode> RESP_CODE_TEXT_MAP = new HashMap<>();
+        static {
+            for (SerialRespCode respCode : values()) {
+                String rcode = String.valueOf(respCode.toInteger());
+                String rcodeText = respCode.name().replace("_", " ");
+                RESP_CODE_TEXT_MAP.put(rcode + ":" + rcodeText, respCode);
+            }
+        }
+
         public int toInteger() { return responseCode; }
 
         public static SerialRespCode lookupByResponseCode(int rcode) {
             return RESP_CODE_MAP.get(rcode);
         }
 
+    }
+
+    public static boolean isCommandResponse(byte[] liveLogData) {
+        String respText = new String(liveLogData).split("[\n\r]+")[0];
+        if(SerialRespCode.RESP_CODE_TEXT_MAP.get(respText) != null)
+            return true;
+        return false;
     }
 
     public static class DeviceStatusSettings {

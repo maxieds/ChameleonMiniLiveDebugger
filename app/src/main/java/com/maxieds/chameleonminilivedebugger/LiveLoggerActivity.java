@@ -160,6 +160,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     case TAB_LOG:
                         LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconNewMsg);
                         LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconNewXFer);
+                        LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconUlDl);
                         break;
                     default:
                         break;
@@ -192,7 +193,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
         // the reader is going to return junk for the settings bar title if we don't pause for a second:
         try {
-            Thread.sleep(500);
+            Thread.sleep(75);
         } catch(Exception e) {}
         ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
         clearStatusIcon(R.id.statusIconNewMsg);
@@ -294,7 +295,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         if(serialPort != null)
             serialPort.close();
         ChameleonIO.PAUSED = true;
-        setStatusIcon(R.id.statusIconUSB, R.drawable.usbconnected16);
+        setStatusIcon(R.id.statusIconUSB, R.drawable.usbdisconnected16);
         return true;
     }
 
@@ -311,7 +312,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
             else if(ChameleonIO.DOWNLOAD) {
                 ExportTools.performXModemSerialDownload(liveLogData);
             }
-            else if(ChameleonIO.WAITING_FOR_RESPONSE) {
+            else if(ChameleonIO.WAITING_FOR_RESPONSE && ChameleonIO.isCommandResponse(liveLogData)) {
                 String strLogData = new String(liveLogData);
                 Log.i(TAG, strLogData);
                 ChameleonIO.DEVICE_RESPONSE_CODE = strLogData.split("[\n\r]+")[0];
@@ -419,34 +420,42 @@ public class LiveLoggerActivity extends AppCompatActivity {
         String msgParam = "";
         if(createCmd.equals("READER")) {
             ChameleonIO.setReaderConfigMode(serialPort, ChameleonIO.TIMEOUT);
+            ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }
         else if(createCmd.equals("SNIFFER")) {
             ChameleonIO.setLoggerConfigMode(serialPort, ChameleonIO.TIMEOUT);
+            ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }
         else if(createCmd.equals("ULTRALIGHT")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_ULTRALIGHT", ChameleonIO.TIMEOUT);
+            ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }
         else if(createCmd.equals("CLASSIC-1K")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_1K", ChameleonIO.TIMEOUT);
+            ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }
         else if(createCmd.equals("CLASSIC-4K")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_4K", ChameleonIO.TIMEOUT);
+            ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }
         else if(createCmd.equals("CLASSIC-1K7B")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_1K_7B", ChameleonIO.TIMEOUT);
+            ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }
         else if(createCmd.equals("CLASSIC-4K7B")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_4K_7B", ChameleonIO.TIMEOUT);
+            ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }
         else if(createCmd.equals("CFGNONE")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=NONE", ChameleonIO.TIMEOUT);
+            ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }
         else if(createCmd.equals("RESET")) { // need to re-establish the usb connection:
@@ -652,15 +661,15 @@ public class LiveLoggerActivity extends AppCompatActivity {
             outfile.createNewFile();
             if (fileType.equals("out")) {
                 mimeType = "plain/text";
-                writeFormattedLogFile(outfile);
+                ExportTools.writeFormattedLogFile(outfile);
             }
             else if (fileType.equals("html")) {
                 mimeType = "text/html";
-                writeHTMLLogFile(outfile);
+                ExportTools.writeHTMLLogFile(outfile);
             }
             else if (fileType.equals("bin")) {
                 mimeType = "application/octet-stream";
-                writeBinaryLogFile(outfile);
+                ExportTools.writeBinaryLogFile(outfile);
             }
         } catch(Exception ioe) {
             appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
@@ -726,66 +735,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     }
                 })
                 .show();
-    }
-
-    public static boolean writeFormattedLogFile(File fd) throws Exception {
-        Log.i(TAG, String.valueOf("00".getBytes(StandardCharsets.US_ASCII)));
-
-        FileOutputStream fout = new FileOutputStream(fd);
-        for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
-            View logEntryView = logDataFeed.getChildAt(vi);
-            if (logDataEntries.get(vi) instanceof LogEntryUI) {
-                String dataLine = ((LogEntryUI) logDataEntries.get(vi)).toString() + "\n";
-                fout.write(dataLine.getBytes(StandardCharsets.US_ASCII));
-            }
-            else {
-                String lineStr = "\n## " + ((LogEntryMetadataRecord) logDataEntries.get(vi)).toString() + "\n";
-                fout.write(lineStr.getBytes(StandardCharsets.US_ASCII));
-            }
-        }
-        fout.close();
-        return true;
-    }
-
-    public static boolean writeHTMLLogFile(File fd) throws Exception {
-        FileOutputStream fout = new FileOutputStream(fd);
-        String htmlHeader = "<html><head><title>Chameleon Mini Live Debugger -- Logging Output</title></head><body>\n\n";
-        fout.write(htmlHeader.getBytes(StandardCharsets.US_ASCII));
-        String defaultBgColor = String.format("#%06X", (0xFFFFFF & R.color.colorPrimaryDarkLog));
-        for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
-            View logEntryView = logDataFeed.getChildAt(vi);
-            if (logDataEntries.get(vi) instanceof LogEntryUI) {
-                String bgColor = String.format("#%06X", (0xFFFFFF & logEntryView.getDrawingCacheBackgroundColor()));
-                if(bgColor.equals(defaultBgColor))
-                    bgColor = "#ffffff";
-                String lineData = "<code bgcolor='" + bgColor + "'>" + ((LogEntryUI) logDataEntries.get(vi)).toString() + "</code><br/>\n";
-                fout.write(lineData.getBytes(StandardCharsets.US_ASCII));
-            }
-            else {
-                String lineData = "<b><code>" + ((LogEntryMetadataRecord) logDataEntries.get(vi)).toString() + "</code></b><br/>\n";
-                fout.write(lineData.getBytes(StandardCharsets.US_ASCII));
-            }
-        }
-        String htmlFooter = "</body></html>";
-        fout.write(htmlFooter.getBytes(StandardCharsets.US_ASCII));
-        fout.close();
-        return true;
-    }
-
-    public static boolean writeBinaryLogFile(File fd) throws Exception {
-        FileOutputStream fout = new FileOutputStream(fd);
-        short localTicks = 0;
-        for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
-            View logEntryView = logDataFeed.getChildAt(vi);
-            if (logDataEntries.get(vi) instanceof LogEntryUI) {
-                LogEntryUI logEntry = (LogEntryUI) logDataEntries.get(vi);
-                byte[] entryBytes = logEntry.packageBinaryLogData(localTicks);
-                localTicks = logEntry.getNextOffsetTime(localTicks);
-                fout.write(entryBytes);
-            }
-        }
-        fout.close();
-        return true;
     }
 
     public void actionButtonExportLogDownload(View view) {
