@@ -16,6 +16,8 @@ import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.Switch;
 
+import java.util.Random;
+
 import static android.content.ContentValues.TAG;
 
 /**
@@ -108,7 +110,7 @@ public class TabFragment extends Fragment {
                 if(setCmd.charAt(0) != '-') {
                     String userInputBytes = ((EditText) LiveLoggerActivity.runningActivity.findViewById(R.id.userInputFormattedBytes)).getText().toString();
                     userInputBytes = userInputBytes.replace(" ", "").replace(":", "").replace("-", ""); // remove pretty printing / spaces formatting
-                    boolean errorFlag = false;
+                    boolean errorFlag = false, resetStatus = false;
                     if(setCmd.equals("UID=") && (!Utils.stringIsHexadecimal(userInputBytes) || userInputBytes.length() != 2 * ChameleonIO.deviceStatus.UIDSIZE)) {
                         errorFlag = true;
                     }
@@ -120,10 +122,22 @@ public class TabFragment extends Fragment {
                     }
                     else if(setCmd.equals("UID=") || setCmd.equals("SETTING=") || setCmd.equals("THRESHOLD=") || setCmd.equals("TIMEOUT=")) {
                         setCmd += userInputBytes;
+                        resetStatus = true;
+                    }
+                    else if(setCmd.equals("RANDOM UID")) {
+                        int uidNumBytes = ChameleonIO.deviceStatus.UIDSIZE;
+                        Random rnGen = new Random(System.currentTimeMillis());
+                        byte[] randomBytes = new byte[uidNumBytes];
+                        for(int b = 0; b < uidNumBytes; b++)
+                            randomBytes[b] = (byte) rnGen.nextInt(0xff);
+                        setCmd = "UID=" + Utils.bytes2Hex(randomBytes).replace(" ", "");
+                        resetStatus = true;
                     }
                     if(!errorFlag) {
                         String deviceSetting = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, setCmd);
                         LiveLoggerActivity.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "INFO: Shell command of " + setCmd + " returned status " + ChameleonIO.DEVICE_RESPONSE_CODE, ChameleonIO.DEVICE_RESPONSE));
+                        if(resetStatus)
+                            ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
                     }
                     else {
                         LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Command formatting error: the input user bytes are invalid or not of the correct length"));

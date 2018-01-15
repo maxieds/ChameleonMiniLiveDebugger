@@ -88,7 +88,7 @@ public class ExportTools {
                             outfile.getAbsolutePath(), outfile.length(), true);
                     String statusMsg = "Write internal log data to file " + outfile.getName() + "(+" + fileSize + " / " + outfile.length() + " bytes).\n";
                     statusMsg += "If you are not seeing the expected output, try running the LOGSTORE command from the tools menu first.";
-                    LiveLoggerActivity.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "NEW EVENT", statusMsg));
+                    LiveLoggerActivity.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "EXPORT", statusMsg));
                     if (throwToLive) {
                         throwDeviceLogDataToLive(outfile);
                     }
@@ -289,6 +289,46 @@ public class ExportTools {
             }
         }
         fout.close();
+        return true;
+    }
+
+    public static boolean saveBinaryDumpMFU(String filePathPrefix) {
+        LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
+        String mimeType = "application/octet-stream";
+        String outfilePath = filePathPrefix + Utils.getTimestamp().replace(":", "") + ".bin";
+        File downloadsFolder = new File("//sdcard//Download//");
+        outfile = new File(downloadsFolder, outfilePath);
+        boolean docsFolderExists = true;
+        if (!downloadsFolder.exists()) {
+            docsFolderExists = downloadsFolder.mkdir();
+        }
+        if (docsFolderExists) {
+            outfile = new File(downloadsFolder.getAbsolutePath(),outfilePath);
+        }
+        else {
+            LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to save output in Downloads folder."));
+            LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            return false;
+        }
+        try {
+            outfile.createNewFile();
+            FileOutputStream fout = new FileOutputStream(outfile);
+            ChameleonIO.EXPECTING_BINARY_DATA = true;
+            LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "DUMP_MFU");
+            fout.write(ChameleonIO.DEVICE_RESPONSE_BINARY);
+            fout.flush();
+            fout.close();
+        } catch(Exception ioe) {
+            LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
+            LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            ioe.printStackTrace();
+            return false;
+        }
+        DownloadManager downloadManager = (DownloadManager) LiveLoggerActivity.defaultContext.getSystemService(DOWNLOAD_SERVICE);
+        downloadManager.addCompletedDownload(outfile.getName(), outfile.getName(), true, mimeType,
+                outfile.getAbsolutePath(), outfile.length(),true);
+        String statusMsg = "Dumped MFU binary data to " + outfilePath + " (" + String.valueOf(outfile.length()) + " bytes).";
+        LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("EXPORT", statusMsg));
         return true;
     }
 

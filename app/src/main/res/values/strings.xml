@@ -113,6 +113,7 @@
         <item>TIMEOUT=</item>
         <item>TIMEOUT=?</item>
         <item>UID=</item>
+        <item>RANDOM UID</item>
     </string-array>
 
 

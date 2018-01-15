@@ -24,16 +24,17 @@ public class ChameleonIO {
 
     private static final String TAG = ChameleonIO.class.getSimpleName();
 
-    public static final int RESP_BUFFER_SIZE = 1024;
-    public static final int TIMEOUT = 1500;
+    public static final int TIMEOUT = 2000;
     public static boolean PAUSED = true;
     public static boolean WAITING_FOR_RESPONSE = false;
     public static boolean DOWNLOAD = false;
+    public static boolean EXPECTING_BINARY_DATA = false;
     public static final int CMUSB_VENDORID = 0x16d0;
     public static final int CMUSB_PRODUCTID = 0x04b2;
-    public static final String DEVICE_RESPONSE_INTENT = "ChameleonIO.device.CMD_QUERY_RESPONSE";
-    public static String DEVICE_RESPONSE;
     public static String DEVICE_RESPONSE_CODE;
+    public static String DEVICE_RESPONSE;
+    public static byte[] DEVICE_RESPONSE_BINARY;
+
 
     public enum SerialRespCode {
 

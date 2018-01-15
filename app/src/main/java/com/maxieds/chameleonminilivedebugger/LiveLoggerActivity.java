@@ -173,7 +173,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
         String[] permissions = {
                 "android.permission.READ_EXTERNAL_STORAGE",
                 "android.permission.WRITE_EXTERNAL_STORAGE",
-                "android.permission.INTERNET",
                 "com.android.example.USB_PERMISSION"
         };
         if(android.os.Build.VERSION.SDK_INT >= 23)
@@ -224,7 +223,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 break;
             }
         }
-        //appendNewLog(new LogEntryMetadataRecord(defaultInflater, "INFO: Device query of " + query + " returned status " + ChameleonIO.DEVICE_RESPONSE_CODE, ChameleonIO.DEVICE_RESPONSE));
         return ChameleonIO.DEVICE_RESPONSE;
     }
 
@@ -307,7 +305,13 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 String strLogData = new String(liveLogData);
                 Log.i(TAG, strLogData);
                 ChameleonIO.DEVICE_RESPONSE_CODE = strLogData.split("[\n\r]+")[0];
-                ChameleonIO.DEVICE_RESPONSE = strLogData.replace(ChameleonIO.DEVICE_RESPONSE_CODE, "").replaceAll("[\n\r\t]*", "");
+                ChameleonIO.DEVICE_RESPONSE = strLogData.replace(ChameleonIO.DEVICE_RESPONSE_CODE, "").replaceAll("[\n\r]*", "");
+                if(ChameleonIO.EXPECTING_BINARY_DATA) {
+                    int binaryBufSize = liveLogData.length - ChameleonIO.DEVICE_RESPONSE_CODE.length() - 2;
+                    ChameleonIO.DEVICE_RESPONSE_BINARY = new byte[binaryBufSize];
+                    System.arraycopy(liveLogData, liveLogData.length - binaryBufSize, ChameleonIO.DEVICE_RESPONSE_BINARY, 0, binaryBufSize);
+                    ChameleonIO.EXPECTING_BINARY_DATA = false;
+                }
                 ChameleonIO.WAITING_FOR_RESPONSE = false;
                 return;
             }
@@ -683,7 +687,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
             i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivity(Intent.createChooser(i, "Share the file ... "));
         }
-        appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "Saved log file to \"" + outfilePath + "\"."));
+        appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("EXPORT", "Saved log file to \"" + outfilePath + "\"."));
+    }
+
+    public void actionButtonDumpMFU(View view) {
+        ExportTools.saveBinaryDumpMFU("mfultralight");
     }
 
     public static void actionSpinnerSetCommand(View view) {

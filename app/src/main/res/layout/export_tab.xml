@@ -156,10 +156,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
-        android:drawableLeft="@drawable/todo16"
+        android:drawableLeft="@drawable/exportarrow16"
         android:drawablePadding="5dp"
         android:singleLine="true"
-        android:text="TODO / wishlist features for later:"
+        android:text="Other Export Features: "
         android:textSize="14sp"
         android:textAllCaps="true"
         android:textStyle="bold|italic" />
@@ -174,7 +174,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
         android:background="@color/colorAccentLog"
-        android:columnCount="13"
+        android:columnCount="2"
         android:orientation="horizontal"
         android:padding="2dp"
         android:rowCount="1">
@@ -183,13 +183,14 @@
             style="@style/GridButtons"
             android:drawableLeft="@drawable/dumpmfuchip24"
             android:tag="DUMP_MFU"
+            android:onClick="actionButtonDumpMFU"
             android:text="Dump MFU Tag to Bin" />
 
         <Button
             style="@style/GridButtons"
             android:drawableLeft="@drawable/idcard24"
             android:tag="UPLOAD"
-            android:text="UPLOAD CARD" />
+            android:text="UPLOAD CARD (TODO)" />
 
     </GridLayout>
 

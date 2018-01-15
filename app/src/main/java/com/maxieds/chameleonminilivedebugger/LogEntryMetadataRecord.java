@@ -70,6 +70,7 @@ public class LogEntryMetadataRecord extends LogEntryBase {
         prefixIconMap.put("ONCLICK", R.drawable.powaction24);
         prefixIconMap.put("IDENTIFY", R.drawable.find24);
         prefixIconMap.put("PRINT", R.drawable.dotdotdotbubble24);
+        prefixIconMap.put("EXPORT", R.drawable.export24);
     }
 
     public static LogEntryMetadataRecord createDefaultEventRecord(String eventID, String eventMsg) {
