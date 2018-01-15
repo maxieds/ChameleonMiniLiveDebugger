@@ -15,6 +15,6 @@ For all intensive reasonable non-commercial applications this app is free to use
 
 # Donations / Contributing to the Project
 
-The app is freeware so instead of adding a PayPal account for good Samaritan user donations, I will just point out that I would like to have another couple of these devices to play with and loan to friends for another private app I'm developing. If anyone finds this app useful and has the resources to donate an extra Chameleon or two (any revision should do the trick), please contact me.
+The app is freeware so instead of adding a PayPal account for good Samaritan user donations, I will just point out that I would like to have another couple of these devices to play with and loan to friends for another private app I'm developing. If anyone finds this app useful and has the resources to donate an extra Chameleon or two (any revision should do the trick), please contact me. I'd also be interested in obtaining one of the Rev. E boards for testing with the app and some of the Proxmark hardware for coding related applications. 
 Additionally, you can contribute to the development of the app by providing [debugging information](https://github.com/maxieds/ChameleonMiniLiveDebugger/issues/1) and [feature requests](https://github.com/maxieds/ChameleonMiniLiveDebugger/issues/2) on the [issues thread](https://github.com/maxieds/ChameleonMiniLiveDebugger/issues) for the project. 
 
