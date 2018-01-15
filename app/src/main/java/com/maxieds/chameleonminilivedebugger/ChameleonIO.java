@@ -48,6 +48,7 @@ public class ChameleonIO {
     public static boolean WAITING_FOR_RESPONSE = false;
     public static boolean WAITING_FOR_XMODEM = false;
     public static boolean DOWNLOAD = false;
+    public static boolean UPLOAD = false;
     public static boolean EXPECTING_BINARY_DATA = false;
 
     /**

@@ -8,6 +8,7 @@ import android.view.View;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import static android.content.ContentValues.TAG;
@@ -55,6 +56,7 @@ public class ExportTools {
      */
     public static int fileSize = 0;
     public static FileOutputStream streamDest;
+    public static FileInputStream streamSrc;
     public static File outfile;
     private static String currentLogMode = "LIVE";
     private static boolean throwToLive = false;
@@ -62,6 +64,8 @@ public class ExportTools {
     public static byte Checksum;
     public static int currentNAKCount;
     public static boolean transmissionErrorOccurred;
+    public static int uploadState;
+    public static byte[] uploadFramebuffer = new byte[XMODEM_BLOCK_SIZE + 4];
 
     /**
      * Completes the XModem download command. Implemented this way to keep the GUI from
@@ -74,7 +78,7 @@ public class ExportTools {
             if (!ExportTools.EOT) {
                 eotSleepHandler.postDelayed(this, 50);
             }
-            else {
+            else if(ChameleonIO.DOWNLOAD){
                 try {
                     streamDest.close();
                 } catch (Exception ioe) {
@@ -100,6 +104,24 @@ public class ExportTools {
                     outfile.delete();
                     LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
                     LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Maximum number of NAK errors exceeded. Download of data aborted."));
+                }
+            }
+            else if(ChameleonIO.UPLOAD) {
+                try {
+                    streamSrc.close();
+                } catch (Exception ioe) {
+                    LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
+                    ioe.printStackTrace();
+                } finally {
+                    ChameleonIO.UPLOAD = false;
+                    LiveLoggerActivity.serialPortLock.release();
+                }
+                if(!ExportTools.transmissionErrorOccurred) {
+                    ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+                }
+                else {
+                    LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+                    LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "File transmission errors encountered. Maximum number of NAK errors exceeded. Download of data aborted."));
                 }
             }
         }
@@ -224,6 +246,7 @@ public class ExportTools {
         // turn of logging so the transfer doesn't get accidentally logged:
         currentLogMode = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "LOGMODE?");
         ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "LOGMODE=OFF", ChameleonIO.TIMEOUT);
+        ChameleonIO.WAITING_FOR_XMODEM = true;
         LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, issueCmd);
         fileSize = 0;
         CurrentFrameNumber = FIRST_FRAME_NUMBER;
@@ -266,7 +289,94 @@ public class ExportTools {
         }
     }
 
-    public static void uploadCardFileByXModem(String cardFilePath) {}
+    /**
+     * Implements the actual data exchange with the card in the upload process.
+     * Currently freezes the UI after the BYTE_EOF frame is sent.
+     * @param liveLogData
+     */
+    public static void performXModemSerialUpload(byte[] liveLogData) {
+        Log.i(TAG, "Received Upload Data (#=" + liveLogData.length + ") ... " + Utils.bytes2Hex(liveLogData));
+        Log.i(TAG, "    => " + Utils.bytes2Ascii(liveLogData));
+        if(ExportTools.EOT)
+            return;
+        byte statusByte = liveLogData[0];
+        if(uploadState == 0 || uploadState == 1 && statusByte == BYTE_ACK) {
+            if(uploadState == 1)
+                CurrentFrameNumber++;
+            else
+                uploadState = 1;
+            uploadFramebuffer[0] = BYTE_SOH;
+            uploadFramebuffer[1] = CurrentFrameNumber;
+            uploadFramebuffer[2] = (byte) (255 - CurrentFrameNumber);
+            byte[] payloadBytes = new byte[XMODEM_BLOCK_SIZE];
+            try {
+                if(streamSrc.available() == 0) {
+                    Log.i(TAG, "Upload / Sending EOT to device.");
+                    EOT = true;
+                    LiveLoggerActivity.serialPort.write(new byte[]{BYTE_EOF});
+                    return;
+                }
+                streamSrc.read(payloadBytes, 0, XMODEM_BLOCK_SIZE);
+                System.arraycopy(payloadBytes, 0, uploadFramebuffer, 3, XMODEM_BLOCK_SIZE);
+            } catch(IOException ioe) {
+                EOT = true;
+                transmissionErrorOccurred = true;
+                LiveLoggerActivity.serialPort.write(new byte[]{BYTE_CAN});
+                return;
+            }
+            uploadFramebuffer[XMODEM_BLOCK_SIZE + 3] = CalcChecksum(payloadBytes, XMODEM_BLOCK_SIZE);
+            LiveLoggerActivity.serialPort.write(uploadFramebuffer);
+        }
+        else if(statusByte == BYTE_NAK && currentNAKCount <= MAX_NAK_COUNT) {
+            Log.i(TAG, "Upload / Sending Another NAK response (#=" + currentNAKCount + ")");
+            currentNAKCount++;
+            LiveLoggerActivity.serialPort.write(uploadFramebuffer);
+        }
+        else {
+            EOT = true;
+            transmissionErrorOccurred = true;
+            LiveLoggerActivity.serialPort.write(new byte[]{BYTE_CAN});
+            return;
+        }
+    }
+
+    /**
+     * Called to initiate the card data upload process.
+     * @param cardFilePath
+     * @see LiveLoggerActivity.actionButtonUploadCard
+     */
+    public static void uploadCardFileByXModem(String cardFilePath) {
+        LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusupload16);
+        if(new File(cardFilePath).length() % XMODEM_BLOCK_SIZE != 0) {
+            LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Invalid file size for the selected card file \"" + cardFilePath + "\". Aborting."));
+            LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            return;
+        }
+        try {
+            streamSrc = new FileInputStream(cardFilePath);
+        } catch(IOException ioe) {
+            LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to open chosen file \"" + cardFilePath + "\": " + ioe.getMessage()));
+            LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            return;
+        }
+        LiveLoggerActivity.serialPortLock.acquireUninterruptibly();
+        ChameleonIO.WAITING_FOR_XMODEM = true;
+        ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "UPLOAD", ChameleonIO.TIMEOUT);
+        fileSize = 0;
+        CurrentFrameNumber = FIRST_FRAME_NUMBER;
+        currentNAKCount = -1;
+        transmissionErrorOccurred = false;
+        uploadState = 0;
+        EOT = false;
+        while(ChameleonIO.WAITING_FOR_XMODEM) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException ie) {}
+        }
+        ChameleonIO.UPLOAD = true;
+        LiveLoggerActivity.serialPort.write(new byte[]{BYTE_NAK});
+        eotSleepHandler.postDelayed(eotSleepRunnable, 50);
+    }
 
     /**
      * Writes the logged data to plaintext roughly in the format of the Python script on the

@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.hardware.usb.UsbDevice;
@@ -15,6 +16,7 @@ import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
+import android.provider.OpenableColumns;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -42,6 +44,7 @@ import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
 
 import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -383,14 +386,23 @@ public class LiveLoggerActivity extends AppCompatActivity {
         // this is what's going to get called when the LIVE config spontaneously prints its log data to console:
         @Override
         public void onReceivedData(byte[] liveLogData) {
+            //Log.i(TAG, "USBReaderCallback Received Data: " + Utils.bytes2Hex(liveLogData));
+            //Log.i(TAG, "    => " + Utils.bytes2Ascii(liveLogData));
             if(ChameleonIO.PAUSED) {
                 return;
             }
             else if(ChameleonIO.DOWNLOAD) {
+                Log.i(TAG, "USBReaderCallback / DOWNLOAD");
                 ExportTools.performXModemSerialDownload(liveLogData);
             }
+            else if(ChameleonIO.UPLOAD) {
+                //Log.i(TAG, "USBReaderCallback / UPLOAD");
+                ExportTools.performXModemSerialUpload(liveLogData);
+            }
             else if(ChameleonIO.WAITING_FOR_XMODEM) {
-                if(new String(liveLogData).substring(0, 10).equals("110:WAITING")) {
+                //Log.i(TAG, "USBReaderCallback / WAITING_FOR_XMODEM");
+                String strLogData = new String(liveLogData);
+                if(strLogData.length() >= 11 && strLogData.substring(0, 11).equals("110:WAITING")) {
                     ChameleonIO.WAITING_FOR_XMODEM = false;
                 }
             }
@@ -917,34 +929,62 @@ public class LiveLoggerActivity extends AppCompatActivity {
         else if(action.equals("LOGDOWNLOAD2LIVE"))
             ExportTools.downloadByXModem("LOGDOWNLOAD", "devicelog", true);
         else if(action.equals("DOWNLOAD"))
-            ExportTools.downloadByXModem("DOWNLOAD", "carddata", false);
+            ExportTools.downloadByXModem("DOWNLOAD", "carddata-" + ChameleonIO.deviceStatus.CONFIG, false);
     }
 
+    /**
+     * Constant for the file chooser dialog in the upload card data process.
+     */
     private static final int FILE_SELECT_CODE = 0;
 
+    /**
+     * Called after the user chooses a file in the upload card dialog.
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case FILE_SELECT_CODE:
                 if (resultCode == RESULT_OK) {
-                    throw new RuntimeException(data.getData().getPath());
+                    String filePath = "<FileNotFound>";
+                    Cursor cursor = getContentResolver().query(data.getData(), null, null, null, null, null);
+                    if (cursor != null && cursor.moveToFirst()) {
+                        filePath = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                        filePath = "//sdcard//Download//" + filePath;
+                    }
+                    throw new RuntimeException(filePath);
                 }
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    /**
+     * Wrapper around the card upload feature.
+     * The method has the user pick a saved card file from the /sdcard/Download/* folder, then
+     * initiates the upload with the function in ExportTools.
+     * @param view pressed Button
+     */
     public void actionButtonUploadCard(View view) {
+        if(view != null) {
+            appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "The card upload feature does not quite work yet. Aborting."));
+            return;
+        }
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        String cardFilePath = "";
+        intent.setDataAndType(Uri.parse("//sdcard//Download//"), "*/*");
         try {
             startActivityForResult(Intent.createChooser(intent, "Select a Card File to Upload"), FILE_SELECT_CODE);
         } catch (android.content.ActivityNotFoundException e) {
             appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to choose card file: " + e.getMessage()));
+        }
+        String cardFilePath = "";
+        try {
+            Looper.loop();
         } catch(RuntimeException rte) {
-            cardFilePath = rte.getMessage();
+            cardFilePath = rte.getMessage().split("java.lang.RuntimeException: ")[1];
             Log.i(TAG, "Chosen Card File: " + cardFilePath);
         }
         ExportTools.uploadCardFileByXModem(cardFilePath);
