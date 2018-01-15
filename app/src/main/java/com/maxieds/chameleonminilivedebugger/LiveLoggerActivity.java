@@ -105,7 +105,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         if(!isTaskRoot()) {
             final Intent intent = getIntent();
             final String intentAction = intent.getAction();
-            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && intentAction != null && intentAction.equals(Intent.ACTION_MAIN) ||
+            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && intentAction != null &&
                     intentAction.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
                 Log.w(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead of re-launching.");
                 finish();
@@ -173,6 +173,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         String[] permissions = {
                 "android.permission.READ_EXTERNAL_STORAGE",
                 "android.permission.WRITE_EXTERNAL_STORAGE",
+                "android.permission.INTERNET",
                 "com.android.example.USB_PERMISSION"
         };
         if(android.os.Build.VERSION.SDK_INT >= 23)
@@ -550,10 +551,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     public void actionButtonProcessBatch(View view) {
         String actionFlag = ((Button) view).getTag().toString();
-        //if(actionFlag.equals("PARSE_APDU")) {
-        //    appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "Parsing of APDU commands and status codes not yet supported."));
-        //    return;
-        //}
         for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
             View logEntryView = logDataFeed.getChildAt(vi);
             if (logDataEntries.get(vi) instanceof LogEntryUI) {
@@ -585,9 +582,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 else if(isChecked && actionFlag.equals("HIDE")) {
                     logEntryView.setVisibility(View.GONE);
                 }
-                //else if(isChecked && actionFlag.equals("TRIM_CMD")) {
-                //    ((LogEntryUI) logDataEntries.get(vi)).trimCommandText();
-                //}
                 else if(isChecked && actionFlag.equals("COPY")) {
                     EditText etUserBytes = (EditText) findViewById(R.id.userInputFormattedBytes);
                     String appendBytes = Utils.bytes2Hex(((LogEntryUI) logDataEntries.get(vi)).getEntryData());
@@ -637,6 +631,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
     }
 
     public void actionButtonWriteFile(View view) {
+        LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
         String fileType = ((Button) view).getTag().toString(), mimeType = "message/rfc822";
         String outfilePath = "logdata-" + Utils.getTimestamp().replace(":", "") + "." + fileType;
         File downloadsFolder = new File("//sdcard//Download//");
@@ -650,6 +645,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
         else {
             appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to save output in Downloads folder."));
+            LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             return;
         }
         try {
@@ -668,6 +664,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
             }
         } catch(Exception ioe) {
             appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
+            LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             ioe.printStackTrace();
             return;
         }
