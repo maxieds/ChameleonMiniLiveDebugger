@@ -920,4 +920,34 @@ public class LiveLoggerActivity extends AppCompatActivity {
             ExportTools.downloadByXModem("DOWNLOAD", "carddata", false);
     }
 
+    private static final int FILE_SELECT_CODE = 0;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case FILE_SELECT_CODE:
+                if (resultCode == RESULT_OK) {
+                    throw new RuntimeException(data.getData().getPath());
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void actionButtonUploadCard(View view) {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        String cardFilePath = "";
+        try {
+            startActivityForResult(Intent.createChooser(intent, "Select a Card File to Upload"), FILE_SELECT_CODE);
+        } catch (android.content.ActivityNotFoundException e) {
+            appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to choose card file: " + e.getMessage()));
+        } catch(RuntimeException rte) {
+            cardFilePath = rte.getMessage();
+            Log.i(TAG, "Chosen Card File: " + cardFilePath);
+        }
+        ExportTools.uploadCardFileByXModem(cardFilePath);
+    }
+
 }

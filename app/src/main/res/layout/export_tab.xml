@@ -190,7 +190,8 @@
             style="@style/GridButtons"
             android:drawableLeft="@drawable/idcard24"
             android:tag="UPLOAD"
-            android:text="UPLOAD CARD (TODO)" />
+            android:onClick="actionButtonUploadCard"
+            android:text="UPLOAD CARD" />
 
     </GridLayout>
 

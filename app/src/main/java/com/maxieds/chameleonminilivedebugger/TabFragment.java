@@ -133,14 +133,14 @@ public class TabFragment extends Fragment {
      * @see TabFragment.onCreateView
      * @see res/layout/tools_menu_tab.xml
      */
-    private void connectCommandListSpinnerAdapter(View view, int spinnerID, int spinnerStringList, SpinnerAdapter spinnerAdapter, String queryCmd) {
+    private void connectCommandListSpinnerAdapter(View view, final int spinnerID, int spinnerStringList, SpinnerAdapter spinnerAdapter, String queryCmd) {
         final String[] spinnerList = getResources().getStringArray(spinnerStringList);
         spinnerAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, spinnerList);
         Spinner spinner = (Spinner) view.findViewById(spinnerID);
         spinner.setAdapter(spinnerAdapter);
-        final Spinner localSpinnerRef = spinner;
+        final View localFinalView = view;
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            Spinner localSpinner = localSpinnerRef;
+            View localView = localFinalView;
             String[] localSpinnerList = spinnerList;
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String setCmd = localSpinnerList[i];
@@ -179,6 +179,7 @@ public class TabFragment extends Fragment {
                     else {
                         LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Command formatting error: the input user bytes are invalid or not of the correct length"));
                     }
+                    ((Spinner) localView.findViewById(spinnerID)).setSelection(0);
                 }
             }
             public void onNothingSelected(AdapterView<?> adapterView) {

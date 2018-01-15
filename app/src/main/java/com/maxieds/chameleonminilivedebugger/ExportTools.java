@@ -266,6 +266,8 @@ public class ExportTools {
         }
     }
 
+    public static void uploadCardFileByXModem(String cardFilePath) {}
+
     /**
      * Writes the logged data to plaintext roughly in the format of the Python script on the
      * Chameleon Mini scripts page https://github.com/emsec/ChameleonMini/tree/master/Software.
