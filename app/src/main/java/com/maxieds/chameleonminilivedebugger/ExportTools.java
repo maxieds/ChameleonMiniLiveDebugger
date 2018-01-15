@@ -12,23 +12,27 @@ import java.nio.charset.StandardCharsets;
 
 import static android.content.ContentValues.TAG;
 import static android.content.Context.DOWNLOAD_SERVICE;
-import static com.maxieds.chameleonminilivedebugger.ExportTools.State_t.STATE_OFF;
-import static com.maxieds.chameleonminilivedebugger.LiveLoggerActivity.logDataFeed;
-
-//import java.nio.file.Path;
-//import java.nio.file.Files;
 
 /**
- * Created by maxie on 1/11/18.
- * Based on XModem.c/h in the Chameleon Mini firmware distribution.
+ * <h1>File Export Tools</h1>
+ * The ExportTools class provides utilities for storing logs to file, downloading / uploading
+ * card data via XModem, and downloading the stored log data from the device.
+ * Parts of this code for the XModem connections are based on
+ * XModem.c/h in the Chameleon Mini firmware distribution.
+ *
+ * @author  Maxie D. Schmidt
+ * @since   1/11/18
  */
-
 public class ExportTools {
 
-    public static final long LOCK_TIMEOUT = 2000;
+    /**
+     * State information for the XModem connections/
+     */
     public static boolean EOT = false;
-    public static int MAX_NAK_COUNT = 6;
 
+    /**
+     * Named XModem connection status bytes.
+     */
     public static final byte BYTE_NAK = (byte) 0x15;
     public static final byte BYTE_SOH = (byte) 0x01;
     public static final byte BYTE_ACK = (byte) 0x06;
@@ -37,24 +41,17 @@ public class ExportTools {
     public static final byte BYTE_EOT = (byte) 0x04;
     public static final byte BYTE_ESC = (byte) 0x1B;
 
+    /**
+     * XModem connection configuration.
+     */
     public static final short XMODEM_BLOCK_SIZE = 128;
     public static final byte FIRST_FRAME_NUMBER = (byte) 1;
     public static final byte CHECKSUM_INIT_VALUE = 0;
+    public static int MAX_NAK_COUNT = 6;
 
-    public static enum State_t {
-        STATE_OFF,
-        STATE_RECEIVE_INIT,
-        STATE_RECEIVE_WAIT,
-        STATE_RECEIVE_FRAMENUM1,
-        STATE_RECEIVE_FRAMENUM2,
-        STATE_RECEIVE_DATA,
-        STATE_RECEIVE_PROCESS,
-        STATE_SEND_INIT,
-        STATE_SEND_WAIT,
-        STATE_SEND_EOT
-    };
-    public static State_t State = STATE_OFF;
-
+    /**
+     * Static variables used internally within the class.
+     */
     public static int fileSize = 0;
     public static FileOutputStream streamDest;
     public static File outfile;
@@ -66,6 +63,12 @@ public class ExportTools {
     public static int currentNAKCount;
     public static boolean transmissionErrorOccurred;
 
+    /**
+     * Completes the XModem download command. Implemented this way to keep the GUI from
+     * freezing waiting for the command to complete by while loop / Thread.sleep.
+     * @see ExportTools.downloadByXModem
+     * @see ExportTools.performXModemSerialDownload
+     */
     public static Runnable eotSleepRunnable = new Runnable() {
         public void run() {
             if (!ExportTools.EOT) {
@@ -103,6 +106,12 @@ public class ExportTools {
     };
     public static Handler eotSleepHandler = new Handler();
 
+    /**
+     * Calculates the checksum of the passed byte buffer.
+     * @param buffer
+     * @param byteCount
+     * @return byte checksum value
+     */
     public static byte CalcChecksum(byte[] buffer, short byteCount) {
         byte checksum = CHECKSUM_INIT_VALUE;
         int bufPos = 0;
@@ -112,6 +121,11 @@ public class ExportTools {
         return checksum;
     }
 
+    /**
+     * Handles the logic of receiving the data in a XModem download.
+     * @param liveLogData
+     * @see LiveLoggerActivity.usbReaderCallback
+     */
     public static void performXModemSerialDownload(byte[] liveLogData) {
         Log.i(TAG, "Received XModem data ..." + Utils.bytes2Hex(liveLogData));
         if (liveLogData != null && liveLogData.length > 0 && liveLogData[0] != ExportTools.BYTE_EOT) {
@@ -165,6 +179,14 @@ public class ExportTools {
         }
     }
 
+    /**
+     * Initiates the file download by XModem.
+     * @param issueCmd
+     * @param outfilePrefix
+     * @param throwToLiveParam
+     * @return boolean success of the operation
+     * @see LiveLoggerActivity.actionButtonExportLogDownload
+     */
     public static boolean downloadByXModem(String issueCmd, String outfilePrefix, boolean throwToLiveParam) {
         LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
         String outfilePath = outfilePrefix + "-" + Utils.getTimestamp().replace(":", "") + ".bin";
@@ -212,6 +234,10 @@ public class ExportTools {
         return true;
     }
 
+    /**
+     * Writes the downloaded log data to the logger interface tab after the download completes.
+     * @param logDataFile
+     */
     public static void throwDeviceLogDataToLive(File logDataFile) {
         try {
             FileInputStream fin = new FileInputStream(logDataFile);
@@ -223,7 +249,7 @@ public class ExportTools {
                 fin.read(payloadBytes, 4, dlen);
                 LiveLoggerActivity.appendNewLog(LogEntryUI.newInstance(payloadBytes, ""));
                 // highlight the entries so it's clear they're from the device's logs:
-                LiveLoggerActivity.logDataFeed.getChildAt(logDataFeed.getChildCount() - 1).setBackgroundColor(LiveLoggerActivity.runningActivity.getResources().getColor(R.color.deviceMemoryLogHighlight));
+                LiveLoggerActivity.logDataFeed.getChildAt(LiveLoggerActivity.logDataFeed.getChildCount() - 1).setBackgroundColor(LiveLoggerActivity.runningActivity.getResources().getColor(R.color.deviceMemoryLogHighlight));
             }
             fin.close();
         } catch(Exception ioe) {
@@ -232,6 +258,14 @@ public class ExportTools {
         }
     }
 
+    /**
+     * Writes the logged data to plaintext roughly in the format of the Python script on the
+     * Chameleon Mini scripts page https://github.com/emsec/ChameleonMini/tree/master/Software.
+     * @param fd
+     * @return boolean success of the operation
+     * @throws Exception (IOException)
+     * @see LiveLoggerActivity.actionButtonWriteFile
+     */
     public static boolean writeFormattedLogFile(File fd) throws Exception {
         Log.i(TAG, String.valueOf("00".getBytes(StandardCharsets.US_ASCII)));
 
@@ -251,6 +285,14 @@ public class ExportTools {
         return true;
     }
 
+    /**
+     * Writes the logged data to color-coded HTML roughly in the format of the Python script on the
+     * Chameleon Mini scripts page https://github.com/emsec/ChameleonMini/tree/master/Software.
+     * @param fd
+     * @return boolean success of the operation
+     * @throws Exception (IOException)
+     * @see LiveLoggerActivity.actionButtonWriteFile
+     */
     public static boolean writeHTMLLogFile(File fd) throws Exception {
         FileOutputStream fout = new FileOutputStream(fd);
         String htmlHeader = "<html><head><title>Chameleon Mini Live Debugger -- Logging Output</title></head><body>\n\n";
@@ -276,6 +318,14 @@ public class ExportTools {
         return true;
     }
 
+    /**
+     * Writes the logged data to the binary format returned by the LOGDOWNLOAD command.
+     * @param fd
+     * @return boolean success of the operation
+     * @throws Exception (IOException)
+     * @see LiveLoggerActivity.actionButtonWriteFile
+     * @see http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/Page_Log.html
+     */
     public static boolean writeBinaryLogFile(File fd) throws Exception {
         FileOutputStream fout = new FileOutputStream(fd);
         short localTicks = 0;
@@ -292,6 +342,12 @@ public class ExportTools {
         return true;
     }
 
+    /**
+     * Saves the output of the DUMP_MFU command to binary file.
+     * @param filePathPrefix
+     * @return boolean success of the operation
+     * @see LiveLoggerActivity.actionButtonDumpMFU
+     */
     public static boolean saveBinaryDumpMFU(String filePathPrefix) {
         LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
         String mimeType = "application/octet-stream";

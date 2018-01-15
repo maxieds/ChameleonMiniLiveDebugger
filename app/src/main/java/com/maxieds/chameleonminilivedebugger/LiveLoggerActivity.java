@@ -54,11 +54,25 @@ import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_TOOLS;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS;
 
+/**
+ * <h1>Live Logger Activity</h1>
+ * Implementation of the main running activity in the application.
+ *
+ * @author  Maxie D. Schmidt
+ * @since   12/31/17
+ */
 public class LiveLoggerActivity extends AppCompatActivity {
 
     private static final String TAG = LiveLoggerActivity.class.getSimpleName();
+
+    /**
+     * We assume there is only one instance of the singleton activity running at a time.
+     */
     public static LiveLoggerActivity runningActivity;
 
+    /**
+     * Static variables used across classes.
+     */
     public static LayoutInflater defaultInflater;
     public static Context defaultContext;
     public static LinearLayout logDataFeed;
@@ -76,9 +90,18 @@ public class LiveLoggerActivity extends AppCompatActivity {
     private static ViewPager viewPager;
     private static int selectedTab = TAB_LOG;
 
+    /**
+     * Configuration of the USB serial port.
+     */
     public static UsbSerialDevice serialPort;
     public static final Semaphore serialPortLock = new Semaphore(1, true);
 
+    /**
+     * Appends a new log to the logging interface tab.
+     * @param logEntry
+     * @see LogEntryUI
+     * @see LogEntryMetadataRecord
+     */
     public static void appendNewLog(LogEntryBase logEntry) {
         if(LiveLoggerActivity.selectedTab != TAB_LOG) {
             if(logEntry instanceof LogEntryUI)
@@ -90,15 +113,37 @@ public class LiveLoggerActivity extends AppCompatActivity {
         logDataEntries.add(logEntry);
     }
 
+    /**
+     * Sets one of the small status icons indicated at the top of the activity window.
+     * @param iconID
+     * @param iconDrawable
+     * @see R.id.statusIconUSB
+     * @see R.id.statusIconUlDl
+     * @see R.id.statusIconNewMsg
+     * @see R.id.statusIconNewXFer
+     */
     public void setStatusIcon(int iconID, int iconDrawable) {
         ((ImageView) findViewById(iconID)).setAlpha(255);
         ((ImageView) findViewById(iconID)).setImageDrawable(getResources().getDrawable(iconDrawable));
     }
 
+    /**
+     * Clears the corresponding status icon indicated at the top of the activity window.
+     * @param iconID
+     * @see R.id.statusIconUSB
+     * @see R.id.statusIconUlDl
+     * @see R.id.statusIconNewMsg
+     * @see R.id.statusIconNewXFer
+     */
     public void clearStatusIcon(int iconID) {
         ((ImageView) findViewById(iconID)).setAlpha(0);
     }
 
+    /**
+     * Initializes the activity state and variables.
+     * Called when the activity is created.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -180,11 +225,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR); // keep app from crashing when the screen rotates
 
         serialPort = configureSerialPort(null, usbReaderCallback);
-
-        // the reader is going to return junk for the settings bar title if we don't pause for a second:
-        //try {
-        //    Thread.sleep(75);
-        //} catch(Exception e) {}
         if(serialPort != null)
             ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
 
@@ -205,6 +245,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Handles newly attached / detached USB devices.
+     * @param intent
+     */
     @Override
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -224,6 +268,16 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Queries the Chameleon device with the query command and returns its response
+     * (sans the preceeding ascii status code).
+     * @param cmPort
+     * @param query
+     * @return String device response
+     * @see ChameleonIO.DEVICE_RESPONSE
+     * @see ChameleonIO.DEVICE_RESPONSE_CODE
+     * @see LiveLoggerActivity.usbReaderCallback
+     */
     public static String getSettingFromDevice(UsbSerialDevice cmPort, String query) {
         ChameleonIO.WAITING_FOR_RESPONSE = true;
         ChameleonIO.DEVICE_RESPONSE = "0";
@@ -243,6 +297,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
         return ChameleonIO.DEVICE_RESPONSE;
     }
 
+    /**
+     * Establishes the connection between the application and the Chameleon device.
+     * @param serialPort
+     * @param readerCallback
+     * @return the configured serial port (or null on error)
+     */
     public UsbSerialDevice configureSerialPort(UsbSerialDevice serialPort, UsbSerialInterface.UsbReadCallback readerCallback) {
 
         if(serialPort != null)
@@ -297,6 +357,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Closes the connection between the application and the Chameleon device.
+     * @param serialPort
+     * @return boolean success of operation (true)
+     */
     public boolean closeSerialPort(UsbSerialDevice serialPort) {
         if(serialPort != null)
             serialPort.close();
@@ -305,14 +370,15 @@ public class LiveLoggerActivity extends AppCompatActivity {
         return true;
     }
 
-    // this is what's going to get called when the LIVE config spontaneously prints its log data to console:
+    /**
+     * Sets up the handling of the serial data responses received from the device
+     * (command responses and spontaneous LIVE log data).
+     */
     public UsbSerialInterface.UsbReadCallback usbReaderCallback = new UsbSerialInterface.UsbReadCallback() {
-
+        // this is what's going to get called when the LIVE config spontaneously prints its log data to console:
         @Override
         public void onReceivedData(byte[] liveLogData) {
             if(ChameleonIO.PAUSED) {
-                //appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB RESPONSE: ", Utils.bytes2Hex(liveLogData) + " | " + Utils.bytes2Ascii(liveLogData)));
-                //ChameleonIO.PAUSED = false;
                 return;
             }
             else if(ChameleonIO.DOWNLOAD) {
@@ -341,19 +407,25 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 });
             }
         }
-
     };
 
+    /**
+     * Exits the application.
+     * @param view
+     * @see res/layout/activity_live_logger.xml
+     */
     public void actionButtonExit(View view) {
         ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
         closeSerialPort(serialPort);
         finish();
-        //Intent intent = new Intent();
-        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        //intent.putExtra("EXIT", true);
-        //this.sendBroadcast(intent);
     }
 
+    /**
+     * Queries and restores the current defaults of the device peripheral actions indicated in the
+     * Tools Menu spinners.
+     * @param view
+     * @see res/layout/tools_menu_tab.xml
+     */
     public void actionButtonRestorePeripheralDefaults(View view) {
             if (LiveLoggerActivity.serialPort != null) {
                 // next, query the defaults from the device to get accurate settings (if the device is connected):
@@ -383,16 +455,31 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Clears the text appended to certain commands run from the Tools Menu.
+     * @param view
+     * @see R.id.userInputFormattedBytes
+     * @see res/layout/tools_menu_tab.xml
+     */
     public void actionButtonClearUserText(View view) {
         TextView userInputText = (TextView) findViewById(R.id.userInputFormattedBytes);
         userInputText.setText("");
         userInputText.setHint("01 23 45 67 89 ab cd ef");
     }
 
+    /**
+     * Manual refreshing of the device status settings requested by the user on button press at the
+     * top right (second rightmost button) of the activity window.
+     * @param view
+     */
     public void actionButtonRefreshDeviceStatus(View view) {
         ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
     }
 
+    /**
+     * Clears all logging data from the Log tab.
+     * @param view
+     */
     public void actionButtonClearAllLogs(View view) {
         if(RECORDID > 0) {
             logDataEntries.clear();
@@ -401,6 +488,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Removes repeated log entries in sequential order in the logging tab.
+     * Useful for pretty-fying / cleaning up the log entries when a device posts repeated
+     * APDU command requests, or zero bits.
+     * @param view
+     */
     public void actionButtonCollapseSimilar(View view) {
         if(RECORDID == 0)
             return;
@@ -427,6 +520,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Handles button presses for most of the commands implemented in the Tools Menu.
+     * @param view calling Button
+     */
     public void actionButtonCreateNewEvent(View view) {
         String createCmd = ((Button) view).getText().toString();
         String msgParam = "";
@@ -517,6 +614,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
         appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord(createCmd, msgParam));
     }
 
+    /**
+     * Highlights the selected logs (by checkmark in the Log tab) in the color of the passed button.
+     * @param view pressed Button
+     */
     public void actionButtonSelectedHighlight(View view) {
         int highlightColor = Color.parseColor(((Button) view).getTag().toString());
         for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
@@ -529,11 +630,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
     }
 
-    public void actionButtonHideRecord(View view) {
-        LinearLayout mainContainer = (LinearLayout) ((Button) view).getParent().getParent();
-        mainContainer.setVisibility(LinearLayout.GONE);
-    }
-
+    /**
+     * Unchecks all of the selected logs in the Log tab.
+     * @param view
+     */
     public void actionButtonUncheckAll(View view) {
         for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
             View logEntryView = logDataFeed.getChildAt(vi);
@@ -543,6 +643,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Used to mark whether the APDU response in the log is incoming / outgoing from
+     * card <--> reader. Mostly reserved for future use as the Chameleon currently only logs responses
+     * in one direction anyhow.
+     * @param view
+     */
     public void actionButtonSetSelectedXFer(View view) {
 
         int directionFlag = Integer.parseInt(((Button) view).getTag().toString());
@@ -565,6 +671,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Handles parsing of the buttons in the Logging Tools menu to be applied to all selected logs.
+     * @param view pressed Button
+     */
     public void actionButtonProcessBatch(View view) {
         String actionFlag = ((Button) view).getTag().toString();
         for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
@@ -607,6 +717,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Constructs and displays a dialog providing meta information about the application.
+     * @param view
+     * @see R.string.aboutapp
+     */
     public void actionButtonAboutTheApp(View view) {
         AlertDialog.Builder adBuilder = new AlertDialog.Builder(this, R.style.SpinnerTheme);
         String rawAboutStr = getString(R.string.aboutapp);
@@ -641,11 +756,20 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Runs a command indicated in the TAG parameter of the pressed button.
+     * @param view pressed Button
+     */
     public void actionButtonRunCommand(View view) {
         String cmCmd = ((Button) view).getTag().toString();
         ChameleonIO.executeChameleonMiniCommand(serialPort, cmCmd, ChameleonIO.TIMEOUT);
     }
 
+    /**
+     * Wrapper around the first three buttons at the top of the Export tab for writing the
+     * logs to Plaintext / HTML / native binary files formats.
+     * @param view pressed Button
+     */
     public void actionButtonWriteFile(View view) {
         LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
         String fileType = ((Button) view).getTag().toString(), mimeType = "message/rfc822";
@@ -703,10 +827,20 @@ public class LiveLoggerActivity extends AppCompatActivity {
         appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("EXPORT", "Saved log file to \"" + outfilePath + "\"."));
     }
 
+    /**
+     * Called when the Export tab button for writing the DUMP_MFU command output is requested by the user.
+     * @param view
+     */
     public void actionButtonDumpMFU(View view) {
         ExportTools.saveBinaryDumpMFU("mfultralight");
     }
 
+    /**
+     * Called when one of the command Spinner buttons changes state.
+     * @param view calling Spinner
+     * @see TabFragment.connectCommandListSpinnerAdapter
+     * @see TabFragment.connectPeripheralSpinnerAdapter
+     */
     public static void actionSpinnerSetCommand(View view) {
         String sopt = ((Spinner) view).getSelectedItem().toString();
         if(sopt.substring(0, 2).equals("--"))
@@ -715,20 +849,32 @@ public class LiveLoggerActivity extends AppCompatActivity {
         ChameleonIO.executeChameleonMiniCommand(serialPort, cmCmd, ChameleonIO.TIMEOUT);
     }
 
+    /**
+     * Listener object for new Spinner selections.
+     * @see LiveLoggerActivity.actionSpinnerSetCommand
+     */
     public static AdapterView.OnItemSelectedListener itemSelectedListener = new AdapterView.OnItemSelectedListener() {
-
         @Override
         public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
             actionSpinnerSetCommand(arg1);
         }
-
         @Override
         public void onNothingSelected(AdapterView<?> arg0) {}
-
     };
 
+    /**
+     * Stores the user input for descriptions of the new annotation events available in the
+     * Logging Tools tab.
+     */
     private String userInputStack;
 
+    /**
+     * Prompts for a user description of the indicated annotation event from the
+     * Log Tools tab.
+     * @param promptMsg
+     * @see LiveLoggerActivity.userInputStack
+     * @see res/layout/log_tools_tab.xml
+     */
     public void displayUserInputPrompt(String promptMsg) {
         final EditText userInput = new EditText(this);
         userInput.setHint("What is the event description?");
@@ -749,6 +895,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 .show();
     }
 
+    /**
+     * Wrapper around the button pressed for the download of stored log data and card information
+     * by XModem in the Export tab.
+     * @param view
+     */
     public void actionButtonExportLogDownload(View view) {
         String action = ((Button) view).getTag().toString();
         if(action.equals("LOGDOWNLOAD"))
