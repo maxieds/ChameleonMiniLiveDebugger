@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -7,10 +8,10 @@
         android:id="@+id/tools_menu_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:verticalScrollbarPosition="right"
         android:fadeScrollbars="false"
-        android:scrollbarSize="25dp">
+        android:orientation="vertical"
+        android:scrollbarSize="25dp"
+        android:verticalScrollbarPosition="right">
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -164,26 +165,26 @@
 
             </GridLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="@color/colorPrimaryDark" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/colorPrimaryDark" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/colorPrimaryDarkLog"
-                    android:drawableLeft="@drawable/hashmark16"
-                    android:drawablePadding="5dp"
-                    android:singleLine="true"
-                    android:text="Run reader device commands: "
-                    android:textAllCaps="true"
-                    android:textStyle="bold|italic" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/hashmark16"
+                android:drawablePadding="5dp"
+                android:singleLine="true"
+                android:text="Run reader device commands: "
+                android:textAllCaps="true"
+                android:textStyle="bold|italic" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="@color/colorPrimaryDark" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/colorPrimaryDark" />
 
             <GridLayout
                 android:layout_width="fill_parent"
@@ -234,85 +235,85 @@
 
             </GridLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="@color/colorPrimaryDark" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/colorPrimaryDark" />
 
-                <TextView
-                    android:layout_width="match_parent"
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/hashmark16"
+                android:drawablePadding="5dp"
+                android:singleLine="true"
+                android:text="Misc configuration: "
+                android:textAllCaps="true"
+                android:textStyle="bold|italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/colorPrimaryDark" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="1dp"
+                android:background="@color/colorAccentLog"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorPrimaryDarkLog"
-                    android:drawableLeft="@drawable/hashmark16"
-                    android:drawablePadding="5dp"
-                    android:singleLine="true"
-                    android:text="Misc configuration: "
-                    android:textAllCaps="true"
-                    android:textStyle="bold|italic" />
+                    android:layout_gravity="center_vertical"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:src="@drawable/field16" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="@color/colorPrimaryDark" />
+                <Switch
+                    android:id="@+id/fieldOnOffSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:checked="true"
+                    android:gravity="center"
+                    android:scrollHorizontally="true"
+                    android:showText="false"
+                    android:switchMinWidth="50dp"
+                    android:text="FIELD:"
+                    android:textOff="0"
+                    android:textOn="1"
+                    android:textStyle="bold|italic"
+                    android:thumbTint="@color/colorPrimaryDark" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginRight="1dp"
-            android:background="@color/colorAccentLog">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="left"
+                    android:paddingLeft="25dp"
+                    android:paddingRight="5dp"
+                    android:src="@drawable/readonly16" />
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/field16" />
+                <Switch
+                    android:id="@+id/readonlyOnOffSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:checked="true"
+                    android:gravity="center|left"
+                    android:paddingLeft="0dp"
+                    android:scrollHorizontally="true"
+                    android:showText="false"
+                    android:switchMinWidth="50dp"
+                    android:text="READONLY:"
+                    android:textOff="RW"
+                    android:textOn="RO"
+                    android:textStyle="bold|italic"
+                    android:thumbTint="@color/colorPrimaryDark" />
 
-            <Switch android:id="@+id/fieldOnOffSwitch"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:switchMinWidth="50dp"
-                android:checked="true"
-                android:gravity="center"
-                android:layout_gravity="center_vertical"
-                android:showText="false"
-                android:textOn="1"
-                android:textOff="0"
-                android:text="FIELD:"
-                android:textStyle="bold|italic"
-                android:thumbTint="@color/colorPrimaryDark"
-                android:typeface="monospace"
-                android:scrollHorizontally="true" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="25dp"
-                android:paddingRight="5dp"
-                android:gravity="left"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/readonly16" />
-
-            <Switch android:id="@+id/readonlyOnOffSwitch"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:paddingLeft="0dp"
-                android:switchMinWidth="50dp"
-                android:checked="true"
-                android:gravity="center|left"
-                android:layout_gravity="center_vertical"
-                android:showText="false"
-                android:textOn="RO"
-                android:textOff="RW"
-                android:text="READONLY:"
-                android:textStyle="bold|italic"
-                android:thumbTint="@color/colorPrimaryDark"
-                android:typeface="monospace"
-                android:scrollHorizontally="true" />
-
-        </LinearLayout>
+            </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
@@ -322,9 +323,60 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginRight="1dp"
-                android:background="@color/colorAccentLog">
+                android:background="@color/colorAccentLog"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="5dp"
+                    android:paddingLeft="5dp"
+                    android:src="@drawable/af24" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text="THRESHOLD: "
+                    android:textStyle="bold|italic"
+                    android:textColor="#000000" />
+
+                <SeekBar
+                    android:id="@+id/thresholdSeekbar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:max="4500"
+                    android:progress="400"
+                    android:thumbTint="@color/colorPrimaryDark" />
+
+                <TextView
+                    android:id="@+id/thresholdSeekbarValueText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text="      mV"
+                    android:paddingRight="5dp"
+                    android:textStyle="normal|bold"
+                    android:textColor="#000000" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorPrimaryDark" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="1dp"
+                android:background="@color/colorAccentLog"
+                android:orientation="horizontal">
 
                 <EditText
                     android:id="@+id/userInputFormattedBytes"
@@ -342,12 +394,12 @@
                     style="@style/GridButtons"
                     android:layout_width="21dp"
                     android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
                     android:background="@color/colorAccentLog"
                     android:drawableLeft="@drawable/backspace24"
-                    android:paddingRight="1dp"
-                    android:layout_gravity="center_vertical"
                     android:gravity="right"
-                    android:onClick="actionButtonClearUserText" />
+                    android:onClick="actionButtonClearUserText"
+                    android:paddingRight="1dp" />
             </LinearLayout>
 
             <View
@@ -368,6 +420,7 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:src="@drawable/cmd24" />
+
                 <Spinner
                     android:id="@+id/FullCmdListSpinner"
                     android:layout_width="300dp"
@@ -428,132 +481,167 @@
                 android:padding="2dp"
                 android:rowCount="10">
 
-                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/ledred24" />
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/ledred24" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="10sp"
                     android:textStyle="bold" />
+
                 <Spinner
                     android:id="@+id/LEDRedSpinner"
                     android:layout_width="250dp"
-                    android:layout_weight="1"
                     android:layout_height="30dp"
+                    android:layout_weight="1"
                     android:entries="@array/LEDRedOptions"
-                    android:tag="LEDRED="
-                    android:spinnerMode="dialog"
                     android:gravity="right|center_vertical"
-                    android:popupBackground="#98fb98" />
+                    android:popupBackground="#98fb98"
+                    android:spinnerMode="dialog"
+                    android:tag="LEDRED=" />
 
-                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/ledgreen24" />
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/ledgreen24" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="10sp"
                     android:textStyle="bold" />
+
                 <Spinner
                     android:id="@+id/LEDGreenSpinner"
                     android:layout_width="250dp"
-                    android:layout_weight="1"
                     android:layout_height="30dp"
+                    android:layout_weight="1"
                     android:entries="@array/LEDGreenOptions"
-                    android:tag="LEDGREEN="
-                    android:spinnerMode="dialog"
                     android:gravity="right|center_vertical"
-                    android:popupBackground="#98fb98" />
+                    android:popupBackground="#98fb98"
+                    android:spinnerMode="dialog"
+                    android:tag="LEDGREEN=" />
 
-                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/circlebutton32" />
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/circlebutton32" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="10sp"
-                    android:textStyle="bold"
                     android:paddingLeft="4dp"
-                    android:text="(RBS)"/>
+                    android:text="(RBS)"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
                 <Spinner
                     android:id="@+id/RButtonSpinner"
                     android:layout_width="250dp"
-                    android:layout_weight="1"
                     android:layout_height="30dp"
+                    android:layout_weight="1"
                     android:entries="@array/RButtonOptions"
-                    android:tag="RBUTTON="
-                    android:spinnerMode="dialog"
                     android:gravity="right|center_vertical"
-                    android:popupBackground="#98fb98" />
+                    android:popupBackground="#98fb98"
+                    android:spinnerMode="dialog"
+                    android:tag="RBUTTON=" />
 
-                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/squarebutton32" />
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/squarebutton32" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="10sp"
-                    android:textStyle="bold"
                     android:paddingLeft="4dp"
-                    android:text="(RBL)"/>
+                    android:text="(RBL)"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
                 <Spinner
                     android:id="@+id/RButtonLongSpinner"
                     android:layout_width="250dp"
-                    android:layout_weight="1"
                     android:layout_height="30dp"
+                    android:layout_weight="1"
                     android:entries="@array/RButtonLongOptions"
-                    android:tag="RBUTTON_LONG="
-                    android:spinnerMode="dialog"
                     android:gravity="right|center_vertical"
-                    android:popupBackground="#98fb98" />
+                    android:popupBackground="#98fb98"
+                    android:spinnerMode="dialog"
+                    android:tag="RBUTTON_LONG=" />
 
-                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/rectbutton32" />
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/rectbutton32" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="10sp"
-                    android:textStyle="bold"
                     android:paddingLeft="4dp"
-                    android:text="(LBS)"/>
+                    android:text="(LBS)"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
                 <Spinner
                     android:id="@+id/LButtonSpinner"
                     android:layout_width="250dp"
-                    android:layout_weight="1"
                     android:layout_height="30dp"
+                    android:layout_weight="1"
                     android:entries="@array/LButtonOptions"
-                    android:tag="LBUTTON="
-                    android:spinnerMode="dialog"
                     android:gravity="right|center_vertical"
-                    android:popupBackground="#98fb98" />
+                    android:popupBackground="#98fb98"
+                    android:spinnerMode="dialog"
+                    android:tag="LBUTTON=" />
 
-                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/twocircbutton32" />
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/twocircbutton32" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="10sp"
-                    android:textStyle="bold"
                     android:paddingLeft="4dp"
-                    android:text="(LBL)"/>
+                    android:text="(LBL)"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
                 <Spinner
                     android:id="@+id/LButtonLongSpinner"
                     android:layout_width="250dp"
-                    android:layout_weight="1"
                     android:layout_height="30dp"
+                    android:layout_weight="1"
                     android:entries="@array/LButtonLongOptions"
-                    android:tag="LBUTTON_LONG="
-                    android:spinnerMode="dialog"
                     android:gravity="right|center_vertical"
-                    android:popupBackground="#98fb98" />
+                    android:popupBackground="#98fb98"
+                    android:spinnerMode="dialog"
+                    android:tag="LBUTTON_LONG=" />
 
-                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/log24" />
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/log24" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="10sp"
                     android:textStyle="bold" />
+
                 <Spinner
                     android:id="@+id/LogModeSpinner"
                     android:layout_width="250dp"
-                    android:layout_weight="1"
                     android:layout_height="30dp"
+                    android:layout_weight="1"
                     android:entries="@array/LogModeOptions"
-                    android:tag="LOGMODE="
-                    android:spinnerMode="dialog"
                     android:gravity="right|center_vertical"
-                    android:popupBackground="#98fb98" />
+                    android:popupBackground="#98fb98"
+                    android:spinnerMode="dialog"
+                    android:tag="LOGMODE=" />
 
             </GridLayout>
 

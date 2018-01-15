@@ -12,9 +12,11 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import java.util.Random;
 
@@ -189,6 +191,28 @@ public class TabFragment extends Fragment {
             roSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "READONLY=" + (isChecked ? "1" : "0"), ChameleonIO.TIMEOUT);
+                }
+            });
+
+            SeekBar thresholdSeekbar = (SeekBar) view.findViewById(R.id.thresholdSeekbar);
+            int threshold = Integer.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "THRESHOLD?"));
+            thresholdSeekbar.setProgress(threshold);
+            thresholdSeekbar.incrementProgressBy(25);
+            ((TextView) view.findViewById(R.id.thresholdSeekbarValueText)).setText(String.format("% 5d mV", threshold));
+            final View seekbarView = view;
+            thresholdSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
+                TextView labelText = (TextView) seekbarView.findViewById(R.id.thresholdSeekbarValueText);
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    labelText.setText(String.format("% 5d mV", progress));
+                }
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {}
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    int nextThreshold = seekBar.getProgress();
+                    ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "THRESHOLD=" + String.valueOf(nextThreshold), ChameleonIO.TIMEOUT);
+                    ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
                 }
             });
         }

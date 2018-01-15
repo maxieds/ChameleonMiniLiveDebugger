@@ -2,6 +2,7 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.os.Handler;
 import android.os.SystemClock;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.felhr.usbserial.UsbSerialDevice;
@@ -141,6 +142,11 @@ public class ChameleonIO {
             ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceStats2)).setText(subStats2);
             String subStats3 = String.format(Locale.ENGLISH,"THRS-%d mv/TMT-%s", THRESHOLD, TIMEOUT);
             ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceStats3)).setText(subStats3);
+            SeekBar thresholdSeekbar = (SeekBar) LiveLoggerActivity.runningActivity.findViewById(R.id.thresholdSeekbar);
+            if(thresholdSeekbar != null) {
+                thresholdSeekbar.setProgress(THRESHOLD);
+                ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.thresholdSeekbarValueText)).setText(String.format("% 5d mV", THRESHOLD));
+            }
             if(resetTimer)
                 statsUpdateHandler.postDelayed(statsUpdateRunnable, STATS_UPDATE_INTERVAL);
         }
