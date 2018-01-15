@@ -27,6 +27,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />-->
             </intent-filter>
             <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" android:resource="@xml/usb_device_filter"/>
+            <meta-data android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" android:resource="@xml/usb_device_filter"/>
 
             <intent-filter>
                 <action android:name="ChameleonIO.device.CMD_QUERY_RESPONSE" />

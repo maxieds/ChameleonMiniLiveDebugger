@@ -1,9 +1,11 @@
 package com.maxieds.chameleonminilivedebugger;
 
 import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -103,16 +105,13 @@ public class LiveLoggerActivity extends AppCompatActivity {
         // fix bug where the tabs are blank when the application is relaunched:
         super.onCreate(savedInstanceState);
         if(!isTaskRoot()) {
+            Log.w(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
             final Intent intent = getIntent();
             final String intentAction = intent.getAction();
-            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && intentAction != null &&
-                    intentAction.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
+            if (intentAction != null && (intentAction.equals(UsbManager.ACTION_USB_DEVICE_DETACHED) || intentAction.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED))) {
                 Log.w(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead of re-launching.");
                 finish();
-                LiveLoggerActivity.runningActivity.closeSerialPort(serialPort);
-                serialPort = LiveLoggerActivity.runningActivity.configureSerialPort(null, usbReaderCallback);
-                ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
-                //LiveLoggerActivity.runningActivity.sendBroadcast(intent); // permission denied!
+                LiveLoggerActivity.runningActivity.onNewIntent(intent);
                 return;
             }
         }
@@ -189,6 +188,18 @@ public class LiveLoggerActivity extends AppCompatActivity {
         if(serialPort != null)
             ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
 
+        BroadcastReceiver usbActionReceiver = new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                if(intent.getAction() != null && (intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED) || intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED))) {
+                    onNewIntent(intent);
+                }
+            }
+        };
+        IntentFilter usbActionFilter = new IntentFilter();
+        usbActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+        usbActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+        registerReceiver(usbActionReceiver, usbActionFilter);
+
         clearStatusIcon(R.id.statusIconNewMsg);
         clearStatusIcon(R.id.statusIconNewXFer);
 
@@ -200,6 +211,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         if(intent == null)
             return;
         else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
+            ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
             closeSerialPort(serialPort);
             serialPort = configureSerialPort(null, usbReaderCallback);
             ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
