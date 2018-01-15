@@ -408,7 +408,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
             }
             else if(ChameleonIO.WAITING_FOR_RESPONSE && ChameleonIO.isCommandResponse(liveLogData)) {
                 String strLogData = new String(liveLogData);
-                Log.i(TAG, strLogData);
+                //Log.i(TAG, strLogData);
                 ChameleonIO.DEVICE_RESPONSE_CODE = strLogData.split("[\n\r]+")[0];
                 ChameleonIO.DEVICE_RESPONSE = strLogData.replace(ChameleonIO.DEVICE_RESPONSE_CODE, "").replaceAll("[\n\r]*", "");
                 if(ChameleonIO.EXPECTING_BINARY_DATA) {
@@ -968,10 +968,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
      * @param view pressed Button
      */
     public void actionButtonUploadCard(View view) {
-        if(view != null) {
-            appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "The card upload feature does not quite work yet. Aborting."));
-            return;
-        }
+        //if(view != null) {
+        //    appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "The card upload feature does not quite work yet. Aborting."));
+        //    return;
+        //}
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setDataAndType(Uri.parse("//sdcard//Download//"), "*/*");

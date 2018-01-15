@@ -107,6 +107,7 @@ public class ExportTools {
                 }
             }
             else if(ChameleonIO.UPLOAD) {
+                Log.i(TAG, "Cleaning up after UPLOAD ...");
                 try {
                     streamSrc.close();
                 } catch (Exception ioe) {
@@ -114,6 +115,7 @@ public class ExportTools {
                     ioe.printStackTrace();
                 } finally {
                     ChameleonIO.UPLOAD = false;
+                    LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "READONLY=" + (ChameleonIO.deviceStatus.READONLY ? "1" : "0"));
                     LiveLoggerActivity.serialPortLock.release();
                 }
                 if(!ExportTools.transmissionErrorOccurred) {
@@ -297,7 +299,7 @@ public class ExportTools {
     public static void performXModemSerialUpload(byte[] liveLogData) {
         Log.i(TAG, "Received Upload Data (#=" + liveLogData.length + ") ... " + Utils.bytes2Hex(liveLogData));
         Log.i(TAG, "    => " + Utils.bytes2Ascii(liveLogData));
-        if(ExportTools.EOT)
+        if(ExportTools.EOT || liveLogData == null || liveLogData.length == 0)
             return;
         byte statusByte = liveLogData[0];
         if(uploadState == 0 || uploadState == 1 && statusByte == BYTE_ACK) {
@@ -313,7 +315,7 @@ public class ExportTools {
                 if(streamSrc.available() == 0) {
                     Log.i(TAG, "Upload / Sending EOT to device.");
                     EOT = true;
-                    LiveLoggerActivity.serialPort.write(new byte[]{BYTE_EOF});
+                    LiveLoggerActivity.serialPort.write(new byte[]{BYTE_EOT});
                     return;
                 }
                 streamSrc.read(payloadBytes, 0, XMODEM_BLOCK_SIZE);
@@ -325,6 +327,7 @@ public class ExportTools {
                 return;
             }
             uploadFramebuffer[XMODEM_BLOCK_SIZE + 3] = CalcChecksum(payloadBytes, XMODEM_BLOCK_SIZE);
+            Log.i(TAG, "Upload Writing Data: frame=" + CurrentFrameNumber + ": " + Utils.bytes2Hex(uploadFramebuffer));
             LiveLoggerActivity.serialPort.write(uploadFramebuffer);
         }
         else if(statusByte == BYTE_NAK && currentNAKCount <= MAX_NAK_COUNT) {
@@ -361,6 +364,7 @@ public class ExportTools {
         }
         LiveLoggerActivity.serialPortLock.acquireUninterruptibly();
         ChameleonIO.WAITING_FOR_XMODEM = true;
+        LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "READONLY=0");
         ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "UPLOAD", ChameleonIO.TIMEOUT);
         fileSize = 0;
         CurrentFrameNumber = FIRST_FRAME_NUMBER;
