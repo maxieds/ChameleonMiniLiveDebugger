@@ -48,7 +48,7 @@ public class ExportTools {
     public static final short XMODEM_BLOCK_SIZE = 128;
     public static final byte FIRST_FRAME_NUMBER = (byte) 1;
     public static final byte CHECKSUM_INIT_VALUE = 0;
-    public static int MAX_NAK_COUNT = 6;
+    public static int MAX_NAK_COUNT = 15;
 
     /**
      * Static variables used internally within the class.
@@ -58,7 +58,6 @@ public class ExportTools {
     public static File outfile;
     private static String currentLogMode = "LIVE";
     private static boolean throwToLive = false;
-    public static byte[] frameBuffer = new byte[XMODEM_BLOCK_SIZE];
     public static byte CurrentFrameNumber;
     public static byte Checksum;
     public static int currentNAKCount;
@@ -128,13 +127,18 @@ public class ExportTools {
      * @see LiveLoggerActivity.usbReaderCallback
      */
     public static void performXModemSerialDownload(byte[] liveLogData) {
-        Log.i(TAG, "Received XModem data ..." + Utils.bytes2Hex(liveLogData));
+        if(ExportTools.EOT)
+            return; // waiting for conclusion of timer to cleanup the download files
+        Log.i(TAG, "Received XModem data (#bytes=" + liveLogData.length + ") ..." + Utils.bytes2Hex(liveLogData));
+        Log.i(TAG, "    => " + Utils.bytes2Ascii(liveLogData));
+        byte[] frameBuffer = new byte[XMODEM_BLOCK_SIZE];
         if (liveLogData != null && liveLogData.length > 0 && liveLogData[0] != ExportTools.BYTE_EOT) {
             if (liveLogData[0] == ExportTools.BYTE_SOH && liveLogData[1] == ExportTools.CurrentFrameNumber && liveLogData[2] == (byte) (255 - ExportTools.CurrentFrameNumber)) {
                 Log.i(TAG, "Writing XModem data ...");
-                System.arraycopy(liveLogData, 3, ExportTools.frameBuffer, 0, ExportTools.XMODEM_BLOCK_SIZE);
-                byte checksumByte = liveLogData[liveLogData.length - 1];
-                ExportTools.Checksum = ExportTools.CalcChecksum(ExportTools.frameBuffer, ExportTools.XMODEM_BLOCK_SIZE);
+                int dataBufferSize = liveLogData.length - 4;
+                System.arraycopy(liveLogData, 3, frameBuffer, 0, ExportTools.XMODEM_BLOCK_SIZE);
+                byte checksumByte = liveLogData[dataBufferSize + 3];
+                ExportTools.Checksum = ExportTools.CalcChecksum(frameBuffer, ExportTools.XMODEM_BLOCK_SIZE);
                 if (ExportTools.Checksum != checksumByte && currentNAKCount < MAX_NAK_COUNT) {
                     Log.w(TAG, "Sent another NAK (invalid checksum) : # = " + currentNAKCount);
                     LiveLoggerActivity.serialPort.write(new byte[]{ExportTools.BYTE_NAK});
@@ -149,7 +153,7 @@ public class ExportTools {
                 }
                 try {
                     ExportTools.fileSize += liveLogData.length;
-                    ExportTools.streamDest.write(ExportTools.frameBuffer);
+                    ExportTools.streamDest.write(frameBuffer);
                     ExportTools.streamDest.flush();
                     ExportTools.CurrentFrameNumber++;
                     LiveLoggerActivity.serialPort.write(new byte[]{BYTE_ACK});
@@ -165,7 +169,7 @@ public class ExportTools {
                     LiveLoggerActivity.serialPort.write(new byte[] {ExportTools.BYTE_CAN});
                     return;
                 }
-                Log.w(TAG, "Sent another NAK (invalid checksum) : # = " + currentNAKCount);
+                Log.w(TAG, "Sent another NAK (header bytes) : # = " + currentNAKCount);
                 LiveLoggerActivity.serialPort.write(new byte[]{ExportTools.BYTE_NAK});
                 currentNAKCount++;
             }
@@ -217,8 +221,6 @@ public class ExportTools {
 
         LiveLoggerActivity.serialPortLock.acquireUninterruptibly();
         throwToLive = throwToLiveParam;
-        ChameleonIO.DOWNLOAD = true;
-        EOT = false;
         // turn of logging so the transfer doesn't get accidentally logged:
         currentLogMode = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "LOGMODE?");
         ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "LOGMODE=OFF", ChameleonIO.TIMEOUT);
@@ -227,10 +229,15 @@ public class ExportTools {
         CurrentFrameNumber = FIRST_FRAME_NUMBER;
         currentNAKCount = 0;
         transmissionErrorOccurred = false;
+        EOT = false;
+        while(ChameleonIO.WAITING_FOR_XMODEM) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException ie) {
+            }
+        }
+        ChameleonIO.DOWNLOAD = true;
         LiveLoggerActivity.serialPort.write(new byte[]{BYTE_NAK});
-        //while (!EOT) {
-        //    Thread.sleep(500);
-        //}
         eotSleepHandler.postDelayed(eotSleepRunnable, 50);
         return true;
     }

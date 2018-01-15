@@ -43,7 +43,7 @@ public class Utils {
      */
     public static char byte2Ascii(byte b) {
         int decAsciiCode = (int) b;
-        if (b >= 32 && b < 127) {
+        if (b >= 32 && b <= 127) {
             char ch = (char) b;
             return ch;
         }

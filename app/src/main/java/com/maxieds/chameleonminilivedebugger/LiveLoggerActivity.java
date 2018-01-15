@@ -176,7 +176,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle(R.string.app_name);
-        actionBar.setSubtitle("Portable logging interface v" + String.valueOf(BuildConfig.VERSION_NAME));
+        actionBar.setSubtitle("Portable logging interface v" + String.valueOf(BuildConfig.VERSION_NAME) + "-" + BuildConfig.BUILD_TYPE);
         actionBar.setDisplayUseLogoEnabled(true);
         actionBar.setIcon(R.drawable.chameleonlogo24);
         actionBar.setDisplayShowHomeEnabled(true);
@@ -333,7 +333,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
         serialPort = UsbSerialDevice.createUsbSerialDevice(device, connection);
         if(serialPort != null && serialPort.open()) {
-            serialPort.setBaudRate(115200);
+            //serialPort.setBaudRate(115200);
+            serialPort.setBaudRate(256000);
             serialPort.setDataBits(UsbSerialInterface.DATA_BITS_8);
             serialPort.setStopBits(UsbSerialInterface.STOP_BITS_1);
             serialPort.setParity(UsbSerialInterface.PARITY_NONE);
@@ -366,6 +367,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
         if(serialPort != null)
             serialPort.close();
         ChameleonIO.PAUSED = true;
+        ExportTools.EOT = true;
+        ExportTools.transmissionErrorOccurred = true;
+        ChameleonIO.DOWNLOAD = false;
+        ChameleonIO.WAITING_FOR_XMODEM = false;
         setStatusIcon(R.id.statusIconUSB, R.drawable.usbdisconnected16);
         return true;
     }
@@ -383,6 +388,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
             }
             else if(ChameleonIO.DOWNLOAD) {
                 ExportTools.performXModemSerialDownload(liveLogData);
+            }
+            else if(ChameleonIO.WAITING_FOR_XMODEM) {
+                if(new String(liveLogData).substring(0, 10).equals("110:WAITING")) {
+                    ChameleonIO.WAITING_FOR_XMODEM = false;
+                }
             }
             else if(ChameleonIO.WAITING_FOR_RESPONSE && ChameleonIO.isCommandResponse(liveLogData)) {
                 String strLogData = new String(liveLogData);

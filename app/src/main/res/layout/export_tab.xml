@@ -140,7 +140,7 @@
 
         <Button
             style="@style/GridButtons"
-            android:drawableLeft="@drawable/bios24"
+            android:drawableLeft="@drawable/binarybraces24"
             android:tag="DOWNLOAD"
             android:onClick="actionButtonExportLogDownload"
             android:text="DL Card" />
@@ -159,7 +159,7 @@
         android:drawableLeft="@drawable/exportarrow16"
         android:drawablePadding="5dp"
         android:singleLine="true"
-        android:text="Other Export Features: "
+        android:text="Other Import / Export Features: "
         android:textSize="14sp"
         android:textAllCaps="true"
         android:textStyle="bold|italic" />
