@@ -1,8 +1,6 @@
 package com.maxieds.chameleonminilivedebugger;
 
-import android.app.Application;
 import android.content.Context;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import static android.content.ContentValues.TAG;
 import static java.lang.Math.abs;
 
 /**

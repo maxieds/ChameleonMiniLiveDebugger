@@ -1,11 +1,9 @@
 package com.maxieds.chameleonminilivedebugger;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.text.format.Time;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,7 +1,5 @@
 package com.maxieds.chameleonminilivedebugger;
 
-import android.support.constraint.ConstraintLayout;
-import android.text.Layout;
 import android.view.View;
 
 /**

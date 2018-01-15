@@ -2,35 +2,21 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.app.DownloadManager;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 
-import com.felhr.usbserial.SerialInputStream;
-import com.felhr.usbserial.SerialOutputStream;
-import com.felhr.usbserial.UsbSerialDevice;
-import com.felhr.usbserial.UsbSerialInterface;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-//import java.nio.file.Path;
-//import java.nio.file.Files;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static android.content.ContentValues.TAG;
 import static android.content.Context.DOWNLOAD_SERVICE;
 import static com.maxieds.chameleonminilivedebugger.ExportTools.State_t.STATE_OFF;
-import static com.maxieds.chameleonminilivedebugger.ExportTools.throwDeviceLogDataToLive;
-import static com.maxieds.chameleonminilivedebugger.LiveLoggerActivity.defaultContext;
 import static com.maxieds.chameleonminilivedebugger.LiveLoggerActivity.logDataFeed;
+
+//import java.nio.file.Path;
+//import java.nio.file.Files;
 
 /**
  * Created by maxie on 1/11/18.

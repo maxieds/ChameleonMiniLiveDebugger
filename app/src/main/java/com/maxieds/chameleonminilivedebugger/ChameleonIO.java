@@ -1,15 +1,11 @@
 package com.maxieds.chameleonminilivedebugger;
 
-import com.felhr.usbserial.UsbSerialDevice;
-
 import android.os.Handler;
-import android.os.Looper;
 import android.os.SystemClock;
-import android.util.Log;
-import android.widget.Switch;
 import android.widget.TextView;
 
-import java.io.IOException;
+import com.felhr.usbserial.UsbSerialDevice;
+
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
@@ -18,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 
 import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.FALSE;
 import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.OK;
-import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.RESP_CODE_TEXT_MAP;
 import static java.lang.Math.round;
 
 /**

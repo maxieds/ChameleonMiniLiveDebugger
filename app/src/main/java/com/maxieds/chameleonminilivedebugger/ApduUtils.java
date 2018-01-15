@@ -1,12 +1,8 @@
 package com.maxieds.chameleonminilivedebugger;
 
-import android.util.Log;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by maxie on 1/4/18.

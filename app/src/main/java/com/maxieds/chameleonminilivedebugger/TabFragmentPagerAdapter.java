@@ -2,8 +2,8 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
