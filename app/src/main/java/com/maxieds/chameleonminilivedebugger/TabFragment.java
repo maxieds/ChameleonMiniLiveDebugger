@@ -77,7 +77,7 @@ public class TabFragment extends Fragment {
         spinnerAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, spinnerList);
         Spinner spinner = (Spinner) view.findViewById(spinnerID);
         spinner.setAdapter(spinnerAdapter);
-        if(queryCmd != null) {
+        if(queryCmd != null && LiveLoggerActivity.serialPort != null) {
             String deviceSetting = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, queryCmd);
             Log.i(TAG, "Returned deviceSetting: " + deviceSetting);
             spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(deviceSetting));
@@ -195,8 +195,11 @@ public class TabFragment extends Fragment {
             });
 
             SeekBar thresholdSeekbar = (SeekBar) view.findViewById(R.id.thresholdSeekbar);
-            int threshold = Integer.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "THRESHOLD?"));
-            thresholdSeekbar.setProgress(threshold);
+            int threshold = 400;
+            if(LiveLoggerActivity.serialPort != null) {
+                threshold = Integer.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "THRESHOLD?"));
+                thresholdSeekbar.setProgress(threshold);
+            }
             thresholdSeekbar.incrementProgressBy(25);
             ((TextView) view.findViewById(R.id.thresholdSeekbarValueText)).setText(String.format("% 5d mV", threshold));
             final View seekbarView = view;

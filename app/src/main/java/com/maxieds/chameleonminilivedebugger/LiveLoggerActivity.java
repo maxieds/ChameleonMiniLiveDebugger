@@ -183,10 +183,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
         serialPort = configureSerialPort(null, usbReaderCallback);
 
         // the reader is going to return junk for the settings bar title if we don't pause for a second:
-        try {
-            Thread.sleep(75);
-        } catch(Exception e) {}
-        ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
+        //try {
+        //    Thread.sleep(75);
+        //} catch(Exception e) {}
+        if(serialPort != null)
+            ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
+
         clearStatusIcon(R.id.statusIconNewMsg);
         clearStatusIcon(R.id.statusIconNewXFer);
 
@@ -213,6 +215,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public static String getSettingFromDevice(UsbSerialDevice cmPort, String query) {
         ChameleonIO.WAITING_FOR_RESPONSE = true;
         ChameleonIO.DEVICE_RESPONSE = "0";
+        if(cmPort == null)
+            return ChameleonIO.DEVICE_RESPONSE;
         ChameleonIO.SerialRespCode rcode = ChameleonIO.executeChameleonMiniCommand(cmPort, query, ChameleonIO.TIMEOUT);
         for(int i = 0; i < ChameleonIO.TIMEOUT / 50; i++) {
             if(!ChameleonIO.WAITING_FOR_RESPONSE)
