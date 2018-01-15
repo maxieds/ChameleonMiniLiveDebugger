@@ -23,23 +23,35 @@ import java.util.Random;
 import static android.content.ContentValues.TAG;
 
 /**
- * Created by mschmidt34 on 12/31/2017.
+ * <h1>Tab Fragment</h1>
+ * Implements a Fragment for individual tab data in the application.
+ *
+ * @author  Maxie D. Schmidt
+ * @since   12/31/17
  */
-
 public class TabFragment extends Fragment {
 
+    /**
+     * Definitions of the in-order tab indices.
+     */
     public static final String ARG_PAGE = "ARG_PAGE";
     public static final int TAB_LOG = 0;
     public static final int TAB_TOOLS = 1;
     public static final int TAB_LOG_TOOLS = 2;
     public static final int TAB_EXPORT = 3;
-    public static boolean CFG_SPINNERS = false;
 
+    /**
+     * Local tab-specific data stored by the class.
+     */
     private int tabNumber;
     private int layoutResRef;
     private View inflatedView;
-    private boolean fragActive;
 
+    /**
+     * Effectively the default constructor used to obtain a new tab of the specified index.
+     * @param page
+     * @return
+     */
     public static TabFragment newInstance(int page) {
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE, page);
@@ -62,16 +74,29 @@ public class TabFragment extends Fragment {
             default:
                 break;
         }
-        fragment.fragActive = false;
         return fragment;
     }
 
+    /**
+     * Called when the tab is created.
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         tabNumber = getArguments().getInt(ARG_PAGE);
     }
 
+    /**
+     * Helper method to setup a peripheral spinner.
+     * @param view
+     * @param spinnerID
+     * @param spinnerStringList
+     * @param spinnerAdapter
+     * @param queryCmd
+     * @see TabFragment.onCreateView
+     * @see res/layout/tools_menu_tab.xml
+     */
     private void connectPeripheralSpinnerAdapter(View view, int spinnerID, int spinnerStringList, SpinnerAdapter spinnerAdapter, String queryCmd) {
         final String[] spinnerList = getResources().getStringArray(spinnerStringList);
         spinnerAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, spinnerList);
@@ -98,6 +123,16 @@ public class TabFragment extends Fragment {
         });
     }
 
+    /**
+     * Helper method to setup the advanced Chameleon Mini command-line spinner.
+     * @param view
+     * @param spinnerID
+     * @param spinnerStringList
+     * @param spinnerAdapter
+     * @param queryCmd
+     * @see TabFragment.onCreateView
+     * @see res/layout/tools_menu_tab.xml
+     */
     private void connectCommandListSpinnerAdapter(View view, int spinnerID, int spinnerStringList, SpinnerAdapter spinnerAdapter, String queryCmd) {
         final String[] spinnerList = getResources().getStringArray(spinnerStringList);
         spinnerAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, spinnerList);
@@ -152,6 +187,13 @@ public class TabFragment extends Fragment {
         });
     }
 
+    /**
+     * Inflates the layout and sets up the configuration of the widgets associated with each tab index.
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return View inflated tab
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -219,15 +261,16 @@ public class TabFragment extends Fragment {
                 }
             });
         }
-        fragActive = true;
         return inflatedView;
     }
 
+    /**
+     * Called when the tab view is destroyed.
+     * (Nothing but the default behavior implemented here.)
+     */
     @Override
     public void onDestroyView() {
-        super.onDestroyView();;
-        fragActive = false;
+        super.onDestroyView();
     }
-
 
 }

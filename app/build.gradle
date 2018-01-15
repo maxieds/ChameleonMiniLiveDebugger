@@ -6,8 +6,8 @@ android {
         applicationId "com.maxieds.chameleonminilivedebugger"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 17
-        versionName "0.1.9"
+        versionCode 18
+        versionName "0.2.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

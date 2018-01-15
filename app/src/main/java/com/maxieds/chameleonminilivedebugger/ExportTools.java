@@ -22,6 +22,7 @@ import static android.content.Context.DOWNLOAD_SERVICE;
  *
  * @author  Maxie D. Schmidt
  * @since   1/11/18
+ * @see http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/_x_modem_8h_source.html
  */
 public class ExportTools {
 

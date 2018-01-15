@@ -7,7 +7,7 @@ import android.view.View;
  */
 
 /**
- * <h1>Log Entry Base Interface</h1>
+ * <h1>Log Entry Base Abstract Interface</h1>
  * Abstract base class for storing the log entry data.
  *
  * @author  Maxie D. Schmidt

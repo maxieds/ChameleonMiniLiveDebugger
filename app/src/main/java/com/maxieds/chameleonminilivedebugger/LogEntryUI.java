@@ -12,23 +12,35 @@ import android.widget.TextView;
 import static java.lang.Math.abs;
 
 /**
- * Created by maxie on 12/31/17.
+ * <h1>Log Entry UI Record</h1>
+ * Implements a live log data entry.
+ *
+ * @author  Maxie D. Schmidt
+ * @since   12/31/17
+ * @see LiveLoggerActivity.logDataEntries
  */
-
 public class LogEntryUI extends LogEntryBase {
 
     private static final String TAG = LiveLoggerActivity.class.getSimpleName();
 
-    public static final float ENTRY_UIWEIGHT = (float) 0.10;
+    /**
+     * Timing information for the log.
+     */
     public static int curSystickTimestamp = -1; // milliseconds
     public static long lastSystemMillis = System.currentTimeMillis();
 
+    /**
+     * GUI display widgets associated with the log entry.
+     */
     private LinearLayout mainEntryContainer;
     private CheckBox entrySelect;
     private ImageView inoutDirIndicator, apduParseStatus;
     private TextView tvLabel, tvNumBytes, tvNumMillis, tvLogType;
     private TextView tvDataHexBytes, tvDataAscii, tvApdu;
 
+    /**
+     * Metadata associated with the log entry.
+     */
     private int recordID;
     private int numBytes;
     private int diffTimeMillis;
@@ -36,6 +48,13 @@ public class LogEntryUI extends LogEntryBase {
     private String logLabel;
     private byte[] entryData;
 
+    /**
+     * Effective constructor for the class.
+     * @param rawLogBytes
+     * @param logLabel
+     * @return LogEntryUI new log entry
+     * @see LiveLoggerActivity.usbReaderCallback
+     */
     public static LogEntryUI newInstance(byte[] rawLogBytes, String logLabel) {
         if(rawLogBytes.length < 4) {
             Log.w(TAG, "Invalid log tag data sent.");
@@ -62,6 +81,16 @@ public class LogEntryUI extends LogEntryBase {
         return newLogDataEntry.configureLogEntry(LiveLoggerActivity.defaultContext, logLabel, diffTimeMs, logCode, payloadBytes);
     }
 
+    /**
+     * Configures / sets parameters based on the parsed native LIVE logging data.
+     * @param context
+     * @param label
+     * @param diffTimeMs
+     * @param ltype
+     * @param edata
+     * @return LogEntryUI the configured log entry
+     * @see http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/Page_Log.html
+     */
     public LogEntryUI configureLogEntry(Context context, String label, int diffTimeMs, int ltype, byte[] edata) {
         numBytes = edata.length;
         diffTimeMillis = diffTimeMs;
@@ -74,10 +103,19 @@ public class LogEntryUI extends LogEntryBase {
         return this;
     }
 
+    /**
+     * The GUI container for the log entry layout.
+     * @return LinearLayout widget container
+     * @see res/layout/log_entry_ui.xml
+     */
     public LinearLayout getMainEntryContainer() {
         return mainEntryContainer;
     }
 
+    /**
+     * Populates the inflated layout with log data about the entry.
+     * @param mainContainerRef
+     */
     public void configureLayout(LinearLayout mainContainerRef) {
         mainEntryContainer = mainContainerRef;
         entrySelect = (CheckBox) mainContainerRef.findViewById(R.id.entrySelect);
@@ -106,27 +144,49 @@ public class LogEntryUI extends LogEntryBase {
             apduParseStatus.setImageDrawable(LiveLoggerActivity.defaultContext.getResources().getDrawable(R.drawable.known16));
     }
 
-    public boolean isSelected() {
-        return entrySelect.isSelected();
-    }
-
+    /**
+     * Returns the payload bytes associated with the log.
+     * @return byte[] data bytes
+     * @see http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/Page_Log.html
+     */
     public byte[] getEntryData() {
         return entryData;
     }
 
+    /**
+     * Returns a String representation of the log payload data bytes.
+     * @return String payload data
+     * @see LogEntryUI.getEntryData
+     */
     public String getPayloadData() {
         String hexBytes = Utils.bytes2Hex(entryData);
         return hexBytes.replace(" ", "");
     }
 
-    public int getRecordIndex() {
-        return recordID;
-    }
+    /**
+     * Returns the numeric application-local identifier of the log index.
+     * @return
+     */
+    public int getRecordIndex() { return recordID; }
 
+    /**
+     * Helper method for determining timing data in the log.
+     * @param offsetTimeMillis
+     * @return short next offset time
+     * @see ExportTools.writeBinaryLogFile
+     */
     public short getNextOffsetTime(short offsetTimeMillis) {
         return (short) (offsetTimeMillis + abs(diffTimeMillis));
     }
 
+    /**
+     * In the reverse direction (from parsed log to composite data), returns a packed byte
+     * representation of the native log information.
+     * @param offsetTimeMillis
+     * @return byte[] packaged raw binary log data
+     * @see http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/Page_Log.html
+     * @see ExportTools.writeBinaryLogFile
+     */
     public byte[] packageBinaryLogData(short offsetTimeMillis) {
         byte[] headerBytes = {
                 (byte) LogUtils.LogCode.lookupByLogCode(logType).toInteger(),
@@ -140,29 +200,20 @@ public class LogEntryUI extends LogEntryBase {
         return fullBytes;
     }
 
-    public void trimCommandText() {
-        String commandAscii = tvDataAscii.getText().toString();
-        if(commandAscii.length() < 2)
-            return;
-        int colonPos = commandAscii.indexOf(":");
-        int dotdotPos = commandAscii.substring(2).indexOf("..");
-        if(colonPos > -1 && dotdotPos > -1 && colonPos < dotdotPos) {
-            int substrStart = dotdotPos + 4;
-            tvDataAscii.setText(commandAscii.substring(substrStart));
-            byte[] nextEntryData = new byte[commandAscii.length() - substrStart];
-            System.arraycopy(entryData, substrStart, nextEntryData, 0, commandAscii.length() - substrStart);
-            entryData = nextEntryData;
-            tvDataHexBytes.setText(Utils.bytes2Hex(nextEntryData).replace(":", " "));
-        }
-
-
-    }
-
+    /**
+     * Stub method.
+     * @param indentLevel
+     * @return
+     */
     @Override
     public String writeXMLFragment(int indentLevel) {
         return null;
     }
 
+    /**
+     * String description of the log entry.
+     * @return String representation of the object
+     */
     @Override
     public String toString() {
         LogUtils.LogCode logCode = LogUtils.LogCode.lookupByLogCode(logType);
@@ -172,6 +223,10 @@ public class LogEntryUI extends LogEntryBase {
         return recordFmt;
     }
 
+    /**
+     * Returns the layout container (LinearLayout object) associated with this log entry.
+     * @return (LinearLayout) View
+     */
     @Override
     public View getLayoutContainer() {
         return mainEntryContainer;

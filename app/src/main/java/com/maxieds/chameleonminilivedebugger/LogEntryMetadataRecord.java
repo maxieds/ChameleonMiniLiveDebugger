@@ -9,23 +9,36 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by mschmidt34 on 12/31/2017.
+ * <h1>Log Entry Metadata Record</h1>
+ * Implements a stylized status-like meta log entry in the Log tab.
+ *
+ * @author  Maxie D. Schmidt
+ * @since   12/31/17
+ * @see LiveLoggerActivity.logDataEntries
  */
-
 public class LogEntryMetadataRecord extends LogEntryBase {
 
+    /**
+     * Class-specific variables for the log entry.
+     */
     private String recordTitle;
     private String recordText;
     private String recordTimestamp;
     protected TextView tvRecTitle, tvRecData;
-
     private LinearLayout recordContainer;
 
+    /**
+     * Constructor.
+     * @param inflater
+     * @param title Main summary title of the status message / annotation entry.
+     * @param text Lower specific subtitle text stored with the entry.
+     * @see LiveLoggerActivity.defaultInflater
+     * @see LogEntryMetadataRecord.createDefaultEventRecord
+     */
     public LogEntryMetadataRecord(LayoutInflater inflater, String title, String text) {
         recordTitle = title;
         recordText = text;
         recordTimestamp = Utils.getTimestamp();
-        //LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         recordContainer = (LinearLayout) inflater.inflate(R.layout.log_metadata_record, null);
         tvRecTitle = (TextView) recordContainer.findViewById(R.id.record_title_text);
         tvRecTitle.setText(recordTitle + " -- " + recordTimestamp);
@@ -38,18 +51,34 @@ public class LogEntryMetadataRecord extends LogEntryBase {
         }
     }
 
+    /**
+     * Stub method.
+     * @param indentLevel
+     * @return
+     */
     public String writeXMLFragment(int indentLevel) {
         return null;
     }
 
+    /**
+     * String description of the log entry.
+     * @return String representation of the object
+     */
     public String toString() {
         return recordTitle + ": " + recordText + " (@" + recordTimestamp + ")";
     }
 
+    /**
+     * Returns the layout container (LinearLayout object) associated with this log entry.
+     * @return (LinearLayout) View
+     */
     public View getLayoutContainer() {
         return recordContainer;
     }
 
+    /**
+     * A map of predefined annotation / status types to their icons shown in the Log tab.
+     */
     private static Map<String, Integer> prefixIconMap = new HashMap<String, Integer>();
     static {
         prefixIconMap.put("READER", Integer.valueOf(R.drawable.binarymobile24));
@@ -73,6 +102,13 @@ public class LogEntryMetadataRecord extends LogEntryBase {
         prefixIconMap.put("EXPORT", R.drawable.export24);
     }
 
+    /**
+     * Creates a new log entry of a predefined type.
+     * @param eventID Type of the status message
+     * @param eventMsg Description (if any) associated with the message.
+     * @return LogEntryMetadataRecord record
+     * @see Types of enries: LogEntryMetadataRecord.prefixIconMap
+     */
     public static LogEntryMetadataRecord createDefaultEventRecord(String eventID, String eventMsg) {
 
         if(eventMsg == null)

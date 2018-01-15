@@ -7,10 +7,18 @@ import java.util.Map;
  * Created by mschmidt34 on 12/26/2017.
  */
 
+/**
+ * <h1>Log Utils</h1>
+ * Stores classifications of LIVE log types returned by the device.
+ *
+ * @author  Maxie D. Schmidt
+ * @since   12/31/17
+ * @see LogEntryUI
+ * @see http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/_log_8h.html#a34112fbd78128ae58dc7801690dfa6e0
+ */
 public class LogUtils {
 
     public enum LogCode {
-
         /* Generic */
         LOG_INFO_GENERIC(0x10, "Unspecific log entry."),
         LOG_INFO_CONFIG_SET(0x11, "Configuration change."),
@@ -43,8 +51,10 @@ public class LogUtils {
         LOG_EMPTY(0x00, "Empty Log Entry. This is not followed by a length byte nor the two systick bytes nor any data."),
         LOG_CODE_DNE(0xff, "This is a dummy log code entry for matching where the input code does not exist.");
 
+        /**
+         * Stores a mapping of the log codes to their enum values.
+         */
         private static final Map<Integer, LogCode> LOG_CODE_MAP = new HashMap<>();
-
         static {
             for (LogCode logCode : values()) {
                 int lcode = logCode.toInteger();
@@ -53,19 +63,36 @@ public class LogUtils {
             }
         }
 
+        /**
+         * Local data stored by the class.
+         */
         private int logCode;
         private String logDesc;
 
+        /**
+         * Constructor.
+         * @param lcode
+         * @param ldesc
+         */
         private LogCode(int lcode, String ldesc) {
             logCode = lcode;
             logDesc = ldesc;
         }
 
+        /**
+         * Get methods for the private variables.
+         * @return
+         */
         public int toInteger() {
             return logCode;
         }
         public String getDesc() { return logDesc; }
 
+        /**
+         * Finds the enum value associated with the integer-valued log code.
+         * @param lcode
+         * @return LogCode enum value
+         */
         public static LogCode lookupByLogCode(int lcode) {
             LogCode lc = LOG_CODE_MAP.get(lcode);
             if(lc == null)
@@ -74,6 +101,11 @@ public class LogUtils {
                 return lc;
         }
 
+        /**
+         * Gets the (shortened) technical description of the integer-valued log code.
+         * @param lcode
+         * @return
+         */
         public static String getShortCodeName(int lcode) {
             LogCode lc = lookupByLogCode(lcode);
             String longName = lc.name();
@@ -85,7 +117,5 @@ public class LogUtils {
         }
 
     }
-
-
 
 }
