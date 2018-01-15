@@ -89,7 +89,7 @@ public class ExportTools {
                     DownloadManager downloadManager = (DownloadManager) LiveLoggerActivity.defaultContext.getSystemService(DOWNLOAD_SERVICE);
                     downloadManager.addCompletedDownload(outfile.getName(), outfile.getName(), true, "application/octet-stream",
                             outfile.getAbsolutePath(), outfile.length(), true);
-                    String statusMsg = "Write internal log data to file " + outfile.getName() + "(+" + outfile.length()  + " / " + fileSize + " bytes).\n";
+                    String statusMsg = "Write internal log data to file " + outfile.getName() + "(+" + outfile.length() + " / " + fileSize + " bytes).\n";
                     statusMsg += "If you are not seeing the expected output, try running the LOGSTORE command from the tools menu first.";
                     LiveLoggerActivity.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "EXPORT", statusMsg));
                     if (throwToLive) {
