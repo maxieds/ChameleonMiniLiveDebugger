@@ -107,6 +107,7 @@
     <string-array name="FullCommandList">
         <item>--Advanced Chameleon Shell--</item>
         <item>CLEAR</item>
+        <item>RANDOM UID</item>
         <item>RECALL</item>
         <item>SETTING=</item>
         <item>STORE</item>
@@ -114,7 +115,6 @@
         <item>TIMEOUT=</item>
         <item>TIMEOUT=?</item>
         <item>UID=</item>
-        <item>RANDOM UID</item>
     </string-array>
 
 

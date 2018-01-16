@@ -274,7 +274,7 @@ public class TabFragment extends Fragment {
             settingsNumberPicker.setOnScrollListener(new NumberPicker.OnScrollListener() {
                 @Override
                 public void onScrollStateChange(NumberPicker numberPicker, int scrollState) {
-                    if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE || scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_FLING) {
+                    if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
                         LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "SETTING=" + numberPicker.getValue());
                         ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
                     }
