@@ -1,5 +1,6 @@
 package com.maxieds.chameleonminilivedebugger;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import com.shawnlin.numberpicker.NumberPicker;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -259,6 +261,23 @@ public class TabFragment extends Fragment {
                     int nextThreshold = seekBar.getProgress();
                     ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "THRESHOLD=" + String.valueOf(nextThreshold), ChameleonIO.TIMEOUT);
                     ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+                }
+            });
+
+            NumberPicker settingsNumberPicker = (NumberPicker) view.findViewById(R.id.settingsNumberPicker);
+            settingsNumberPicker.setDividerThickness(1);
+            settingsNumberPicker.setOrientation(LinearLayout.HORIZONTAL);
+            settingsNumberPicker.setValue(ChameleonIO.deviceStatus.DIP_SETTING);
+            settingsNumberPicker.setFormatter("%02d");
+            settingsNumberPicker.setTypeface("sans-serif", Typeface.BOLD_ITALIC);
+            settingsNumberPicker.setOnLongPressUpdateInterval(25);
+            settingsNumberPicker.setOnScrollListener(new NumberPicker.OnScrollListener() {
+                @Override
+                public void onScrollStateChange(NumberPicker numberPicker, int scrollState) {
+                    if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE || scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_FLING) {
+                        LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "SETTING=" + numberPicker.getValue());
+                        ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+                    }
                 }
             });
         }

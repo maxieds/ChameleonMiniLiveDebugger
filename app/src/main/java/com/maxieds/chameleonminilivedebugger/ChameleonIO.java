@@ -6,6 +6,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.felhr.usbserial.UsbSerialDevice;
+import com.shawnlin.numberpicker.NumberPicker;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -229,6 +230,10 @@ public class ChameleonIO {
             if(thresholdSeekbar != null) {
                 thresholdSeekbar.setProgress(THRESHOLD);
                 ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.thresholdSeekbarValueText)).setText(String.format("% 5d mV", THRESHOLD));
+            }
+            NumberPicker settingsNumberPicker = (NumberPicker) LiveLoggerActivity.runningActivity.findViewById(R.id.settingsNumberPicker);
+            if(settingsNumberPicker != null) {
+                settingsNumberPicker.setValue(DIP_SETTING);
             }
             if(resetTimer)
                 statsUpdateHandler.postDelayed(statsUpdateRunnable, STATS_UPDATE_INTERVAL);

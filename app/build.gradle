@@ -6,8 +6,8 @@ android {
         applicationId "com.maxieds.chameleonminilivedebugger"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 20
-        versionName "0.2.3"
+        versionCode 21
+        versionName "0.2.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -29,6 +29,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.4.0'
     compile 'com.android.support:design:25.4.0'
     compile 'com.github.felHR85:UsbSerial:4.5'
+    compile 'com.shawnlin:number-picker:2.4.4'
 }
 
 repositories {

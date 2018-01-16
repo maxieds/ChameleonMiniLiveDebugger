@@ -90,6 +90,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public static SpinnerAdapter spinnerLEDGreenAdapter;
     public static SpinnerAdapter spinnerLogModeAdapter;
     public static SpinnerAdapter spinnerCmdShellAdapter;
+    public static boolean userIsScrolling = false;
     private static ViewPager viewPager;
     private static int selectedTab = TAB_LOG;
 
@@ -261,6 +262,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
             ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
             closeSerialPort(serialPort);
             serialPort = configureSerialPort(null, usbReaderCallback);
+            LiveLoggerActivity.runningActivity.actionButtonRestorePeripheralDefaults(null);
             ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
         }
         else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
@@ -746,7 +748,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
      */
     public void actionButtonAboutTheApp(View view) {
         AlertDialog.Builder adBuilder = new AlertDialog.Builder(this, R.style.SpinnerTheme);
-        String rawAboutStr = getString(R.string.aboutapp);
+        String rawAboutStr = getString(R.string.apphtmlheader) + getString(R.string.aboutapp) + getString(R.string.apphtmlfooter);
         rawAboutStr = rawAboutStr.replace("%%ANDROID_VERSION_CODE%%", String.valueOf(BuildConfig.VERSION_CODE));
         rawAboutStr = rawAboutStr.replace("%%ANDROID_VERSION_NAME%%", String.valueOf(BuildConfig.VERSION_NAME));
         //builder1.setMessage(Html.fromHtml(rawAboutStr, Html.FROM_HTML_MODE_LEGACY));

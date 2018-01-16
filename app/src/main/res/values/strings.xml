@@ -5,6 +5,8 @@
         &lt;b>&lt;u>Support&lt;/u>&lt;/b>: Documentation for the app is found on the project webpage, though most of the buttons are self explanatory after some mild tinkering (which is of course encouraged in this sort of application). Testing data, feedback, and future feature requests can all be issued &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger/issues">here&lt;/a> in official form.&lt;br/>&lt;br/>
         &lt;b>&lt;u>Credits&lt;/u>&lt;/b>: The pretty freeware icons used by the app were obtained from &lt;a href="flaticon.com">flaticon.com&lt;/a> and their lovely sized transparent PNG conversions of these images. &lt;br/>&lt;br/>
         &lt;b>&lt;u>Donations&lt;/u>&lt;/b>: If you find this application particularly useful, the author requests donations in the form of more Chameleon Mini and other related hardware in place of cash transactions (see &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger/issues/3">issue #3&lt;/a>).&lt;br/>&lt;hr/></string>
+    <string name="apphtmlheader">&lt;html>&lt;head>&lt;style>a { text-decoration: underline; color: #6eb703; font-weight: bold; font-style: italic; }&lt;/style>&lt;/head>&lt;body></string>
+    <string name="apphtmlfooter">&lt;/body>&lt;/html></string>
 
     <string-array name="RButtonOptions">
         <item>RBUTTON</item>
@@ -108,7 +110,6 @@
         <item>RECALL</item>
         <item>SETTING=</item>
         <item>STORE</item>
-        <item>THRESHOLD=</item>
         <item>THRESHOLD=?</item>
         <item>TIMEOUT=</item>
         <item>TIMEOUT=?</item>
