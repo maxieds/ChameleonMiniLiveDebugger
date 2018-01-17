@@ -756,7 +756,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         WebView wv = new WebView(this);
         wv.getSettings().setJavaScriptEnabled(false);
         wv.loadDataWithBaseURL(null, rawAboutStr, "text/html", "UTF-8", "");
-        wv.setBackgroundColor(Color.parseColor("#98fb98"));
+        wv.setBackgroundColor(getResources().getColor(R.color.colorAccentHighlight));
         wv.getSettings().setLoadWithOverviewMode(true);
         wv.getSettings().setUseWideViewPort(true);
         //wv.getSettings().setBuiltInZoomControls(true);

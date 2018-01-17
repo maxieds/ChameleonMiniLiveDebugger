@@ -476,7 +476,7 @@
                     android:layout_weight="1"
                     android:entries="@array/FullCommandList"
                     android:gravity="right|center_vertical"
-                    android:popupBackground="#98fb98"
+                    android:popupBackground="@color/colorAccentHighlight"
                     android:spinnerMode="dialog" />
 
             </GridLayout>
@@ -547,7 +547,7 @@
                     android:layout_weight="1"
                     android:entries="@array/LEDRedOptions"
                     android:gravity="right|center_vertical"
-                    android:popupBackground="#98fb98"
+                    android:popupBackground="@color/colorAccentHighlight"
                     android:spinnerMode="dialog"
                     android:tag="LEDRED=" />
 
@@ -569,7 +569,7 @@
                     android:layout_weight="1"
                     android:entries="@array/LEDGreenOptions"
                     android:gravity="right|center_vertical"
-                    android:popupBackground="#98fb98"
+                    android:popupBackground="@color/colorAccentHighlight"
                     android:spinnerMode="dialog"
                     android:tag="LEDGREEN=" />
 
@@ -593,7 +593,7 @@
                     android:layout_weight="1"
                     android:entries="@array/RButtonOptions"
                     android:gravity="right|center_vertical"
-                    android:popupBackground="#98fb98"
+                    android:popupBackground="@color/colorAccentHighlight"
                     android:spinnerMode="dialog"
                     android:tag="RBUTTON=" />
 
@@ -617,7 +617,7 @@
                     android:layout_weight="1"
                     android:entries="@array/RButtonLongOptions"
                     android:gravity="right|center_vertical"
-                    android:popupBackground="#98fb98"
+                    android:popupBackground="@color/colorAccentHighlight"
                     android:spinnerMode="dialog"
                     android:tag="RBUTTON_LONG=" />
 
@@ -641,7 +641,7 @@
                     android:layout_weight="1"
                     android:entries="@array/LButtonOptions"
                     android:gravity="right|center_vertical"
-                    android:popupBackground="#98fb98"
+                    android:popupBackground="@color/colorAccentHighlight"
                     android:spinnerMode="dialog"
                     android:tag="LBUTTON=" />
 
@@ -665,7 +665,7 @@
                     android:layout_weight="1"
                     android:entries="@array/LButtonLongOptions"
                     android:gravity="right|center_vertical"
-                    android:popupBackground="#98fb98"
+                    android:popupBackground="@color/colorAccentHighlight"
                     android:spinnerMode="dialog"
                     android:tag="LBUTTON_LONG=" />
 
@@ -687,7 +687,7 @@
                     android:layout_weight="1"
                     android:entries="@array/LogModeOptions"
                     android:gravity="right|center_vertical"
-                    android:popupBackground="#98fb98"
+                    android:popupBackground="@color/colorAccentHighlight"
                     android:spinnerMode="dialog"
                     android:tag="LOGMODE=" />
 

@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:drawableLeft="@drawable/phonebubble24"
         android:drawablePadding="5dp"
-        android:background="#98fb98"
+        android:background="@color/colorAccentHighlight"
         android:textAllCaps="true"
         android:textStyle="bold" />
 

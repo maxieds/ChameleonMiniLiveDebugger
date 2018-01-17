@@ -17,6 +17,21 @@ android {
         }
     }
     buildToolsVersion '27.0.3'
+
+    flavorDimensions "mode"
+    productFlavors {
+
+        main {
+            //applicationIdSuffix ".blue"
+            dimension "mode"
+        }
+
+        blue {
+            applicationIdSuffix ".blue"
+            dimension "mode"
+        }
+    }
+
 }
 
 dependencies {
