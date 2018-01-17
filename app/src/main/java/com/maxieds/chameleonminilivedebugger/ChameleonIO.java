@@ -186,14 +186,17 @@ public class ChameleonIO {
         /**
          * Queries the live device for its status settings.
          */
-        private void updateAllStatus() {
+        private boolean updateAllStatus(boolean resetTimer) {
             try {
                 if(!LiveLoggerActivity.serialPortLock.tryAcquire(ChameleonIO.LOCK_TIMEOUT, TimeUnit.MILLISECONDS)) {
-                    statsUpdateHandler.postDelayed(statsUpdateRunnable, STATS_UPDATE_INTERVAL / 4);
-                    return;
+                    if(resetTimer)
+                        statsUpdateHandler.postDelayed(statsUpdateRunnable, STATS_UPDATE_INTERVAL / 4);
+                    return false;
                 }
             } catch(InterruptedException ie) {
-                return;
+                if(resetTimer)
+                    statsUpdateHandler.postDelayed(statsUpdateRunnable, STATS_UPDATE_INTERVAL / 4);
+                return false;
             }
             CONFIG = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "CONFIG?");
             UID = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "UID?");
@@ -210,6 +213,7 @@ public class ChameleonIO {
             THRESHOLD = Integer.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "THRESHOLD?"));
             TIMEOUT = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "TIMEOUT?");
             LiveLoggerActivity.serialPortLock.release();
+            return true;
         }
 
         /**
@@ -221,7 +225,9 @@ public class ChameleonIO {
         public void updateAllStatusAndPost(boolean resetTimer) {
             if(LiveLoggerActivity.serialPort == null)
                 return;
-            updateAllStatus();
+            boolean haveUpdates = updateAllStatus(resetTimer);
+            if(!haveUpdates)
+                return;
             ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceConfigText)).setText(CONFIG);
             ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceConfigUID)).setText(UID);
             String subStats1 = String.format(Locale.ENGLISH,"MEM-%dK/LOG-%dK/DIP#%d", round(MEMSIZE / 1024), round(LOGSIZE / 1024), DIP_SETTING);

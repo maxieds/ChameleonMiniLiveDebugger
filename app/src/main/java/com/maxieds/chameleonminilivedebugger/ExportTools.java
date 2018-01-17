@@ -23,7 +23,7 @@ import static android.content.Context.DOWNLOAD_SERVICE;
  *
  * @author  Maxie D. Schmidt
  * @since   1/11/18
- * @see http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/_x_modem_8h_source.html
+ * @url http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/_x_modem_8h_source.html
  */
 public class ExportTools {
 
@@ -49,7 +49,7 @@ public class ExportTools {
     public static final short XMODEM_BLOCK_SIZE = 128;
     public static final byte FIRST_FRAME_NUMBER = (byte) 1;
     public static final byte CHECKSUM_INIT_VALUE = 0;
-    public static int MAX_NAK_COUNT = 15;
+    public static int MAX_NAK_COUNT = 20; // to match the Chameleon device standard
 
     /**
      * Static variables used internally within the class.
