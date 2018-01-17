@@ -1,6 +1,9 @@
 package com.maxieds.chameleonminilivedebugger;
 
 import android.app.DownloadManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,6 +25,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -274,6 +278,29 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        // clear the status icon before the application is abruptly terminated:
+        ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).cancel(1);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // setup the system status bar icon:
+        NotificationCompat.Builder statusBarIconBuilder = new NotificationCompat.Builder(this);
+        statusBarIconBuilder.setSmallIcon(R.drawable.chameleonstatusbaricon16);
+        statusBarIconBuilder.setContentTitle(getResources().getString(R.string.app_name));
+        Intent resultIntent = new Intent(this, LiveLoggerActivity.class);
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        statusBarIconBuilder.setContentIntent(resultPendingIntent);
+        Notification notification = statusBarIconBuilder.build();
+        notification.flags |= Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
+        NotificationManager notifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notifyMgr.notify(1, notification);
+    }
+
     /**
      * Queries the Chameleon device with the query command and returns its response
      * (sans the preceeding ascii status code).
@@ -442,6 +469,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public void actionButtonExit(View view) {
         ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
         closeSerialPort(serialPort);
+        ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).cancel(1);
         finish();
     }
 
