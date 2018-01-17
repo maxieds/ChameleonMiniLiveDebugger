@@ -20,14 +20,20 @@ android {
 
     flavorDimensions "mode"
     productFlavors {
-
         main {
             //applicationIdSuffix ".blue"
             dimension "mode"
         }
-
         blue {
             applicationIdSuffix ".blue"
+            dimension "mode"
+        }
+        goldenrod {
+            applicationIdSuffix ".goldenrod"
+            dimension "mode"
+        }
+        chicky {
+            applicationIdSuffix ".chicky"
             dimension "mode"
         }
     }

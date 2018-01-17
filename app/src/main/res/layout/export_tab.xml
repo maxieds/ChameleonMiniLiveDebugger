@@ -10,7 +10,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorPrimaryDarkLog"
         android:drawableLeft="@drawable/filesystem16"
         android:drawablePadding="5dp"
         android:singleLine="true"
@@ -100,7 +100,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorPrimaryDarkLog"
         android:drawableLeft="@drawable/modemplug16"
         android:drawablePadding="5dp"
         android:singleLine="true"
@@ -155,7 +155,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorPrimaryDarkLog"
         android:drawableLeft="@drawable/exportarrow16"
         android:drawablePadding="5dp"
         android:singleLine="true"

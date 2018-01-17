@@ -8,7 +8,7 @@
     </style>
 
     <style name="SpinnerTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:background">#98fb98</item>
+        <item name="android:background">@color/colorAccentHighlight</item>
         <item name="buttonStyle">@style/AboutButtonTheme</item>
     </style>
 

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#E51284</color>
+    <color name="colorPrimaryDark">#630839</color>
+    <color name="colorAccent">#FF74BF</color>
+    <color name="colorPrimaryDarkLog">#FF44A9</color>
+    <color name="colorAccentLog">#FFBCE0</color>
+    <color name="deviceMemoryLogHighlight">#EF2929</color>
+    <color name="colorAccentHighlight">#FF00FF</color>
+</resources>
