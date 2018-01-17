@@ -41,6 +41,7 @@ public class ChameleonIO {
      * Default timeout to use when communicating with the device.
      */
     public static final int TIMEOUT = 2000;
+    public static final int LOCK_TIMEOUT = 350;
 
     /**
      * Static constants for storing state of the device.
@@ -187,7 +188,10 @@ public class ChameleonIO {
          */
         private void updateAllStatus() {
             try {
-                LiveLoggerActivity.serialPortLock.tryAcquire(ChameleonIO.TIMEOUT, TimeUnit.MILLISECONDS);
+                if(!LiveLoggerActivity.serialPortLock.tryAcquire(ChameleonIO.LOCK_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                    statsUpdateHandler.postDelayed(statsUpdateRunnable, STATS_UPDATE_INTERVAL / 4);
+                    return;
+                }
             } catch(InterruptedException ie) {
                 return;
             }
