@@ -278,6 +278,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Called when the activity is paused or put into the background.
+     * @ref onResume()
+     */
     @Override
     public void onPause() {
         super.onPause();
@@ -285,6 +289,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
         ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).cancel(1);
     }
 
+    /**
+     * Called when the activity is resumes or put into the foreground.
+     * @ref onPause()
+     */
     @Override
     public void onResume() {
         super.onResume();
