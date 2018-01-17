@@ -36,6 +36,10 @@ android {
             applicationIdSuffix ".chicky"
             dimension "mode"
         }
+        white {
+            applicationIdSuffix ".white"
+            dimension "mode"
+        }
     }
 
 }
