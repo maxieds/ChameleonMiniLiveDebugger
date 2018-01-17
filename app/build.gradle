@@ -21,24 +21,38 @@ android {
     flavorDimensions "mode"
     productFlavors {
         main {
-            //applicationIdSuffix ".blue"
             dimension "mode"
+            manifestPlaceholders = [
+                    appIcon: "@drawable/chameleonicon64"
+            ]
         }
         blue {
             applicationIdSuffix ".blue"
             dimension "mode"
+            manifestPlaceholders = [
+                    appIcon: "@drawable/chameleonicon64_blue"
+            ]
         }
         goldenrod {
             applicationIdSuffix ".goldenrod"
             dimension "mode"
+            manifestPlaceholders = [
+                    appIcon: "@drawable/chameleonicon64_goldenrod"
+            ]
         }
         chicky {
             applicationIdSuffix ".chicky"
             dimension "mode"
+            manifestPlaceholders = [
+                    appIcon: "@drawable/chameleonicon64_chicky"
+            ]
         }
         white {
             applicationIdSuffix ".white"
             dimension "mode"
+            manifestPlaceholders = [
+                    appIcon: "@drawable/chameleonicon64_white"
+            ]
         }
     }
 

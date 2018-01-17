@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
@@ -182,7 +183,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         actionBar.setTitle(R.string.app_name);
         actionBar.setSubtitle("Portable logging interface v" + String.valueOf(BuildConfig.VERSION_NAME) + "-" + BuildConfig.BUILD_TYPE);
         actionBar.setDisplayUseLogoEnabled(true);
-        actionBar.setIcon(R.drawable.chameleonlogo24);
+        actionBar.setIcon(R.drawable.chameleonlogo32);
         actionBar.setDisplayShowHomeEnabled(true);
         clearStatusIcon(R.id.statusIconUlDl);
 
@@ -751,6 +752,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
         String rawAboutStr = getString(R.string.apphtmlheader) + getString(R.string.aboutapp) + getString(R.string.apphtmlfooter);
         rawAboutStr = rawAboutStr.replace("%%ANDROID_VERSION_CODE%%", String.valueOf(BuildConfig.VERSION_CODE));
         rawAboutStr = rawAboutStr.replace("%%ANDROID_VERSION_NAME%%", String.valueOf(BuildConfig.VERSION_NAME));
+        rawAboutStr = rawAboutStr.replace("%%ANDROID_FLAVOR_NAME%%", String.valueOf(BuildConfig.FLAVOR));
+        rawAboutStr = rawAboutStr.replace("%%ABOUTLINKCOLOR%%", String.format(Locale.ENGLISH, "#%06X", 0xFFFFFF & getResources().getColor(R.color.colorAboutLinkColor)));
         //builder1.setMessage(Html.fromHtml(rawAboutStr, Html.FROM_HTML_MODE_LEGACY));
 
         WebView wv = new WebView(this);

@@ -7,4 +7,5 @@
     <color name="colorAccentLog">#FFFBFB</color>
     <color name="deviceMemoryLogHighlight">#EF2929</color>
     <color name="colorAccentHighlight">#fff8dc</color>
+    <color name="colorAboutLinkColor">#BEBBBB</color>
 </resources>
