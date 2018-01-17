@@ -96,7 +96,7 @@ public class TabFragment extends Fragment {
      * @param spinnerStringList
      * @param spinnerAdapter
      * @param queryCmd
-     * @see TabFragment.onCreateView
+     * @ref TabFragment.onCreateView
      * @see res/layout/tools_menu_tab.xml
      */
     private void connectPeripheralSpinnerAdapter(View view, int spinnerID, int spinnerStringList, SpinnerAdapter spinnerAdapter, String queryCmd) {
@@ -132,7 +132,7 @@ public class TabFragment extends Fragment {
      * @param spinnerStringList
      * @param spinnerAdapter
      * @param queryCmd
-     * @see TabFragment.onCreateView
+     * @ref TabFragment.onCreateView
      * @see res/layout/tools_menu_tab.xml
      */
     private void connectCommandListSpinnerAdapter(View view, final int spinnerID, int spinnerStringList, SpinnerAdapter spinnerAdapter, String queryCmd) {

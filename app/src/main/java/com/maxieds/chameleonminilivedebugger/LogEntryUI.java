@@ -17,7 +17,7 @@ import static java.lang.Math.abs;
  *
  * @author  Maxie D. Schmidt
  * @since   12/31/17
- * @see LiveLoggerActivity.logDataEntries
+ * @ref LiveLoggerActivity.logDataEntries
  */
 public class LogEntryUI extends LogEntryBase {
 
@@ -53,7 +53,7 @@ public class LogEntryUI extends LogEntryBase {
      * @param rawLogBytes
      * @param logLabel
      * @return LogEntryUI new log entry
-     * @see LiveLoggerActivity.usbReaderCallback
+     * @ref LiveLoggerActivity.usbReaderCallback
      */
     public static LogEntryUI newInstance(byte[] rawLogBytes, String logLabel) {
         if(rawLogBytes.length < 4) {
@@ -89,7 +89,7 @@ public class LogEntryUI extends LogEntryBase {
      * @param ltype
      * @param edata
      * @return LogEntryUI the configured log entry
-     * @see http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/Page_Log.html
+     * @url http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/Page_Log.html
      */
     public LogEntryUI configureLogEntry(Context context, String label, int diffTimeMs, int ltype, byte[] edata) {
         numBytes = edata.length;
@@ -147,7 +147,7 @@ public class LogEntryUI extends LogEntryBase {
     /**
      * Returns the payload bytes associated with the log.
      * @return byte[] data bytes
-     * @see http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/Page_Log.html
+     * @url http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/Page_Log.html
      */
     public byte[] getEntryData() {
         return entryData;
@@ -156,7 +156,7 @@ public class LogEntryUI extends LogEntryBase {
     /**
      * Returns a String representation of the log payload data bytes.
      * @return String payload data
-     * @see LogEntryUI.getEntryData
+     * @ref LogEntryUI.getEntryData
      */
     public String getPayloadData() {
         String hexBytes = Utils.bytes2Hex(entryData);
@@ -173,7 +173,7 @@ public class LogEntryUI extends LogEntryBase {
      * Helper method for determining timing data in the log.
      * @param offsetTimeMillis
      * @return short next offset time
-     * @see ExportTools.writeBinaryLogFile
+     * @ref ExportTools.writeBinaryLogFile
      */
     public short getNextOffsetTime(short offsetTimeMillis) {
         return (short) (offsetTimeMillis + abs(diffTimeMillis));
@@ -184,8 +184,8 @@ public class LogEntryUI extends LogEntryBase {
      * representation of the native log information.
      * @param offsetTimeMillis
      * @return byte[] packaged raw binary log data
-     * @see http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/Page_Log.html
-     * @see ExportTools.writeBinaryLogFile
+     * @url http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/Page_Log.html
+     * @ref ExportTools.writeBinaryLogFile
      */
     public byte[] packageBinaryLogData(short offsetTimeMillis) {
         byte[] headerBytes = {

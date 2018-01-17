@@ -121,10 +121,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
      * Sets one of the small status icons indicated at the top of the activity window.
      * @param iconID
      * @param iconDrawable
-     * @see R.id.statusIconUSB
-     * @see R.id.statusIconUlDl
-     * @see R.id.statusIconNewMsg
-     * @see R.id.statusIconNewXFer
+     * @ref R.id.statusIconUSB
+     * @ref R.id.statusIconUlDl
+     * @ref R.id.statusIconNewMsg
+     * @ref R.id.statusIconNewXFer
      */
     public void setStatusIcon(int iconID, int iconDrawable) {
         ((ImageView) findViewById(iconID)).setAlpha(255);
@@ -134,10 +134,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
     /**
      * Clears the corresponding status icon indicated at the top of the activity window.
      * @param iconID
-     * @see R.id.statusIconUSB
-     * @see R.id.statusIconUlDl
-     * @see R.id.statusIconNewMsg
-     * @see R.id.statusIconNewXFer
+     * @ref R.id.statusIconUSB
+     * @ref R.id.statusIconUlDl
+     * @ref R.id.statusIconNewMsg
+     * @ref R.id.statusIconNewXFer
      */
     public void clearStatusIcon(int iconID) {
         ((ImageView) findViewById(iconID)).setAlpha(0);
@@ -279,9 +279,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
      * @param cmPort
      * @param query
      * @return String device response
-     * @see ChameleonIO.DEVICE_RESPONSE
-     * @see ChameleonIO.DEVICE_RESPONSE_CODE
-     * @see LiveLoggerActivity.usbReaderCallback
+     * @ref ChameleonIO.DEVICE_RESPONSE
+     * @ref ChameleonIO.DEVICE_RESPONSE_CODE
+     * @ref LiveLoggerActivity.usbReaderCallback
      */
     public static String getSettingFromDevice(UsbSerialDevice cmPort, String query) {
         ChameleonIO.WAITING_FOR_RESPONSE = true;
@@ -482,7 +482,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
     /**
      * Clears the text appended to certain commands run from the Tools Menu.
      * @param view
-     * @see R.id.userInputFormattedBytes
+     * @ref R.id.userInputFormattedBytes
      * @see res/layout/tools_menu_tab.xml
      */
     public void actionButtonClearUserText(View view) {
@@ -744,7 +744,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
     /**
      * Constructs and displays a dialog providing meta information about the application.
      * @param view
-     * @see R.string.aboutapp
+     * @ref R.string.aboutapp
      */
     public void actionButtonAboutTheApp(View view) {
         AlertDialog.Builder adBuilder = new AlertDialog.Builder(this, R.style.SpinnerTheme);
@@ -862,8 +862,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
     /**
      * Called when one of the command Spinner buttons changes state.
      * @param view calling Spinner
-     * @see TabFragment.connectCommandListSpinnerAdapter
-     * @see TabFragment.connectPeripheralSpinnerAdapter
+     * @ref TabFragment.connectCommandListSpinnerAdapter
+     * @ref TabFragment.connectPeripheralSpinnerAdapter
      */
     public static void actionSpinnerSetCommand(View view) {
         String sopt = ((Spinner) view).getSelectedItem().toString();
@@ -875,7 +875,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     /**
      * Listener object for new Spinner selections.
-     * @see LiveLoggerActivity.actionSpinnerSetCommand
+     * @ref LiveLoggerActivity.actionSpinnerSetCommand
      */
     public static AdapterView.OnItemSelectedListener itemSelectedListener = new AdapterView.OnItemSelectedListener() {
         @Override
@@ -896,7 +896,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
      * Prompts for a user description of the indicated annotation event from the
      * Log Tools tab.
      * @param promptMsg
-     * @see LiveLoggerActivity.userInputStack
+     * @ref LiveLoggerActivity.userInputStack
      * @see res/layout/log_tools_tab.xml
      */
     public void displayUserInputPrompt(String promptMsg) {
@@ -970,10 +970,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
      * @param view pressed Button
      */
     public void actionButtonUploadCard(View view) {
-        //if(view != null) {
-        //    appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "The card upload feature does not quite work yet. Aborting."));
-        //    return;
-        //}
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setDataAndType(Uri.parse("//sdcard//Download//"), "*/*");

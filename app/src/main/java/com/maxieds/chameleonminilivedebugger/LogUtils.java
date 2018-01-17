@@ -14,7 +14,7 @@ import java.util.Map;
  * @author  Maxie D. Schmidt
  * @since   12/31/17
  * @see LogEntryUI
- * @see http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/_log_8h.html#a34112fbd78128ae58dc7801690dfa6e0
+ * @url http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/_log_8h.html#a34112fbd78128ae58dc7801690dfa6e0
  */
 public class LogUtils {
 

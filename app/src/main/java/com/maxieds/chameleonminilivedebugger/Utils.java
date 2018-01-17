@@ -97,7 +97,7 @@ public class Utils {
      * Returns a byte with its bits reversed in lexocographical order.
      * @param b
      * @return byte reversed byte
-     * @see Utils.reverseBits (reverse hex representation of a byte array).
+     * @ref Utils.reverseBits (reverse hex representation of a byte array).
      */
     public static byte reverseBits(byte b) {
         int bint = (int) b;

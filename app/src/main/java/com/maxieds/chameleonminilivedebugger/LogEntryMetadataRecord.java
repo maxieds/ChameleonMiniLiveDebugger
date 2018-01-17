@@ -14,7 +14,7 @@ import java.util.Map;
  *
  * @author  Maxie D. Schmidt
  * @since   12/31/17
- * @see LiveLoggerActivity.logDataEntries
+ * @ref LiveLoggerActivity.logDataEntries
  */
 public class LogEntryMetadataRecord extends LogEntryBase {
 
@@ -32,8 +32,8 @@ public class LogEntryMetadataRecord extends LogEntryBase {
      * @param inflater
      * @param title Main summary title of the status message / annotation entry.
      * @param text Lower specific subtitle text stored with the entry.
-     * @see LiveLoggerActivity.defaultInflater
-     * @see LogEntryMetadataRecord.createDefaultEventRecord
+     * @ref LiveLoggerActivity.defaultInflater
+     * @ref LogEntryMetadataRecord.createDefaultEventRecord
      */
     public LogEntryMetadataRecord(LayoutInflater inflater, String title, String text) {
         recordTitle = title;
@@ -107,7 +107,7 @@ public class LogEntryMetadataRecord extends LogEntryBase {
      * @param eventID Type of the status message
      * @param eventMsg Description (if any) associated with the message.
      * @return LogEntryMetadataRecord record
-     * @see Types of enries: LogEntryMetadataRecord.prefixIconMap
+     * @ref Types of enries: LogEntryMetadataRecord.prefixIconMap
      */
     public static LogEntryMetadataRecord createDefaultEventRecord(String eventID, String eventMsg) {
 

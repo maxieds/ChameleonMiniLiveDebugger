@@ -56,8 +56,8 @@ public class ChameleonIO {
     /**
      * Static storage for command return values.
      * Used to avoid overhead of passing messages for the command responses.
-     * @see LiveLoggerActivity.getSettingFromDevice
-     * @see LiveLoggerActivity.usbReaderCallback
+     * @ref LiveLoggerActivity.getSettingFromDevice
+     * @ref LiveLoggerActivity.usbReaderCallback
      */
     public static String DEVICE_RESPONSE_CODE;
     public static String DEVICE_RESPONSE;
@@ -109,7 +109,7 @@ public class ChameleonIO {
 
         /**
          * Lookup table of String response codes prefixing command return data sent by the device.
-         * @see ChameleonIO.isCommandResponse
+         * @ref ChameleonIO.isCommandResponse
          */
         public static final Map<String, SerialRespCode> RESP_CODE_TEXT_MAP = new HashMap<>();
         static {
@@ -142,7 +142,7 @@ public class ChameleonIO {
      * (as opposed to a LIVE log sent by the device).
      * @param liveLogData
      * @return boolean whether the log data is a response to an issued command
-     * @see LiveLoggerActivity.usbReaderCallback
+     * @ref LiveLoggerActivity.usbReaderCallback
      */
     public static boolean isCommandResponse(byte[] liveLogData) {
         String respText = new String(liveLogData).split("[\n\r]+")[0];
@@ -219,8 +219,8 @@ public class ChameleonIO {
         /**
          * Updates all status settings and posts the results to the live activity window.
          * @param resetTimer whether to have this execute again in STATS_UPDATE_INTERVAL milliseconds
-         * @see DeviceStatusSettings.STATS_UPDATE_INTERVAL
-         * @see DeviceStatusSettings.updateAllStatus
+         * @ref DeviceStatusSettings.STATS_UPDATE_INTERVAL
+         * @ref DeviceStatusSettings.updateAllStatus
          */
         public void updateAllStatusAndPost(boolean resetTimer) {
             if(LiveLoggerActivity.serialPort == null)
@@ -288,7 +288,7 @@ public class ChameleonIO {
      * @param rawCmd
      * @param timeout
      * @return SerialRespCode status code (OK)
-     * @see http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/Page_CommandLine.html
+     * @url http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/Page_CommandLine.html
      */
     public static SerialRespCode executeChameleonMiniCommand(UsbSerialDevice cmPort, String rawCmd, int timeout) {
         if(cmPort == null || PAUSED)

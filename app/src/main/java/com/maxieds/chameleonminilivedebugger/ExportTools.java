@@ -70,8 +70,8 @@ public class ExportTools {
     /**
      * Completes the XModem download command. Implemented this way to keep the GUI from
      * freezing waiting for the command to complete by while loop / Thread.sleep.
-     * @see ExportTools.downloadByXModem
-     * @see ExportTools.performXModemSerialDownload
+     * @ref ExportTools.downloadByXModem
+     * @ref ExportTools.performXModemSerialDownload
      */
     public static Runnable eotSleepRunnable = new Runnable() {
         public void run() {
@@ -148,7 +148,7 @@ public class ExportTools {
     /**
      * Handles the logic of receiving the data in a XModem download.
      * @param liveLogData
-     * @see LiveLoggerActivity.usbReaderCallback
+     * @ref LiveLoggerActivity.usbReaderCallback
      */
     public static void performXModemSerialDownload(byte[] liveLogData) {
         if(ExportTools.EOT)
@@ -214,7 +214,7 @@ public class ExportTools {
      * @param outfilePrefix
      * @param throwToLiveParam
      * @return boolean success of the operation
-     * @see LiveLoggerActivity.actionButtonExportLogDownload
+     * @ref LiveLoggerActivity.actionButtonExportLogDownload
      */
     public static boolean downloadByXModem(String issueCmd, String outfilePrefix, boolean throwToLiveParam) {
         LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
@@ -346,7 +346,7 @@ public class ExportTools {
     /**
      * Called to initiate the card data upload process.
      * @param cardFilePath
-     * @see LiveLoggerActivity.actionButtonUploadCard
+     * @ref LiveLoggerActivity.actionButtonUploadCard
      */
     public static void uploadCardFileByXModem(String cardFilePath) {
         LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusupload16);
@@ -388,7 +388,7 @@ public class ExportTools {
      * @param fd
      * @return boolean success of the operation
      * @throws Exception (IOException)
-     * @see LiveLoggerActivity.actionButtonWriteFile
+     * @ref LiveLoggerActivity.actionButtonWriteFile
      */
     public static boolean writeFormattedLogFile(File fd) throws Exception {
         Log.i(TAG, String.valueOf("00".getBytes(StandardCharsets.US_ASCII)));
@@ -415,7 +415,7 @@ public class ExportTools {
      * @param fd
      * @return boolean success of the operation
      * @throws Exception (IOException)
-     * @see LiveLoggerActivity.actionButtonWriteFile
+     * @ref LiveLoggerActivity.actionButtonWriteFile
      */
     public static boolean writeHTMLLogFile(File fd) throws Exception {
         FileOutputStream fout = new FileOutputStream(fd);
@@ -447,8 +447,8 @@ public class ExportTools {
      * @param fd
      * @return boolean success of the operation
      * @throws Exception (IOException)
-     * @see LiveLoggerActivity.actionButtonWriteFile
-     * @see http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/Page_Log.html
+     * @ref LiveLoggerActivity.actionButtonWriteFile
+     * @url http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/Page_Log.html
      */
     public static boolean writeBinaryLogFile(File fd) throws Exception {
         FileOutputStream fout = new FileOutputStream(fd);
@@ -470,7 +470,7 @@ public class ExportTools {
      * Saves the output of the DUMP_MFU command to binary file.
      * @param filePathPrefix
      * @return boolean success of the operation
-     * @see LiveLoggerActivity.actionButtonDumpMFU
+     * @ref LiveLoggerActivity.actionButtonDumpMFU
      */
     public static boolean saveBinaryDumpMFU(String filePathPrefix) {
         LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);

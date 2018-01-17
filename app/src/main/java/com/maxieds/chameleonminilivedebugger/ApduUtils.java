@@ -162,11 +162,11 @@ public class ApduUtils {
      * Attempts to classify log payload data as APDU commands (instructions and status codes).
      * @param dataBytes
      * @return String list of recognized APDU commands
-     * @see ApduUtils.parseDesfireInstructions
-     * @see ApduUtils.parseDesfireStatusCodes
-     * @see ApduUtils.parseCommonInstructions
-     * @see ApduUtils.parseStatusCodes
-     * @see ApduUtils.parseDetailedInstructions
+     * @ref ApduUtils.parseDesfireInstructions
+     * @ref ApduUtils.parseDesfireStatusCodes
+     * @ref ApduUtils.parseCommonInstructions
+     * @ref ApduUtils.parseStatusCodes
+     * @ref ApduUtils.parseDetailedInstructions
      */
     public static String classifyApdu(byte[] dataBytes) {
         List<String> apduClassifications = parseDesfireInstructions(dataBytes);
