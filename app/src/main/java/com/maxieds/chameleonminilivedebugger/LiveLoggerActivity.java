@@ -197,13 +197,14 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
         runningActivity = this;
         localSavedInstanceState = savedInstanceState;
+        logDataFeed = new LinearLayout(getApplicationContext());
+        defaultInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        defaultContext = getApplicationContext();
+
         //SharedPreferences preferences = getSharedPreferences("LATER", MODE_PRIVATE);
         //setTheme(R.style.AppThemeGreen);
         setContentView(R.layout.activity_live_logger);
 
-        logDataFeed = new LinearLayout(getApplicationContext());
-        defaultInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        defaultContext = getApplicationContext();
 
         Toolbar actionBar = (Toolbar) findViewById(R.id.toolbarActionBar);
         actionBar.setSubtitle("Portable logging interface v" + String.valueOf(BuildConfig.VERSION_NAME));
@@ -213,57 +214,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         setActionBar(actionBar);
         clearStatusIcon(R.id.statusIconUlDl);
 
-        logDataFeedConfigured = false;
-        viewPager = (ViewPager) findViewById(R.id.tab_pager);
-        TabFragmentPagerAdapter tfPagerAdapter = new TabFragmentPagerAdapter(getSupportFragmentManager(), LiveLoggerActivity.this);
-        //tfPagerAdapter.reloadTabData();
-        //tfPagerAdapter.notifyDataSetChanged();
-        viewPager.setAdapter(tfPagerAdapter);
-        viewPager.setOffscreenPageLimit(0);
-        //viewPager.setOffscreenPageLimit(TabFragmentPagerAdapter.TAB_COUNT - 1);
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            ViewPager viewPager = (ViewPager) findViewById(R.id.tab_pager);
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
-            @Override
-            public void onPageSelected(int position) {
-                LiveLoggerActivity.selectedTab = position;
-                switch (position) {
-                    case TAB_LOG:
-                        LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconNewMsg);
-                        LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconNewXFer);
-                        LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconUlDl);
-                        break;
-                    default:
-                        break;
-                }
-                //if(viewPager.getAdapter() != null) {
-                //    Fragment tabFrag = ((TabFragmentPagerAdapter) viewPager.getAdapter()).getItem(position);
-                //    if (tabFrag != null)
-                //        tabFrag.onResume();
-                //    //viewPager.getAdapter().notifyDataSetChanged();
-                //}
-            }
-            @Override
-            public void onPageScrollStateChanged(int state) {}
-        });
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.removeAllTabs();
-        tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_LOG)));
-        tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_TOOLS)));
-        tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_LOG_TOOLS)));
-        tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_EXPORT)));
-        tabLayout.setupWithViewPager(viewPager);
-
-        viewPager.setOffscreenPageLimit(TabFragmentPagerAdapter.TAB_COUNT - 1);
-        viewPager.setCurrentItem(LiveLoggerActivity.selectedTab);
-        tfPagerAdapter.notifyDataSetChanged();
-
-        // the view pager hides the tab icons by default, so we reset them:
-        tabLayout.getTabAt(TAB_LOG).setIcon(R.drawable.nfc24v1);
-        tabLayout.getTabAt(TAB_TOOLS).setIcon(R.drawable.tools24);
-        tabLayout.getTabAt(TAB_EXPORT).setIcon(R.drawable.insertbinary24);
-        tabLayout.getTabAt(TAB_LOG_TOOLS).setIcon(R.drawable.logtools24);
+        configureTabViewPager();
 
         String[] permissions = {
                 "android.permission.READ_EXTERNAL_STORAGE",
@@ -302,17 +253,62 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     }
 
+    protected void configureTabViewPager() {
+
+        logDataFeedConfigured = false;
+        logDataFeed = new LinearLayout(getApplicationContext());
+
+        viewPager = (ViewPager) findViewById(R.id.tab_pager);
+        //viewPager.invalidate();
+        TabFragmentPagerAdapter tfPagerAdapter = new TabFragmentPagerAdapter(getSupportFragmentManager(), LiveLoggerActivity.this);
+        viewPager.setAdapter(tfPagerAdapter);
+        //viewPager.setOffscreenPageLimit(0);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+            @Override
+            public void onPageSelected(int position) {
+                LiveLoggerActivity.selectedTab = position;
+                switch (position) {
+                    case TAB_LOG:
+                        LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconNewMsg);
+                        LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconNewXFer);
+                        LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconUlDl);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            @Override
+            public void onPageScrollStateChanged(int state) {}
+        });
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.removeAllTabs();
+        tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_LOG)));
+        tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_TOOLS)));
+        tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_LOG_TOOLS)));
+        tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_EXPORT)));
+        tabLayout.setupWithViewPager(viewPager);
+
+        viewPager.setOffscreenPageLimit(TabFragmentPagerAdapter.TAB_COUNT - 1);
+        viewPager.setCurrentItem(LiveLoggerActivity.selectedTab);
+        tfPagerAdapter.notifyDataSetChanged();
+
+        // the view pager hides the tab icons by default, so we reset them:
+        tabLayout.getTabAt(TAB_LOG).setIcon(R.drawable.nfc24v1);
+        tabLayout.getTabAt(TAB_TOOLS).setIcon(R.drawable.tools24);
+        tabLayout.getTabAt(TAB_EXPORT).setIcon(R.drawable.insertbinary24);
+        tabLayout.getTabAt(TAB_LOG_TOOLS).setIcon(R.drawable.logtools24);
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu overflowMenu) {
         if(BuildConfig.PAID_APP_VERSION) { // install themes menu:
-            //overflowMenu.setGroupEnabled(R.id.paidMenuGroup, true);
-            //overflowMenu.setGroupVisible(R.id.paidMenuGroup, true);
             getMenuInflater().inflate(R.menu.paid_theme_menu, overflowMenu);
-            return true; //super.onCreateOptionsMenu(overflowMenu);
+            return true;
         }
         else {
-            //overflowMenu.setGroupEnabled(R.id.paidMenuGroup, true);
-            //overflowMenu.setGroupVisible(R.id.paidMenuGroup, true);
             return false;
         }
     }
@@ -323,8 +319,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
             //throw new RuntimeException("This should not occur in the free version -- no themese menu available!");
             return false;
         }
+        mitem.setChecked(true);
         int themeID;
-        switch(mitem.getTitle().toString().substring("Theme: ".length())) {
+        String themeDesc = mitem.getTitle().toString().substring("Theme: ".length());
+        switch(themeDesc) {
             case "Amber":
                 themeID = R.style.AppThemeAmber;
                 break;
@@ -369,9 +367,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
         Log.w(TAG, mitem.getTitle().toString().substring("Theme: ".length()));
         Log.w(TAG, String.valueOf(themeID));
-        //getApplication().getTheme().setTo(new Resources.Theme(themeID));
         setTheme(themeID);
+        //setContentView(R.layout.activity_live_logger);
+        //configureTabViewPager();
         onCreate(localSavedInstanceState);
+        appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "New theme installed: " + themeDesc));
         return true;
     }
 

@@ -36,21 +36,6 @@ public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
     FragmentManager fm;
 
     /**
-     * Reload the content tabs.
-     */
-    public TabFragmentPagerAdapter reloadTabData() {
-        for (int i = 0; i < tabFragments.length; i++) {
-            fm.beginTransaction().remove(tabFragments[i]).commit();
-        }
-        tabFragments[0] = TabFragment.newInstance(TAB_LOG);
-        tabFragments[1] = TabFragment.newInstance(TAB_TOOLS);
-        tabFragments[2] = TabFragment.newInstance(TAB_LOG_TOOLS);
-        tabFragments[3] = TabFragment.newInstance(TAB_EXPORT);
-        notifyDataSetChanged();
-        return this;
-    }
-
-    /**
      * Corresponding titles of each tab.
      */
     private String tabTitles[] = new String[]{
@@ -124,4 +109,5 @@ public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
         Log.w(TAG, "instantiateItem called on tab #" + String.valueOf(position));
         return null;
     }
+
 }
