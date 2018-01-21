@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--<declare-styleable name="CurrentThemeData">-->
+    <attr name="colorPrimaryDarkLog" format="reference|color" />
+    <attr name="colorAccentLog" format="reference|color" />
+    <attr name="deviceMemoryLogHighlight" format="reference|color" />
+    <attr name="colorAccentHighlight" format="reference|color" />
+    <attr name="colorAboutLinkColor" format="reference|color" />
+    <attr name="colorAboutTextColor" format="reference|color" />
+    <attr name="actionBarLeftLogoIcon" format="reference" />
+    <attr name="deviceStatusBarDividerColor" format="reference|color" />
+    <attr name="deviceStatusBarBackgroundColor" format="reference|color" />
+    <attr name="deviceStatusBarTextColor" format="reference|color" />
+    <attr name="actionBarBackgroundColor" format="reference|color" />
+</resources>

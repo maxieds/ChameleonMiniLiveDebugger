@@ -1,0 +1,258 @@
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:actionBarStyle">@style/ActionBarTheme</item>
+        <item name="android:popupTheme">@style/SpinnerTheme</item>
+        <item name="deviceStatusBarBackgroundColor">#555753</item>
+        <item name="deviceStatusBarTextColor">#ffffff</item>
+        <item name="deviceStatusBarDividerColor">#ffffff</item>
+        <item name="actionBarBackgroundColor">#282A2B</item>
+        <item name="colorAboutTextColor">#000000</item>
+        <item name="android:textColorPrimary">#000000</item>
+        <item name="android:actionOverflowButtonStyle">@style/Actionbar.PopupTheme</item>
+        <item name="android:contextPopupMenuStyle">@style/Actionbar.PopupTheme</item>
+        <item name="android:actionBarPopupTheme">@style/ActionBarTheme</item>
+        <item name="android:windowEnableSplitTouch">false</item>
+    </style>
+
+    <style name="AppThemeGreen" parent="@style/AppTheme">
+        <item name="colorPrimary">#75a72c</item>
+        <item name="colorPrimaryDark">#3d5717</item>
+        <item name="colorAccent">#91cb3b</item>
+        <item name="colorPrimaryDarkLog">#6eb703</item>
+        <item name="colorAccentLog">#cfe8a9</item>
+        <item name="deviceMemoryLogHighlight">#EF2929</item>
+        <item name="colorAccentHighlight">#98fb98</item>
+        <item name="colorAboutLinkColor">#6eb703</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32</item>
+    </style>
+
+    <style name="AppThemeBlue" parent="@style/AppTheme">
+        <item name="colorPrimary">#0E4D92</item>
+        <item name="colorPrimaryDark">#071529</item>
+        <item name="colorAccent">#6E95BE</item>
+        <item name="colorPrimaryDarkLog">#3E71A8</item>
+        <item name="colorAccentLog">#9EB9D4</item>
+        <item name="deviceMemoryLogHighlight">#EF2929</item>
+        <item name="colorAccentHighlight">#CEDDEA</item>
+        <item name="colorAboutLinkColor">#A4B1BC</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_blue</item>
+    </style>
+
+    <style name="AppThemeChicky" parent="AppTheme">
+        <item name="colorPrimary">#E51284</item>
+        <item name="colorPrimaryDark">#630839</item>
+        <item name="colorAccent">#FF74BF</item>
+        <item name="colorPrimaryDarkLog">#FF44A9</item>
+        <item name="colorAccentLog">#FFBCE0</item>
+        <item name="deviceMemoryLogHighlight">#EF2929</item>
+        <item name="colorAccentHighlight">#FF00FF</item>
+        <item name="colorAboutLinkColor">#720843</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_chicky</item>
+    </style>
+
+    <style name="AppThemeGoldenrod" parent="AppTheme">
+        <item name="colorPrimary">#CB9B1D</item>
+        <item name="colorPrimaryDark">#7D6211</item>
+        <item name="colorAccent">#FFC125</item>
+        <item name="colorPrimaryDarkLog">#FFC73B</item>
+        <item name="colorAccentLog">#FFD97D</item>
+        <item name="deviceMemoryLogHighlight">#EF2929</item>
+        <item name="colorAccentHighlight">#FFFF66</item>
+        <item name="colorAboutLinkColor">#CBCB52</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_goldenrod</item>
+    </style>
+
+    <style name="AppThemeWhite" parent="AppTheme">
+        <item name="colorPrimary">#EEE9E9</item>
+        <item name="colorPrimaryDark">#767676</item>
+        <item name="colorAccent">#F4EFEF</item>
+        <item name="colorPrimaryDarkLog">#F8F3F3</item>
+        <item name="colorAccentLog">#FFFBFB</item>
+        <item name="deviceMemoryLogHighlight">#EF2929</item>
+        <item name="colorAccentHighlight">#fff8dc</item>
+        <item name="colorAboutLinkColor">#BEBBBB</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_white</item>
+    </style>
+
+    <style name="AppThemeRed" parent="AppTheme">
+        <item name="colorPrimary">#F44336</item>
+        <item name="colorPrimaryDark">#B71C1C</item>
+        <item name="colorAccent">#FFCDD2</item>
+        <item name="colorPrimaryDarkLog">#E53935</item>
+        <item name="colorAccentLog">#FF8A80</item>
+        <item name="deviceMemoryLogHighlight">#EF2929</item>
+        <item name="colorAccentHighlight">#FF1744</item>
+        <item name="colorAboutLinkColor">#BEBBBB</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_red</item>
+    </style>
+
+    <style name="AppThemePurple" parent="AppTheme">
+        <item name="colorPrimary">#9C27B0</item>
+        <item name="colorPrimaryDark">#4A148C</item>
+        <item name="colorAccent">#E1BEE7</item>
+        <item name="colorPrimaryDarkLog">#8E24AA</item>
+        <item name="colorAccentLog">#EA80FC</item>
+        <item name="deviceMemoryLogHighlight">#EF2929</item>
+        <item name="colorAccentHighlight">#D500F9</item>
+        <item name="colorAboutLinkColor">#4A148C</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_purple</item>
+    </style>
+
+    <style name="AppThemeRedmond" parent="AppTheme">
+        <item name="colorPrimary">#4F5B67</item>
+        <item name="colorPrimaryDark">#343839</item>
+        <item name="colorAccent">#DADBD3</item>
+        <item name="colorPrimaryDarkLog">#A3B1B4</item>
+        <item name="colorAccentLog">#C8CDC7</item>
+        <item name="deviceMemoryLogHighlight">#EF2929</item>
+        <item name="colorAccentHighlight">#D500F9</item>
+        <item name="colorAboutLinkColor">#C8CDC7</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_redmond</item>
+    </style>
+
+    <style name="AppThemeLightblue" parent="AppTheme">
+        <item name="colorPrimary">#2196F3</item>
+        <item name="colorPrimaryDark">#0D47A1</item>
+        <item name="colorAccent">#BBDEFB</item>
+        <item name="colorPrimaryDarkLog">#1E88E5</item>
+        <item name="colorAccentLog">#82B1FF</item>
+        <item name="deviceMemoryLogHighlight">#EF2929</item>
+        <item name="colorAccentHighlight">#2979FF</item>
+        <item name="colorAboutLinkColor">#0D47A1</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_lightblue</item>
+    </style>
+
+    <style name="AppThemeAmber" parent="AppTheme">
+        <item name="colorPrimary">#FFC107</item>
+        <item name="colorPrimaryDark">#FF6F00</item>
+        <item name="colorAccent">#FFECB3</item>
+        <item name="colorPrimaryDarkLog">#FFB300</item>
+        <item name="colorAccentLog">#FFE57F</item>
+        <item name="deviceMemoryLogHighlight">#EF2929</item>
+        <item name="colorAccentHighlight">#FFC400</item>
+        <item name="colorAboutLinkColor">#FFA000</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_amber</item>
+    </style>
+
+    <style name="AppThemeChocolate" parent="AppTheme">
+        <item name="colorPrimary">#795548</item>
+        <item name="colorPrimaryDark">#3E2723</item>
+        <item name="colorAccent">#D7CCC8</item>
+        <item name="colorPrimaryDarkLog">#6D4C41</item>
+        <item name="colorAccentLog">#D7CCC8</item>
+        <item name="deviceMemoryLogHighlight">#EF2929</item>
+        <item name="colorAccentHighlight">#8D6E63</item>
+        <item name="colorAboutLinkColor">#795548</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_chocolate</item>
+    </style>
+
+    <style name="AppThemeBlack" parent="AppTheme">
+        <item name="colorPrimary">#424242</item>
+        <item name="colorPrimaryDark">#212121</item>
+        <item name="colorAccent">#F5F5F5</item>
+        <item name="colorPrimaryDarkLog">#757575</item>
+        <item name="colorAccentLog">#BDBDBD</item>
+        <item name="deviceMemoryLogHighlight">#EF2929</item>
+        <item name="colorAccentHighlight">#E0E0E0</item>
+        <item name="colorAboutLinkColor">#9E9E9E</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_black</item>
+    </style>
+
+    <style name="AppThemeTeal" parent="AppTheme">
+        <item name="colorPrimary">#00897B</item>
+        <item name="colorPrimaryDark">#004D40</item>
+        <item name="colorAccent">#B2DFDB</item>
+        <item name="colorPrimaryDarkLog">#00897B</item>
+        <item name="colorAccentLog">#A7FFEB</item>
+        <item name="deviceMemoryLogHighlight">#EF2929</item>
+        <item name="colorAccentHighlight">#64FFDA</item>
+        <item name="colorAboutLinkColor">#00897B</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_teal</item>
+    </style>
+
+    <style name="SpinnerTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:background">?colorAccentHighlight</item>
+        <item name="buttonStyle">@style/AboutButtonTheme</item>
+    </style>
+
+    <style name="AboutButtonTheme" parent="AppTheme">
+        <item name="android:textColor">?colorAboutTextColor</item>
+        <item name="android:background">?colorAccentHighlight</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="LogDataUITheme" parent="AppTheme">
+        <item name="android:background">?colorPrimaryDarkLog</item>
+        <item name="android:colorPrimary">?colorPrimary</item>
+        <item name="android:colorPrimaryDark">?colorPrimaryDark</item>
+        <item name="android:colorAccent">?colorAccent</item>
+    </style>
+
+    <style name="ActionBarTheme" parent="Base.Theme.AppCompat.Light.DarkActionBar">
+        <item name="logo">?actionBarLeftLogoIcon</item>
+        <item name="android:background">?actionBarBackgroundColor</item>
+        <item name="android:textColorPrimary">#ffffff</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textSize">6sp</item>
+        <item name="android:subtitleTextColor">#dcdcdc</item>
+        <item name="android:contentInsetEnd">0dp</item>
+        <item name="android:contentInsetStart">0dp</item>
+        <item name="android:contentInsetLeft">0dp</item>
+        <item name="android:titleMarginStart">5dp</item>
+        <item name="android:titleTextStyle">@style/Actionbar.TitleText</item>
+        <item name="android:actionOverflowMenuStyle">@style/Actionbar.PopupTheme</item>
+        <item name="android:subtitleTextStyle">@style/Actionbar.TitleText</item>
+    </style>
+
+    <style name="Actionbar.TitleText" parent="Base.Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textColorPrimary">#ffffff</item>
+        <item name="android:textSize">6sp</item>
+    </style>
+
+    <style name="Actionbar.PopupTheme" parent="Base.Widget.AppCompat.Light.PopupMenu.Overflow">
+        <item name="android:enabled">true</item>
+        <item name="android:visible">true</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">#000000</item>
+        <item name="android:background">?colorAccentHighlight</item>
+        <item name="android:title">Theme Selections:</item>
+        <item name="android:checkedTextViewStyle">@style/MenuCheckedStyle</item>
+        <item name="android:checkedButton">@drawable/themecheck24</item>
+    </style>
+
+    <style name="MenuCheckedStyle" parent="Actionbar.PopupTheme">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">?colorAboutLinkColor</item>
+        <item name="android:background">?colorAccentLog</item>
+    </style>
+
+    <style name="GridButtons">
+        <item name="android:background">?colorAccentLog</item>
+        <item name="android:maxButtonHeight">8dp</item>
+        <item name="android:layout_columnWeight">0.25</item>
+        <item name="android:layout_width">100dp</item>
+        <item name="android:maxHeight">40dp</item>
+        <item name="android:layout_weight">0.29</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">normal|bold</item>
+    </style>
+
+    <style name="ColorHighlightButtons">
+        <item name="android:maxButtonHeight">8dp</item>
+        <item name="android:layout_columnWeight">0.075</item>
+        <item name="android:layout_width">15dp</item>
+        <item name="android:layout_height">20dp</item>
+        <item name="android:layout_weight">0.075</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">normal|bold</item>
+    </style>
+
+    <style name="CheckBoxTheme" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">?colorPrimaryDark</item>
+        <item name="colorControlActivated">?colorPrimaryDark</item>
+    </style>
+
+</resources>

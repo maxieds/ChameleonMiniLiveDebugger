@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static android.content.ContentValues.TAG;
 
@@ -75,9 +76,9 @@ public class Utils {
         else if(bytes.length == 0)
             return "";
         StringBuilder hstr = new StringBuilder();
-        hstr.append(String.format("%02x", bytes[0]));
+        hstr.append(String.format(Locale.ENGLISH, "%02x", bytes[0]));
         for(int b = 1; b < bytes.length; b++)
-            hstr.append(" " + String.format("%02x", bytes[b]));
+            hstr.append(" " + String.format(Locale.ENGLISH, "%02x", bytes[b]));
         return hstr.toString();
     }
 

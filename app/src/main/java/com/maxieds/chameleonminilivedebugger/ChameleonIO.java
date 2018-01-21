@@ -239,7 +239,7 @@ public class ChameleonIO {
             SeekBar thresholdSeekbar = (SeekBar) LiveLoggerActivity.runningActivity.findViewById(R.id.thresholdSeekbar);
             if(thresholdSeekbar != null) {
                 thresholdSeekbar.setProgress(THRESHOLD);
-                ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.thresholdSeekbarValueText)).setText(String.format("% 5d mV", THRESHOLD));
+                ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.thresholdSeekbarValueText)).setText(String.format(Locale.ENGLISH, "% 5d mV", THRESHOLD));
             }
             NumberPicker settingsNumberPicker = (NumberPicker) LiveLoggerActivity.runningActivity.findViewById(R.id.settingsNumberPicker);
             if(settingsNumberPicker != null) {

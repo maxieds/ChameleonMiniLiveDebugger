@@ -7,16 +7,27 @@
     android:orientation="vertical"
     tools:context="com.maxieds.chameleonminilivedebugger.LiveLoggerActivity">
 
+    <Toolbar
+        style="@style/ActionBarTheme"
+        android:id="@+id/toolbarActionBar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:title="@string/app_name"
+        android:logo="?actionBarLeftLogoIcon"
+        android:background="?actionBarBackgroundColor"
+        android:theme="@style/ActionBarTheme"
+        android:popupTheme="@style/Actionbar.PopupTheme"/>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:background="#ffffff" />
+        android:background="?deviceStatusBarDividerColor" />
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="0dp"
-        android:background="#555753"
+        android:background="?deviceStatusBarBackgroundColor"
         android:orientation="horizontal"
         android:paddingLeft="5dp"
         android:paddingRight="4dp">
@@ -27,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="0dp"
             android:layout_weight="1"
-            android:background="#555753"
+            android:background="?deviceStatusBarBackgroundColor"
             android:columnCount="2"
             android:padding="0dp"
             android:rowCount="2">
@@ -37,11 +48,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.42"
-                android:background="#555753"
+                android:background="?deviceStatusBarBackgroundColor"
                 android:minWidth="125dp"
                 android:paddingRight="10dp"
                 android:text="DEVICE CONFIGURATION"
-                android:textColor="#ffffff"
+                android:textColor="?deviceStatusBarTextColor"
                 android:textSize="12sp"
                 android:textStyle="normal|bold" />
 
@@ -50,10 +61,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.53"
-                android:background="#555753"
+                android:background="?deviceStatusBarBackgroundColor"
                 android:gravity="right"
                 android:text="MEM / LOG / DIP#"
-                android:textColor="#ffffff"
+                android:textColor="?deviceStatusBarTextColor"
                 android:textSize="10sp"
                 android:textStyle="normal|italic" />
 
@@ -61,10 +72,10 @@
                 android:id="@+id/deviceConfigUID"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#555753"
+                android:background="?deviceStatusBarBackgroundColor"
                 android:paddingRight="10dp"
                 android:text="DEVICE UID"
-                android:textColor="#ffffff"
+                android:textColor="?deviceStatusBarTextColor"
                 android:textSize="12sp"
                 android:textStyle="normal|bold" />
 
@@ -72,10 +83,10 @@
                 android:id="@+id/deviceStats2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#555753"
+                android:background="?deviceStatusBarBackgroundColor"
                 android:gravity="right"
                 android:text="RO / FLD1 / NOCHRG"
-                android:textColor="#ffffff"
+                android:textColor="?deviceStatusBarTextColor"
                 android:textSize="10sp"
                 android:textStyle="normal|italic" />
 
@@ -83,7 +94,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="2dp"
-                android:background="#555753"
+                android:background="?deviceStatusBarBackgroundColor"
                 android:columnCount="4"
                 android:paddingLeft="0dp"
                 android:layout_marginLeft="1dp"
@@ -123,10 +134,10 @@
                 android:id="@+id/deviceStats3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#555753"
+                android:background="?deviceStatusBarBackgroundColor"
                 android:gravity="right"
                 android:text="THRES / TMOUT"
-                android:textColor="#ffffff"
+                android:textColor="?deviceStatusBarTextColor"
                 android:textSize="10sp"
                 android:textStyle="normal|italic" />
 
@@ -138,25 +149,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="5dp"
-            android:background="#555753"
-            android:drawableLeft="@drawable/refresh24"
-            android:drawablePadding="10dp"
-            android:elevation="0dp"
-            android:gravity="left|center_vertical"
-            android:onClick="actionButtonRefreshDeviceStatus" />
-
-        <Button
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="25dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="5dp"
-            android:background="#555753"
+            android:background="?deviceStatusBarBackgroundColor"
             android:drawableLeft="@drawable/info24"
             android:drawablePadding="10dp"
             android:gravity="left|center_vertical"
             android:onClick="actionButtonAboutTheApp"
-            android:textColor="#ffffff" />
+            android:textColor="?deviceStatusBarTextColor" />
 
         <Button
             style="?android:attr/borderlessButtonStyle"
@@ -164,7 +162,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="5dp"
-            android:background="#555753"
+            android:background="?deviceStatusBarBackgroundColor"
             android:drawableLeft="@drawable/closeicon24"
             android:drawablePadding="6dp"
             android:gravity="left|center_vertical"
@@ -175,14 +173,14 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:background="#ffffff" />
+        android:background="?deviceStatusBarDividerColor" />
 
     <LinearLayout
         style="@style/AppTheme"
         android:layout_width="fill_parent"
         android:layout_height="500dp"
         android:layout_weight="1"
-        android:background="@color/colorPrimary"
+        android:background="?colorPrimary"
         android:orientation="vertical">
 
         <TabHost
@@ -201,10 +199,10 @@
                 android:id="@+id/tab_layout"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorAccent"
+                android:background="?colorAccent"
                 android:visibility="visible"
                 app:tabGravity="fill"
-                app:tabIndicatorColor="@color/colorPrimaryDark"
+                app:tabIndicatorColor="?colorPrimaryDark"
                 app:tabIndicatorHeight="3dp"
                 app:tabMaxWidth="0dp"
                 app:tabMinWidth="0dp"
@@ -213,7 +211,7 @@
                 app:tabPaddingStart="-1dp"
                 app:tabTextAppearance="?android:attr/textAppearanceSmall">
 
-                <android.support.design.widget.TabItem
+                <!--<android.support.design.widget.TabItem
                     android:id="@+id/main_logger_tab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -241,7 +239,7 @@
                     android:layout_height="wrap_content"
                     android:icon="@drawable/searchdisabled24"
                     android:text="Search"
-                    android:textColor="#dcdcdc" />
+                    android:textColor="#dcdcdc" />-->
 
             </android.support.design.widget.TabLayout>
 
@@ -250,7 +248,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/colorPrimaryDark" />
+            android:background="?colorPrimaryDark" />
 
         <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
@@ -258,7 +256,7 @@
             android:layout_width="match_parent"
             android:layout_height="500dp"
             android:layout_weight="1.0"
-            android:background="@color/colorPrimary"
+            android:background="?colorPrimary"
             android:padding="8dp"
             tools:context="net.voidynullness.android.tabitytabs.TabLayoutActivity">
 

@@ -12,26 +12,26 @@
         android:layout_height="wrap_content"
         android:drawableLeft="@drawable/phonebubble24"
         android:drawablePadding="5dp"
-        android:background="@color/colorAccentHighlight"
+        android:background="?colorAccentHighlight"
         android:textAllCaps="true"
         android:textStyle="bold" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:background="@color/colorPrimaryDark" />
+        android:background="?colorPrimaryDark" />
 
     <TextView
         android:id="@+id/record_data_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorAccentLog"
+        android:background="?colorAccentLog"
         android:textSize="12sp"
         android:textStyle="normal" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:background="@color/colorPrimaryDark" />
+        android:background="?colorPrimaryDark" />
 
 </LinearLayout>

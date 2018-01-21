@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.Locale;
+
 import static java.lang.Math.abs;
 
 /**
@@ -123,7 +125,7 @@ public class LogEntryUI extends LogEntryBase {
         apduParseStatus = (ImageView) mainContainerRef.findViewById(R.id.apduParseStatusImg);
         tvLabel = (TextView) mainContainerRef.findViewById(R.id.text_label);
         recordID = ++LiveLoggerActivity.RECORDID;
-        tvLabel.setText(logLabel + String.format("%06d", LiveLoggerActivity.RECORDID));
+        tvLabel.setText(logLabel + String.format(Locale.ENGLISH, "%06d", LiveLoggerActivity.RECORDID));
         tvNumBytes = (TextView) mainContainerRef.findViewById(R.id.text_data_num_bytes);
         tvNumBytes.setText(String.valueOf(numBytes) + "B");
         tvNumMillis = (TextView) mainContainerRef.findViewById(R.id.text_offset_millis);
@@ -217,7 +219,7 @@ public class LogEntryUI extends LogEntryBase {
     @Override
     public String toString() {
         LogUtils.LogCode logCode = LogUtils.LogCode.lookupByLogCode(logType);
-        String recordFmt = String.format("%06d -- %-32s [%-3s bytes] (%s%-6s ms) [%s] {%s}", recordID, logCode.name(),
+        String recordFmt = String.format(Locale.ENGLISH, "%06d -- %-32s [%-3s bytes] (%s%-6s ms) [%s] {%s}", recordID, logCode.name(),
                 String.valueOf(entryData.length), diffTimeMillis >= 0 ? "+" : "~", String.valueOf(abs(diffTimeMillis)),
                 Utils.bytes2Hex(entryData), tvApdu.getText().toString());
         return recordFmt;

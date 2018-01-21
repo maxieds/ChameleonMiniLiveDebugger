@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.util.Log;
+import android.view.View;
 
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
@@ -19,6 +21,8 @@ import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS;
  */
 public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
 
+    private static final String TAG = TabFragmentPagerAdapter.class.getSimpleName();
+
     /**
      * Stores the data for each tab (only one instance created at runtime).
      */
@@ -29,6 +33,22 @@ public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
             TabFragment.newInstance(TAB_LOG_TOOLS),
             TabFragment.newInstance(TAB_EXPORT),
     };
+    FragmentManager fm;
+
+    /**
+     * Reload the content tabs.
+     */
+    public TabFragmentPagerAdapter reloadTabData() {
+        for (int i = 0; i < tabFragments.length; i++) {
+            fm.beginTransaction().remove(tabFragments[i]).commit();
+        }
+        tabFragments[0] = TabFragment.newInstance(TAB_LOG);
+        tabFragments[1] = TabFragment.newInstance(TAB_TOOLS);
+        tabFragments[2] = TabFragment.newInstance(TAB_LOG_TOOLS);
+        tabFragments[3] = TabFragment.newInstance(TAB_EXPORT);
+        notifyDataSetChanged();
+        return this;
+    }
 
     /**
      * Corresponding titles of each tab.
@@ -44,11 +64,12 @@ public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
 
     /**
      * Constructor.
-     * @param fm
+     * @param fmParam
      * @param context
      */
-    public TabFragmentPagerAdapter(FragmentManager fm, Context context) {
-        super(fm);
+    public TabFragmentPagerAdapter(FragmentManager fmParam, Context context) {
+        super(fmParam);
+        fm = fmParam;
         this.context = context;
     }
 
@@ -69,7 +90,7 @@ public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
      */
     @Override
     public int getItemPosition(Object object) {
-        return POSITION_UNCHANGED;
+        return POSITION_NONE;
     }
 
     /**
@@ -80,6 +101,7 @@ public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int tabid) {
         return tabFragments[tabid];
+        //return TabFragment.newInstance(tabid);
     }
 
     /**
@@ -90,5 +112,16 @@ public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         return tabTitles[position];
+    }
+
+    @Override
+    public void destroyItem(View collection, int position, Object view) {
+        Log.w(TAG, "destroyItem called on tab #" + String.valueOf(position));
+    }
+
+    @Override
+    public Object instantiateItem(View collection, int position) {
+        Log.w(TAG, "instantiateItem called on tab #" + String.valueOf(position));
+        return null;
     }
 }

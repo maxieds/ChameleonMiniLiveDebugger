@@ -20,6 +20,7 @@ import android.widget.SpinnerAdapter;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import java.util.Locale;
 import java.util.Random;
 
 import static android.content.ContentValues.TAG;
@@ -246,13 +247,13 @@ public class TabFragment extends Fragment {
                 thresholdSeekbar.setProgress(threshold);
             }
             thresholdSeekbar.incrementProgressBy(25);
-            ((TextView) view.findViewById(R.id.thresholdSeekbarValueText)).setText(String.format("% 5d mV", threshold));
+            ((TextView) view.findViewById(R.id.thresholdSeekbarValueText)).setText(String.format(Locale.ENGLISH, "% 5d mV", threshold));
             final View seekbarView = view;
             thresholdSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
                 TextView labelText = (TextView) seekbarView.findViewById(R.id.thresholdSeekbarValueText);
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    labelText.setText(String.format("% 5d mV", progress));
+                    labelText.setText(String.format(Locale.ENGLISH, "% 5d mV", progress));
                 }
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -291,6 +292,11 @@ public class TabFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
 }

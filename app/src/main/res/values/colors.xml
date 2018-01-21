@@ -1,11 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#75a72c</color>
-    <color name="colorPrimaryDark">#3d5717</color>
-    <color name="colorAccent">#91cb3b</color>
-    <color name="colorPrimaryDarkLog">#6eb703</color>
-    <color name="colorAccentLog">#cfe8a9</color>
-    <color name="deviceMemoryLogHighlight">#EF2929</color>
-    <color name="colorAccentHighlight">#98fb98</color>
-    <color name="colorAboutLinkColor">#6eb703</color>
+    <color name="colorBigVeryBadError">#ff0000</color>
 </resources>

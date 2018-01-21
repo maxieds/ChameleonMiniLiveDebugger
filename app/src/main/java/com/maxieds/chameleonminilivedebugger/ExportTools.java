@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
 import static android.content.ContentValues.TAG;
 import static android.content.Context.DOWNLOAD_SERVICE;
@@ -282,7 +283,7 @@ public class ExportTools {
                 fin.read(payloadBytes, 4, dlen);
                 LiveLoggerActivity.appendNewLog(LogEntryUI.newInstance(payloadBytes, ""));
                 // highlight the entries so it's clear they're from the device's logs:
-                LiveLoggerActivity.logDataFeed.getChildAt(LiveLoggerActivity.logDataFeed.getChildCount() - 1).setBackgroundColor(LiveLoggerActivity.runningActivity.getResources().getColor(R.color.deviceMemoryLogHighlight));
+                LiveLoggerActivity.logDataFeed.getChildAt(LiveLoggerActivity.logDataFeed.getChildCount() - 1).setBackgroundColor(LiveLoggerActivity.runningActivity.getResources().getColor(R.attr.deviceMemoryLogHighlight, LiveLoggerActivity.runningActivity.getTheme()));
             }
             fin.close();
         } catch(Exception ioe) {
@@ -421,11 +422,11 @@ public class ExportTools {
         FileOutputStream fout = new FileOutputStream(fd);
         String htmlHeader = "<html><head><title>Chameleon Mini Live Debugger -- Logging Output</title></head><body>\n\n";
         fout.write(htmlHeader.getBytes(StandardCharsets.US_ASCII));
-        String defaultBgColor = String.format("#%06X", (0xFFFFFF & R.color.colorPrimaryDarkLog));
+        String defaultBgColor = String.format(Locale.ENGLISH, "#%06X", (0xFFFFFF & R.attr.colorPrimaryDarkLog));
         for (int vi = 0; vi < LiveLoggerActivity.logDataFeed.getChildCount(); vi++) {
             View logEntryView = LiveLoggerActivity.logDataFeed.getChildAt(vi);
             if (LiveLoggerActivity.logDataEntries.get(vi) instanceof LogEntryUI) {
-                String bgColor = String.format("#%06X", (0xFFFFFF & logEntryView.getDrawingCacheBackgroundColor()));
+                String bgColor = String.format(Locale.ENGLISH, "#%06X", (0xFFFFFF & logEntryView.getDrawingCacheBackgroundColor()));
                 if(bgColor.equals(defaultBgColor))
                     bgColor = "#ffffff";
                 String lineData = "<code bgcolor='" + bgColor + "'>" + ((LogEntryUI) LiveLoggerActivity.logDataEntries.get(vi)).toString() + "</code><br/>\n";

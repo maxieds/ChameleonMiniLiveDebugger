@@ -20,16 +20,20 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.OpenableColumns;
+import android.support.annotation.ColorInt;
+import android.support.annotation.DrawableRes;
+import android.support.design.widget.TabItem;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.AdapterView;
@@ -43,12 +47,12 @@ import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
 
 import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -77,6 +81,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
      * We assume there is only one instance of the singleton activity running at a time.
      */
     public static LiveLoggerActivity runningActivity;
+    Bundle localSavedInstanceState;
 
     /**
      * Static variables used across classes.
@@ -137,6 +142,21 @@ public class LiveLoggerActivity extends AppCompatActivity {
     }
 
     /**
+     * Obtains the color associated with the theme.
+     * @param attrID
+     * @return
+     */
+    @ColorInt
+    public int getThemeColorVariant(int attrID) {
+        return getTheme().obtainStyledAttributes(new int[] {attrID}).getColor(0, attrID);
+    }
+
+    @DrawableRes
+    public Drawable getThemeDrawableVariant(int attrID) {
+        return getTheme().obtainStyledAttributes(new int[] {attrID}).getDrawable(0);
+    }
+
+    /**
      * Clears the corresponding status icon indicated at the top of the activity window.
      * @param iconID
      * @ref R.id.statusIconUSB
@@ -157,7 +177,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         // fix bug where the tabs are blank when the application is relaunched:
-        super.onCreate(savedInstanceState);
+        if(runningActivity == null)
+            super.onCreate(savedInstanceState);
         if(!isTaskRoot()) {
             Log.w(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
             final Intent intent = getIntent();
@@ -169,32 +190,39 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 return;
             }
         }
-
         if (getIntent().getBooleanExtra("EXIT", false)) {
             finish();
             return;
         }
 
         runningActivity = this;
-        requestWindowFeature(Window.FEATURE_ACTION_BAR);
+        localSavedInstanceState = savedInstanceState;
+        //SharedPreferences preferences = getSharedPreferences("LATER", MODE_PRIVATE);
+        //setTheme(R.style.AppThemeGreen);
         setContentView(R.layout.activity_live_logger);
 
         logDataFeed = new LinearLayout(getApplicationContext());
         defaultInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         defaultContext = getApplicationContext();
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(R.string.app_name);
-        actionBar.setSubtitle("Portable logging interface v" + String.valueOf(BuildConfig.VERSION_NAME) + "-" + BuildConfig.BUILD_TYPE);
-        actionBar.setDisplayUseLogoEnabled(true);
-        actionBar.setIcon(R.drawable.chameleonlogo32);
-        actionBar.setDisplayShowHomeEnabled(true);
+        Toolbar actionBar = (Toolbar) findViewById(R.id.toolbarActionBar);
+        actionBar.setSubtitle("Portable logging interface v" + String.valueOf(BuildConfig.VERSION_NAME));
+        if(BuildConfig.PAID_APP_VERSION) {
+            actionBar.inflateMenu(R.menu.paid_theme_menu);
+        }
+        setActionBar(actionBar);
         clearStatusIcon(R.id.statusIconUlDl);
 
+        logDataFeedConfigured = false;
         viewPager = (ViewPager) findViewById(R.id.tab_pager);
-        viewPager.setAdapter(new TabFragmentPagerAdapter(getSupportFragmentManager(), LiveLoggerActivity.this));
-        viewPager.setOffscreenPageLimit(TabFragmentPagerAdapter.TAB_COUNT - 1);
+        TabFragmentPagerAdapter tfPagerAdapter = new TabFragmentPagerAdapter(getSupportFragmentManager(), LiveLoggerActivity.this);
+        //tfPagerAdapter.reloadTabData();
+        //tfPagerAdapter.notifyDataSetChanged();
+        viewPager.setAdapter(tfPagerAdapter);
+        viewPager.setOffscreenPageLimit(0);
+        //viewPager.setOffscreenPageLimit(TabFragmentPagerAdapter.TAB_COUNT - 1);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            ViewPager viewPager = (ViewPager) findViewById(R.id.tab_pager);
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
             @Override
@@ -209,13 +237,27 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     default:
                         break;
                 }
+                //if(viewPager.getAdapter() != null) {
+                //    Fragment tabFrag = ((TabFragmentPagerAdapter) viewPager.getAdapter()).getItem(position);
+                //    if (tabFrag != null)
+                //        tabFrag.onResume();
+                //    //viewPager.getAdapter().notifyDataSetChanged();
+                //}
             }
             @Override
             public void onPageScrollStateChanged(int state) {}
         });
-
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.removeAllTabs();
+        tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_LOG)));
+        tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_TOOLS)));
+        tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_LOG_TOOLS)));
+        tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_EXPORT)));
         tabLayout.setupWithViewPager(viewPager);
+
+        viewPager.setOffscreenPageLimit(TabFragmentPagerAdapter.TAB_COUNT - 1);
+        viewPager.setCurrentItem(LiveLoggerActivity.selectedTab);
+        tfPagerAdapter.notifyDataSetChanged();
 
         // the view pager hides the tab icons by default, so we reset them:
         tabLayout.getTabAt(TAB_LOG).setIcon(R.drawable.nfc24v1);
@@ -252,6 +294,85 @@ public class LiveLoggerActivity extends AppCompatActivity {
         clearStatusIcon(R.id.statusIconNewMsg);
         clearStatusIcon(R.id.statusIconNewXFer);
 
+        // add a nice feature for those who pay for the app (sorry to those who get it for free ... ):
+        //boolean disableScreenshot = !BuildConfig.DEBUG && !BuildConfig.PAID_APP_VERSION;
+        //if(disableScreenshot && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+        //    getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+        //}
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu overflowMenu) {
+        if(BuildConfig.PAID_APP_VERSION) { // install themes menu:
+            //overflowMenu.setGroupEnabled(R.id.paidMenuGroup, true);
+            //overflowMenu.setGroupVisible(R.id.paidMenuGroup, true);
+            getMenuInflater().inflate(R.menu.paid_theme_menu, overflowMenu);
+            return true; //super.onCreateOptionsMenu(overflowMenu);
+        }
+        else {
+            //overflowMenu.setGroupEnabled(R.id.paidMenuGroup, true);
+            //overflowMenu.setGroupVisible(R.id.paidMenuGroup, true);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem mitem) {
+        if(!BuildConfig.PAID_APP_VERSION) {
+            //throw new RuntimeException("This should not occur in the free version -- no themese menu available!");
+            return false;
+        }
+        int themeID;
+        switch(mitem.getTitle().toString().substring("Theme: ".length())) {
+            case "Amber":
+                themeID = R.style.AppThemeAmber;
+                break;
+            case "Black":
+                themeID = R.style.AppThemeBlack;
+                break;
+            case "Blue":
+                themeID = R.style.AppThemeBlue;
+                break;
+            case "Chocolate":
+                themeID = R.style.AppThemeChocolate;
+                break;
+            case "Chicky":
+                themeID = R.style.AppThemeChicky;
+                break;
+            case "Goldenrod":
+                themeID = R.style.AppThemeGoldenrod;
+                break;
+            case "Standard Green":
+                themeID = R.style.AppThemeGreen;
+                break;
+            case "Lightblue":
+                themeID = R.style.AppThemeLightblue;
+                break;
+            case "Purple":
+                themeID = R.style.AppThemePurple;
+                break;
+            case "Red":
+                themeID = R.style.AppThemeRed;
+                break;
+            case "Redmond":
+                themeID = R.style.AppThemeRedmond;
+                break;
+            case "Teal":
+                themeID = R.style.AppThemeTeal;
+                break;
+            case "White":
+                themeID = R.style.AppThemeWhite;
+                break;
+            default:
+                return false;
+        }
+        Log.w(TAG, mitem.getTitle().toString().substring("Theme: ".length()));
+        Log.w(TAG, String.valueOf(themeID));
+        //getApplication().getTheme().setTo(new Resources.Theme(themeID));
+        setTheme(themeID);
+        onCreate(localSavedInstanceState);
+        return true;
     }
 
     /**
@@ -299,7 +420,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
         // setup the system status bar icon:
         NotificationCompat.Builder statusBarIconBuilder = new NotificationCompat.Builder(this);
         statusBarIconBuilder.setSmallIcon(R.drawable.chameleonstatusbaricon16);
-        statusBarIconBuilder.setContentTitle(getResources().getString(R.string.app_name));
+        statusBarIconBuilder.setContentTitle(getResources().getString(R.string.app_name) + " -- v" + BuildConfig.VERSION_NAME);
+        statusBarIconBuilder.setContentText(getResources().getString(R.string.app_desc));
+        //statusBarIconBuilder.setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+        statusBarIconBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         Intent resultIntent = new Intent(this, LiveLoggerActivity.class);
         PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         statusBarIconBuilder.setContentIntent(resultPendingIntent);
@@ -656,7 +780,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
         else if(createCmd.equals("GETUID")) {
             String rParam = getSettingFromDevice(serialPort, "GETUID");
-            msgParam = "GETUID: " + rParam.replaceAll("..(?!$)", "$0:") + "(" + rParam + ").";
+            msgParam = "GETUID: " + rParam;
         }
         else if(createCmd.equals("SEND") || createCmd.equals("SEND_RAW")) {
             String bytesToSend = ((TextView) findViewById(R.id.userInputFormattedBytes)).getText().toString().replaceAll(" ", "");
@@ -788,14 +912,14 @@ public class LiveLoggerActivity extends AppCompatActivity {
         String rawAboutStr = getString(R.string.apphtmlheader) + getString(R.string.aboutapp) + getString(R.string.apphtmlfooter);
         rawAboutStr = rawAboutStr.replace("%%ANDROID_VERSION_CODE%%", String.valueOf(BuildConfig.VERSION_CODE));
         rawAboutStr = rawAboutStr.replace("%%ANDROID_VERSION_NAME%%", String.valueOf(BuildConfig.VERSION_NAME));
-        rawAboutStr = rawAboutStr.replace("%%ANDROID_FLAVOR_NAME%%", String.valueOf(BuildConfig.FLAVOR));
-        rawAboutStr = rawAboutStr.replace("%%ABOUTLINKCOLOR%%", String.format(Locale.ENGLISH, "#%06X", 0xFFFFFF & getResources().getColor(R.color.colorAboutLinkColor)));
+        rawAboutStr = rawAboutStr.replace("%%ANDROID_FLAVOR_NAME%%", String.valueOf(BuildConfig.FLAVOR) + ", " + BuildConfig.BUILD_TIMESTAMP);
+        rawAboutStr = rawAboutStr.replace("%%ABOUTLINKCOLOR%%", String.format(Locale.ENGLISH, "#%06X", 0xFFFFFF & getTheme().obtainStyledAttributes(new int[] {R.attr.colorAboutLinkColor}).getColor(0, getResources().getColor(R.color.colorBigVeryBadError))));
         //builder1.setMessage(Html.fromHtml(rawAboutStr, Html.FROM_HTML_MODE_LEGACY));
 
         WebView wv = new WebView(this);
         wv.getSettings().setJavaScriptEnabled(false);
         wv.loadDataWithBaseURL(null, rawAboutStr, "text/html", "UTF-8", "");
-        wv.setBackgroundColor(getResources().getColor(R.color.colorAccentHighlight));
+        wv.setBackgroundColor(getThemeColorVariant(R.attr.colorAccentHighlight));
         wv.getSettings().setLoadWithOverviewMode(true);
         wv.getSettings().setUseWideViewPort(true);
         //wv.getSettings().setBuiltInZoomControls(true);

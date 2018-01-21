@@ -11,7 +11,7 @@
         android:orientation="vertical"
         android:scrollbarSize="25dp"
         android:verticalScrollbarPosition="right"
-        android:background="@color/colorPrimary">
+        android:background="?colorPrimary">
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -23,12 +23,12 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:background="@color/colorPrimaryDark" />
+                android:background="?colorPrimaryDark" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimaryDarkLog"
+                android:background="?colorPrimaryDarkLog"
                 android:drawableLeft="@drawable/checkbox16"
                 android:drawablePadding="5dp"
                 android:singleLine="true"
@@ -40,7 +40,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
-                android:background="@color/colorAccentLog"
+                android:background="?colorAccentLog"
                 android:columnCount="3"
                 android:orientation="horizontal"
                 android:padding="2dp"
@@ -112,7 +112,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimaryDarkLog"
+                android:background="?colorPrimaryDarkLog"
                 android:drawableLeft="@drawable/highlight16"
                 android:drawablePadding="5dp"
                 android:singleLine="true"
@@ -123,59 +123,17 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:background="@color/colorPrimaryDark" />
+                android:background="?colorPrimaryDark" />
 
             <GridLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
-                android:background="@color/colorAccentLog"
+                android:background="?colorAccentLog"
                 android:columnCount="13"
                 android:orientation="horizontal"
                 android:padding="2dp"
                 android:rowCount="1">
-
-                <Button
-                    style="@style/ColorHighlightButtons"
-                    android:background="#ff5ba5"
-                    android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#ff5ba5" />
-
-                <Button
-                    style="@style/ColorHighlightButtons"
-                    android:background="#c2b4d6"
-                    android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#c2b4d6" />
-
-                <Button
-                    style="@style/ColorHighlightButtons"
-                    android:background="#d3ac26"
-                    android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#d3ac26" />
-
-                <Button
-                    style="@style/ColorHighlightButtons"
-                    android:background="#b07cda"
-                    android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#b07cda" />
-
-                <Button
-                    style="@style/ColorHighlightButtons"
-                    android:background="#3bc6b6"
-                    android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#3bc6b6" />
-
-                <Button
-                    style="@style/ColorHighlightButtons"
-                    android:background="#637a89"
-                    android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#637a89" />
-
-                <Button
-                    style="@style/ColorHighlightButtons"
-                    android:background="#a3c6c4"
-                    android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#a3c6c4" />
 
                 <Button
                     style="@style/ColorHighlightButtons"
@@ -185,15 +143,15 @@
 
                 <Button
                     style="@style/ColorHighlightButtons"
-                    android:background="#9f4298"
+                    android:background="#ff5ba5"
                     android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#9f4298" />
+                    android:tag="#ff5ba5" />
 
                 <Button
                     style="@style/ColorHighlightButtons"
-                    android:background="#a0d3f9"
+                    android:background="#ffca2b"
                     android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#a0d3f9" />
+                    android:tag="#ffca2b" />
 
                 <Button
                     style="@style/ColorHighlightButtons"
@@ -203,15 +161,62 @@
 
                 <Button
                     style="@style/ColorHighlightButtons"
+                    android:background="#d3ac26"
+                    android:onClick="actionButtonSelectedHighlight"
+                    android:tag="#d3ac26" />
+
+
+                <Button
+                    style="@style/ColorHighlightButtons"
+                    android:background="#3bc6b6"
+                    android:onClick="actionButtonSelectedHighlight"
+                    android:tag="#3bc6b6" />
+
+
+                <Button
+                    style="@style/ColorHighlightButtons"
+                    android:background="#a3c6c4"
+                    android:onClick="actionButtonSelectedHighlight"
+                    android:tag="#a3c6c4" />
+
+                <Button
+                    style="@style/ColorHighlightButtons"
+                    android:background="#637a89"
+                    android:onClick="actionButtonSelectedHighlight"
+                    android:tag="#637a89" />
+
+
+                <Button
+                    style="@style/ColorHighlightButtons"
+                    android:background="#a0d3f9"
+                    android:onClick="actionButtonSelectedHighlight"
+                    android:tag="#a0d3f9" />
+
+                <Button
+                    style="@style/ColorHighlightButtons"
+                    android:background="#c2b4d6"
+                    android:onClick="actionButtonSelectedHighlight"
+                    android:tag="#c2b4d6" />
+
+
+                <Button
+                    style="@style/ColorHighlightButtons"
+                    android:background="#b07cda"
+                    android:onClick="actionButtonSelectedHighlight"
+                    android:tag="#b07cda" />
+
+                <Button
+                    style="@style/ColorHighlightButtons"
+                    android:background="#9f4298"
+                    android:onClick="actionButtonSelectedHighlight"
+                    android:tag="#9f4298" />
+
+                <Button
+                    style="@style/ColorHighlightButtons"
                     android:background="#fffee6"
                     android:onClick="actionButtonSelectedHighlight"
                     android:tag="#fffee6" />
 
-                <Button
-                    style="@style/ColorHighlightButtons"
-                    android:background="#ffca2b"
-                    android:onClick="actionButtonSelectedHighlight"
-                    android:tag="#ffca2b" />
 
 
             </GridLayout>
@@ -219,12 +224,12 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:background="@color/colorPrimaryDark" />
+                android:background="?colorPrimaryDark" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimaryDarkLog"
+                android:background="?colorPrimaryDarkLog"
                 android:drawableLeft="@drawable/infobubble16"
                 android:drawablePadding="5dp"
                 android:singleLine="true"
@@ -235,13 +240,13 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:background="@color/colorPrimaryDark" />
+                android:background="?colorPrimaryDark" />
 
             <GridLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
-                android:background="@color/colorAccentLog"
+                android:background="?colorAccentLog"
                 android:columnCount="3"
                 android:padding="2dp"
                 android:rowCount="10">
