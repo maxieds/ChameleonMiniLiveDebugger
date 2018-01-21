@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -204,16 +205,14 @@ public class LiveLoggerActivity extends AppCompatActivity {
         defaultInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         defaultContext = getApplicationContext();
 
-        //SharedPreferences preferences = getSharedPreferences("TODO_LATER", MODE_PRIVATE);
-        //setTheme(R.style.AppThemeGreen);
+        SharedPreferences preferences = getSharedPreferences(LiveLoggerActivity.TAG, Context.MODE_PRIVATE);
+        String storedAppTheme = preferences.getString("ThemeUI", "Standard Green");
+        setLocalTheme(storedAppTheme);
         setContentView(R.layout.activity_live_logger);
-
 
         Toolbar actionBar = (Toolbar) findViewById(R.id.toolbarActionBar);
         actionBar.setSubtitle("Portable logging interface v" + String.valueOf(BuildConfig.VERSION_NAME));
-        if(BuildConfig.PAID_APP_VERSION) {
-            actionBar.inflateMenu(R.menu.paid_theme_menu);
-        }
+        actionBar.inflateMenu(R.menu.paid_theme_menu);
         setActionBar(actionBar);
         clearStatusIcon(R.id.statusIconUlDl);
 
@@ -319,29 +318,18 @@ public class LiveLoggerActivity extends AppCompatActivity {
      */
     @Override
     public boolean onCreateOptionsMenu(Menu overflowMenu) {
-        if(BuildConfig.PAID_APP_VERSION) { // install themes menu:
-            getMenuInflater().inflate(R.menu.paid_theme_menu, overflowMenu);
-            return true;
-        }
-        else {
-            return false;
-        }
+        getMenuInflater().inflate(R.menu.paid_theme_menu, overflowMenu);
+        return true;
     }
 
     /**
-     * Handles the new theme selections in the paid flavor of the app.
-     * @param mitem
-     * @return
+     * Sets the local theme (before the ful UI updating to implement the theme change) based on
+     * the passed theme text description.
+     * @param themeDesc
+     * @ref res/values/style.xml
      */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem mitem) {
-        if(!BuildConfig.PAID_APP_VERSION) {
-            //throw new RuntimeException("This should not occur in the free version -- no themese menu available!");
-            return false;
-        }
-        mitem.setChecked(true);
+    private void setLocalTheme(String themeDesc) {
         int themeID;
-        String themeDesc = mitem.getTitle().toString().substring("Theme: ".length());
         switch(themeDesc) {
             case "Amber":
                 themeID = R.style.AppThemeAmber;
@@ -367,6 +355,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
             case "Lightblue":
                 themeID = R.style.AppThemeLightblue;
                 break;
+            case "Linux Green On Black":
+                themeID = R.style.AppThemeLinuxGreenOnBlack;
+                break;
             case "Purple":
                 themeID = R.style.AppThemePurple;
                 break;
@@ -383,11 +374,32 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 themeID = R.style.AppThemeWhite;
                 break;
             default:
-                return false;
+                themeID = R.style.AppThemeGreen;
         }
-        Log.w(TAG, mitem.getTitle().toString().substring("Theme: ".length()));
+        Log.w(TAG, themeDesc);
         Log.w(TAG, String.valueOf(themeID));
         setTheme(themeID);
+    }
+
+    /**
+     * Handles the new theme selections in the paid flavor of the app.
+     * @param mitem
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem mitem) {
+        mitem.setChecked(true);
+        int themeID;
+        String themeDesc = mitem.getTitle().toString().substring("Theme: ".length());
+        setLocalTheme(themeDesc);
+
+        // store the theme setting for when the app reopens:
+        SharedPreferences sharedPrefs = getSharedPreferences(LiveLoggerActivity.TAG, Context.MODE_PRIVATE);
+        SharedPreferences.Editor spEditor = sharedPrefs.edit();
+        spEditor.putString("ThemeUI", themeDesc);
+        spEditor.commit();
+
+        // finally, apply the theme settings by (essentially) restarting the activity UI:
         onCreate(localSavedInstanceState);
         appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "New theme installed: " + themeDesc));
         return true;
