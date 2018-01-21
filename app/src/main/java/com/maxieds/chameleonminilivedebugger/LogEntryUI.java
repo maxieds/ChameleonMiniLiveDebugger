@@ -99,7 +99,8 @@ public class LogEntryUI extends LogEntryBase {
         logType = ltype;
         logLabel = label;
         entryData = edata;
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        //LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = LiveLoggerActivity.defaultInflater;
         mainEntryContainer = (LinearLayout) inflater.inflate(R.layout.log_entry_ui, null);
         configureLayout(mainEntryContainer);
         return this;

@@ -116,6 +116,7 @@
         <item>TIMEOUT=</item>
         <item>TIMEOUT=?</item>
         <item>UID=</item>
+        <item>UID=?</item>
     </string-array>
 
 

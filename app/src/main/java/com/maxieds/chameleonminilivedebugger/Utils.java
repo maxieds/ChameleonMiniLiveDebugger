@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 import static android.content.ContentValues.TAG;
 
@@ -175,6 +176,25 @@ public class Utils {
      */
     public static boolean stringIsDecimal(String str) {
         return str.matches("-?[0-9]+");
+    }
+
+    /**
+     * Get random bytes seeded by the time. For use with generating random UID's.
+     * @param numBytes
+     * @return
+     */
+    public static byte[] getRandomBytes(int numBytes) {
+        Random rnGen = new Random(System.currentTimeMillis());
+        byte[] randomBytes = new byte[numBytes];
+        for(int b = 0; b < numBytes; b++)
+            randomBytes[b] = (byte) rnGen.nextInt(0xff);
+        return randomBytes;
+    }
+
+    public static String trimString(String str, int maxNumChars) {
+        if(str.length() <= maxNumChars)
+            return str;
+        return str.substring(0, maxNumChars) + "...";
     }
 
 }

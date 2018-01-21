@@ -165,11 +165,7 @@ public class TabFragment extends Fragment {
                         resetStatus = true;
                     }
                     else if(setCmd.equals("RANDOM UID")) {
-                        int uidNumBytes = ChameleonIO.deviceStatus.UIDSIZE;
-                        Random rnGen = new Random(System.currentTimeMillis());
-                        byte[] randomBytes = new byte[uidNumBytes];
-                        for(int b = 0; b < uidNumBytes; b++)
-                            randomBytes[b] = (byte) rnGen.nextInt(0xff);
+                        byte[] randomBytes = Utils.getRandomBytes(ChameleonIO.deviceStatus.UIDSIZE);
                         setCmd = "UID=" + Utils.bytes2Hex(randomBytes).replace(" ", "");
                         resetStatus = true;
                     }

@@ -80,7 +80,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
     /**
      * We assume there is only one instance of the singleton activity running at a time.
      */
-    public static LiveLoggerActivity runningActivity;
+    public static LiveLoggerActivity runningActivity = null;
     Bundle localSavedInstanceState;
 
     /**
@@ -109,6 +109,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
      */
     public static UsbSerialDevice serialPort;
     public static final Semaphore serialPortLock = new Semaphore(1, true);
+    boolean usbReceiversRegistered = false;
 
     /**
      * Appends a new log to the logging interface tab.
@@ -195,6 +196,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
             return;
         }
 
+        boolean completeRestart = (runningActivity == null);
         runningActivity = this;
         localSavedInstanceState = savedInstanceState;
         logDataFeed = new LinearLayout(getApplicationContext());
@@ -216,31 +218,36 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
         configureTabViewPager();
 
-        String[] permissions = {
-                "android.permission.READ_EXTERNAL_STORAGE",
-                "android.permission.WRITE_EXTERNAL_STORAGE",
-                "android.permission.INTERNET",
-                "com.android.example.USB_PERMISSION"
-        };
-        if(android.os.Build.VERSION.SDK_INT >= 23)
-            requestPermissions(permissions, 200);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR); // keep app from crashing when the screen rotates
+        if(completeRestart) {
+            String[] permissions = {
+                    "android.permission.READ_EXTERNAL_STORAGE",
+                    "android.permission.WRITE_EXTERNAL_STORAGE",
+                    "android.permission.INTERNET",
+                    "com.android.example.USB_PERMISSION"
+            };
+            if (android.os.Build.VERSION.SDK_INT >= 23)
+                requestPermissions(permissions, 200);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR); // keep app from crashing when the screen rotates
+        }
 
-        serialPort = configureSerialPort(null, usbReaderCallback);
-        if(serialPort != null)
-            ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
+        if(!usbReceiversRegistered) {
+            serialPort = configureSerialPort(null, usbReaderCallback);
+            if (serialPort != null)
+                ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
 
-        BroadcastReceiver usbActionReceiver = new BroadcastReceiver() {
-            public void onReceive(Context context, Intent intent) {
-                if(intent.getAction() != null && (intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED) || intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED))) {
-                    onNewIntent(intent);
+            BroadcastReceiver usbActionReceiver = new BroadcastReceiver() {
+                public void onReceive(Context context, Intent intent) {
+                    if (intent.getAction() != null && (intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED) || intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED))) {
+                        onNewIntent(intent);
+                    }
                 }
-            }
-        };
-        IntentFilter usbActionFilter = new IntentFilter();
-        usbActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
-        usbActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
-        registerReceiver(usbActionReceiver, usbActionFilter);
+            };
+            IntentFilter usbActionFilter = new IntentFilter();
+            usbActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+            usbActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+            registerReceiver(usbActionReceiver, usbActionFilter);
+            usbReceiversRegistered = true;
+        }
 
         clearStatusIcon(R.id.statusIconNewMsg);
         clearStatusIcon(R.id.statusIconNewXFer);
@@ -253,35 +260,43 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     }
 
+    private static ViewPager.OnPageChangeListener tabChangeListener = null;
+
+    /**
+     * Configures the tabs part of the main UI.
+     * @ref onCreate
+     * @ref onOptionsItemSelected
+     */
     protected void configureTabViewPager() {
 
         logDataFeedConfigured = false;
         logDataFeed = new LinearLayout(getApplicationContext());
 
         viewPager = (ViewPager) findViewById(R.id.tab_pager);
-        //viewPager.invalidate();
         TabFragmentPagerAdapter tfPagerAdapter = new TabFragmentPagerAdapter(getSupportFragmentManager(), LiveLoggerActivity.this);
         viewPager.setAdapter(tfPagerAdapter);
-        //viewPager.setOffscreenPageLimit(0);
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
-            @Override
-            public void onPageSelected(int position) {
-                LiveLoggerActivity.selectedTab = position;
-                switch (position) {
-                    case TAB_LOG:
-                        LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconNewMsg);
-                        LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconNewXFer);
-                        LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconUlDl);
-                        break;
-                    default:
-                        break;
+        if(tabChangeListener == null) {
+            tabChangeListener = new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+                @Override
+                public void onPageSelected(int position) {
+                    LiveLoggerActivity.selectedTab = position;
+                    switch (position) {
+                        case TAB_LOG:
+                            LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconNewMsg);
+                            LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconNewXFer);
+                            LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconUlDl);
+                            break;
+                        default:
+                            break;
+                    }
                 }
-            }
-            @Override
-            public void onPageScrollStateChanged(int state) {}
-        });
+                @Override
+                public void onPageScrollStateChanged(int state) {}
+            };
+            viewPager.addOnPageChangeListener(tabChangeListener);
+        }
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.removeAllTabs();
         tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_LOG)));
@@ -302,6 +317,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Sets up the themes changer menu in the paid flavor of the app.
+     * @param overflowMenu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu overflowMenu) {
         if(BuildConfig.PAID_APP_VERSION) { // install themes menu:
@@ -313,6 +333,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Handles the new theme selections in the paid flavor of the app.
+     * @param mitem
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem mitem) {
         if(!BuildConfig.PAID_APP_VERSION) {
@@ -368,8 +393,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
         Log.w(TAG, mitem.getTitle().toString().substring("Theme: ".length()));
         Log.w(TAG, String.valueOf(themeID));
         setTheme(themeID);
-        //setContentView(R.layout.activity_live_logger);
-        //configureTabViewPager();
         onCreate(localSavedInstanceState);
         appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "New theme installed: " + themeDesc));
         return true;
@@ -747,6 +770,16 @@ public class LiveLoggerActivity extends AppCompatActivity {
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }
+        else if(createCmd.equals("MFU-EV1-80B")) {
+            ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_ULTRALIGHT_EV1_80B", ChameleonIO.TIMEOUT);
+            ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+            return;
+        }
+        else if(createCmd.equals("MFU-EV1-164B")) {
+            ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_ULTRALIGHT_EV1_164B", ChameleonIO.TIMEOUT);
+            ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+            return;
+        }
         else if(createCmd.equals("CFGNONE")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=NONE", ChameleonIO.TIMEOUT);
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
@@ -759,6 +792,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
             configureSerialPort(null, usbReaderCallback);
             ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
             return;
+        }
+        else if(createCmd.equals("RANDOM UID")) {
+            byte[] randomBytes = Utils.getRandomBytes(ChameleonIO.deviceStatus.UIDSIZE);
+            String sendCmd = "UID=" + Utils.bytes2Hex(randomBytes).replace(" ", "");
+            ChameleonIO.executeChameleonMiniCommand(serialPort, sendCmd, ChameleonIO.TIMEOUT);
+            ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
         }
         else if(createCmd.equals("Log Replay")) {
             appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "RE: LOG REPLAY: This is a wishlist feature. It might be necessary to add it to the firmware and implement it in hardware. Not currently implemented."));

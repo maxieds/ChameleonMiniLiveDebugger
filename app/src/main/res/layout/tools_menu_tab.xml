@@ -95,9 +95,27 @@
 
                 <Button
                     style="@style/GridButtons"
+                    android:drawableLeft="@drawable/card24v6"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="MFU-EV1-80B" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/chip24v1"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="MFU-EV1-164B" />
+
+                <Button
+                    style="@style/GridButtons"
                     android:drawableLeft="@drawable/blankchip24"
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="CFGNONE" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/cardicon24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="RANDOM UID" />
 
             </GridLayout>
 
