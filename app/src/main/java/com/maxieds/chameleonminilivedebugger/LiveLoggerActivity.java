@@ -178,7 +178,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         // fix bug where the tabs are blank when the application is relaunched:
-        if(runningActivity == null)
+        if(runningActivity == null || !isTaskRoot())
             super.onCreate(savedInstanceState);
         if(!isTaskRoot()) {
             Log.w(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
@@ -203,7 +203,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         defaultInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         defaultContext = getApplicationContext();
 
-        //SharedPreferences preferences = getSharedPreferences("LATER", MODE_PRIVATE);
+        //SharedPreferences preferences = getSharedPreferences("TODO_LATER", MODE_PRIVATE);
         //setTheme(R.style.AppThemeGreen);
         setContentView(R.layout.activity_live_logger);
 

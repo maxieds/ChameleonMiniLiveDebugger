@@ -35,7 +35,7 @@
         <item name="colorPrimaryDarkLog">#3E71A8</item>
         <item name="colorAccentLog">#9EB9D4</item>
         <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#CEDDEA</item>
+        <item name="colorAccentHighlight">#00B0FF</item>
         <item name="colorAboutLinkColor">#A4B1BC</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_blue</item>
     </style>
@@ -107,8 +107,8 @@
         <item name="colorPrimaryDarkLog">#A3B1B4</item>
         <item name="colorAccentLog">#C8CDC7</item>
         <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#D500F9</item>
-        <item name="colorAboutLinkColor">#C8CDC7</item>
+        <item name="colorAccentHighlight">#CDC7B9</item>
+        <item name="colorAboutLinkColor">#BCB3A2</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_redmond</item>
     </style>
 
@@ -119,7 +119,7 @@
         <item name="colorPrimaryDarkLog">#1E88E5</item>
         <item name="colorAccentLog">#82B1FF</item>
         <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#2979FF</item>
+        <item name="colorAccentHighlight">#00B0FF</item>
         <item name="colorAboutLinkColor">#0D47A1</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_lightblue</item>
     </style>
@@ -128,11 +128,11 @@
         <item name="colorPrimary">#FFC107</item>
         <item name="colorPrimaryDark">#FF6F00</item>
         <item name="colorAccent">#FFECB3</item>
-        <item name="colorPrimaryDarkLog">#FFB300</item>
+        <item name="colorPrimaryDarkLog">#FF8F00</item>
         <item name="colorAccentLog">#FFE57F</item>
         <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#FFC400</item>
-        <item name="colorAboutLinkColor">#FFA000</item>
+        <item name="colorAccentHighlight">#FFD740</item>
+        <item name="colorAboutLinkColor">#FF6F00</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_amber</item>
     </style>
 
@@ -143,7 +143,7 @@
         <item name="colorPrimaryDarkLog">#6D4C41</item>
         <item name="colorAccentLog">#D7CCC8</item>
         <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#8D6E63</item>
+        <item name="colorAccentHighlight">#795548</item>
         <item name="colorAboutLinkColor">#795548</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_chocolate</item>
     </style>

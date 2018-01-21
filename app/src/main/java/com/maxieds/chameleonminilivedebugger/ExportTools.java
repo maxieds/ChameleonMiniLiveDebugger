@@ -283,7 +283,7 @@ public class ExportTools {
                 fin.read(payloadBytes, 4, dlen);
                 LiveLoggerActivity.appendNewLog(LogEntryUI.newInstance(payloadBytes, ""));
                 // highlight the entries so it's clear they're from the device's logs:
-                LiveLoggerActivity.logDataFeed.getChildAt(LiveLoggerActivity.logDataFeed.getChildCount() - 1).setBackgroundColor(LiveLoggerActivity.runningActivity.getResources().getColor(R.attr.deviceMemoryLogHighlight, LiveLoggerActivity.runningActivity.getTheme()));
+                LiveLoggerActivity.logDataFeed.getChildAt(LiveLoggerActivity.logDataFeed.getChildCount() - 1).setBackgroundColor(LiveLoggerActivity.runningActivity.getThemeColorVariant(R.attr.deviceMemoryLogHighlight));
             }
             fin.close();
         } catch(Exception ioe) {
@@ -422,7 +422,7 @@ public class ExportTools {
         FileOutputStream fout = new FileOutputStream(fd);
         String htmlHeader = "<html><head><title>Chameleon Mini Live Debugger -- Logging Output</title></head><body>\n\n";
         fout.write(htmlHeader.getBytes(StandardCharsets.US_ASCII));
-        String defaultBgColor = String.format(Locale.ENGLISH, "#%06X", (0xFFFFFF & R.attr.colorPrimaryDarkLog));
+        String defaultBgColor = String.format(Locale.ENGLISH, "#%06X", (0xFFFFFF & LiveLoggerActivity.runningActivity.getThemeColorVariant(R.attr.colorPrimaryDarkLog)));
         for (int vi = 0; vi < LiveLoggerActivity.logDataFeed.getChildCount(); vi++) {
             View logEntryView = LiveLoggerActivity.logDataFeed.getChildAt(vi);
             if (LiveLoggerActivity.logDataEntries.get(vi) instanceof LogEntryUI) {
