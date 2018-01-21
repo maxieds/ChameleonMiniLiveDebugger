@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -251,12 +252,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
         clearStatusIcon(R.id.statusIconNewMsg);
         clearStatusIcon(R.id.statusIconNewXFer);
-
-        // add a nice feature for those who pay for the app (sorry to those who get it for free ... ):
-        //boolean disableScreenshot = !BuildConfig.DEBUG && !BuildConfig.PAID_APP_VERSION;
-        //if(disableScreenshot && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-        //    getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
-        //}
 
     }
 
