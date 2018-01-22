@@ -201,7 +201,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
         boolean completeRestart = (runningActivity == null);
         runningActivity = this;
         localSavedInstanceState = savedInstanceState;
-        logDataFeed = new LinearLayout(getApplicationContext());
         defaultInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         defaultContext = getApplicationContext();
 
@@ -272,6 +271,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
         logDataFeedConfigured = false;
         logDataFeed = new LinearLayout(getApplicationContext());
+        if(logDataEntries != null)
+            logDataEntries.clear();
 
         viewPager = (ViewPager) findViewById(R.id.tab_pager);
         TabFragmentPagerAdapter tfPagerAdapter = new TabFragmentPagerAdapter(getSupportFragmentManager(), LiveLoggerActivity.this);
