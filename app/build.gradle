@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
+import com.android.build.OutputFile
 
 def getDateTimestamp() {
     DateFormat df = new SimpleDateFormat("YYYY-MM-DD-HH:mm:ss");
@@ -41,10 +42,13 @@ android {
     buildToolsVersion '27.0.3'
 
     flavorDimensions "mode"
-    productFlavors.whenObjectAdded { variant ->
-        variant.ext.set('configBuildTimeStamp', getDateTimestamp())
-        variant.ext.set('directoryPath', 'all-builds/')
-        variant.ext.set('apkName', "ChameleonMiniLiveDebugger-${variant.name}-vc${variant.versionCode}-v${variant.versionName}-${variant.configBuildTimeStamp}.apk")
+    def configBuildTimeStamp = getDateTimestamp()
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def directoryPath = "all-builds/"
+            def apkName = "ChameleonMiniLiveDebugger-${variant.name}-vc${variant.versionCode}-v${variant.versionName}-${configBuildTimeStamp}.apk"
+            //output.outputFile = new File(directoryPath + apkName)
+        }
     }
     productFlavors {
         main {

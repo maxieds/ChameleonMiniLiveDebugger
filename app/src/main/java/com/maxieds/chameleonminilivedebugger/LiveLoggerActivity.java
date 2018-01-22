@@ -1008,7 +1008,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
         adBuilder.setCancelable(true);
         adBuilder.setTitle("About the Application:");
-        adBuilder.setIcon(R.drawable.olben64);
+        adBuilder.setIcon(R.drawable.chameleonicon_about64);
         adBuilder.setPositiveButton(
                 "Done",
                 new DialogInterface.OnClickListener() {
@@ -1229,6 +1229,15 @@ public class LiveLoggerActivity extends AppCompatActivity {
             Log.i(TAG, "Chosen Card File: " + cardFilePath);
         }
         ExportTools.uploadCardFileByXModem(cardFilePath);
+    }
+
+    public void actionButtonPerformSearch(View view) {
+
+        // TODO: javadcocs
+        // clear out the existing search data first
+
+
+
     }
 
 }
