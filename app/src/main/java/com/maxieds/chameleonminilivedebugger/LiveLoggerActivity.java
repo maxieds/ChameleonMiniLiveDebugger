@@ -38,6 +38,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.AdapterView;
@@ -48,6 +49,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
@@ -1231,13 +1233,64 @@ public class LiveLoggerActivity extends AppCompatActivity {
         ExportTools.uploadCardFileByXModem(cardFilePath);
     }
 
+    // TODO: javadcocs
     public void actionButtonPerformSearch(View view) {
 
-        // TODO: javadcocs
-        // clear out the existing search data first
+        // hide the search keyboard obstructing the results after the button press:
+        View focusView = this.getCurrentFocus();
+        if (focusView != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
 
+        long startTime = System.currentTimeMillis();
+        // clear out the existing search data first:
+        ScrollView searchResultsScroller = (ScrollView) findViewById(R.id.searchResultsScrollView);
+        if(searchResultsScroller.getChildCount() != 0) {
+            searchResultsScroller.removeViewAt(0);
+        }
+        LinearLayout searchResultsContainer = new LinearLayout(getApplicationContext());
+        logDataFeed.setOrientation(LinearLayout.VERTICAL);
+        searchResultsScroller.addView(searchResultsContainer);
 
+        boolean selectedBytes = ((RadioButton) findViewById(R.id.radio_search_bytes)).isSelected();
+        String searchString = ((TextView) findViewById(R.id.userInputSearchData)).getText().toString();
+        if(searchString.equals(""))
+            return;
+        else if(selectedBytes && !Utils.stringIsHexadecimal(searchString)) {
+            searchResultsContainer.addView(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Not a hexadecimal string.").getLayoutContainer());
+            return;
+        }
+        else if(selectedBytes) {
+            searchString = searchString.replace("[\n\t\r]+", "").replaceAll("..(?!$)", "$0 ");
+        }
 
+        boolean searchStatus = ((CheckBox) findViewById(R.id.entrySearchIncludeStatus)).isChecked();
+        boolean searchAPDU = ((CheckBox) findViewById(R.id.entrySearchAPDU)).isChecked();
+        boolean searchLogPayload = ((CheckBox) findViewById(R.id.entrySearchRawLogData)).isChecked();
+        boolean searchLogHeaders = ((CheckBox) findViewById(R.id.entrySearchLogHeaders)).isChecked();
+        int matchCount = 0;
+        Log.i(TAG, "Searching for: " + searchString);
+        for(int vi = 0; vi < logDataEntries.size(); vi++) {
+            if (logDataEntries.get(vi) instanceof LogEntryMetadataRecord && searchStatus) {
+                if (logDataEntries.get(vi).toString().contains(searchString)) {
+                    searchResultsContainer.addView(logDataEntries.get(vi).cloneLayoutContainer());
+                    matchCount++;
+                }
+                continue;
+            }
+            Log.i(TAG, ((LogEntryUI) logDataEntries.get(vi)).getPayloadDataString(selectedBytes));
+            if (searchAPDU && ((LogEntryUI) logDataEntries.get(vi)).getAPDUString().contains(searchString) ||
+                    searchLogHeaders && ((LogEntryUI) logDataEntries.get(vi)).getLogCodeName().contains(searchString) ||
+                    searchLogPayload && ((LogEntryUI) logDataEntries.get(vi)).getPayloadDataString(selectedBytes).contains(searchString)) {
+                searchResultsContainer.addView(logDataEntries.get(vi).cloneLayoutContainer());
+                matchCount++;
+            }
+        }
+        double diffSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
+        String resultStr = String.format(Locale.ENGLISH, "Explored #%d logs in %4g seconds for a total of #%d matching records.",
+                logDataEntries.size(), diffSeconds, matchCount);
+        searchResultsContainer.addView(LogEntryMetadataRecord.createDefaultEventRecord("SEARCH", resultStr).getLayoutContainer());
     }
 
 }

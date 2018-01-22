@@ -228,6 +228,24 @@ public class LogEntryUI extends LogEntryBase {
         return recordFmt;
     }
 
+    // TODO: javadoc
+    public String getLogCodeName() {
+        return LogUtils.LogCode.lookupByLogCode(logType).name();
+    }
+
+    // TODO: javadoc
+    public String getAPDUString() {
+        return tvApdu.getText().toString();
+    }
+
+    // TODO: javadoc
+    public String getPayloadDataString(boolean byteString) {
+        if(byteString)
+            return tvDataHexBytes.getText().toString();
+        else
+            return tvDataAscii.getText().toString();
+    }
+
     /**
      * Returns the layout container (LinearLayout object) associated with this log entry.
      * @return (LinearLayout) View
