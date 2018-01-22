@@ -31,7 +31,7 @@
             android:gravity="center_horizontal"
             android:singleLine="true"
             android:text="LBLXXXXX"
-            android:textSize="12sp"
+            android:textSize="10sp"
             android:textStyle="bold|italic"
             android:paddingLeft="0dp"
             android:paddingRight="5dp" />
@@ -67,7 +67,7 @@
             android:gravity="center_horizontal"
             android:singleLine="true"
             android:text="LOG_TYPE"
-            android:textSize="12sp"
+            android:textSize="9sp"
             android:textStyle="bold|italic"
             android:paddingLeft="5dp"/>
 
@@ -81,7 +81,7 @@
             android:gravity="center_horizontal"
             android:singleLine="true"
             android:text="XXB"
-            android:textSize="12sp"
+            android:textSize="10sp"
             android:textStyle="bold|italic"
             android:paddingLeft="5dp"/>
 
@@ -95,7 +95,21 @@
             android:gravity="center_horizontal"
             android:singleLine="true"
             android:text="+XXX ms"
-            android:textSize="12sp"
+            android:textSize="10sp"
+            android:textStyle="bold|italic"
+            android:paddingLeft="5dp"/>
+
+        <TextView
+            android:id="@+id/text_entropy_compression_ratio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_columnWeight="0.15"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_horizontal"
+            android:singleLine="true"
+            android:text="CPR/ENT: 0.0000"
+            android:textSize="9sp"
             android:textStyle="bold|italic"
             android:paddingLeft="5dp"/>
 

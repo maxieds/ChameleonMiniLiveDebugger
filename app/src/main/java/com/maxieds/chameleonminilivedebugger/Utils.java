@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.zip.Deflater;
 
 import static android.content.ContentValues.TAG;
 
@@ -22,6 +23,8 @@ import static android.content.ContentValues.TAG;
  * @since   12/31/17
  */
 public class Utils {
+
+    private static final String TAG = Utils.class.getSimpleName();
 
     /**
      * Converts a string representation of a two-digit byte into a corresponding byte type.
@@ -195,6 +198,27 @@ public class Utils {
         if(str.length() <= maxNumChars)
             return str;
         return str.substring(0, maxNumChars) + "...";
+    }
+
+    /**
+     * Computes a measure of entropy (i.e., how likely the payload data is to be encrypted) by
+     * compressing the input byte array and comparing the resulting size (in bytes) to the
+     * original array.
+     * @param inputBytes
+     * @return entropy rating
+     */
+    public static double computeByteArrayEntropy(byte[] inputBytes) {
+        Deflater cmpr = new Deflater();
+        cmpr.setLevel(Deflater.BEST_COMPRESSION);
+        cmpr.setInput(inputBytes);
+        cmpr.finish();
+        int cmprByteCount = 0;
+        while(!cmpr.finished()) {
+            cmprByteCount += cmpr.deflate(new byte[1024]);
+        }
+        double entropyRatio = (double) cmprByteCount / inputBytes.length;
+        Log.i(TAG, String.format(Locale.ENGLISH, "Compressed #%d bytes to #%d bytes ... Entropy ratio = %1.4g", inputBytes.length, cmprByteCount, entropyRatio));
+        return entropyRatio;
     }
 
 }

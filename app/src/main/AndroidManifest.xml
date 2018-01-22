@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
 
-    <uses-feature android:name="android.hardware.usb.host" />
+    <uses-feature android:name="android.hardware.usb.host" android:required="true"/>
 
     <application
         android:theme="${appTheme}"
@@ -24,31 +24,28 @@
         android:usesCleartextTraffic="true"
         android:installLocation="${installLocation}">
 
-        <activity android:name=".LiveLoggerActivity" android:screenOrientation="portrait" android:alwaysRetainTaskState="true">
+        <activity android:name=".LiveLoggerActivity"
+            android:screenOrientation="portrait"
+            android:alwaysRetainTaskState="true"
+            android:clearTaskOnLaunch="true"
+            android:stateNotNeeded="true">
 
-            <intent-filter>
+            <intent-filter android:priority="1000">
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
-                <!--<category android:name="android.intent.category.HOME" />
-                <category android:name="android.intent.category.LAUNCHER" />-->
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" android:resource="@xml/usb_device_filter"/>
             <meta-data android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" android:resource="@xml/usb_device_filter"/>
 
-            <intent-filter>
-                <action android:name="ChameleonIO.device.CMD_QUERY_RESPONSE" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.IOT_LAUNCHER" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

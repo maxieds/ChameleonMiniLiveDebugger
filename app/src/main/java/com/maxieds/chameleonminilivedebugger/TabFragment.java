@@ -42,6 +42,7 @@ public class TabFragment extends Fragment {
     public static final int TAB_TOOLS = 1;
     public static final int TAB_LOG_TOOLS = 2;
     public static final int TAB_EXPORT = 3;
+    public static final int TAB_SEARCH = 4;
 
     /**
      * Local tab-specific data stored by the class.
@@ -73,6 +74,9 @@ public class TabFragment extends Fragment {
                 break;
             case TAB_LOG_TOOLS:
                 fragment.layoutResRef = R.layout.log_tools_tab;
+                break;
+            case TAB_SEARCH:
+                fragment.layoutResRef = R.layout.search_tab;
                 break;
             default:
                 break;

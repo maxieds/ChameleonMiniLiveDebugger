@@ -37,7 +37,7 @@ public class LogEntryUI extends LogEntryBase {
     private LinearLayout mainEntryContainer;
     private CheckBox entrySelect;
     private ImageView inoutDirIndicator, apduParseStatus;
-    private TextView tvLabel, tvNumBytes, tvNumMillis, tvLogType;
+    private TextView tvLabel, tvNumBytes, tvNumMillis, tvLogType, tvEntropy;
     private TextView tvDataHexBytes, tvDataAscii, tvApdu;
 
     /**
@@ -133,6 +133,8 @@ public class LogEntryUI extends LogEntryBase {
         tvNumMillis.setText((diffTimeMillis >=0 ? "+" : "~") + String.valueOf(abs(diffTimeMillis)) + "ms");
         tvLogType = (TextView) mainContainerRef.findViewById(R.id.text_log_type);
         tvLogType.setText(LogUtils.LogCode.lookupByLogCode(logType).getShortCodeName(logType));
+        tvEntropy = (TextView) mainContainerRef.findViewById(R.id.text_entropy_compression_ratio);
+        tvEntropy.setText(String.format(Locale.ENGLISH, "CPR/ENT: %1.4g", Utils.computeByteArrayEntropy(entryData)));
         tvDataHexBytes = (TextView) mainContainerRef.findViewById(R.id.text_logdata_hex);
         tvDataHexBytes.setText(Utils.bytes2Hex(entryData));
         tvDataAscii = (TextView) mainContainerRef.findViewById(R.id.text_logdata_ascii);

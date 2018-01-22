@@ -16,8 +16,8 @@ android {
         applicationId "com.maxieds.chameleonminilivedebugger"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 31
-        versionName "0.3.1"
+        versionCode 32
+        versionName "0.3.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -57,25 +57,9 @@ android {
             manifestPlaceholders = [
                     appIcon : "@drawable/chameleonicon64",
                     appTheme: "@style/AppThemeGreen",
-                    appDebug: "true",
+                    appDebug: "false",
                     installLocation: "internalOnly"
             ]
-
-            /**
-             * The splits block is where you can configure different APK builds that
-             * each contain only code and resources for a supported screen density or
-             * ABI. You'll also need to configure your build so that each APK has a
-             * different versionCode.
-             */
-            splits {
-                density {
-                    enable false
-                    reset()
-                    include 'mdpi', 'hdpi', 'xhdpi', 'xxhdpi'
-                    //exclude "ldpi", "tvdpi", "xxxhdpi", "400dpi", "560dpi"
-                    compatibleScreens 'small', 'normal', 'large', 'xlarge'
-                }
-            }
         }
         paid {
             applicationIdSuffix ".paid"

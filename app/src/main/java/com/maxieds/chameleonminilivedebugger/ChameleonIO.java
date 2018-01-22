@@ -175,7 +175,7 @@ public class ChameleonIO {
         /**
          * How often do we update / refresh the stats at the top of the window?
          */
-        public final int STATS_UPDATE_INTERVAL = 10000; // 10 seconds
+        public final int STATS_UPDATE_INTERVAL = 8000; // 8 seconds
         public Handler statsUpdateHandler = new Handler();
         public Runnable statsUpdateRunnable = new Runnable(){
             public void run() {

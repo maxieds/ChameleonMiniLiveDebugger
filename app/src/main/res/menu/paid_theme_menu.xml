@@ -129,7 +129,7 @@
         <item
             android:alphabeticShortcut="w"
             android:checked="false"
-            android:enabled="true"
+            android:checkable="false"
             android:tag="@style/AppThemeWinter"
             android:title="Theme: Winter"
             app:showAsAction="never" />

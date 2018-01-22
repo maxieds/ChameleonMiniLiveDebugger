@@ -15,6 +15,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
@@ -36,6 +37,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.AdapterView;
@@ -66,6 +68,7 @@ import java.util.concurrent.Semaphore;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_TOOLS;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_SEARCH;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS;
 
 /**
@@ -233,6 +236,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
             };
             if (android.os.Build.VERSION.SDK_INT >= 23)
                 requestPermissions(permissions, 200);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR); // keep app from crashing when the screen rotates
         }
 
@@ -305,17 +309,19 @@ public class LiveLoggerActivity extends AppCompatActivity {
         tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_TOOLS)));
         tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_LOG_TOOLS)));
         tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_EXPORT)));
+        tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_SEARCH)));
         tabLayout.setupWithViewPager(viewPager);
 
         viewPager.setOffscreenPageLimit(TabFragmentPagerAdapter.TAB_COUNT - 1);
-        viewPager.setCurrentItem(LiveLoggerActivity.selectedTab);
+        viewPager.setCurrentItem(TAB_LOG);
         tfPagerAdapter.notifyDataSetChanged();
 
         // the view pager hides the tab icons by default, so we reset them:
         tabLayout.getTabAt(TAB_LOG).setIcon(R.drawable.nfc24v1);
         tabLayout.getTabAt(TAB_TOOLS).setIcon(R.drawable.tools24);
-        tabLayout.getTabAt(TAB_EXPORT).setIcon(R.drawable.insertbinary24);
         tabLayout.getTabAt(TAB_LOG_TOOLS).setIcon(R.drawable.logtools24);
+        tabLayout.getTabAt(TAB_EXPORT).setIcon(R.drawable.insertbinary24);
+        tabLayout.getTabAt(TAB_SEARCH).setIcon(R.drawable.binarysearch24v2);
 
     }
 
@@ -551,7 +557,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
         if(serialPort != null && serialPort.open()) {
             //serialPort.setBaudRate(115200);
             serialPort.setBaudRate(256000);
-            serialPort.setDataBits(UsbSerialInterface.DATA_BITS_8);
+            //serialPort.setDataBits(UsbSerialInterface.DATA_BITS_8);
+            serialPort.setDataBits(16); // slight optimization?
             serialPort.setStopBits(UsbSerialInterface.STOP_BITS_1);
             serialPort.setParity(UsbSerialInterface.PARITY_NONE);
             serialPort.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF);
@@ -568,7 +575,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
         //ChameleonIO.setReaderConfigMode(serialPort, ChameleonIO.TIMEOUT);
         ChameleonIO.enableLiveDebugging(serialPort, ChameleonIO.TIMEOUT);
         ChameleonIO.PAUSED = false;
-        appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB STATUS: ", "Successfully configured the device in passive logging mode."));
+        String usbDeviceData = String.format(Locale.ENGLISH, "Manufacturer: %s\nProduct Name: %s\nVersion: %s\nDevice Serial: %s\nUSB Dev: %s",
+                device.getManufacturerName(), device.getProductName(), device.getVersion(), device.getSerialNumber(), device.getDeviceName());
+        appendNewLog(new LogEntryMetadataRecord(defaultInflater, "USB STATUS: ", "Successfully configured the device in passive logging mode...\n" + usbDeviceData));
         setStatusIcon(R.id.statusIconUSB, R.drawable.usbconnected16);
         return serialPort;
 
@@ -586,6 +595,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         ExportTools.EOT = true;
         ExportTools.transmissionErrorOccurred = true;
         ChameleonIO.DOWNLOAD = false;
+        ChameleonIO.UPLOAD = false;
         ChameleonIO.WAITING_FOR_XMODEM = false;
         setStatusIcon(R.id.statusIconUSB, R.drawable.usbdisconnected16);
         return true;
@@ -605,18 +615,21 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 return;
             }
             else if(ChameleonIO.DOWNLOAD) {
-                Log.i(TAG, "USBReaderCallback / DOWNLOAD");
+                //Log.i(TAG, "USBReaderCallback / DOWNLOAD");
                 ExportTools.performXModemSerialDownload(liveLogData);
+                return;
             }
             else if(ChameleonIO.UPLOAD) {
                 //Log.i(TAG, "USBReaderCallback / UPLOAD");
                 ExportTools.performXModemSerialUpload(liveLogData);
+                return;
             }
             else if(ChameleonIO.WAITING_FOR_XMODEM) {
                 //Log.i(TAG, "USBReaderCallback / WAITING_FOR_XMODEM");
                 String strLogData = new String(liveLogData);
                 if(strLogData.length() >= 11 && strLogData.substring(0, 11).equals("110:WAITING")) {
                     ChameleonIO.WAITING_FOR_XMODEM = false;
+                    return;
                 }
             }
             else if(ChameleonIO.WAITING_FOR_RESPONSE && ChameleonIO.isCommandResponse(liveLogData)) {
