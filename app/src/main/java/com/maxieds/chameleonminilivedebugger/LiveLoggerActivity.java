@@ -59,6 +59,7 @@ import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
 
 import java.io.File;
+import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -1242,15 +1243,15 @@ public class LiveLoggerActivity extends AppCompatActivity {
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
-
         long startTime = System.currentTimeMillis();
+
         // clear out the existing search data first:
         ScrollView searchResultsScroller = (ScrollView) findViewById(R.id.searchResultsScrollView);
         if(searchResultsScroller.getChildCount() != 0) {
             searchResultsScroller.removeViewAt(0);
         }
         LinearLayout searchResultsContainer = new LinearLayout(getApplicationContext());
-        logDataFeed.setOrientation(LinearLayout.VERTICAL);
+        searchResultsContainer.setOrientation(LinearLayout.VERTICAL);
         searchResultsScroller.addView(searchResultsContainer);
 
         boolean selectedBytes = ((RadioButton) findViewById(R.id.radio_search_bytes)).isChecked();
@@ -1272,8 +1273,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
         int matchCount = 0;
         Log.i(TAG, "Searching for: " + searchString);
         for(int vi = 0; vi < logDataEntries.size(); vi++) {
-            if (logDataEntries.get(vi) instanceof LogEntryMetadataRecord && searchStatus) {
-                if (logDataEntries.get(vi).toString().contains(searchString)) {
+            if (logDataEntries.get(vi) instanceof LogEntryMetadataRecord) {
+                if (searchStatus && logDataEntries.get(vi).toString().contains(searchString)) {
                     searchResultsContainer.addView(logDataEntries.get(vi).cloneLayoutContainer());
                     matchCount++;
                 }
@@ -1283,7 +1284,13 @@ public class LiveLoggerActivity extends AppCompatActivity {
             if (searchAPDU && ((LogEntryUI) logDataEntries.get(vi)).getAPDUString().contains(searchString) ||
                     searchLogHeaders && ((LogEntryUI) logDataEntries.get(vi)).getLogCodeName().contains(searchString) ||
                     searchLogPayload && ((LogEntryUI) logDataEntries.get(vi)).getPayloadDataString(selectedBytes).contains(searchString)) {
-                //searchResultsContainer.addView(logDataEntries.get(vi).cloneLayoutContainer());
+                LinearLayout searchResult = (LinearLayout) logDataEntries.get(vi).cloneLayoutContainer();
+                searchResult.setVisibility(LinearLayout.VISIBLE);
+                searchResult.setEnabled(true);
+                searchResult.setMinimumWidth(350);
+                searchResult.setMinimumHeight(150);
+                LinearLayout.LayoutParams lllp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                searchResultsContainer.addView(searchResult, lllp);
                 Log.i(TAG, "Case II: Record " + vi + " matches");
                 matchCount++;
             }

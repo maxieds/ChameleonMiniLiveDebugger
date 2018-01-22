@@ -117,7 +117,31 @@ public class LogEntryUI extends LogEntryBase {
 
     // TODO: javadoc
     public View cloneLayoutContainer() {
-        return mainEntryContainer;
+        LinearLayout mainEntryContainerClone = (LinearLayout) LiveLoggerActivity.defaultInflater.inflate(R.layout.log_entry_ui, null);
+        ImageView inoutDirIndicatorClone = (ImageView) mainEntryContainerClone.findViewById(R.id.inputDirIndicatorImg);
+        inoutDirIndicatorClone.setImageDrawable(inoutDirIndicator.getDrawable());
+        ImageView apduParseStatusClone = (ImageView) mainEntryContainerClone.findViewById(R.id.apduParseStatusImg);
+        apduParseStatusClone.setImageDrawable(apduParseStatusClone.getDrawable());
+        TextView tvLabelClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_label);
+        tvLabelClone.setText(tvLabel.getText());
+        TextView tvNumBytesClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_data_num_bytes);
+        tvNumBytesClone.setText(tvNumBytes.getText());
+        TextView tvNumMillisClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_offset_millis);
+        tvNumMillisClone.setText(tvNumMillis.getText());
+        TextView tvLogTypeClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_log_type);
+        tvLogTypeClone.setText(tvLogType.getText());
+        TextView tvEntropyClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_entropy_compression_ratio);
+        tvEntropyClone.setText(tvEntropy.getText());
+        TextView tvDataHexBytesClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_logdata_hex);
+        tvDataHexBytesClone.setText(tvDataHexBytes.getText());
+        TextView tvDataAsciiClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_logdata_ascii);
+        tvDataAsciiClone.setText(tvDataAscii.getText());
+        TextView tvApduClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_apdu);
+        tvApduClone.setText(tvApdu.getText());
+        if(tvApduClone.getText().toString().equals("APDU: NONE RECOGNIZED")) {
+            tvApduClone.setVisibility(TextView.GONE);
+        }
+        return mainEntryContainerClone;
     }
 
     /**
