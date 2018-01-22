@@ -14,6 +14,7 @@
         <item name="android:contextPopupMenuStyle">@style/Actionbar.PopupTheme</item>
         <item name="android:actionBarPopupTheme">@style/ActionBarTheme</item>
         <item name="android:windowEnableSplitTouch">false</item>
+        <item name="android:actionButtonStyle">@style/Actionbar.PopupTheme</item>
     </style>
 
     <style name="AppThemeGreen" parent="@style/AppTheme">
@@ -184,6 +185,42 @@
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_linuxgob</item>
     </style>
 
+    <style name="AppThemeWinter" parent="AppTheme">
+        <item name="colorPrimary">#646956</item>
+        <item name="colorPrimaryDark">#0081E7</item>
+        <item name="colorAccent">#17C5FF</item>
+        <item name="colorPrimaryDarkLog">#00B8FF</item>
+        <item name="colorAccentLog">#9FBDC9</item>
+        <item name="deviceMemoryLogHighlight">#EF2929</item>
+        <item name="colorAccentHighlight">#AEEEEE</item>
+        <item name="colorAboutLinkColor">#0040FF</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_rainbow3</item>
+    </style>
+
+    <style name="AppThemeUrbanaDesfire" parent="AppTheme">
+        <item name="colorPrimary">#13294b</item>
+        <item name="colorPrimaryDark">#050D13</item>
+        <item name="colorAccent">#E84A27</item>
+        <item name="colorPrimaryDarkLog">#A3351B</item>
+        <item name="colorAccentLog">#EE8069</item>
+        <item name="deviceMemoryLogHighlight">#EF2929</item>
+        <item name="colorAccentHighlight">#FAECED</item>
+        <item name="colorAboutLinkColor">#D14323</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_rainbow2</item>
+    </style>
+
+    <style name="AppThemeAtlanta" parent="AppTheme">
+        <item name="colorPrimary">#C59353</item>
+        <item name="colorPrimaryDark">#EEB211</item>
+        <item name="colorAccent">#C59353</item>
+        <item name="colorPrimaryDarkLog">#4E6782</item>
+        <item name="colorAccentLog">#F4CA59</item>
+        <item name="deviceMemoryLogHighlight">#EF2929</item>
+        <item name="colorAccentHighlight">#F4CA59</item>
+        <item name="colorAboutLinkColor">#001934</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_rainbow</item>
+    </style>
+
     <style name="SpinnerTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="android:background">?colorAccentHighlight</item>
         <item name="buttonStyle">@style/AboutButtonTheme</item>
@@ -216,6 +253,8 @@
         <item name="android:titleTextStyle">@style/Actionbar.TitleText</item>
         <item name="android:actionOverflowMenuStyle">@style/Actionbar.PopupTheme</item>
         <item name="android:subtitleTextStyle">@style/Actionbar.TitleText</item>
+        <!-- Overflow menu ... icon color: -->
+        <item name="android:textColorSecondary">#ffffff</item>
     </style>
 
     <style name="Actionbar.TitleText" parent="Base.Theme.AppCompat.Light.DarkActionBar">
@@ -224,21 +263,37 @@
         <item name="android:textSize">6sp</item>
     </style>
 
-    <style name="Actionbar.PopupTheme" parent="Base.Widget.AppCompat.Light.PopupMenu.Overflow">
+    <style name="Actionbar.PopupTheme" parent="Base.Widget.AppCompat.ActionButton.Overflow">
         <item name="android:enabled">true</item>
         <item name="android:visible">true</item>
-        <item name="android:textSize">10sp</item>
+        <item name="android:textSize">12sp</item>
         <item name="android:textColor">#000000</item>
         <item name="android:background">?colorAccentHighlight</item>
         <item name="android:title">Theme Selections:</item>
         <item name="android:checkedTextViewStyle">@style/MenuCheckedStyle</item>
-        <item name="android:checkedButton">@drawable/themecheck24</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:itemPadding">0dp</item>
+        <item name="android:textAppearanceListItemSmall">?attr/textAppearanceSmallPopupMenu</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_marginBottom">0dp</item>
+        <item name="android:inset">0dp</item>
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:textStyle">bold|italic</item>
+        <item name="android:drawableStart">@drawable/thememarker24</item>
+        <item name="android:drawablePadding">5dp</item>
+        <item name="android:maxHeight">0dp</item>
+
     </style>
 
     <style name="MenuCheckedStyle" parent="Actionbar.PopupTheme">
-        <item name="android:textSize">10sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:textColor">?colorAboutLinkColor</item>
-        <item name="android:background">?colorAccentLog</item>
+        <item name="android:background">?colorAccent</item>
+        <item name="android:textStyle">bold|italic</item>
+        <item name="android:drawableRight">@drawable/menucheck48</item>
+        <item name="android:itemTextAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
     <style name="GridButtons">

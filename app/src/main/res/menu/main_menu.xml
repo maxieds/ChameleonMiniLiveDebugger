@@ -1,3 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:alphabeticShortcut="c"
+            android:checkable="false"
+            android:checked="false"
+            android:tag="@style/AppThemeChicky"
+            android:title="Theme: Chicky"
+            app:showAsAction="never" />
+
+        <item
+            android:alphabeticShortcut="g"
+            android:checkable="false"
+            android:checked="false"
+            android:tag="@style/AppThemeGreen"
+            android:title="Theme: Standard Green"
+            app:showAsAction="never" />
+
+        <item
+            android:checkable="false"
+            android:checked="false"
+            android:tag="@style/AppThemeLinuxGreenOnBlack"
+            android:title="Theme: Linux Green On Black"
+            app:showAsAction="never" />
+
+    </group>
+
 </menu>

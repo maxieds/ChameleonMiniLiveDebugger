@@ -211,43 +211,13 @@
                 app:tabPaddingStart="-1dp"
                 app:tabTextAppearance="?android:attr/textAppearanceSmall">
 
-                <!--<android.support.design.widget.TabItem
-                    android:id="@+id/main_logger_tab"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:icon="@drawable/nfc24v1"
-                    android:text="Log"
-                    android:visibility="visible" />
-
-                <android.support.design.widget.TabItem
-                    android:id="@+id/tools_tab"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:icon="@drawable/tools24"
-                    android:text="Tools Menu" />
-
-                <android.support.design.widget.TabItem
-                    android:id="@+id/export_tab"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:icon="@drawable/insertbinary24"
-                    android:text="Export" />
-
-                <android.support.design.widget.TabItem
-                    android:id="@+id/search_tab"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:icon="@drawable/searchdisabled24"
-                    android:text="Search"
-                    android:textColor="#dcdcdc" />-->
-
             </android.support.design.widget.TabLayout>
 
         </TabHost>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="2dp"
             android:background="?colorPrimaryDark" />
 
         <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"

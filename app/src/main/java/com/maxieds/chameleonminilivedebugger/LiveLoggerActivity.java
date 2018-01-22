@@ -212,9 +212,16 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
         Toolbar actionBar = (Toolbar) findViewById(R.id.toolbarActionBar);
         actionBar.setSubtitle("Portable logging interface v" + String.valueOf(BuildConfig.VERSION_NAME));
-        actionBar.inflateMenu(R.menu.paid_theme_menu);
+        if(BuildConfig.PAID_APP_VERSION)
+            actionBar.inflateMenu(R.menu.paid_theme_menu);
+        else
+            actionBar.inflateMenu(R.menu.main_menu);
+        //actionBar.setPopupTheme(R.style.Actionbar_PopupTheme);
         setActionBar(actionBar);
         clearStatusIcon(R.id.statusIconUlDl);
+        getWindow().setTitleColor(getThemeColorVariant(R.attr.actionBarBackgroundColor));
+        getWindow().setStatusBarColor(getThemeColorVariant(R.attr.colorPrimaryDark));
+        getWindow().setNavigationBarColor(getThemeColorVariant(R.attr.colorPrimaryDark));
 
         configureTabViewPager();
 
@@ -318,7 +325,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
      */
     @Override
     public boolean onCreateOptionsMenu(Menu overflowMenu) {
-        getMenuInflater().inflate(R.menu.paid_theme_menu, overflowMenu);
+        if(BuildConfig.PAID_APP_VERSION)
+            getMenuInflater().inflate(R.menu.paid_theme_menu, overflowMenu);
+        else
+            getMenuInflater().inflate(R.menu.main_menu, overflowMenu);
         return true;
     }
 
@@ -333,6 +343,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
         switch(themeDesc) {
             case "Amber":
                 themeID = R.style.AppThemeAmber;
+                break;
+            case "Atlanta":
+                themeID = R.style.AppThemeAtlanta;
                 break;
             case "Black":
                 themeID = R.style.AppThemeBlack;
@@ -370,8 +383,14 @@ public class LiveLoggerActivity extends AppCompatActivity {
             case "Teal":
                 themeID = R.style.AppThemeTeal;
                 break;
+            case "Urbana Desfire":
+                themeID = R.style.AppThemeUrbanaDesfire;
+                break;
             case "White":
                 themeID = R.style.AppThemeWhite;
+                break;
+            case "Winter":
+                themeID = R.style.AppThemeWinter;
                 break;
             default:
                 themeID = R.style.AppThemeGreen;
@@ -389,6 +408,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem mitem) {
         mitem.setChecked(true);
+        mitem.setEnabled(true);
         int themeID;
         String themeDesc = mitem.getTitle().toString().substring("Theme: ".length());
         setLocalTheme(themeDesc);
