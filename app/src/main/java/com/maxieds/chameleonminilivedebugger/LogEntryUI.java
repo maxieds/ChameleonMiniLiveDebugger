@@ -115,6 +115,11 @@ public class LogEntryUI extends LogEntryBase {
         return mainEntryContainer;
     }
 
+    // TODO: javadoc
+    public View cloneLayoutContainer() {
+        return mainEntryContainer;
+    }
+
     /**
      * Populates the inflated layout with log data about the entry.
      * @param mainContainerRef
@@ -240,10 +245,14 @@ public class LogEntryUI extends LogEntryBase {
 
     // TODO: javadoc
     public String getPayloadDataString(boolean byteString) {
-        if(byteString)
+        if(byteString) {
+            Log.i(TAG, "Returning bytes: " + tvDataHexBytes.getText().toString());
             return tvDataHexBytes.getText().toString();
-        else
+        }
+        else {
+            Log.i(TAG, "Returning ascii: " + tvDataAscii.getText().toString());
             return tvDataAscii.getText().toString();
+        }
     }
 
     /**

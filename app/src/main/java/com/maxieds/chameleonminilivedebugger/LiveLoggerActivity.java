@@ -1253,7 +1253,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         logDataFeed.setOrientation(LinearLayout.VERTICAL);
         searchResultsScroller.addView(searchResultsContainer);
 
-        boolean selectedBytes = ((RadioButton) findViewById(R.id.radio_search_bytes)).isSelected();
+        boolean selectedBytes = ((RadioButton) findViewById(R.id.radio_search_bytes)).isChecked();
         String searchString = ((TextView) findViewById(R.id.userInputSearchData)).getText().toString();
         if(searchString.equals(""))
             return;
@@ -1283,7 +1283,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
             if (searchAPDU && ((LogEntryUI) logDataEntries.get(vi)).getAPDUString().contains(searchString) ||
                     searchLogHeaders && ((LogEntryUI) logDataEntries.get(vi)).getLogCodeName().contains(searchString) ||
                     searchLogPayload && ((LogEntryUI) logDataEntries.get(vi)).getPayloadDataString(selectedBytes).contains(searchString)) {
-                searchResultsContainer.addView(logDataEntries.get(vi).cloneLayoutContainer());
+                //searchResultsContainer.addView(logDataEntries.get(vi).cloneLayoutContainer());
+                Log.i(TAG, "Case II: Record " + vi + " matches");
                 matchCount++;
             }
         }

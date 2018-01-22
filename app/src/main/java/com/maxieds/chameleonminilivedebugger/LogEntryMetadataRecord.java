@@ -51,6 +51,22 @@ public class LogEntryMetadataRecord extends LogEntryBase {
         }
     }
 
+    // TODO: javadoc
+    public View cloneLayoutContainer() {
+        LinearLayout recordContainerClone = (LinearLayout) LiveLoggerActivity.defaultInflater.inflate(R.layout.log_metadata_record, null);
+        TextView tvRecTitleClone = (TextView) recordContainerClone.findViewById(R.id.record_title_text);
+        tvRecTitleClone.setText(tvRecTitle.getText());
+        tvRecTitleClone.setCompoundDrawables(tvRecTitle.getCompoundDrawables()[0], null, null, null);
+        TextView tvRecDataClone = (TextView) recordContainerClone.findViewById(R.id.record_data_text);
+        tvRecDataClone.setText(recordText);
+        if(recordText.equals("")) {
+            tvRecDataClone.setVisibility(TextView.INVISIBLE);
+            tvRecDataClone.setEnabled(false);
+            tvRecDataClone.setHeight(0);
+        }
+        return recordContainerClone;
+    }
+
     /**
      * Stub method.
      * @param indentLevel
