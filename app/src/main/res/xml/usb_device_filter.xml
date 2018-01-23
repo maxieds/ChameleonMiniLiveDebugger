@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-    <!--ChameleonMini Rev. G Board Firmware Device Specs -->
+    <!-- ChameleonMini Rev. G Board Firmware Device Specs -->
+    <usb-device vendor-id="5840" product-id="1202" />
+    <!-- Add prospective support for the untested ChameleonMini Rev. E Boards -->
     <usb-device vendor-id="5840" product-id="1202" />
 </resources>

@@ -5,12 +5,14 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -108,6 +110,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public static SpinnerAdapter spinnerLEDGreenAdapter;
     public static SpinnerAdapter spinnerLogModeAdapter;
     public static SpinnerAdapter spinnerCmdShellAdapter;
+    public static MenuItem selectedThemeMenuItem;
     public static boolean userIsScrolling = false;
     private static ViewPager viewPager;
     private static int selectedTab = TAB_LOG;
@@ -260,6 +263,15 @@ public class LiveLoggerActivity extends AppCompatActivity {
             usbActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
             registerReceiver(usbActionReceiver, usbActionFilter);
             usbReceiversRegistered = true;
+
+            // without this workaround, a worn out USB cable will cause excessive calls to the
+            // launcher for USB intent handling when more than one flavor of the app is installed:
+            Context context = getApplicationContext();
+            ComponentName component = new ComponentName(context.getPackageName(), LiveLoggerActivity.class.getName());
+            ComponentName[] components = new ComponentName[] {new ComponentName("com.android.launcher", "com.android.launcher.Launcher"), component};
+            PackageManager pm = getPackageManager();
+            pm.clearPackagePreferredActivities(getPackageName());
+            pm.addPreferredActivity(usbActionFilter, IntentFilter.MATCH_CATEGORY_EMPTY, components, component);
         }
 
         clearStatusIcon(R.id.statusIconNewMsg);
@@ -417,8 +429,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem mitem) {
+        if(selectedThemeMenuItem != null) {
+            selectedThemeMenuItem.setIcon(R.drawable.thememarker24);
+        }
         mitem.setChecked(true);
         mitem.setEnabled(true);
+        mitem.setIcon(R.drawable.themecheck24);
         int themeID;
         String themeDesc = mitem.getTitle().toString().substring("Theme: ".length());
         setLocalTheme(themeDesc);
@@ -431,7 +447,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
         // finally, apply the theme settings by (essentially) restarting the activity UI:
         onCreate(localSavedInstanceState);
-        appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "New theme installed: " + themeDesc));
+        appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("THEME", "New theme installed: " + themeDesc));
         return true;
     }
 
@@ -1216,6 +1232,14 @@ public class LiveLoggerActivity extends AppCompatActivity {
      * @param view pressed Button
      */
     public void actionButtonUploadCard(View view) {
+        if(serialPort == null)
+            return;
+        // fixes (should fix) a slight "bug" where the card uploads but fails to get transferred to the
+        // running device profile due to differences in the current configuration's memsize setting.
+        // This might be more of a bug with the Chameleon software, but not entirely sure.
+        // Solution: Clear out the current setting slot to CONFIG=NONE before performing the upload:
+        getSettingFromDevice(serialPort, "CONFIG=NONE");
+
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setDataAndType(Uri.parse("//sdcard//Download//"), "*/*");

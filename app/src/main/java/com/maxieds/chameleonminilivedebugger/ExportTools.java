@@ -218,6 +218,8 @@ public class ExportTools {
      * @ref LiveLoggerActivity.actionButtonExportLogDownload
      */
     public static boolean downloadByXModem(String issueCmd, String outfilePrefix, boolean throwToLiveParam) {
+        if(LiveLoggerActivity.serialPort == null)
+            return false;
         LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
         String outfilePath = outfilePrefix + "-" + Utils.getTimestamp().replace(":", "") + ".bin";
         File downloadsFolder = new File("//sdcard//Download//");
@@ -281,9 +283,10 @@ public class ExportTools {
                 byte[] payloadBytes = new byte[dlen + 4];
                 System.arraycopy(headerBytes, 0, payloadBytes, 0, 4);
                 fin.read(payloadBytes, 4, dlen);
-                LiveLoggerActivity.appendNewLog(LogEntryUI.newInstance(payloadBytes, ""));
+                LogEntryUI nextLogEntry = LogEntryUI.newInstance(payloadBytes, "");
                 // highlight the entries so it's clear they're from the device's logs:
-                LiveLoggerActivity.logDataFeed.getChildAt(LiveLoggerActivity.logDataFeed.getChildCount() - 1).setBackgroundColor(LiveLoggerActivity.runningActivity.getThemeColorVariant(R.attr.deviceMemoryLogHighlight));
+                nextLogEntry.getMainEntryContainer().setBackgroundColor(LiveLoggerActivity.runningActivity.getThemeColorVariant(R.attr.deviceMemoryLogHighlight));
+                LiveLoggerActivity.appendNewLog(nextLogEntry);
             }
             fin.close();
         } catch(Exception ioe) {
@@ -350,6 +353,8 @@ public class ExportTools {
      * @ref LiveLoggerActivity.actionButtonUploadCard
      */
     public static void uploadCardFileByXModem(String cardFilePath) {
+        if(LiveLoggerActivity.serialPort == null)
+            return;
         LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusupload16);
         if(new File(cardFilePath).length() % XMODEM_BLOCK_SIZE != 0) {
             LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Invalid file size for the selected card file \"" + cardFilePath + "\". Aborting."));

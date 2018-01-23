@@ -105,7 +105,7 @@
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:paddingRight="2dp"
-                    android:src="@drawable/usbconnected16" />
+                    android:src="@drawable/usbdisconnected16" />
 
                 <ImageView
                     android:id="@+id/statusIconNewMsg"
