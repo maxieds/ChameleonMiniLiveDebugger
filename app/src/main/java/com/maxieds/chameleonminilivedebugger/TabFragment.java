@@ -1,14 +1,17 @@
 package com.maxieds.chameleonminilivedebugger;
 
+import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.CompoundButtonCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -281,6 +284,14 @@ public class TabFragment extends Fragment {
                     }
                 }
             });
+        }
+        else if(tabNumber == TAB_SEARCH) {
+            int states[][] = {{android.R.attr.state_checked}, {}};
+            int colors[] = {LiveLoggerActivity.runningActivity.getThemeColorVariant(R.attr.colorPrimaryDark), LiveLoggerActivity.runningActivity.getThemeColorVariant(R.attr.colorPrimaryDark)};
+            CompoundButtonCompat.setButtonTintList((CheckBox) view.findViewById(R.id.entrySearchIncludeStatus), new ColorStateList(states, colors));
+            CompoundButtonCompat.setButtonTintList((CheckBox) view.findViewById(R.id.entrySearchAPDU), new ColorStateList(states, colors));
+            CompoundButtonCompat.setButtonTintList((CheckBox) view.findViewById(R.id.entrySearchRawLogData), new ColorStateList(states, colors));
+            CompoundButtonCompat.setButtonTintList((CheckBox) view.findViewById(R.id.entrySearchLogHeaders), new ColorStateList(states, colors));
         }
         return inflatedView;
     }

@@ -28,7 +28,7 @@ public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
      * Stores the data for each tab (only one instance created at runtime).
      */
     public static final int TAB_COUNT = 5;
-    public static TabFragment[] tabFragments = {
+    public TabFragment[] tabFragments = {
             TabFragment.newInstance(TAB_LOG),
             TabFragment.newInstance(TAB_TOOLS),
             TabFragment.newInstance(TAB_LOG_TOOLS),

@@ -317,9 +317,10 @@
         <item name="android:textStyle">normal|bold</item>
     </style>
 
-    <style name="CheckBoxTheme" parent="Theme.AppCompat.Light">
-        <item name="colorControlNormal">?colorPrimaryDark</item>
-        <item name="colorControlActivated">?colorPrimaryDark</item>
+    <style name="CheckBoxTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorControlNormal">?attr/colorPrimaryDark</item>
+        <item name="colorControlActivated">?attr/colorPrimaryDark</item>
+        <item name="buttonTint">?attr/colorPrimaryDark</item>
     </style>
 
 </resources>

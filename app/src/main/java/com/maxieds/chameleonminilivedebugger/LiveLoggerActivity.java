@@ -13,6 +13,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -31,6 +32,7 @@ import android.support.design.widget.TabItem;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.CompoundButtonCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
@@ -57,9 +59,11 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
+import com.crashlytics.android.Crashlytics;
 import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
 
+import io.fabric.sdk.android.Fabric;
 import java.io.File;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
@@ -191,6 +195,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         // fix bug where the tabs are blank when the application is relaunched:
         if(runningActivity == null || !isTaskRoot())
             super.onCreate(savedInstanceState);
+            Fabric.with(this, new Crashlytics());
         if(!isTaskRoot()) {
             Log.w(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
             final Intent intent = getIntent();
@@ -263,15 +268,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
             usbActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
             registerReceiver(usbActionReceiver, usbActionFilter);
             usbReceiversRegistered = true;
-
-            // without this workaround, a worn out USB cable will cause excessive calls to the
-            // launcher for USB intent handling when more than one flavor of the app is installed:
-            Context context = getApplicationContext();
-            ComponentName component = new ComponentName(context.getPackageName(), LiveLoggerActivity.class.getName());
-            ComponentName[] components = new ComponentName[] {new ComponentName("com.android.launcher", "com.android.launcher.Launcher"), component};
-            PackageManager pm = getPackageManager();
-            pm.clearPackagePreferredActivities(getPackageName());
-            pm.addPreferredActivity(usbActionFilter, IntentFilter.MATCH_CATEGORY_EMPTY, components, component);
         }
 
         clearStatusIcon(R.id.statusIconNewMsg);
@@ -296,28 +292,34 @@ public class LiveLoggerActivity extends AppCompatActivity {
         viewPager = (ViewPager) findViewById(R.id.tab_pager);
         TabFragmentPagerAdapter tfPagerAdapter = new TabFragmentPagerAdapter(getSupportFragmentManager(), LiveLoggerActivity.this);
         viewPager.setAdapter(tfPagerAdapter);
-        if(tabChangeListener == null) {
-            tabChangeListener = new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
-                @Override
-                public void onPageSelected(int position) {
-                    LiveLoggerActivity.selectedTab = position;
-                    switch (position) {
-                        case TAB_LOG:
-                            LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconNewMsg);
-                            LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconNewXFer);
-                            LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconUlDl);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                @Override
-                public void onPageScrollStateChanged(int state) {}
-            };
-            viewPager.addOnPageChangeListener(tabChangeListener);
+        if(tabChangeListener != null) {
+            viewPager.removeOnPageChangeListener(tabChangeListener);
         }
+        tabChangeListener = new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                LiveLoggerActivity.selectedTab = position;
+                switch (position) {
+                    case TAB_LOG:
+                        LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconNewMsg);
+                        LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconNewXFer);
+                        LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconUlDl);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        };
+        viewPager.addOnPageChangeListener(tabChangeListener);
+
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.removeAllTabs();
         tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_LOG)));
@@ -328,7 +330,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
 
         viewPager.setOffscreenPageLimit(TabFragmentPagerAdapter.TAB_COUNT - 1);
-        viewPager.setCurrentItem(TAB_LOG);
+        viewPager.setCurrentItem(selectedTab);
         tfPagerAdapter.notifyDataSetChanged();
 
         // the view pager hides the tab icons by default, so we reset them:
@@ -429,13 +431,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem mitem) {
-        if(selectedThemeMenuItem != null) {
-            selectedThemeMenuItem.setIcon(R.drawable.thememarker24);
-        }
-        mitem.setChecked(true);
-        mitem.setEnabled(true);
-        mitem.setIcon(R.drawable.themecheck24);
-        int themeID;
         String themeDesc = mitem.getTitle().toString().substring("Theme: ".length());
         setLocalTheme(themeDesc);
 
@@ -447,6 +442,14 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
         // finally, apply the theme settings by (essentially) restarting the activity UI:
         onCreate(localSavedInstanceState);
+
+        if(selectedThemeMenuItem != null) {
+            selectedThemeMenuItem.setIcon(R.drawable.thememarker24);
+        }
+        mitem.setChecked(true);
+        mitem.setEnabled(true);
+        mitem.setIcon(R.drawable.themecheck24);
+
         appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("THEME", "New theme installed: " + themeDesc));
         return true;
     }
@@ -461,6 +464,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
         if(intent == null)
             return;
         else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
+            if(serialPort != null)
+                return;
             ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
             closeSerialPort(serialPort);
             serialPort = configureSerialPort(null, usbReaderCallback);
@@ -999,6 +1004,28 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    public void actionButtonModifyUID(View view) {
+        if(ChameleonIO.deviceStatus.UID == null || ChameleonIO.deviceStatus.UID.equals("DEVICE UID") || ChameleonIO.deviceStatus.UID.equals("NO UID."))
+            return;
+        String uidAction = ((Button) view).getTag().toString();
+        int uid = Integer.parseInt(ChameleonIO.deviceStatus.UID, 16);
+        int uidSize = ChameleonIO.deviceStatus.UIDSIZE;
+        if(uidAction.equals("INCREMENT_RIGHT"))
+            uid += 1;
+        else if(uidAction.equals("DECREMENT_RIGHT"))
+            uid -= 1;
+        else if(uidAction.equals("SHIFT_RIGHT"))
+            uid <<= 4;
+        else if(uidAction.equals("INCREMENT_LEFT"))
+            uid += 0x80 << (8 * uidSize);
+        else if(uidAction.equals("DECREMENT_LEFT"))
+            uid -= 0x80 << (8 * uidSize);
+        else if(uidAction.equals("SHIFT_LEFT"))
+            uid >>>= 4;
+        getSettingFromDevice(serialPort, String.format(Locale.ENGLISH, "UID=%x"));
+        ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
     }
 
     /**

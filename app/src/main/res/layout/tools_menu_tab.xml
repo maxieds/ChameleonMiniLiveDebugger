@@ -117,6 +117,48 @@
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="RANDOM UID" />
 
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/user24v1"
+                    android:onClick="actionButtonModifyUID"
+                    android:tag="INCREMENT_RIGHT"
+                    android:text="UID + 1" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/user24v2"
+                    android:onClick="actionButtonModifyUID"
+                    android:tag="DECREMENT_RIGHT"
+                    android:text="UID - 1" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/user24v3"
+                    android:onClick="actionButtonModifyUID"
+                    android:tag="SHIFT_RIGHT"
+                    android:text="UID &lt;&lt; 4" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/user24v4"
+                    android:onClick="actionButtonModifyUID"
+                    android:tag="INCREMENT_LEFT"
+                    android:text="1 + UID" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/user24v6"
+                    android:onClick="actionButtonModifyUID"
+                    android:tag="DECREMENT_LEFT"
+                    android:text="-1 + UID" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/user24v5"
+                    android:onClick="actionButtonModifyUID"
+                    android:tag="SHIFT_LEFT"
+                    android:text="UID >>> 4" />
+
             </GridLayout>
 
             <TextView

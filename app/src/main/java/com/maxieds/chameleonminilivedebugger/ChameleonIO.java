@@ -200,8 +200,6 @@ public class ChameleonIO {
             }
             CONFIG = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "CONFIG?");
             UID = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "UID?");
-            if(!UID.equals("NO UID."))
-                UID = UID.replaceAll("..(?!$)", "$0:");
             UIDSIZE = Integer.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "UIDSIZE?"));
             MEMSIZE = Integer.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "MEMSIZE?"));
             LOGSIZE = Integer.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "LOGMEM?").replaceAll(" \\(.*\\)", ""));
@@ -229,7 +227,10 @@ public class ChameleonIO {
             if(!haveUpdates)
                 return;
             ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceConfigText)).setText(CONFIG);
-            ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceConfigUID)).setText(Utils.trimString(UID, "DEVICE CONFIGURATION".length()));
+            String formattedUID = UID;
+            if(!UID.equals("NO UID."))
+                formattedUID = UID.replaceAll("..(?!$)", "$0:");
+            ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceConfigUID)).setText(Utils.trimString(formattedUID, "DEVICE CONFIGURATION".length()));
             String subStats1 = String.format(Locale.ENGLISH,"MEM-%dK/LOG-%dK/DIP#%d", round(MEMSIZE / 1024), round(LOGSIZE / 1024), DIP_SETTING);
             ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceStats1)).setText(subStats1);
             String subStats2 = String.format(Locale.ENGLISH,"%s/FLD-%d/%sCHRG", READONLY ? "RO" : "RW", FIELD ? 1 : 0, CHARGING ? "" : "NO-");

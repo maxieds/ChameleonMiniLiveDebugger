@@ -1,5 +1,14 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
 apply plugin: 'com.android.application'
-//apply plugin: 'io.fabric'
+apply plugin: 'io.fabric'
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -94,7 +103,8 @@ android {
         compile 'com.android.support:design:25.4.0'
         compile 'com.github.felHR85:UsbSerial:4.5'
         compile 'com.shawnlin:number-picker:2.4.4'
-        //compile('com.crashlytics.sdk.android:crashlytics:KIT_VERSION@aar') { transitive = true; }
+        //classpath 'io.fabric.tools:gradle:1.+'
+        compile('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') { transitive = true; }
     }
 
     repositories {
