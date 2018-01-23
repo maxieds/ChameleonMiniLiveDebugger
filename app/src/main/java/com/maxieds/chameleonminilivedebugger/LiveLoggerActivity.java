@@ -125,6 +125,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public static UsbSerialDevice serialPort;
     public static final Semaphore serialPortLock = new Semaphore(1, true);
     boolean usbReceiversRegistered = false;
+    public static final int USB_DATA_BITS = 16;
 
     /**
      * Appends a new log to the logging interface tab.
@@ -525,10 +526,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
      * @ref LiveLoggerActivity.usbReaderCallback
      */
     public static String getSettingFromDevice(UsbSerialDevice cmPort, String query) {
-        ChameleonIO.WAITING_FOR_RESPONSE = true;
         ChameleonIO.DEVICE_RESPONSE = "0";
+        ChameleonIO.LASTCMD = query;
         if(cmPort == null)
             return ChameleonIO.DEVICE_RESPONSE;
+        ChameleonIO.WAITING_FOR_RESPONSE = true;
         ChameleonIO.SerialRespCode rcode = ChameleonIO.executeChameleonMiniCommand(cmPort, query, ChameleonIO.TIMEOUT);
         for(int i = 0; i < ChameleonIO.TIMEOUT / 50; i++) {
             if(!ChameleonIO.WAITING_FOR_RESPONSE)
@@ -582,7 +584,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
             //serialPort.setBaudRate(115200);
             serialPort.setBaudRate(256000);
             //serialPort.setDataBits(UsbSerialInterface.DATA_BITS_8);
-            serialPort.setDataBits(16); // slight optimization?
+            serialPort.setDataBits(USB_DATA_BITS); // slight optimization? ... yes, better
             serialPort.setStopBits(UsbSerialInterface.STOP_BITS_1);
             serialPort.setParity(UsbSerialInterface.PARITY_NONE);
             serialPort.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF);
@@ -621,6 +623,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
         ChameleonIO.DOWNLOAD = false;
         ChameleonIO.UPLOAD = false;
         ChameleonIO.WAITING_FOR_XMODEM = false;
+        ChameleonIO.WAITING_FOR_RESPONSE = false;
+        ChameleonIO.EXPECTING_BINARY_DATA = false;
+        ChameleonIO.LASTCMD = "";
         setStatusIcon(R.id.statusIconUSB, R.drawable.usbdisconnected16);
         return true;
     }
@@ -1010,22 +1015,29 @@ public class LiveLoggerActivity extends AppCompatActivity {
         if(ChameleonIO.deviceStatus.UID == null || ChameleonIO.deviceStatus.UID.equals("DEVICE UID") || ChameleonIO.deviceStatus.UID.equals("NO UID."))
             return;
         String uidAction = ((Button) view).getTag().toString();
-        int uid = Integer.parseInt(ChameleonIO.deviceStatus.UID, 16);
-        int uidSize = ChameleonIO.deviceStatus.UIDSIZE;
+        byte[] uid = Utils.hexString2Bytes(ChameleonIO.deviceStatus.UID);
+        int uidSize = uid.length - 1;
         if(uidAction.equals("INCREMENT_RIGHT"))
-            uid += 1;
+            uid[uidSize] += (byte) 0x01;
         else if(uidAction.equals("DECREMENT_RIGHT"))
-            uid -= 1;
-        else if(uidAction.equals("SHIFT_RIGHT"))
-            uid <<= 4;
+            uid[uidSize] -= (byte) 0x01;
+        else if(uidAction.equals("SHIFT_RIGHT")) {
+            byte[] nextUID = new byte[uid.length];
+            System.arraycopy(uid, 1, nextUID, 0, uid.length - 1);
+            uid = nextUID;
+        }
         else if(uidAction.equals("INCREMENT_LEFT"))
-            uid += 0x80 << (8 * uidSize);
+            uid[0] += (byte) 0x80;
         else if(uidAction.equals("DECREMENT_LEFT"))
-            uid -= 0x80 << (8 * uidSize);
-        else if(uidAction.equals("SHIFT_LEFT"))
-            uid >>>= 4;
-        getSettingFromDevice(serialPort, String.format(Locale.ENGLISH, "UID=%x"));
+            uid[0] -= (byte) 0x80;
+        else if(uidAction.equals("SHIFT_LEFT")){
+            byte[] nextUID = new byte[uid.length];
+            System.arraycopy(uid, 0, nextUID, 1, uid.length - 1);
+            uid = nextUID;
+        }
+        getSettingFromDevice(serialPort, String.format(Locale.ENGLISH, "UID=%s", Utils.bytes2Hex(uid).replace(" ", "")));
         ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+        appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("UID", "Next device UID set to " + Utils.bytes2Hex(uid).replace(" ", ":")));
     }
 
     /**
@@ -1261,11 +1273,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public void actionButtonUploadCard(View view) {
         if(serialPort == null)
             return;
-        // fixes (should fix) a slight "bug" where the card uploads but fails to get transferred to the
+        // should potentially fix a slight "bug" where the card uploads but fails to get transferred to the
         // running device profile due to differences in the current configuration's memsize setting.
         // This might be more of a bug with the Chameleon software, but not entirely sure.
         // Solution: Clear out the current setting slot to CONFIG=NONE before performing the upload:
-        getSettingFromDevice(serialPort, "CONFIG=NONE");
+        //getSettingFromDevice(serialPort, "CONFIG=NONE");
 
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);

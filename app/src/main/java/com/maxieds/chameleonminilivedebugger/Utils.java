@@ -41,6 +41,17 @@ public class Utils {
         return (byte) (lsb | msb << 4);
     }
 
+    // TODO: javadoc
+    public static byte[] hexString2Bytes(String byteStr) {
+        if (byteStr.length() % 2 != 0) { // left-pad the string:
+            byteStr = "0" + byteStr;
+        }
+        byte[] byteRep = new byte[byteStr.length() / 2];
+        for(int b = 0; b < byteStr.length(); b += 2)
+            byteRep[b / 2] = hexString2Byte(byteStr.substring(b, b + 2));
+        return byteRep;
+    }
+
     /**
      * Returns an ascii print character (or '.' representation for non-print characters) of the input byte.
      * @param b

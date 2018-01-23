@@ -52,6 +52,7 @@ public class ChameleonIO {
     public static boolean DOWNLOAD = false;
     public static boolean UPLOAD = false;
     public static boolean EXPECTING_BINARY_DATA = false;
+    public static String LASTCMD = "";
 
     /**
      * Static storage for command return values.
@@ -146,8 +147,11 @@ public class ChameleonIO {
      */
     public static boolean isCommandResponse(byte[] liveLogData) {
         String respText = new String(liveLogData).split("[\n\r]+")[0];
+        String[] respText2 = new String(liveLogData).split("=");
         if(SerialRespCode.RESP_CODE_TEXT_MAP.get(respText) != null)
             return true;
+        else if(respText2.length >= 2 && SerialRespCode.RESP_CODE_TEXT_MAP.get(LASTCMD.replace(respText2[1].substring(0, LiveLoggerActivity.USB_DATA_BITS), "")) != null)
+            return false;
         return false;
     }
 
@@ -225,7 +229,7 @@ public class ChameleonIO {
                 return;
             boolean haveUpdates = updateAllStatus(resetTimer);
             if(!haveUpdates)
-                return;
+                return;ChameleonIO.WAITING_FOR_RESPONSE = true;
             ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceConfigText)).setText(CONFIG);
             String formattedUID = UID;
             if(!UID.equals("NO UID."))
