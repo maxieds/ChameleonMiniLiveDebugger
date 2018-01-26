@@ -188,7 +188,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
         // fix bug where the tabs are blank when the application is relaunched:
         if(runningActivity == null || !isTaskRoot()) {
             super.onCreate(savedInstanceState);
-            Fabric.with(this, new Crashlytics());
+            if(!BuildConfig.DEBUG)
+                Fabric.with(this, new Crashlytics());
         }
         if(!isTaskRoot()) {
             Log.w(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
