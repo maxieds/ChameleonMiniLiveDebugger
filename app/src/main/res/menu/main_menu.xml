@@ -27,6 +27,20 @@
             android:title="Theme: Linux Green On Black"
             app:showAsAction="never" />
 
+        <item
+            android:checkable="false"
+            android:checked="false"
+            android:tag="@style/AppThemeRed"
+            android:title="Theme: Red"
+            app:showAsAction="never" />
+
+        <item
+            android:checkable="false"
+            android:checked="false"
+            android:tag="@style/AppThemeWhite"
+            android:title="Theme: White"
+            app:showAsAction="never" />
+
     </group>
 
 </menu>

@@ -5,20 +5,15 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
@@ -28,11 +23,8 @@ import android.os.Looper;
 import android.provider.OpenableColumns;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
-import android.support.design.widget.TabItem;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.CompoundButtonCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
@@ -63,9 +55,7 @@ import com.crashlytics.android.Crashlytics;
 import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
 
-import io.fabric.sdk.android.Fabric;
 import java.io.File;
-import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -73,6 +63,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
+
+import io.fabric.sdk.android.Fabric;
 
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
@@ -194,9 +186,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         // fix bug where the tabs are blank when the application is relaunched:
-        if(runningActivity == null || !isTaskRoot())
+        if(runningActivity == null || !isTaskRoot()) {
             super.onCreate(savedInstanceState);
             Fabric.with(this, new Crashlytics());
+        }
         if(!isTaskRoot()) {
             Log.w(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
             final Intent intent = getIntent();
@@ -204,7 +197,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
             if (intentAction != null && (intentAction.equals(UsbManager.ACTION_USB_DEVICE_DETACHED) || intentAction.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED))) {
                 Log.w(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead of re-launching.");
                 finish();
-                LiveLoggerActivity.runningActivity.onNewIntent(intent);
+                ChameleonIO.USB_CONFIGURED = false;
+                //LiveLoggerActivity.runningActivity.onNewIntent(intent);
                 return;
             }
         }
@@ -219,18 +213,19 @@ public class LiveLoggerActivity extends AppCompatActivity {
         defaultInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         defaultContext = getApplicationContext();
 
-        SharedPreferences preferences = getSharedPreferences(LiveLoggerActivity.TAG, Context.MODE_PRIVATE);
-        String storedAppTheme = preferences.getString("ThemeUI", "Standard Green");
-        setLocalTheme(storedAppTheme);
+        if(completeRestart) {
+            SharedPreferences preferences = getSharedPreferences(LiveLoggerActivity.TAG, Context.MODE_PRIVATE);
+            String storedAppTheme = preferences.getString("ThemeUI", "Standard Green");
+            setLocalTheme(storedAppTheme);
+        }
         setContentView(R.layout.activity_live_logger);
 
         Toolbar actionBar = (Toolbar) findViewById(R.id.toolbarActionBar);
         actionBar.setSubtitle("Portable logging interface v" + String.valueOf(BuildConfig.VERSION_NAME));
-        if(BuildConfig.PAID_APP_VERSION)
+        if (BuildConfig.PAID_APP_VERSION)
             actionBar.inflateMenu(R.menu.paid_theme_menu);
         else
             actionBar.inflateMenu(R.menu.main_menu);
-        //actionBar.setPopupTheme(R.style.Actionbar_PopupTheme);
         setActionBar(actionBar);
         clearStatusIcon(R.id.statusIconUlDl);
         getWindow().setTitleColor(getThemeColorVariant(R.attr.actionBarBackgroundColor));
@@ -270,6 +265,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
             registerReceiver(usbActionReceiver, usbActionFilter);
             usbReceiversRegistered = true;
         }
+
+        String userGreeting = "Dear new user, \n\nThank you for using and testing this app. It is still under development. We are working to fix any new errors" +
+                " on untested devices using Crashlytics. While this will eventually fix most unforseen errors that slip through testing, *PLEASE* " +
+                "if you consistently get a runtime error using a feature notify the developer at maxieds@gmail.com so it can be fixed quickly for all users.\n\n" +
+                "Enjoy the app and using your Chameleon Mini device!";
+        appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", userGreeting));
 
         clearStatusIcon(R.id.statusIconNewMsg);
         clearStatusIcon(R.id.statusIconNewXFer);
@@ -465,19 +466,21 @@ public class LiveLoggerActivity extends AppCompatActivity {
         if(intent == null)
             return;
         else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
-            if(serialPort != null)
+            if(serialPort != null && ChameleonIO.USB_CONFIGURED)
                 return;
             ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
             closeSerialPort(serialPort);
             serialPort = configureSerialPort(null, usbReaderCallback);
             LiveLoggerActivity.runningActivity.actionButtonRestorePeripheralDefaults(null);
             ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
+            ChameleonIO.USB_CONFIGURED = true;
         }
         else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
             ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
             if(ChameleonIO.WAITING_FOR_RESPONSE)
                 ChameleonIO.WAITING_FOR_RESPONSE = false;
             closeSerialPort(serialPort);
+            ChameleonIO.USB_CONFIGURED = false;
         }
     }
 
@@ -803,6 +806,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
      * @param view calling Button
      */
     public void actionButtonCreateNewEvent(View view) {
+        if(serialPort == null) {
+            appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Cannot run command since USB is not configured."));
+            return;
+        }
         String createCmd = ((Button) view).getText().toString();
         String msgParam = "";
         if(createCmd.equals("READER")) {
@@ -976,17 +983,17 @@ public class LiveLoggerActivity extends AppCompatActivity {
             if (logDataEntries.get(vi) instanceof LogEntryUI) {
                 boolean isChecked = ((CheckBox) logEntryView.findViewById(R.id.entrySelect)).isChecked();
                 int recordIdx = ((LogEntryUI) logDataEntries.get(vi)).getRecordIndex();
-                if (isChecked && actionFlag.equals("SEND")) {
+                if (serialPort != null && isChecked && actionFlag.equals("SEND")) {
                     String byteString = ((LogEntryUI) logDataEntries.get(vi)).getPayloadData();
                     appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("CARD INFO", "Sending: " + byteString + "..."));
                     ChameleonIO.executeChameleonMiniCommand(serialPort, "SEND " + byteString, ChameleonIO.TIMEOUT);
                 }
-                else if(isChecked && actionFlag.equals("SEND_RAW")) {
+                else if(serialPort != null && isChecked && actionFlag.equals("SEND_RAW")) {
                     String byteString = ((LogEntryUI) logDataEntries.get(vi)).getPayloadData();
                     appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("CARD INFO", "Sending: " + byteString + "..."));
                     ChameleonIO.executeChameleonMiniCommand(serialPort, "SEND_RAW " + byteString, ChameleonIO.TIMEOUT);
                 }
-                else if(isChecked && actionFlag.equals("CLONE_UID")) {
+                else if(serialPort != null && isChecked && actionFlag.equals("CLONE_UID")) {
                     String uid = ((LogEntryUI) logDataEntries.get(vi)).getPayloadData();
                     if(uid.length() != 2 * ChameleonIO.deviceStatus.UIDSIZE) {
                         appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", String.format("Number of bytes for record #%d != the required %d bytes!", recordIdx, ChameleonIO.deviceStatus.UIDSIZE)));

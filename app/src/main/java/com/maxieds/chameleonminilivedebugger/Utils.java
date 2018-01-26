@@ -232,4 +232,13 @@ public class Utils {
         return entropyRatio;
     }
 
+    public static int parseInt(String numberStr) {
+        try {
+            int rNum = Integer.parseInt(numberStr);
+            return rNum;
+        } catch(NumberFormatException nfe) {
+            return 0;
+        }
+    }
+
 }

@@ -2,6 +2,7 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.os.Handler;
 import android.os.SystemClock;
+import android.util.Log;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -16,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.FALSE;
 import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.OK;
+import static java.lang.Math.min;
 import static java.lang.Math.round;
 
 /**
@@ -53,6 +55,7 @@ public class ChameleonIO {
     public static boolean UPLOAD = false;
     public static boolean EXPECTING_BINARY_DATA = false;
     public static String LASTCMD = "";
+    public static boolean USB_CONFIGURED = false;
 
     /**
      * Static storage for command return values.
@@ -150,7 +153,7 @@ public class ChameleonIO {
         String[] respText2 = new String(liveLogData).split("=");
         if(SerialRespCode.RESP_CODE_TEXT_MAP.get(respText) != null)
             return true;
-        else if(respText2.length >= 2 && SerialRespCode.RESP_CODE_TEXT_MAP.get(LASTCMD.replace(respText2[1].substring(0, LiveLoggerActivity.USB_DATA_BITS), "")) != null)
+        else if(respText2.length >= 2 && SerialRespCode.RESP_CODE_TEXT_MAP.get(LASTCMD.replace(respText2[1].substring(0, min(respText2[1].length(), LiveLoggerActivity.USB_DATA_BITS)), "")) != null)
             return false;
         return false;
     }
@@ -204,15 +207,15 @@ public class ChameleonIO {
             }
             CONFIG = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "CONFIG?");
             UID = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "UID?");
-            UIDSIZE = Integer.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "UIDSIZE?"));
-            MEMSIZE = Integer.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "MEMSIZE?"));
-            LOGSIZE = Integer.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "LOGMEM?").replaceAll(" \\(.*\\)", ""));
-            DIP_SETTING = Integer.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "SETTING?"));
+            UIDSIZE = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "UIDSIZE?"));
+            MEMSIZE = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "MEMSIZE?"));
+            LOGSIZE = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "LOGMEM?").replaceAll(" \\(.*\\)", ""));
+            DIP_SETTING = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "SETTING?"));
             FIELD = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "FIELD?").equals("1");
             READONLY = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "READONLY?").equals("1");
             FIELD = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "FIELD?").equals("1");
             CHARGING = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "CHARGING?").equals("TRUE");
-            THRESHOLD = Integer.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "THRESHOLD?"));
+            THRESHOLD = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "THRESHOLD?"));
             TIMEOUT = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "TIMEOUT?");
             LiveLoggerActivity.serialPortLock.release();
             return true;
