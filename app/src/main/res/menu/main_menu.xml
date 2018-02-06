@@ -35,6 +35,14 @@
             app:showAsAction="never" />
 
         <item
+            android:alphabeticShortcut="w"
+            android:checked="false"
+            android:checkable="false"
+            android:tag="@style/AppThemeRedmond"
+            android:title="Theme: Redmond"
+            app:showAsAction="never" />
+
+        <item
             android:checkable="false"
             android:checked="false"
             android:tag="@style/AppThemeWhite"
