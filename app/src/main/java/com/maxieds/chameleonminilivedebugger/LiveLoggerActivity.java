@@ -185,8 +185,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        if(isTaskRoot())
-            throw new RuntimeException("Testing the API KEY");
         // fix bug where the tabs are blank when the application is relaunched:
         if(runningActivity == null || !isTaskRoot()) {
             super.onCreate(savedInstanceState);

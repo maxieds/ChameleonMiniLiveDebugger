@@ -26,8 +26,8 @@ android {
         applicationId "com.maxieds.chameleonminilivedebugger"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 34
-        versionName "0.3.4"
+        versionCode 36
+        versionName "0.3.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -68,7 +68,7 @@ android {
             buildConfigField "String", "BUILD_TIMESTAMP", "\"" + configBuildTimeStamp + "\""
             resConfigs "en", "en_US", "en_UK", "de"
             manifestPlaceholders = [
-                    appIcon : "@drawable/chameleonicon64",
+                    appIcon : "@drawable/chameleonicon_about64",
                     appTheme: "@style/AppThemeGreen",
                     appDebug: "false",
                     installLocation: "internalOnly"
