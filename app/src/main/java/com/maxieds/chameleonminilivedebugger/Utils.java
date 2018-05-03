@@ -96,6 +96,20 @@ public class Utils {
     }
 
     /**
+     * Returns a 32-bit integer obtained from the bytes (in lex. order).
+     * @param bytesArray
+     * @return 32-bit integer
+     */
+    public static int bytes2Integer32(byte[] bytesArray) {
+        int rint = 0;
+        for(int b = 0; b < Math.min(bytesArray.length, 4); b++) {
+            int rintMask = 0x000000ff << 4 * b;
+            rint |= ((int) bytesArray[b]) & rintMask;
+        }
+        return rint;
+    }
+
+    /**
      * Reverses the order of the bytes in the array.
      * @param bytes
      * @return byte[] reversed array

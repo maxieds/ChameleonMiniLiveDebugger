@@ -1120,9 +1120,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public void actionButtonRunCommand(View view) {
         String cmCmd = ((Button) view).getTag().toString();
         if(cmCmd.equals("DUMP_MFU")) {
+            String mfuBytes = getSettingFromDevice(serialPort, cmCmd);
             ChameleonIO.DEVICE_RESPONSE[0] = Arrays.toString(ChameleonIO.DEVICE_RESPONSE);
             ChameleonIO.DEVICE_RESPONSE[0] = ChameleonIO.DEVICE_RESPONSE[0].substring(1, ChameleonIO.DEVICE_RESPONSE[0].length() - 1);
-            String mfuBytes = getSettingFromDevice(serialPort, cmCmd);
             mfuBytes = mfuBytes.replace(",", "");
             mfuBytes = mfuBytes.replace("\n", "");
             mfuBytes = mfuBytes.replace("\r", "");
@@ -1203,6 +1203,22 @@ public class LiveLoggerActivity extends AppCompatActivity {
      */
     public void actionButtonDumpMFU(View view) {
         ExportTools.saveBinaryDumpMFU("mfultralight");
+    }
+
+    /**
+     * Called when the Export tab button for cloning the DUMP_MFU command output is requested by the user.
+     * @param view
+     */
+    public void actionButtonCloneMFU(View view) {
+        String mfuBytes = getSettingFromDevice(serialPort, "DUMP_MFU");
+        ChameleonIO.DEVICE_RESPONSE[0] = Arrays.toString(ChameleonIO.DEVICE_RESPONSE);
+        ChameleonIO.DEVICE_RESPONSE[0] = ChameleonIO.DEVICE_RESPONSE[0].substring(1, ChameleonIO.DEVICE_RESPONSE[0].length() - 1);
+        mfuBytes = mfuBytes.replace(",", "");
+        mfuBytes = mfuBytes.replace("\n", "");
+        mfuBytes = mfuBytes.replace("\r", "");
+        String mfuBytesPrettyPrint = Utils.prettyPrintMFU(mfuBytes);
+        appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("DUMP_MFU", mfuBytesPrettyPrint));
+        ExportTools.cloneBinaryDumpMFU(Utils.hexString2Bytes(mfuBytes));
     }
 
     /**

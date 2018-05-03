@@ -181,8 +181,8 @@
             style="@style/GridButtons"
             android:drawableLeft="@drawable/dumpmfuchip24"
             android:tag="DUMP_MFU"
-            android:onClick="actionButtonDumpMFU"
-            android:text="Dump MFU Tag to Bin" />
+            android:onClick="actionButtonCloneMFU"
+            android:text="Clone MFU Tag" />
 
         <Button
             style="@style/GridButtons"

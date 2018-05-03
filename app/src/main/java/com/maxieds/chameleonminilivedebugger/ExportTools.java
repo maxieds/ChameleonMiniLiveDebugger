@@ -546,4 +546,34 @@ public class ExportTools {
         return true;
     }
 
+    /**
+     * Clones the output of the DUMP_MFU command to the running DIP slot.
+     * @param dataBytes
+     * @return boolean success of the operation
+     * @ref LiveLoggerActivity.actionButtonCloneMFU
+     * @ref http://tech.springcard.com/2014/reading-and-writing-data-in-a-mifare-ultralight-card-with-a-proxnroll/
+     * @ref https://stackoverflow.com/questions/30121809/how-do-i-permanently-lock-specific-data-pages-in-a-mifare-ultralight-c-tag
+     */
+    public static boolean cloneBinaryDumpMFU(byte[] dataBytes) {
+
+        ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "CONFIG=MF_ULTRALIGHT", ChameleonIO.TIMEOUT);
+        ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
+        for(int page = 0; page < dataBytes.length; page += 4) {
+            byte[] apduSendBytesHdr = {
+                    (byte) 0xff, // CLA
+                    (byte) 0xa2, // INS (write)
+                    (byte) 0x00, // P1
+                    (byte) (page / 4), // P2
+            };
+            byte[] apduSendBytesData = new byte[4];
+            System.arraycopy(dataBytes, 4 * page, apduSendBytesData, 4, 4);
+            int sendBytesHdr = Utils.bytes2Integer32(apduSendBytesHdr);
+            int sendBytesData = Utils.bytes2Integer32(apduSendBytesData);
+            String chameleonCmd = String.format("SEND %08x%08x", sendBytesHdr, sendBytesData);
+            ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, chameleonCmd, ChameleonIO.TIMEOUT);
+        }
+        return true;
+
+    }
+
 }
