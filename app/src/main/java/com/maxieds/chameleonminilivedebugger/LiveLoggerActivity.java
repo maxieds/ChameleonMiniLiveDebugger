@@ -1465,4 +1465,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     }
 
+    public void actionButtonApduClear(View view) {}
+
+    public void actionButtonSendAPDU(View view) {}
+
 }

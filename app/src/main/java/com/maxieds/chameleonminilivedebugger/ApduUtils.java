@@ -1,11 +1,9 @@
 package com.maxieds.chameleonminilivedebugger;
 
 import android.view.View;
-import android.widget.SpinnerAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -271,10 +269,10 @@ public class ApduUtils {
     public static APDUCommandData apduTransceiveCmd;
     public static APDUCommandData[] fullInsList;
     public static String[] fullInsDescList;
-    public static SpinnerAdapter apduCmdListSpinnerAdapter;
+    public static View tabView;
 
     public static void buildFullInstructionsList() {
-        List<String[]> apduStringFormattedSpecs;
+        List<String[]> apduStringFormattedSpecs = new ArrayList();
         try {
             apduStringFormattedSpecs = Utils.readCSVFile(LiveLoggerActivity.defaultContext.getResources().openRawResource(R.raw.desfire_ins));
             apduStringFormattedSpecs.addAll(Utils.readCSVFile(LiveLoggerActivity.defaultContext.getResources().openRawResource(R.raw.common_ins)));
@@ -288,10 +286,11 @@ public class ApduUtils {
         fullInsList = new APDUCommandData[apduStringFormattedSpecs.size()];
         fullInsDescList = new String[apduStringFormattedSpecs.size()];
         for(int a = 0; a < apduStringFormattedSpecs.size(); a++) {
+            fullInsList[a] = new APDUCommandData();
             fullInsList[a].loadFromStringArray(apduStringFormattedSpecs.get(a));
             fullInsDescList[a] = fullInsList[a].apduCmdDesc;
         }
-        Arrays.sort(fullInsList);
+        //Arrays.sort(fullInsList);
     }
 
     public static void processNewCommandSelection(View tabView) {

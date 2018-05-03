@@ -298,23 +298,11 @@ public class TabFragment extends Fragment {
             CompoundButtonCompat.setButtonTintList((CheckBox) view.findViewById(R.id.entrySearchLogHeaders), new ColorStateList(states, colors));
         }
         else if(tabNumber == TAB_APDU) {
-            /*ApduUtils.buildFullInstructionsList();
-            ApduUtils.apduCmdListSpinnerAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, ApduUtils.fullInsDescList);
-            Spinner spinner = (Spinner) view.findViewById(R.id.apduCmdListSpinner);
-            spinner.setAdapter(ApduUtils.apduCmdListSpinnerAdapter);
-            final View localFinalView = view;
-            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                View localView = localFinalView;
-                String[] localSpinnerList = ApduUtils.fullInsDescList;
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    ApduUtils.apduTransceiveCmd = ApduUtils.fullInsList[i];
-                    ApduUtils.processNewCommandSelection(localView);
-                    //((Spinner) localView.findViewById(R.id.apduCmdListSpinner)).setSelection(0);
-                }
-                public void onNothingSelected(AdapterView<?> adapterView) {
-                    return;
-                }
-            });*/
+            ApduUtils.buildFullInstructionsList();
+            ApduUtils.tabView = inflatedView;
+            ScrollView sv = (ScrollView) inflatedView.findViewById(R.id.apduSearchResultsScrollView);
+            TextView tvSearchResults = new TextView(inflatedView.getContext());
+            sv.addView(tvSearchResults);
         }
         return inflatedView;
     }

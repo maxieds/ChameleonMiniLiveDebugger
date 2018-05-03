@@ -69,19 +69,45 @@
         android:drawableLeft="@drawable/console16"
         android:drawablePadding="5dp"
         android:singleLine="true"
-        android:text="Select Instruction (INS): "
+        android:text="APDU Parameters: "
         android:textAllCaps="true"
         android:textSize="14sp"
         android:textStyle="bold|italic" />
 
-    <Spinner
-        android:id="@+id/apduCmdListSpinner"
-        android:layout_width="300dp"
-        android:layout_height="30dp"
-        android:layout_weight="1"
-        android:gravity="right|center_vertical"
-        android:popupBackground="?colorAccentHighlight"
-        android:spinnerMode="dialog" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
+
+    <GridLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="1dp"
+        android:background="?colorAccentLog"
+        android:columnCount="13"
+        android:orientation="horizontal"
+        android:padding="2dp"
+        android:rowCount="1">
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/enterdata24"
+            android:onClick="actionButtonApduClear"
+            android:text="ENTER DATA" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/idcard3"
+            android:onClick="actionButtonSendAPDU"
+            android:text="CLONE UID BITS" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/randombytes24"
+            android:onClick="actionButtonSendAPDU"
+            android:text="RANDOM BYTES" />
+
+    </GridLayout>
 
     <View
         android:layout_width="match_parent"
@@ -93,24 +119,7 @@
         android:layout_height="wrap_content"
         android:background="?colorPrimaryDarkLog"
         android:drawableLeft="@drawable/console16"
-        android:drawablePadding="5dp"
-        android:singleLine="true"
-        android:text="APDU Parameters (AUTOFILLS REQUIRED DATA): "
-        android:textAllCaps="true"
-        android:textSize="14sp"
-        android:textStyle="bold|italic" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="?colorPrimaryDark" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?colorPrimaryDarkLog"
-        android:drawableLeft="@drawable/console16"
-        android:drawablePadding="5dp"
+        android:drawablePadding="3dp"
         android:singleLine="true"
         android:text="Assembled APDU Command: "
         android:textAllCaps="true"
@@ -124,7 +133,7 @@
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
-        android:layout_height="65dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <TextView
@@ -132,7 +141,7 @@
             android:layout_height="wrap_content"
             android:background="?colorAccent"
             android:paddingLeft="2dp"
-            android:paddingRight="2dp"
+            android:paddingRight="1dp"
             android:singleLine="true"
             android:text="CLA / CLS: "
             android:textAllCaps="true"
@@ -144,7 +153,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:background="?colorAccent"
-            android:paddingLeft="1dp"
+            android:paddingRight="1dp"
             android:singleLine="true"
             android:text="XX"
             android:textAllCaps="true"
@@ -165,8 +174,56 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
             android:layout_gravity="left"
+            android:layout_weight="0"
+            android:background="?colorAccent"
+            android:paddingLeft="1dp"
+            android:singleLine="true"
+            android:text="XX"
+            android:textAllCaps="true"
+            android:textSize="11sp"
+            android:textStyle="normal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?colorAccent"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:text="P1: "
+            android:textAllCaps="true"
+            android:textSize="11sp"
+            android:textStyle="bold|italic" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_weight="0"
+            android:background="?colorAccent"
+            android:paddingLeft="1dp"
+            android:singleLine="true"
+            android:text="XX"
+            android:textAllCaps="true"
+            android:textSize="11sp"
+            android:textStyle="normal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?colorAccent"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:text="P2: "
+            android:textAllCaps="true"
+            android:textSize="11sp"
+            android:textStyle="bold|italic" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_weight="0"
             android:background="?colorAccent"
             android:paddingLeft="1dp"
             android:singleLine="true"
@@ -190,8 +247,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_gravity="right"
+            android:layout_weight="1"
             android:background="?colorAccent"
             android:hint="NONE"
             android:paddingLeft="1dp"
@@ -201,6 +258,33 @@
             android:textStyle="normal" />
 
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="1dp"
+        android:background="?colorAccentLog"
+        android:orientation="horizontal"
+        android:padding="2dp">
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/cleardown24"
+            android:onClick="actionButtonApduClear"
+            android:text="CLEAR" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/sendarrow24v2"
+            android:onClick="actionButtonSendAPDU"
+            android:text="TRANSMIT APDU" />
+
+    </GridLayout>
 
     <View
         android:layout_width="match_parent"
@@ -218,5 +302,18 @@
         android:textAllCaps="true"
         android:textSize="14sp"
         android:textStyle="bold|italic" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
+
+    <ScrollView
+        android:id="@+id/apduSearchResultsScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:orientation="vertical"
+        android:verticalScrollbarPosition="right" />
 
 </LinearLayout>
