@@ -102,6 +102,7 @@ public class LogEntryMetadataRecord extends LogEntryBase {
         prefixIconMap.put("STATUS", R.drawable.phonebubble24);
         prefixIconMap.put("NEW EVENT", R.drawable.statusicon24);
         prefixIconMap.put("ERROR", R.drawable.erroricon24);
+        prefixIconMap.put("UNRECOGNIZED EXCEPTION", R.drawable.bug);
         prefixIconMap.put("CARD INFO", R.drawable.cardicon24);
         prefixIconMap.put("GETUID", R.drawable.usericon24);
         prefixIconMap.put("STRENGTH", R.drawable.signalicon24);
@@ -118,6 +119,7 @@ public class LogEntryMetadataRecord extends LogEntryBase {
         prefixIconMap.put("EXPORT", R.drawable.export24);
         prefixIconMap.put("SEARCH", R.drawable.searchicon24);
         prefixIconMap.put("THEME", R.drawable.themecheck24);
+        prefixIconMap.put("DUMP_MFU", R.drawable.phonebubble24);
     }
 
     /**

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -59,12 +58,6 @@
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/replay24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="Log Replay" />
-
-                <Button
-                    style="@style/GridButtons"
                     android:drawableLeft="@drawable/chip24v3"
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="ULTRALIGHT" />
@@ -95,6 +88,12 @@
 
                 <Button
                     style="@style/GridButtons"
+                    android:drawableLeft="@drawable/chipbrain2"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="DESFIRE-EV1-4K" />
+
+                <Button
+                    style="@style/GridButtons"
                     android:drawableLeft="@drawable/card24v6"
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="MFU-EV1-80B" />
@@ -113,7 +112,7 @@
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/cardicon24"
+                    android:drawableLeft="@drawable/programmer2"
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="RANDOM UID" />
 
@@ -493,7 +492,7 @@
                     android:layout_marginLeft="0dp"
                     android:layout_weight="1"
                     android:background="?colorAccentLog"
-                    android:drawableLeft="@drawable/pitext24"
+                    android:drawableLeft="@drawable/ellipsisbracket"
                     android:drawablePadding="11dp"
                     android:hint="01 23 45 67 89 ab cd ef"
                     android:paddingLeft="5dp" />

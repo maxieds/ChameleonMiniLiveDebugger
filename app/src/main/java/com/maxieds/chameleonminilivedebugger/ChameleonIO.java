@@ -2,7 +2,6 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.os.Handler;
 import android.os.SystemClock;
-import android.util.Log;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -64,7 +63,7 @@ public class ChameleonIO {
      * @ref LiveLoggerActivity.usbReaderCallback
      */
     public static String DEVICE_RESPONSE_CODE;
-    public static String DEVICE_RESPONSE;
+    public static String[] DEVICE_RESPONSE;
     public static byte[] DEVICE_RESPONSE_BINARY;
 
     /**
@@ -205,18 +204,18 @@ public class ChameleonIO {
                     statsUpdateHandler.postDelayed(statsUpdateRunnable, STATS_UPDATE_INTERVAL / 4);
                 return false;
             }
-            CONFIG = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "CONFIG?");
-            UID = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "UID?");
-            UIDSIZE = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "UIDSIZE?"));
-            MEMSIZE = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "MEMSIZE?"));
-            LOGSIZE = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "LOGMEM?").replaceAll(" \\(.*\\)", ""));
-            DIP_SETTING = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "SETTING?"));
-            FIELD = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "FIELD?").equals("1");
-            READONLY = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "READONLY?").equals("1");
-            FIELD = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "FIELD?").equals("1");
-            CHARGING = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "CHARGING?").equals("TRUE");
-            THRESHOLD = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "THRESHOLD?"));
-            TIMEOUT = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "TIMEOUT?");
+            CONFIG = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "CONFIG?", CONFIG);
+            UID = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "UID?", UID);
+            UIDSIZE = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "UIDSIZE?", String.format("%d",UIDSIZE)));
+            MEMSIZE = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "MEMSIZE?", String.format("%d",MEMSIZE)));
+            LOGSIZE = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "LOGMEM?", String.format("%d", LOGSIZE)).replaceAll(" \\(.*\\)", ""));
+            DIP_SETTING = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "SETTING?", String.format("%d", DIP_SETTING)));
+            FIELD = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "FIELD?", String.format("%d", FIELD ? 1 : 0)).equals("1");
+            READONLY = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "READONLY?", String.format("%d", READONLY ? 1 : 0)).equals("1");
+            FIELD = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "FIELD?", String.format("%d", FIELD ? 1 : 0)).equals("1");
+            CHARGING = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "CHARGING?", String.format("%d", CHARGING ? 1 : 0)).equals("TRUE");
+            THRESHOLD = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "THRESHOLD?", String.format("%d", THRESHOLD)));
+            TIMEOUT = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "TIMEOUT?", TIMEOUT);
             LiveLoggerActivity.serialPortLock.release();
             return true;
         }
@@ -290,6 +289,18 @@ public class ChameleonIO {
     }
 
     /**
+     * Resets the timeout on the Chameleon device (avoids zero timeouts from AUTOCALIBRATE) that make
+     * the app otherwise hang.
+     * @param cmPort
+     * @param timeout
+     */
+    private static void setTimeout(UsbSerialDevice cmPort, int timeout) {
+        String timeoutCmd = String.format("TIMEOUT=%d\n\r", timeout);
+        byte[] sendBuf = timeoutCmd.getBytes(StandardCharsets.UTF_8);
+        cmPort.write(sendBuf);
+    }
+
+    /**
      * Executes the passed command by sending the command to the device.
      * The response returned by the device is handled separately elsewhere in the program.
      * @param cmPort
@@ -305,6 +316,8 @@ public class ChameleonIO {
             timeout *= -1;
             SystemClock.sleep(timeout);
         }
+        if(timeout != Utils.parseInt(deviceStatus.TIMEOUT))
+            setTimeout(cmPort, timeout);
         String deviceConfigCmd = rawCmd + "\n\r";
         byte[] sendBuf = deviceConfigCmd.getBytes(StandardCharsets.UTF_8);
         cmPort.write(sendBuf);

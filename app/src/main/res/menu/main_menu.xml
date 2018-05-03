@@ -2,53 +2,56 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <group android:checkableBehavior="single">
+    <item
+        android:alphabeticShortcut="c"
+        android:checkable="false"
+        android:checked="false"
+        android:enabled="true"
+        android:tag="@style/AppThemeChicky"
+        android:title="Theme: Chicky"
+        app:showAsAction="never" />
 
-        <item
-            android:alphabeticShortcut="c"
-            android:checkable="false"
-            android:checked="false"
-            android:tag="@style/AppThemeChicky"
-            android:title="Theme: Chicky"
-            app:showAsAction="never" />
+    <item
+        android:alphabeticShortcut="g"
+        android:checkable="false"
+        android:checked="false"
+        android:enabled="true"
+        android:tag="@style/AppThemeGreen"
+        android:title="Theme: Standard Green"
+        app:showAsAction="never" />
 
-        <item
-            android:alphabeticShortcut="g"
-            android:checkable="false"
-            android:checked="false"
-            android:tag="@style/AppThemeGreen"
-            android:title="Theme: Standard Green"
-            app:showAsAction="never" />
+    <item
+        android:checkable="false"
+        android:checked="false"
+        android:enabled="true"
+        android:tag="@style/AppThemeLinuxGreenOnBlack"
+        android:title="Theme: Linux Green On Black"
+        app:showAsAction="never" />
 
-        <item
-            android:checkable="false"
-            android:checked="false"
-            android:tag="@style/AppThemeLinuxGreenOnBlack"
-            android:title="Theme: Linux Green On Black"
-            app:showAsAction="never" />
+    <item
+        android:checkable="false"
+        android:checked="false"
+        android:enabled="true"
+        android:tag="@style/AppThemeRed"
+        android:title="Theme: Red"
+        app:showAsAction="never" />
 
-        <item
-            android:checkable="false"
-            android:checked="false"
-            android:tag="@style/AppThemeRed"
-            android:title="Theme: Red"
-            app:showAsAction="never" />
+    <item
+        android:alphabeticShortcut="w"
+        android:checkable="false"
+        android:checked="false"
+        android:enabled="true"
+        android:tag="@style/AppThemeRedmond"
+        android:title="Theme: Redmond"
+        app:showAsAction="never" />
 
-        <item
-            android:alphabeticShortcut="w"
-            android:checked="false"
-            android:checkable="false"
-            android:tag="@style/AppThemeRedmond"
-            android:title="Theme: Redmond"
-            app:showAsAction="never" />
+    <item
+        android:checkable="false"
+        android:checked="false"
+        android:enabled="true"
+        android:tag="@style/AppThemeWhite"
+        android:title="Theme: White"
+        app:showAsAction="never" />
 
-        <item
-            android:checkable="false"
-            android:checked="false"
-            android:tag="@style/AppThemeWhite"
-            android:title="Theme: White"
-            app:showAsAction="never" />
-
-    </group>
 
 </menu>

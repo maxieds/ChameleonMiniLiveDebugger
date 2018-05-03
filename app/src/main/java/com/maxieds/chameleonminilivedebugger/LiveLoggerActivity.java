@@ -45,6 +45,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
@@ -178,6 +179,18 @@ public class LiveLoggerActivity extends AppCompatActivity {
     }
 
     /**
+     * Default handler for  all uncaught exceptions.
+     */
+    private Thread.UncaughtExceptionHandler unCaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
+        @Override
+        public void uncaughtException(Thread thread, Throwable ex) {
+            String msgParam = "An unknown error happened in the app. Please upgrade to the latest version if a newer one is available, or ";
+            msgParam += "contact the developer at maxieds@gmail.com to report whatever action you took to generate this error!";
+            appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("UNRECOGNIZED EXCEPTION", msgParam));
+        }
+    };
+
+    /**
      * Initializes the activity state and variables.
      * Called when the activity is created.
      * @param savedInstanceState
@@ -188,6 +201,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         // fix bug where the tabs are blank when the application is relaunched:
         if(runningActivity == null || !isTaskRoot()) {
             super.onCreate(savedInstanceState);
+            Thread.setDefaultUncaughtExceptionHandler(unCaughtExceptionHandler);
             if(!BuildConfig.DEBUG)
                 Fabric.with(this, new Crashlytics());
         }
@@ -227,7 +241,13 @@ public class LiveLoggerActivity extends AppCompatActivity {
             actionBar.inflateMenu(R.menu.paid_theme_menu);
         else
             actionBar.inflateMenu(R.menu.main_menu);
-        setActionBar(actionBar);
+        //actionBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+        //    @Override
+        //    public boolean onMenuItemClick(MenuItem mitem) {
+        //        return onOptionsItemSelected(mitem);
+        //    }
+        //});
+        //setActionBar(actionBar);
         clearStatusIcon(R.id.statusIconUlDl);
         getWindow().setTitleColor(getThemeColorVariant(R.attr.actionBarBackgroundColor));
         getWindow().setStatusBarColor(getThemeColorVariant(R.attr.colorPrimaryDark));
@@ -352,6 +372,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
      */
     @Override
     public boolean onCreateOptionsMenu(Menu overflowMenu) {
+        //super.onCreateOptionsMenu(overflowMenu);
         if(BuildConfig.PAID_APP_VERSION)
             getMenuInflater().inflate(R.menu.paid_theme_menu, overflowMenu);
         else
@@ -427,6 +448,45 @@ public class LiveLoggerActivity extends AppCompatActivity {
         setTheme(themeID);
     }
 
+    public void actionButtonAppSettings(View view) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        final View dialogView = getLayoutInflater().inflate(R.layout.theme_config, null);
+        dialog.setView(dialogView);
+        dialog.setIcon(R.drawable.settingsgears24);
+        dialog.setTitle( "Application Theme Configuration: ");
+        dialog.setPositiveButton( "Set Theme", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int whichBtn) {
+
+                int getSelectedOption = ((RadioGroup) dialogView.findViewById(R.id.themeRadioGroup)).getCheckedRadioButtonId();
+                String themeID = ((RadioButton) dialogView.findViewById(getSelectedOption)).getText().toString();
+                String themeDesc = themeID.substring("Theme: ".length());
+                setLocalTheme(themeDesc);
+
+                // store the theme setting for when the app reopens:
+                SharedPreferences sharedPrefs = getSharedPreferences(LiveLoggerActivity.TAG, Context.MODE_PRIVATE);
+                SharedPreferences.Editor spEditor = sharedPrefs.edit();
+                spEditor.putString("ThemeUI", themeDesc);
+                spEditor.commit();
+
+                // finally, apply the theme settings by (essentially) restarting the activity UI:
+                onCreate(localSavedInstanceState);
+                if(selectedThemeMenuItem != null) {
+                    selectedThemeMenuItem.setIcon(R.drawable.thememarker24);
+                }
+                appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("THEME", "New theme installed: " + themeDesc));
+
+            }
+
+        });
+        dialog.setNegativeButton( "Cancel", null);
+        dialog.show();
+    }
+
+    public boolean onOptionsItemSelectedHelper(View view) {
+        return onOptionsItemSelected((MenuItem) view);
+    }
+
     /**
      * Handles the new theme selections in the paid flavor of the app.
      * @param mitem
@@ -434,6 +494,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem mitem) {
+        //super.onOptionsItemSelected(mitem);
         String themeDesc = mitem.getTitle().toString().substring("Theme: ".length());
         setLocalTheme(themeDesc);
 
@@ -530,10 +591,25 @@ public class LiveLoggerActivity extends AppCompatActivity {
      * @ref LiveLoggerActivity.usbReaderCallback
      */
     public static String getSettingFromDevice(UsbSerialDevice cmPort, String query) {
-        ChameleonIO.DEVICE_RESPONSE = "0";
+        return getSettingFromDevice(cmPort, query, null);
+    }
+
+    /**
+     * Queries the Chameleon device with the query command and returns its response
+     * (sans the preceeding ascii status code).
+     * @param cmPort
+     * @param query
+     * @return String device response
+     * @ref ChameleonIO.DEVICE_RESPONSE
+     * @ref ChameleonIO.DEVICE_RESPONSE_CODE
+     * @ref LiveLoggerActivity.usbReaderCallback
+     */
+    public static String getSettingFromDevice(UsbSerialDevice cmPort, String query, String hint) {
+        ChameleonIO.DEVICE_RESPONSE = new String[1];
+        ChameleonIO.DEVICE_RESPONSE[0] = (hint == null) ? "0" : hint;
         ChameleonIO.LASTCMD = query;
         if(cmPort == null)
-            return ChameleonIO.DEVICE_RESPONSE;
+            return ChameleonIO.DEVICE_RESPONSE[0];
         ChameleonIO.WAITING_FOR_RESPONSE = true;
         ChameleonIO.SerialRespCode rcode = ChameleonIO.executeChameleonMiniCommand(cmPort, query, ChameleonIO.TIMEOUT);
         for(int i = 0; i < ChameleonIO.TIMEOUT / 50; i++) {
@@ -546,7 +622,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 break;
             }
         }
-        return ChameleonIO.DEVICE_RESPONSE;
+        return ChameleonIO.DEVICE_RESPONSE[0];
     }
 
     /**
@@ -666,10 +742,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 }
             }
             else if(ChameleonIO.WAITING_FOR_RESPONSE && ChameleonIO.isCommandResponse(liveLogData)) {
-                String strLogData = new String(liveLogData);
+                String[] strLogData = (new String(liveLogData)).split("[\n\r]+");
                 //Log.i(TAG, strLogData);
-                ChameleonIO.DEVICE_RESPONSE_CODE = strLogData.split("[\n\r]+")[0];
-                ChameleonIO.DEVICE_RESPONSE = strLogData.replace(ChameleonIO.DEVICE_RESPONSE_CODE, "").replaceAll("[\n\r]*", "");
+                ChameleonIO.DEVICE_RESPONSE_CODE = strLogData[0];
+                ChameleonIO.DEVICE_RESPONSE = Arrays.copyOfRange(strLogData, 1, strLogData.length);
                 if(ChameleonIO.EXPECTING_BINARY_DATA) {
                     int binaryBufSize = liveLogData.length - ChameleonIO.DEVICE_RESPONSE_CODE.length() - 2;
                     ChameleonIO.DEVICE_RESPONSE_BINARY = new byte[binaryBufSize];
@@ -847,6 +923,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_4K_7B", ChameleonIO.TIMEOUT);
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
+        }
+        else if(createCmd.equals("MF-DESFIRE-EV1-4K")) {
+            ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_DESFIRE_EV1_4K", ChameleonIO.TIMEOUT);
+            ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+            msgParam = "NOTE: You must use the firmware from https://github.com/maxieds/ChameleonMini to have the DESFire chip support enabled.";
         }
         else if(createCmd.equals("MFU-EV1-80B")) {
             ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_ULTRALIGHT_EV1_80B", ChameleonIO.TIMEOUT);
@@ -1095,7 +1176,20 @@ public class LiveLoggerActivity extends AppCompatActivity {
      */
     public void actionButtonRunCommand(View view) {
         String cmCmd = ((Button) view).getTag().toString();
-        ChameleonIO.executeChameleonMiniCommand(serialPort, cmCmd, ChameleonIO.TIMEOUT);
+        if(cmCmd.equals("DUMP_MFU")) {
+            ChameleonIO.DEVICE_RESPONSE[0] = Arrays.toString(ChameleonIO.DEVICE_RESPONSE);
+            ChameleonIO.DEVICE_RESPONSE[0] = ChameleonIO.DEVICE_RESPONSE[0].substring(1, ChameleonIO.DEVICE_RESPONSE[0].length() - 1);
+            String mfuBytes = getSettingFromDevice(serialPort, cmCmd);
+            mfuBytes = mfuBytes.replace(",", "");
+            mfuBytes = mfuBytes.replace("\n", "");
+            mfuBytes = mfuBytes.replace("\r", "");
+            String mfuBytesPrettyPrint = Utils.prettyPrintMFU(mfuBytes);
+            appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("DUMP_MFU", mfuBytesPrettyPrint));
+        }
+        else {
+            String rdata = getSettingFromDevice(serialPort, cmCmd);
+            appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord(cmCmd, rdata));
+        }
     }
 
     /**
@@ -1166,6 +1260,37 @@ public class LiveLoggerActivity extends AppCompatActivity {
      */
     public void actionButtonDumpMFU(View view) {
         ExportTools.saveBinaryDumpMFU("mfultralight");
+    }
+
+    /**
+     * Called to load the stock card images from stored in the res/raw/* directory.
+     * @param view
+     */
+    public void actionButtonCloneStockDumpImages(View view) {
+
+        String stockChipType = ((Button) view).getTag().toString();
+        String chipType;
+        int cardFilePath;
+        if(stockChipType.equals("MFC1K_RCFK")) {
+            chipType = "MF_CLASSIC_1K";
+            cardFilePath = R.raw.mfc1k_random_content_fixed_keys;
+        }
+        else if(stockChipType.equals("MFC4K_RCFK")) {
+            chipType = "MF_CLASSIC_4K";
+            cardFilePath = R.raw.mfc4k_random_content_fixed_keys;
+        }
+        else if(stockChipType.equals("MFC1K")) {
+            chipType = "MF_CLASSIC_1K";
+            cardFilePath = R.raw.mifare_classic_1k;
+        }
+        else {
+            chipType = "MF_ULTRALIGHT";
+            cardFilePath = R.raw.mifare_ultralight;
+        }
+        ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=" + chipType, ChameleonIO.TIMEOUT);
+        ExportTools.uploadCardFromRawByXModem(cardFilePath);
+        ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
+
     }
 
     /**

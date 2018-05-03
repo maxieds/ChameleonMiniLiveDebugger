@@ -25,9 +25,9 @@ android {
     defaultConfig {
         applicationId "com.maxieds.chameleonminilivedebugger"
         minSdkVersion 21
-        targetSdkVersion 25
-        versionCode 36
-        versionName "0.3.6"
+        targetSdkVersion 27
+        versionCode 37
+        versionName "0.3.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }

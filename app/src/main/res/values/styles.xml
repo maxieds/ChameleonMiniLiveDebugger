@@ -284,7 +284,7 @@
         <item name="android:drawableStart">@drawable/thememarker24</item>
         <item name="android:drawablePadding">5dp</item>
         <item name="android:maxHeight">0dp</item>
-
+        <item name="android:clickable">true</item>
     </style>
 
     <style name="MenuCheckedStyle" parent="Actionbar.PopupTheme">

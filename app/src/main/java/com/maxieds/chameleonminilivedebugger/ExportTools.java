@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
@@ -57,7 +58,7 @@ public class ExportTools {
      */
     public static int fileSize = 0;
     public static FileOutputStream streamDest;
-    public static FileInputStream streamSrc;
+    public static InputStream streamSrc;
     public static File outfile;
     private static String currentLogMode = "LIVE";
     private static boolean throwToLive = false;
@@ -349,25 +350,52 @@ public class ExportTools {
 
     /**
      * Called to initiate the card data upload process.
+     * @param rawResID
+     * @ref LiveLoggerActivity.actionButtonUploadCard
+     */
+    public static void uploadCardFromRawByXModem(int rawResID) {
+        try {
+            InputStream istream = LiveLoggerActivity.defaultContext.getResources().openRawResource(rawResID);
+            uploadCardFileByXModem(istream);
+        } catch(Exception ioe) {
+            String cardFilePath = LiveLoggerActivity.defaultContext.getResources().getResourceName(rawResID);
+            LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to open chosen resource \"" + cardFilePath + "\": " + ioe.getMessage()));
+            LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            return;
+        }
+    }
+
+    /**
+     * Called to initiate the card data upload process.
      * @param cardFilePath
      * @ref LiveLoggerActivity.actionButtonUploadCard
      */
     public static void uploadCardFileByXModem(String cardFilePath) {
-        if(LiveLoggerActivity.serialPort == null)
-            return;
-        LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusupload16);
         if(new File(cardFilePath).length() % XMODEM_BLOCK_SIZE != 0) {
             LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Invalid file size for the selected card file \"" + cardFilePath + "\". Aborting."));
             LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             return;
         }
         try {
-            streamSrc = new FileInputStream(cardFilePath);
+            InputStream istream = new FileInputStream(cardFilePath);
+            uploadCardFileByXModem(istream);
         } catch(IOException ioe) {
             LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to open chosen file \"" + cardFilePath + "\": " + ioe.getMessage()));
             LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             return;
         }
+    }
+
+    /**
+     * Called to initiate the card data upload process.
+     * @param cardInputStream
+     * @ref LiveLoggerActivity.actionButtonUploadCard
+     */
+    public static void uploadCardFileByXModem(InputStream cardInputStream) {
+        if(LiveLoggerActivity.serialPort == null || cardInputStream == null)
+            return;
+        LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusupload16);
+        streamSrc = cardInputStream;
         LiveLoggerActivity.serialPortLock.acquireUninterruptibly();
         ChameleonIO.WAITING_FOR_XMODEM = true;
         LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "READONLY=0");

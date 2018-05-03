@@ -13,8 +13,6 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.zip.Deflater;
 
-import static android.content.ContentValues.TAG;
-
 /**
  * <h1>Utils</h1>
  * Misc utility functions for the application.
@@ -239,6 +237,59 @@ public class Utils {
         } catch(NumberFormatException nfe) {
             return 0;
         }
+    }
+
+    /**
+     * Pretty prints the DUMP_MFU command output according to this link:
+     * https://www.manualslib.com/manual/815771/Advanced-Card-Acr122s.html?page=47#manual
+     * https://shop.sonmicro.com/Downloads/MIFAREULTRALIGHT-UM.pdf
+     * @param mfuBytes
+     * @return Pretty String Format of the MFU tag
+     */
+    public static String prettyPrintMFU(String mfuBytes) {
+        String pp = "PG | B0 B1 B2 B3 | LOCK AND/OR SPECIAL REGISTERS";
+        pp +=       "================================================";
+        for(int page = 0; page < mfuBytes.length(); page += 8) {
+            int pageNumber = page / 8;
+            byte[] pageData = Utils.hexString2Bytes(mfuBytes.substring(page, page + 8));
+            String specialRegs = "";
+            int lockBits = 0;
+            if(pageNumber == 0) {
+                specialRegs = "SN0-2:BCC0";
+            }
+            else if(pageNumber == 1) {
+                specialRegs = "SN3-6";
+            }
+            else if(pageNumber == 2) {
+                specialRegs = "BCC1:INT:LOCK0-1";
+                lockBits = (pageData[2] << 2) | pageData[3];
+            }
+            else if(pageNumber == 3) {
+                specialRegs = "OTP0-3";
+            }
+            else if(pageNumber >= 4 && pageNumber <= 15){
+                int lockBit = (1 << (15 - pageNumber)) & 0x0000 & lockBits;
+                specialRegs = (lockBit == 0) ? "UNLOCKED" : "NO ACCESS";
+            }
+            else if(pageNumber == 16) {
+                specialRegs = "CFG0";
+            }
+            else if(pageNumber == 17) {
+                specialRegs = "CFG1";
+            }
+            else if(pageNumber == 18) {
+                specialRegs = "PWD0-3";
+            }
+            else if(pageNumber == 19) {
+                specialRegs = "PACK0-1:RFU0-1";
+            }
+            else {
+                specialRegs = "ONE WAY CTRS";
+            }
+            String pageLine = String.format("% 2d | %02x %02x %02x %02x | [%s]\n", pageNumber, pageData[0], pageData[1], pageData[2], pageData[3]);
+            pp += pageLine;
+        }
+        return pp;
     }
 
 }
