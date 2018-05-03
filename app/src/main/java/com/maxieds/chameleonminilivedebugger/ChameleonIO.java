@@ -217,6 +217,20 @@ public class ChameleonIO {
             THRESHOLD = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "THRESHOLD?", String.format("%d", THRESHOLD)));
             TIMEOUT = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "TIMEOUT?", TIMEOUT);
             LiveLoggerActivity.serialPortLock.release();
+
+            // setup threshold signal bars:
+            double signalStrength = THRESHOLD / 4500.0;
+            if(signalStrength >= 0.80)
+                LiveLoggerActivity.runningActivity.setStatusIcon(R.id.signalStrength, R.drawable.signalbars5);
+            else if(signalStrength >= 0.60)
+                LiveLoggerActivity.runningActivity.setStatusIcon(R.id.signalStrength, R.drawable.signalbars4);
+            else if(signalStrength >= 0.40)
+                LiveLoggerActivity.runningActivity.setStatusIcon(R.id.signalStrength, R.drawable.signalbars3);
+            else if(signalStrength >= 0.20)
+                LiveLoggerActivity.runningActivity.setStatusIcon(R.id.signalStrength, R.drawable.signalbars2);
+            else
+                LiveLoggerActivity.runningActivity.setStatusIcon(R.id.signalStrength, R.drawable.signalbars1);
+
             return true;
         }
 

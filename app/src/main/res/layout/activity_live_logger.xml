@@ -128,6 +128,13 @@
                     android:paddingRight="2dp"
                     android:src="@drawable/statusdownload16" />
 
+                <ImageView
+                    android:id="@+id/signalStrength"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:paddingRight="2dp"
+                    android:src="@drawable/signalbars5" />
+
             </GridLayout>
 
             <TextView

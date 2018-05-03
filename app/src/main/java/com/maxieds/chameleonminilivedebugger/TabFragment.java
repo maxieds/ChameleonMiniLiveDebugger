@@ -46,6 +46,7 @@ public class TabFragment extends Fragment {
     public static final int TAB_LOG_TOOLS = 2;
     public static final int TAB_EXPORT = 3;
     public static final int TAB_SEARCH = 4;
+    public static final int TAB_APDU = 5;
 
     /**
      * Local tab-specific data stored by the class.
@@ -80,6 +81,9 @@ public class TabFragment extends Fragment {
                 break;
             case TAB_SEARCH:
                 fragment.layoutResRef = R.layout.search_tab;
+                break;
+            case TAB_APDU:
+                fragment.layoutResRef = R.layout.apdu_tab;
                 break;
             default:
                 break;
@@ -292,6 +296,25 @@ public class TabFragment extends Fragment {
             CompoundButtonCompat.setButtonTintList((CheckBox) view.findViewById(R.id.entrySearchAPDU), new ColorStateList(states, colors));
             CompoundButtonCompat.setButtonTintList((CheckBox) view.findViewById(R.id.entrySearchRawLogData), new ColorStateList(states, colors));
             CompoundButtonCompat.setButtonTintList((CheckBox) view.findViewById(R.id.entrySearchLogHeaders), new ColorStateList(states, colors));
+        }
+        else if(tabNumber == TAB_APDU) {
+            /*ApduUtils.buildFullInstructionsList();
+            ApduUtils.apduCmdListSpinnerAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, ApduUtils.fullInsDescList);
+            Spinner spinner = (Spinner) view.findViewById(R.id.apduCmdListSpinner);
+            spinner.setAdapter(ApduUtils.apduCmdListSpinnerAdapter);
+            final View localFinalView = view;
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                View localView = localFinalView;
+                String[] localSpinnerList = ApduUtils.fullInsDescList;
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    ApduUtils.apduTransceiveCmd = ApduUtils.fullInsList[i];
+                    ApduUtils.processNewCommandSelection(localView);
+                    //((Spinner) localView.findViewById(R.id.apduCmdListSpinner)).setSelection(0);
+                }
+                public void onNothingSelected(AdapterView<?> adapterView) {
+                    return;
+                }
+            });*/
         }
         return inflatedView;
     }

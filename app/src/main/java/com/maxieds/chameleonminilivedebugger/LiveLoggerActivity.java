@@ -66,6 +66,7 @@ import java.util.concurrent.Semaphore;
 
 import io.fabric.sdk.android.Fabric;
 
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_APDU;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_TOOLS;
@@ -283,6 +284,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
         clearStatusIcon(R.id.statusIconNewMsg);
         clearStatusIcon(R.id.statusIconNewXFer);
+        clearStatusIcon(R.id.signalStrength);
 
     }
 
@@ -338,6 +340,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_LOG_TOOLS)));
         tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_EXPORT)));
         tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_SEARCH)));
+        tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_APDU)));
         tabLayout.setupWithViewPager(viewPager);
 
         viewPager.setOffscreenPageLimit(TabFragmentPagerAdapter.TAB_COUNT - 1);
@@ -350,6 +353,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
         tabLayout.getTabAt(TAB_LOG_TOOLS).setIcon(R.drawable.logtools24);
         tabLayout.getTabAt(TAB_EXPORT).setIcon(R.drawable.insertbinary24);
         tabLayout.getTabAt(TAB_SEARCH).setIcon(R.drawable.binarysearch24v2);
+        tabLayout.getTabAt(TAB_APDU).setIcon(R.drawable.command24);
 
     }
 
@@ -1454,6 +1458,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
         String resultStr = String.format(Locale.ENGLISH, "Explored #%d logs in %4g seconds for a total of #%d matching records.",
                 logDataEntries.size(), diffSeconds, matchCount);
         searchResultsContainer.addView(LogEntryMetadataRecord.createDefaultEventRecord("SEARCH", resultStr).getLayoutContainer());
+    }
+
+    public void actionButtonApduCLA(View view) {
+        String CLA = ((Button) view).getText().toString();
+
     }
 
 }

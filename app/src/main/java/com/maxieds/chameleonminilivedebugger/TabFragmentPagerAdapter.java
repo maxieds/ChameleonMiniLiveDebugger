@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
 import android.view.View;
 
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_APDU;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_TOOLS;
@@ -27,13 +28,14 @@ public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
     /**
      * Stores the data for each tab (only one instance created at runtime).
      */
-    public static final int TAB_COUNT = 5;
+    public static final int TAB_COUNT = 6;
     public TabFragment[] tabFragments = {
             TabFragment.newInstance(TAB_LOG),
             TabFragment.newInstance(TAB_TOOLS),
             TabFragment.newInstance(TAB_LOG_TOOLS),
             TabFragment.newInstance(TAB_EXPORT),
             TabFragment.newInstance(TAB_SEARCH),
+            TabFragment.newInstance(TAB_APDU),
     };
     FragmentManager fm;
 
@@ -41,7 +43,7 @@ public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
      * Corresponding titles of each tab.
      */
     private String tabTitles[] = new String[]{
-            "Log", "Tools", "Log Tools", "Export", "Search",
+            "Log", "Tools", "Log Tools", "Export", "Search", "APDU",
     };
 
     /**
