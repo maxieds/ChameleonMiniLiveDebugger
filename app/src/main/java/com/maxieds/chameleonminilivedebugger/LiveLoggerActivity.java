@@ -1468,7 +1468,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     public void actionButtonApduClear(View view) {
         ApduUtils.apduTransceiveCmd.clear();
-        ((TextView) ((ScrollView) ApduUtils.tabView.findViewById(R.id.apduSearchResultsScrollView)).getChildAt(0)).setText("");
+        //((TextView) ((ScrollView) ApduUtils.tabView.findViewById(R.id.apduSearchResultsScrollView)).getChildAt(0)).setText("");
+        ((LinearLayout) ((ScrollView) ApduUtils.tabView.findViewById(R.id.apduSearchResultsScrollView)).getChildAt(0)).removeAllViewsInLayout();
         ApduUtils.updateAssembledAPDUCmd();
     }
 
@@ -1487,6 +1488,20 @@ public class LiveLoggerActivity extends AppCompatActivity {
         adbuilder.setView(apduCmdEntryFinal);
 
         adbuilder.setNegativeButton("Cancel", null);
+        adbuilder.setNeutralButton("Parse As Data Only", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String dataBytes = apduCmdEntryFinal.getText().toString().toLowerCase();
+                dataBytes.replaceAll("[ \n\t\r]*", ""); // remove whitespace
+                if (!Utils.stringIsHexadecimal(dataBytes)) {
+                    return;
+                }
+                ApduUtils.apduTransceiveCmd.setPayloadData(dataBytes);
+                ApduUtils.apduTransceiveCmd.computeLELCBytes();
+                ApduUtils.updateAssembledAPDUCmd();
+                dialog.dismiss();
+            }
+        });
         adbuilder.setPositiveButton("Parse Input", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -1537,14 +1552,30 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     public void actionButtonAPDUSearchCmd(View view) {
         String searchText = ((TextView) ApduUtils.tabView.findViewById(R.id.apduSearchText)).getText().toString().toLowerCase();
-        TextView tvSearchResults = (TextView) ((ScrollView) ApduUtils.tabView.findViewById(R.id.apduSearchResultsScrollView)).getChildAt(0);
+        //TextView tvSearchResults = (TextView) ((ScrollView) ApduUtils.tabView.findViewById(R.id.apduSearchResultsScrollView)).getChildAt(0);
+        LinearLayout layoutList = (LinearLayout) ((ScrollView) ApduUtils.tabView.findViewById(R.id.apduSearchResultsScrollView)).getChildAt(0);
         for(int cmd = 0; cmd < ApduUtils.fullInsList.length; cmd++) {
             String summaryStr = ApduUtils.fullInsList[cmd].getSummary();
             if(summaryStr.toLowerCase().contains(searchText)) {
-                tvSearchResults.append(" >> " + summaryStr + "\n");
+                //tvSearchResults.append(" >> " + summaryStr + "\n");
+                LinearLayout searchResult = (LinearLayout) LiveLoggerActivity.defaultInflater.inflate(R.layout.apdu_search_result, null);
+                String[] cmdDescParts = ApduUtils.fullInsList[cmd].apduCmdDesc.split("[\\(\\)]");
+                ((TextView) searchResult.findViewById(R.id.apduCmdDesc)).setText(cmdDescParts[0]);
+                if(cmdDescParts.length > 1)
+                     ((TextView) searchResult.findViewById(R.id.apduCmdStd)).setText(cmdDescParts[1]);
+                ((TextView) searchResult.findViewById(R.id.apduByteData)).setText(summaryStr.toLowerCase().split(" : ")[1]);
+                ((Button) searchResult.findViewById(R.id.copyCmdButton)).setTag(Integer.toString(cmd));
+                layoutList.addView(searchResult);
             }
         }
         ((TextView) ApduUtils.tabView.findViewById(R.id.apduSearchText)).setHint("Search by Text or Byte Strings ...");
+    }
+
+    public void actionButtonAPDUCopyCmd(View view) {
+        String tagIndex = ((Button) view).getTag().toString();
+        int apduCmdIndex = Integer.valueOf(tagIndex);
+        ApduUtils.apduTransceiveCmd = ApduUtils.fullInsList[apduCmdIndex];
+        ApduUtils.updateAssembledAPDUCmd();
     }
 
 }

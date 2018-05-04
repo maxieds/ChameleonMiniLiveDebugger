@@ -301,10 +301,13 @@ public class TabFragment extends Fragment {
             ApduUtils.buildFullInstructionsList();
             ApduUtils.tabView = inflatedView;
             ScrollView sv = (ScrollView) inflatedView.findViewById(R.id.apduSearchResultsScrollView);
-            TextView tvSearchResults = new TextView(inflatedView.getContext());
-            tvSearchResults.setTextSize((float) 10.0);
-            tvSearchResults.setTypeface(Typeface.MONOSPACE);
-            sv.addView(tvSearchResults);
+            //TextView tvSearchResults = new TextView(inflatedView.getContext());
+            //tvSearchResults.setTextSize((float) 10.0);
+            //tvSearchResults.setTypeface(Typeface.MONOSPACE);
+            //sv.addView(tvSearchResults);
+            LinearLayout searchResultsContainer = new LinearLayout(LiveLoggerActivity.runningActivity);
+            searchResultsContainer.setOrientation(LinearLayout.VERTICAL);
+            sv.addView(searchResultsContainer);
         }
         return inflatedView;
     }
