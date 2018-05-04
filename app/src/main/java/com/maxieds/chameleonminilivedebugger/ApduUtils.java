@@ -203,10 +203,19 @@ public class ApduUtils {
             clear();
         }
 
+        public void computeLELCBytes() {
+            LE = String.format("%02x", payloadData.length() / 2);
+            LC = (payloadData.length() == 0) ? "" : "000000";
+        }
+
         public void setPayloadData(String byteString) {
             payloadData = byteString.replaceAll("[ \n\r\t:.]*", "");
             if(payloadData.length() % 2 == 1)
                 payloadData = "0" + payloadData;
+        }
+
+        public String getPayloadData() {
+            return payloadData;
         }
 
         public byte[] assembleAPDU() {
@@ -220,7 +229,7 @@ public class ApduUtils {
                 LC = "000000";
             }
             apduCommand += LE + payloadData + LC;
-            return Utils.hexString2Bytes(apduCommand);
+            return Utils.hexString2Bytes(apduCommand.replaceAll("x", "0")); // zero fill the x-marker bits
         }
 
         public String assembleAPDUString() {
@@ -234,12 +243,12 @@ public class ApduUtils {
                 LC = "000000";
             }
             apduCommand += LE + payloadData + LC;
-            return apduCommand;
+            return apduCommand.replaceAll("x", "0"); // zero fill the x-marker bits
         }
 
         public void clear() {
-            CLA = INS = P1 = P2 = LE = LC = payloadData = "xx";
-            apduCmdDesc = "";
+            CLA = INS = P1 = P2 = LE = LC = "xx";
+            apduCmdDesc = payloadData = "";
         }
 
         public void loadFromStringArray(String[] apduSpec) {

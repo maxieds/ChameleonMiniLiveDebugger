@@ -92,19 +92,21 @@
         <Button
             style="@style/GridButtons"
             android:drawableLeft="@drawable/enterdata24"
-            android:onClick="actionButtonApduClear"
+            android:onClick="actionButtonApduManualDataEntry"
             android:text="ENTER DATA" />
 
         <Button
             style="@style/GridButtons"
             android:drawableLeft="@drawable/idcard3"
-            android:onClick="actionButtonSendAPDU"
+            android:onClick="actionButtonGetBits"
+            android:tag="UID"
             android:text="CLONE UID BITS" />
 
         <Button
             style="@style/GridButtons"
             android:drawableLeft="@drawable/randombytes24"
-            android:onClick="actionButtonSendAPDU"
+            android:onClick="actionButtonGetBits"
+            android:tag="RANDOM"
             android:text="RANDOM BYTES" />
 
     </GridLayout>
@@ -165,7 +167,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?colorAccent"
-            android:paddingLeft="2dp"
+            android:paddingLeft="5dp"
             android:paddingRight="2dp"
             android:text="INS: "
             android:textAllCaps="true"
@@ -190,7 +192,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?colorAccent"
-            android:paddingLeft="2dp"
+            android:paddingLeft="5dp"
             android:paddingRight="2dp"
             android:text="P1: "
             android:textAllCaps="true"
@@ -215,7 +217,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?colorAccent"
-            android:paddingLeft="2dp"
+            android:paddingLeft="5dp"
             android:paddingRight="2dp"
             android:text="P2: "
             android:textAllCaps="true"
@@ -240,7 +242,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?colorAccent"
-            android:paddingLeft="2dp"
+            android:paddingLeft="5dp"
             android:paddingRight="2dp"
             android:singleLine="true"
             android:text="PAYLOAD DATA: "
@@ -352,6 +354,7 @@
 
     <ScrollView
         android:id="@+id/apduSearchResultsScrollView"
+        android:backgroundTint="?colorAccent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="bottom"

@@ -24,6 +24,7 @@ import android.provider.OpenableColumns;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.design.widget.TabLayout;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -1469,6 +1470,62 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public void actionButtonApduClear(View view) {
         ApduUtils.apduTransceiveCmd.clear();
         ((TextView) ((ScrollView) ApduUtils.tabView.findViewById(R.id.apduSearchResultsScrollView)).getChildAt(0)).setText("");
+        ApduUtils.updateAssembledAPDUCmd();
+    }
+
+    public void actionButtonApduManualDataEntry(View view) {
+
+        AlertDialog.Builder adbuilder = new AlertDialog.Builder(this);
+        adbuilder.setTitle("Set APDU Command Components: ");
+        String instrMsg = "Enter the APDU command components manually into the following box. ";
+        instrMsg += "The bytes are in hexadecimal in the following order: CLA | INS | P1 | P2 | [LE] | DATA | [LC]. ";
+        instrMsg += "Note that the LE/LC fields should not be included and will be calculated based on your input later.";
+        adbuilder.setMessage(instrMsg);
+
+        TextInputLayout tilAPDUCmdEntry = new TextInputLayout(this);
+        tilAPDUCmdEntry.setHint(ApduUtils.apduTransceiveCmd.assembleAPDUString());
+        tilAPDUCmdEntry.setHintAnimationEnabled(true);
+        final TextInputLayout tilAPDUCmdEntryFinal = tilAPDUCmdEntry;
+        adbuilder.setView(tilAPDUCmdEntryFinal);
+
+        adbuilder.setNegativeButton("Cancel", null);
+        adbuilder.setPositiveButton("Parse Input", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String dataBytes = tilAPDUCmdEntryFinal.getEditText().toString().toLowerCase();
+                dataBytes.replaceAll("[ \n\t\r]*", ""); // remove whitespace
+                if(!Utils.stringIsHexadecimal(dataBytes) || dataBytes.length() < 8) {
+                    return;
+                }
+                ApduUtils.apduTransceiveCmd.CLA = dataBytes.substring(0, 1);
+                ApduUtils.apduTransceiveCmd.INS = dataBytes.substring(2, 3);
+                ApduUtils.apduTransceiveCmd.P1 = dataBytes.substring(4, 5);
+                ApduUtils.apduTransceiveCmd.P2 = dataBytes.substring(6, 7);
+                if(dataBytes.length() >= 9) {
+                    ApduUtils.apduTransceiveCmd.setPayloadData(dataBytes.substring(8, -1));
+                }
+                ApduUtils.apduTransceiveCmd.computeLELCBytes();
+                ApduUtils.updateAssembledAPDUCmd();
+                dialog.dismiss();
+            }
+        });
+        adbuilder.show();
+
+    }
+
+    public void actionButtonGetBits(View view) {
+        String action = ((Button) view).getTag().toString();
+        String dataBytesStr = new String();
+        if(action.equals("UID") && serialPort != null) {
+            dataBytesStr = ChameleonIO.deviceStatus.UID;
+        }
+        else if(action.equals("RANDOM")) {
+            if(ChameleonIO.deviceStatus.UIDSIZE == 0)
+                dataBytesStr = Utils.bytes2Hex(Utils.getRandomBytes(7));
+            else
+                dataBytesStr = Utils.bytes2Hex(Utils.getRandomBytes(ChameleonIO.deviceStatus.UIDSIZE));
+        }
+        ApduUtils.apduTransceiveCmd.setPayloadData(dataBytesStr);
         ApduUtils.updateAssembledAPDUCmd();
     }
 
