@@ -308,6 +308,42 @@
         android:layout_height="2dp"
         android:background="?colorPrimaryDark" />
 
+    <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:rowCount="1"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/apduSearchText"
+            android:layout_width="400dp"
+            android:layout_height="48dp"
+            android:layout_gravity="right"
+            android:background="?colorAccent"
+            android:hint="Search by Text or Byte Strings ..."
+            android:paddingLeft="1dp"
+            android:singleLine="true"
+            android:textAllCaps="true"
+            android:textSize="14sp"
+            android:textStyle="normal" />
+
+        <Button
+            android:background="?colorAccent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/searchapdu24"
+            android:drawablePadding="0dp"
+            android:onClick="actionButtonAPDUSearchCmd"
+            android:text="" />
+
+    </GridLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
+
     <ScrollView
         android:id="@+id/apduSearchResultsScrollView"
         android:layout_width="match_parent"

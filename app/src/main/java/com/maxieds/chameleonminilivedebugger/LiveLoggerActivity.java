@@ -1469,4 +1469,16 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     public void actionButtonSendAPDU(View view) {}
 
+    public void actionButtonAPDUSearchCmd(View view) {
+        String searchText = ((TextView) ApduUtils.tabView.findViewById(R.id.apduSearchText)).getText().toString().toLowerCase();
+        TextView tvSearchResults = (TextView) ((ScrollView) ApduUtils.tabView.findViewById(R.id.apduSearchResultsScrollView)).getChildAt(0);
+        for(int cmd = 0; cmd < ApduUtils.fullInsList.length; cmd++) {
+            String summaryStr = ApduUtils.fullInsList[cmd].getSummary();
+            if(summaryStr.toLowerCase().contains(searchText)) {
+                tvSearchResults.append(" >> " + summaryStr + "\n");
+            }
+        }
+        ((TextView) ApduUtils.tabView.findViewById(R.id.apduSearchText)).setHint("Search by Text or Byte Strings ...");
+    }
+
 }

@@ -223,7 +223,8 @@ public class ApduUtils {
         }
 
         public void clear() {
-            CLA = INS = P1 = P2 = LE = LC = payloadData = apduCmdDesc = null;
+            CLA = INS = P1 = P2 = LE = LC = payloadData = "xx";
+            apduCmdDesc = "";
         }
 
         public void loadFromStringArray(String[] apduSpec) {
@@ -262,6 +263,11 @@ public class ApduUtils {
         @Override
         public int compareTo(APDUCommandData apdu) {
             return apdu.apduCmdDesc.compareTo(apduCmdDesc);
+        }
+
+        public String getSummary() {
+            String sstr = String.format("% 40s : %s %s %s %s %s", apduCmdDesc, CLA, INS, P1, P2, LE);
+            return sstr;
         }
 
     }
