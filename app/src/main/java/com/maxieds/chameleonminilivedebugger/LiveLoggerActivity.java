@@ -24,7 +24,6 @@ import android.provider.OpenableColumns;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.design.widget.TabLayout;
-import android.support.design.widget.TextInputLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -1482,27 +1481,26 @@ public class LiveLoggerActivity extends AppCompatActivity {
         instrMsg += "Note that the LE/LC fields should not be included and will be calculated based on your input later.";
         adbuilder.setMessage(instrMsg);
 
-        TextInputLayout tilAPDUCmdEntry = new TextInputLayout(this);
-        tilAPDUCmdEntry.setHint(ApduUtils.apduTransceiveCmd.assembleAPDUString());
-        tilAPDUCmdEntry.setHintAnimationEnabled(true);
-        final TextInputLayout tilAPDUCmdEntryFinal = tilAPDUCmdEntry;
-        adbuilder.setView(tilAPDUCmdEntryFinal);
+        EditText apduCmdEntry = new EditText(this);
+        apduCmdEntry.setHint(ApduUtils.apduTransceiveCmd.assembleAPDUString());
+        final EditText apduCmdEntryFinal = apduCmdEntry;
+        adbuilder.setView(apduCmdEntryFinal);
 
         adbuilder.setNegativeButton("Cancel", null);
         adbuilder.setPositiveButton("Parse Input", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String dataBytes = tilAPDUCmdEntryFinal.getEditText().toString().toLowerCase();
+                String dataBytes = apduCmdEntryFinal.getText().toString().toLowerCase();
                 dataBytes.replaceAll("[ \n\t\r]*", ""); // remove whitespace
                 if(!Utils.stringIsHexadecimal(dataBytes) || dataBytes.length() < 8) {
                     return;
                 }
-                ApduUtils.apduTransceiveCmd.CLA = dataBytes.substring(0, 1);
-                ApduUtils.apduTransceiveCmd.INS = dataBytes.substring(2, 3);
-                ApduUtils.apduTransceiveCmd.P1 = dataBytes.substring(4, 5);
-                ApduUtils.apduTransceiveCmd.P2 = dataBytes.substring(6, 7);
+                ApduUtils.apduTransceiveCmd.CLA = dataBytes.substring(0, 2);
+                ApduUtils.apduTransceiveCmd.INS = dataBytes.substring(2, 4);
+                ApduUtils.apduTransceiveCmd.P1 = dataBytes.substring(4, 6);
+                ApduUtils.apduTransceiveCmd.P2 = dataBytes.substring(6, 8);
                 if(dataBytes.length() >= 9) {
-                    ApduUtils.apduTransceiveCmd.setPayloadData(dataBytes.substring(8, -1));
+                    ApduUtils.apduTransceiveCmd.setPayloadData(dataBytes.substring(8, dataBytes.length()));
                 }
                 ApduUtils.apduTransceiveCmd.computeLELCBytes();
                 ApduUtils.updateAssembledAPDUCmd();
