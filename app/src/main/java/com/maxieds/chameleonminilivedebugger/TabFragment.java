@@ -302,6 +302,8 @@ public class TabFragment extends Fragment {
             ApduUtils.tabView = inflatedView;
             ScrollView sv = (ScrollView) inflatedView.findViewById(R.id.apduSearchResultsScrollView);
             TextView tvSearchResults = new TextView(inflatedView.getContext());
+            tvSearchResults.setTextSize((float) 10.0);
+            tvSearchResults.setTypeface(Typeface.MONOSPACE);
             sv.addView(tvSearchResults);
         }
         return inflatedView;

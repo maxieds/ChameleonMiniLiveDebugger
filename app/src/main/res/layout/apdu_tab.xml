@@ -149,6 +149,7 @@
             android:textStyle="bold|italic" />
 
         <TextView
+            android:id="@+id/apduCLA"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
@@ -172,6 +173,7 @@
             android:textStyle="bold|italic" />
 
         <TextView
+            android:id="@+id/apduINS"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
@@ -196,6 +198,7 @@
             android:textStyle="bold|italic" />
 
         <TextView
+            android:id="@+id/apduP1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
@@ -220,6 +223,7 @@
             android:textStyle="bold|italic" />
 
         <TextView
+            android:id="@+id/apduP2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
@@ -245,6 +249,7 @@
             android:textStyle="bold|italic" />
 
         <TextView
+            android:id="@+id/apduPayloadData"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
@@ -309,6 +314,7 @@
         android:background="?colorPrimaryDark" />
 
     <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:background="?colorAccent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:columnCount="2"
@@ -322,7 +328,7 @@
             android:layout_gravity="right"
             android:background="?colorAccent"
             android:hint="Search by Text or Byte Strings ..."
-            android:paddingLeft="1dp"
+            android:paddingLeft="5dp"
             android:singleLine="true"
             android:textAllCaps="true"
             android:textSize="14sp"
@@ -333,7 +339,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/searchapdu24"
-            android:drawablePadding="0dp"
+            android:drawablePadding="5dp"
             android:onClick="actionButtonAPDUSearchCmd"
             android:text="" />
 

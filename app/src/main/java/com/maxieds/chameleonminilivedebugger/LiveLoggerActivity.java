@@ -1461,13 +1461,24 @@ public class LiveLoggerActivity extends AppCompatActivity {
     }
 
     public void actionButtonApduCLA(View view) {
-        String CLA = ((Button) view).getText().toString();
-
+        String CLA = ((Button) view).getTag().toString();
+        ApduUtils.apduTransceiveCmd.CLA = CLA;
+        ApduUtils.updateAssembledAPDUCmd();
     }
 
-    public void actionButtonApduClear(View view) {}
+    public void actionButtonApduClear(View view) {
+        ApduUtils.apduTransceiveCmd.clear();
+        ((TextView) ((ScrollView) ApduUtils.tabView.findViewById(R.id.apduSearchResultsScrollView)).getChildAt(0)).setText("");
+        ApduUtils.updateAssembledAPDUCmd();
+    }
 
-    public void actionButtonSendAPDU(View view) {}
+    public void actionButtonSendAPDU(View view) {
+        String apduCmd = ApduUtils.apduTransceiveCmd.assembleAPDUString();
+        String chameleonCmd = "SEND " + apduCmd;
+        String respData = getSettingFromDevice(serialPort, chameleonCmd);
+        String logMsg = String.format("Sent %s as %s ... \nResponse: %s", ApduUtils.apduTransceiveCmd.apduCmdDesc, apduCmd, respData);
+        appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("APDU", logMsg));
+    }
 
     public void actionButtonAPDUSearchCmd(View view) {
         String searchText = ((TextView) ApduUtils.tabView.findViewById(R.id.apduSearchText)).getText().toString().toLowerCase();

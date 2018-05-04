@@ -1,6 +1,7 @@
 package com.maxieds.chameleonminilivedebugger;
 
 import android.view.View;
+import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -222,6 +223,20 @@ public class ApduUtils {
             return Utils.hexString2Bytes(apduCommand);
         }
 
+        public String assembleAPDUString() {
+            String apduCommand = CLA + INS + P1 + P2;
+            if(payloadData.length() == 0) {
+                LE = "00";
+                LC = "";
+            }
+            else {
+                LE = String.format("%02x", payloadData.length() / 2);
+                LC = "000000";
+            }
+            apduCommand += LE + payloadData + LC;
+            return apduCommand;
+        }
+
         public void clear() {
             CLA = INS = P1 = P2 = LE = LC = payloadData = "xx";
             apduCmdDesc = "";
@@ -266,13 +281,15 @@ public class ApduUtils {
         }
 
         public String getSummary() {
-            String sstr = String.format("% 40s : %s %s %s %s %s", apduCmdDesc, CLA, INS, P1, P2, LE);
+            int numRHSSpaces = 45 - apduCmdDesc.length();
+            String formatResp = "%s" + String.format("%" + numRHSSpaces + "s", "") + " : %s %s %s %s %s";
+            String sstr = String.format(formatResp, apduCmdDesc, CLA, INS, P1, P2, LE);
             return sstr;
         }
 
     }
 
-    public static APDUCommandData apduTransceiveCmd;
+    public static APDUCommandData apduTransceiveCmd = new APDUCommandData();
     public static APDUCommandData[] fullInsList;
     public static String[] fullInsDescList;
     public static View tabView;
@@ -299,8 +316,13 @@ public class ApduUtils {
         //Arrays.sort(fullInsList);
     }
 
-    public static void processNewCommandSelection(View tabView) {
-
+    public static void updateAssembledAPDUCmd() {
+        ((TextView) tabView.findViewById(R.id.apduCLA)).setText(apduTransceiveCmd.CLA);
+        ((TextView) tabView.findViewById(R.id.apduINS)).setText(apduTransceiveCmd.INS);
+        ((TextView) tabView.findViewById(R.id.apduP1)).setText(apduTransceiveCmd.P1);
+        ((TextView) tabView.findViewById(R.id.apduP2)).setText(apduTransceiveCmd.P2);
+        String payloadDataText = apduTransceiveCmd.payloadData.equals("") ? "NONE" : apduTransceiveCmd.payloadData;
+        ((TextView) tabView.findViewById(R.id.apduPayloadData)).setText(payloadDataText);
     }
 
 }
