@@ -1561,8 +1561,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 LinearLayout searchResult = (LinearLayout) LiveLoggerActivity.defaultInflater.inflate(R.layout.apdu_search_result, null);
                 String[] cmdDescParts = ApduUtils.fullInsList[cmd].apduCmdDesc.split("[\\(\\)]");
                 ((TextView) searchResult.findViewById(R.id.apduCmdDesc)).setText(cmdDescParts[0]);
-                if(cmdDescParts.length > 1)
-                     ((TextView) searchResult.findViewById(R.id.apduCmdStd)).setText(cmdDescParts[1]);
+                //if(cmdDescParts.length > 1)
+                //     ((TextView) searchResult.findViewById(R.id.apduCmdStd)).setText(cmdDescParts[1]);
                 ((TextView) searchResult.findViewById(R.id.apduByteData)).setText(summaryStr.toLowerCase().split(" : ")[1]);
                 ((Button) searchResult.findViewById(R.id.copyCmdButton)).setTag(Integer.toString(cmd));
                 layoutList.addView(searchResult);

@@ -6,18 +6,22 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <LinearLayout
+    <RelativeLayout
+        android:background="?colorAccentHighlight"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="0dp"
+        android:weightSum="1"
         android:orientation="horizontal">
 
         <TextView
             android:id="@+id/apduCmdDesc"
             android:layout_width="wrap_content"
+            android:maxLength="20"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
-            android:layout_weight="0.35"
+            android:layout_weight="0.50"
+            android:layout_alignParentLeft="true"
             android:drawableLeft="@drawable/apdubullet16"
             android:drawablePadding="5dp"
             android:background="?colorAccentHighlight"
@@ -30,27 +34,13 @@
             android:typeface="monospace" />
 
         <TextView
-            android:id="@+id/apduCmdStd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:layout_weight="0.25"
-            android:background="?colorAccentHighlight"
-            android:paddingLeft="3dp"
-            android:paddingRight="3dp"
-            android:singleLine="true"
-            android:text=""
-            android:textAllCaps="true"
-            android:textSize="12.5sp"
-            android:textStyle="normal"
-            android:typeface="monospace" />
-
-        <TextView
             android:id="@+id/apduByteData"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_weight="0"
+            android:layout_weight="0.40"
+            android:gravity="center_vertical|right"
+            android:layout_toRightOf="@id/apduCmdDesc"
+            android:layout_toLeftOf="@id/copyCmdButton"
             android:background="?colorAccentHighlight"
             android:paddingLeft="3dp"
             android:paddingRight="3dp"
@@ -64,21 +54,24 @@
         <Button
             android:id="@+id/copyCmdButton"
             android:layout_height="wrap_content"
+            android:layout_weight="0.10"
             android:minHeight="0dp"
             android:layout_width="wrap_content"
             android:layout_gravity="right"
             android:padding="0dp"
             android:layout_marginTop="0dp"
             android:layout_marginBottom="0dp"
+            android:layout_margin="0dp"
+            android:layout_alignParentRight="true"
             android:drawableLeft="@drawable/copysquare16"
             android:background="?colorAccentHighlight"
             android:textAllCaps="true"
             android:textSize="12.5sp"
             android:textStyle="normal"
             android:onClick="actionButtonAPDUCopyCmd"
-            android:text="COPY CMD" />
+            android:text="COPY" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
