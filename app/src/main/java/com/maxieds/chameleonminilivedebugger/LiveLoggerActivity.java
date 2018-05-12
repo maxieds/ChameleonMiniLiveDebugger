@@ -189,6 +189,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
             String msgParam = "An unknown error happened in the app. Please upgrade to the latest version if a newer one is available, or ";
             msgParam += "contact the developer at maxieds@gmail.com to report whatever action you took to generate this error!";
             appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("UNRECOGNIZED EXCEPTION", msgParam));
+            System.exit(-1);
         }
     };
 
@@ -201,11 +202,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         // fix bug where the tabs are blank when the application is relaunched:
+        super.onCreate(savedInstanceState); // should fix most of the crashes in the ANR report on Play Store
+        if(!BuildConfig.DEBUG)
+            Fabric.with(this, new Crashlytics());
         if(runningActivity == null || !isTaskRoot()) {
-            super.onCreate(savedInstanceState);
             Thread.setDefaultUncaughtExceptionHandler(unCaughtExceptionHandler);
-            if(!BuildConfig.DEBUG)
-                Fabric.with(this, new Crashlytics());
         }
         if(!isTaskRoot()) {
             Log.w(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
