@@ -1,5 +1,6 @@
 # Chameleon Mini Live Debugger
 
+```
   _____ _                          _                  __  __ _       _ 
  / ____| |                        | |                |  \/  (_)     (_)
 | |    | |__   __ _ _ __ ___   ___| | ___  ___  _ __ | \  / |_ _ __  _ 
@@ -15,6 +16,7 @@
                                              __/ | __/ |          
                                             |___/ |___/           
 
+```
 
 ![](https://user-images.githubusercontent.com/22165688/35208704-a1ebdc68-ff17-11e7-8fde-291c89ff61bd.png)
 
