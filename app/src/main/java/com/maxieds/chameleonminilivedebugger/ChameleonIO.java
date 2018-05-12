@@ -183,6 +183,7 @@ public class ChameleonIO {
          */
         public String CONFIG;
         public String UID;
+        public String LASTUID = "00000000000000";
         public int UIDSIZE;
         public int MEMSIZE;
         public int LOGSIZE;
@@ -248,17 +249,7 @@ public class ChameleonIO {
             LiveLoggerActivity.serialPortLock.release();
 
             // setup threshold signal bars:
-            double signalStrength = THRESHOLD / 4500.0;
-            if (signalStrength >= 0.80)
-                LiveLoggerActivity.runningActivity.setStatusIcon(R.id.signalStrength, R.drawable.signalbars5);
-            else if (signalStrength >= 0.60)
-                LiveLoggerActivity.runningActivity.setStatusIcon(R.id.signalStrength, R.drawable.signalbars4);
-            else if (signalStrength >= 0.40)
-                LiveLoggerActivity.runningActivity.setStatusIcon(R.id.signalStrength, R.drawable.signalbars3);
-            else if (signalStrength >= 0.20)
-                LiveLoggerActivity.runningActivity.setStatusIcon(R.id.signalStrength, R.drawable.signalbars2);
-            else
-                LiveLoggerActivity.runningActivity.setStatusIcon(R.id.signalStrength, R.drawable.signalbars1);
+            LiveLoggerActivity.setSignalStrengthIndicator(THRESHOLD);
 
             return true;
         }

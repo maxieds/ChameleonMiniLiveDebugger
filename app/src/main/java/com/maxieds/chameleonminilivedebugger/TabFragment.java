@@ -268,10 +268,12 @@ public class TabFragment extends Fragment {
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
                     int nextThreshold = seekBar.getProgress();
+                    LiveLoggerActivity.setSignalStrengthIndicator(nextThreshold);
                     ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "THRESHOLD=" + String.valueOf(nextThreshold), ChameleonIO.TIMEOUT);
                     ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
                 }
             });
+            LiveLoggerActivity.setSignalStrengthIndicator(thresholdSeekbar.getProgress());
 
             NumberPicker settingsNumberPicker = (NumberPicker) view.findViewById(R.id.settingsNumberPicker);
             settingsNumberPicker.setDividerThickness(1);

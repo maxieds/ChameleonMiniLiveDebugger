@@ -431,6 +431,16 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public void actionButtonAppSettings(View view) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         final View dialogView = getLayoutInflater().inflate(R.layout.theme_config, null);
+        if(!BuildConfig.FLAVOR.equals("paid")) { // restore the "bonus" for upgrading to the paid flavor:
+            ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonAtlanta)).setEnabled(false);
+            ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonBlack)).setEnabled(false);
+            ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonChocolate)).setEnabled(false);
+            ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonGoldenrod)).setEnabled(false);
+            ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonLightblue)).setEnabled(false);
+            ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonPurple)).setEnabled(false);
+            ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonUrbanaDesfire)).setEnabled(false);
+            ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonWinter)).setEnabled(false);
+        }
         dialog.setView(dialogView);
         dialog.setIcon(R.drawable.settingsgears24);
         dialog.setTitle( "Application Theme Configuration: ");
@@ -929,6 +939,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
             return;
         }
         else if(createCmd.equals("RANDOM UID")) {
+            ChameleonIO.deviceStatus.LASTUID = ChameleonIO.deviceStatus.UID;
             String uidCmd = ChameleonIO.REVE_BOARD ? "uidmy=" : "UID=";
             byte[] randomBytes = Utils.getRandomBytes(ChameleonIO.deviceStatus.UIDSIZE);
             String sendCmd = uidCmd + Utils.bytes2Hex(randomBytes).replace(" ", "");
@@ -1081,6 +1092,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public void actionButtonModifyUID(View view) {
         if(ChameleonIO.deviceStatus.UID == null || ChameleonIO.deviceStatus.UID.equals("DEVICE UID") || ChameleonIO.deviceStatus.UID.equals("NO UID."))
             return;
+        ChameleonIO.deviceStatus.LASTUID = ChameleonIO.deviceStatus.UID;
         String uidAction = ((Button) view).getTag().toString();
         byte[] uid = Utils.hexString2Bytes(ChameleonIO.deviceStatus.UID);
         int uidSize = uid.length - 1;
@@ -1101,6 +1113,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
             byte[] nextUID = new byte[uid.length];
             System.arraycopy(uid, 0, nextUID, 1, uid.length - 1);
             uid = nextUID;
+        }
+        else if(uidAction.equals("LAST_UID")) {
+            uid = Utils.hexString2Bytes(ChameleonIO.deviceStatus.LASTUID);
+            ChameleonIO.deviceStatus.LASTUID = ChameleonIO.deviceStatus.UID;
         }
         String uidCmd = ChameleonIO.REVE_BOARD ? "uidmy" : "UID";
         getSettingFromDevice(serialPort, String.format(Locale.ENGLISH, "%s=%s", uidCmd, Utils.bytes2Hex(uid).replace(" ", "")));
@@ -1610,6 +1626,20 @@ public class LiveLoggerActivity extends AppCompatActivity {
         int apduCmdIndex = Integer.valueOf(tagIndex);
         ApduUtils.apduTransceiveCmd = ApduUtils.fullInsList[apduCmdIndex];
         ApduUtils.updateAssembledAPDUCmd();
+    }
+
+    public static void setSignalStrengthIndicator(int threshold) {
+        double signalStrength = threshold / 4500.0;
+        if (signalStrength >= 0.80)
+            LiveLoggerActivity.runningActivity.setStatusIcon(R.id.signalStrength, R.drawable.signalbars5);
+        else if (signalStrength >= 0.60)
+            LiveLoggerActivity.runningActivity.setStatusIcon(R.id.signalStrength, R.drawable.signalbars4);
+        else if (signalStrength >= 0.40)
+            LiveLoggerActivity.runningActivity.setStatusIcon(R.id.signalStrength, R.drawable.signalbars3);
+        else if (signalStrength >= 0.20)
+            LiveLoggerActivity.runningActivity.setStatusIcon(R.id.signalStrength, R.drawable.signalbars2);
+        else
+            LiveLoggerActivity.runningActivity.setStatusIcon(R.id.signalStrength, R.drawable.signalbars1);
     }
 
 }

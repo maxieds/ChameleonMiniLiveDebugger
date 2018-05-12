@@ -95,7 +95,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="2dp"
                 android:background="?deviceStatusBarBackgroundColor"
-                android:columnCount="4"
+                android:columnCount="5"
                 android:paddingLeft="0dp"
                 android:layout_marginLeft="1dp"
                 android:rowCount="1">

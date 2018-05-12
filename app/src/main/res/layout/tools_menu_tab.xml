@@ -155,6 +155,13 @@
 
                 <Button
                     style="@style/GridButtons"
+                    android:drawableLeft="@drawable/uidlast24"
+                    android:onClick="actionButtonModifyUID"
+                    android:tag="LAST_UID"
+                    android:text="LAST UID" />
+
+                <Button
+                    style="@style/GridButtons"
                     android:drawableLeft="@drawable/user24v1"
                     android:onClick="actionButtonModifyUID"
                     android:tag="INCREMENT_RIGHT"
@@ -194,10 +201,6 @@
                     android:onClick="actionButtonModifyUID"
                     android:tag="SHIFT_LEFT"
                     android:text="UID >>> 4" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:text="" />
 
             </GridLayout>
 
@@ -537,7 +540,7 @@
                     android:background="?colorAccentLog"
                     android:drawableLeft="@drawable/ellipsisbracket"
                     android:drawablePadding="11dp"
-                    android:hint="01 23 45 67 89 ab cd ef"
+                    android:hint="01 23 45 67 89 ab cd ef (data field entry)"
                     android:paddingLeft="5dp" />
 
                 <Button
