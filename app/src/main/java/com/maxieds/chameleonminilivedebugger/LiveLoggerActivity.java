@@ -48,6 +48,7 @@ import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
@@ -105,6 +106,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public static SpinnerAdapter spinnerLButtonLongAdapter;
     public static SpinnerAdapter spinnerLEDRedAdapter;
     public static SpinnerAdapter spinnerLEDGreenAdapter;
+    public static SpinnerAdapter spinnerButtonMyAdapter;
     public static SpinnerAdapter spinnerLogModeAdapter;
     public static SpinnerAdapter spinnerCmdShellAdapter;
     public static MenuItem selectedThemeMenuItem;
@@ -595,6 +597,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 int deviceVID = device.getVendorId();
                 int devicePID = device.getProductId();
                 if(deviceVID == ChameleonIO.CMUSB_VENDORID && devicePID == ChameleonIO.CMUSB_PRODUCTID) {
+                    ChameleonIO.REVE_BOARD = false;
+                    connection = usbManager.openDevice(device);
+                    break;
+                }
+                else if(deviceVID == ChameleonIO.CMUSB_REVE_VENDORID && devicePID == ChameleonIO.CMUSB_REVE_PRODUCTID) {
+                    ChameleonIO.REVE_BOARD = true;
                     connection = usbManager.openDevice(device);
                     break;
                 }
@@ -740,7 +748,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
                         R.id.LButtonSpinner,
                         R.id.LButtonLongSpinner,
                         R.id.LEDRedSpinner,
-                        R.id.LEDGreenSpinner
+                        R.id.LEDGreenSpinner,
+                        R.id.ButtonMyRevEBoardSpinner
                 };
                 String[] queryCmds = {
                         "RBUTTON?",
@@ -748,7 +757,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
                         "LBUTTON?",
                         "LBUTTON_LONG?",
                         "LEDRED?",
-                        "LEDGREEN?"
+                        "LEDGREEN?",
+                        "buttonmy?"
                 };
                 for (int i = 0; i < spinnerIDs.length; i++) {
                     Log.i(TAG, queryCmds[i]);
@@ -756,6 +766,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     String deviceSetting = getSettingFromDevice(LiveLoggerActivity.serialPort, queryCmds[i]);
                     curSpinner.setSelection(((ArrayAdapter<String>) curSpinner.getAdapter()).getPosition(deviceSetting));
                 }
+                // handle FIELD and READ-ONLY switches:
+                String fieldSetting = getSettingFromDevice(LiveLoggerActivity.serialPort, "FIELD?");
+                ((Switch) findViewById(R.id.fieldOnOffSwitch)).setChecked(fieldSetting.equals("0") ? false : true);
+                String roQueryCmd = ChameleonIO.REVE_BOARD ? "readonlymy?" : "READONLY?";
+                String roSetting = getSettingFromDevice(LiveLoggerActivity.serialPort, roQueryCmd);
+                ((Switch) findViewById(R.id.readonlyOnOffSwitch)).setChecked(roSetting.equals("0") ? false : true);
         }
 
     }
@@ -847,17 +863,26 @@ public class LiveLoggerActivity extends AppCompatActivity {
             return;
         }
         else if(createCmd.equals("ULTRALIGHT")) {
-            ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_ULTRALIGHT", ChameleonIO.TIMEOUT);
+            if(!ChameleonIO.REVE_BOARD)
+                 ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_ULTRALIGHT", ChameleonIO.TIMEOUT);
+            else
+                 ChameleonIO.executeChameleonMiniCommand(serialPort, "configmy=MF_ULTRALIGHT", ChameleonIO.TIMEOUT);
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }
         else if(createCmd.equals("CLASSIC-1K")) {
-            ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_1K", ChameleonIO.TIMEOUT);
+            if(!ChameleonIO.REVE_BOARD)
+                 ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_1K", ChameleonIO.TIMEOUT);
+            else
+                ChameleonIO.executeChameleonMiniCommand(serialPort, "configmy=MF_CLASSIC_1K", ChameleonIO.TIMEOUT);
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }
         else if(createCmd.equals("CLASSIC-4K")) {
-            ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_4K", ChameleonIO.TIMEOUT);
+            if(!ChameleonIO.REVE_BOARD)
+                 ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_4K", ChameleonIO.TIMEOUT);
+            else
+                 ChameleonIO.executeChameleonMiniCommand(serialPort, "configmy=MF_CLASSIC_4K", ChameleonIO.TIMEOUT);
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }
@@ -887,12 +912,15 @@ public class LiveLoggerActivity extends AppCompatActivity {
             return;
         }
         else if(createCmd.equals("CFGNONE")) {
-            ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=NONE", ChameleonIO.TIMEOUT);
+            if(!ChameleonIO.REVE_BOARD)
+                 ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=NONE", ChameleonIO.TIMEOUT);
+            else
+                 ChameleonIO.executeChameleonMiniCommand(serialPort, "configmy=NONE", ChameleonIO.TIMEOUT);
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }
-        else if(createCmd.equals("RESET")) { // need to re-establish the usb connection:
-            ChameleonIO.executeChameleonMiniCommand(serialPort, "RESET", ChameleonIO.TIMEOUT);
+        else if(createCmd.equals("RESET") || createCmd.equals("resetmy")) { // need to re-establish the usb connection:
+            ChameleonIO.executeChameleonMiniCommand(serialPort, createCmd, ChameleonIO.TIMEOUT);
             ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
             closeSerialPort(serialPort);
             configureSerialPort(null, usbReaderCallback);
@@ -900,8 +928,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
             return;
         }
         else if(createCmd.equals("RANDOM UID")) {
+            String uidCmd = ChameleonIO.REVE_BOARD ? "uidmy=" : "UID=";
             byte[] randomBytes = Utils.getRandomBytes(ChameleonIO.deviceStatus.UIDSIZE);
-            String sendCmd = "UID=" + Utils.bytes2Hex(randomBytes).replace(" ", "");
+            String sendCmd = uidCmd + Utils.bytes2Hex(randomBytes).replace(" ", "");
             ChameleonIO.executeChameleonMiniCommand(serialPort, sendCmd, ChameleonIO.TIMEOUT);
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
         }
@@ -924,7 +953,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
             msgParam = "SYSTICK Millis := " + getSettingFromDevice(serialPort, "SYSTICK?");
         }
         else if(createCmd.equals("GETUID")) {
-            String rParam = getSettingFromDevice(serialPort, "GETUID");
+            String queryCmd = ChameleonIO.REVE_BOARD ? "uidmy?" : "GETUID";
+            String rParam = getSettingFromDevice(serialPort, queryCmd);
             msgParam = "GETUID: " + rParam;
         }
         else if(createCmd.equals("SEND") || createCmd.equals("SEND_RAW")) {
@@ -1071,7 +1101,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
             System.arraycopy(uid, 0, nextUID, 1, uid.length - 1);
             uid = nextUID;
         }
-        getSettingFromDevice(serialPort, String.format(Locale.ENGLISH, "UID=%s", Utils.bytes2Hex(uid).replace(" ", "")));
+        String uidCmd = ChameleonIO.REVE_BOARD ? "uidmy" : "UID";
+        getSettingFromDevice(serialPort, String.format(Locale.ENGLISH, "%s=%s", uidCmd, Utils.bytes2Hex(uid).replace(" ", "")));
         ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
         appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("UID", "Next device UID set to " + Utils.bytes2Hex(uid).replace(" ", ":")));
     }
@@ -1327,8 +1358,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
             ExportTools.downloadByXModem("LOGDOWNLOAD", "devicelog", false);
         else if(action.equals("LOGDOWNLOAD2LIVE"))
             ExportTools.downloadByXModem("LOGDOWNLOAD", "devicelog", true);
-        else if(action.equals("DOWNLOAD"))
-            ExportTools.downloadByXModem("DOWNLOAD", "carddata-" + ChameleonIO.deviceStatus.CONFIG, false);
+        else if(action.equals("DOWNLOAD")) {
+            String dldCmd = ChameleonIO.REVE_BOARD ? "downloadmy" : "DOWNLOAD";
+            ExportTools.downloadByXModem(dldCmd, "carddata-" + ChameleonIO.deviceStatus.CONFIG, false);
+        }
     }
 
     /**

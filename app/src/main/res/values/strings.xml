@@ -99,6 +99,17 @@
         <item>LOGMEM_FULL</item>
     </string-array>
 
+    <string-array name="ButtonMyRevEBoards">
+        <item>BUTTON_REVE</item>
+        <item>NONE</item>
+        <item>RANDOM_UID</item>
+        <item>UID_LEFT_INCREMENT</item>
+        <item>UID_RIGHT_INCREMENT</item>
+        <item>UID_LEFT_DECREMENT</item>
+        <item>UID_RIGHT_DECREMENT</item>
+        <item>SWITCHCARD</item>
+    </string-array>
+
     <string-array name="LogModeOptions">
         <item>LIVE</item>
         <item>MEMORY</item>
@@ -106,7 +117,7 @@
     </string-array>
 
     <string-array name="FullCommandList">
-        <item>--Advanced Chameleon Shell--</item>
+        <item>--Advanced Chameleon Shell (RevG)--</item>
         <item>CLEAR</item>
         <item>RANDOM UID</item>
         <item>RECALL</item>

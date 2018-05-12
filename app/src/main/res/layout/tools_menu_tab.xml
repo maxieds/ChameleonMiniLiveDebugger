@@ -112,9 +112,46 @@
 
                 <Button
                     style="@style/GridButtons"
+                    android:text="" />
+
+            </GridLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/uididentifier16"
+                android:drawablePadding="5dp"
+                android:singleLine="true"
+                android:text="Set UID configurations:"
+                android:textAllCaps="true"
+                android:textStyle="bold|italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="3"
+                android:padding="2dp"
+                android:rowCount="10">
+
+                <Button
+                    style="@style/GridButtons"
                     android:drawableLeft="@drawable/programmer2"
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="RANDOM UID" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/usericon24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="GETUID" />
 
                 <Button
                     style="@style/GridButtons"
@@ -158,6 +195,10 @@
                     android:tag="SHIFT_LEFT"
                     android:text="UID >>> 4" />
 
+                <Button
+                    style="@style/GridButtons"
+                    android:text="" />
+
             </GridLayout>
 
             <TextView
@@ -167,7 +208,7 @@
                 android:drawableLeft="@drawable/hashmark16"
                 android:drawablePadding="5dp"
                 android:singleLine="true"
-                android:text="Run global device commands: "
+                android:text="Run global and reader commands (RevE and RevG): "
                 android:textAllCaps="true"
                 android:textStyle="bold|italic" />
 
@@ -193,9 +234,29 @@
 
                 <Button
                     style="@style/GridButtons"
+                    android:drawableLeft="@drawable/reset24v2"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="resetmy" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/clearmy24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="clearmy"
+                    android:text="clearmy" />
+
+                <Button
+                    style="@style/GridButtons"
                     android:drawableLeft="@drawable/rssi24"
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="RSSI?" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/rssimy24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="rssimy"
+                    android:text="rssimy" />
 
                 <Button
                     style="@style/GridButtons"
@@ -211,6 +272,12 @@
 
                 <Button
                     style="@style/GridButtons"
+                    android:drawableLeft="@drawable/versionmy24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="versionmy?" />
+
+                <Button
+                    style="@style/GridButtons"
                     android:drawableLeft="@drawable/logclear24"
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="LOGCLEAR" />
@@ -220,39 +287,6 @@
                     android:drawableLeft="@drawable/logstore24"
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="LOGSTORE" />
-
-
-            </GridLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="?colorPrimaryDark" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?colorPrimaryDarkLog"
-                android:drawableLeft="@drawable/hashmark16"
-                android:drawablePadding="5dp"
-                android:singleLine="true"
-                android:text="Run reader device commands: "
-                android:textAllCaps="true"
-                android:textStyle="bold|italic" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="?colorPrimaryDark" />
-
-            <GridLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="1dp"
-                android:background="?colorAccentLog"
-                android:columnCount="3"
-                android:padding="2dp"
-                android:rowCount="10">
 
                 <Button
                     style="@style/GridButtons"
@@ -265,12 +299,6 @@
                     android:drawableLeft="@drawable/broadcastantenna24"
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="SEND_RAW" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/usericon24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="GETUID" />
 
                 <Button
                     style="@style/GridButtons"
@@ -291,6 +319,21 @@
                     android:onClick="actionButtonRunCommand"
                     android:tag="AUTOCALIBRATE"
                     android:text="AUTOCAL" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/fingerprint"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="detectionmy"
+                    android:text="detectmy" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:text="" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:text="" />
 
             </GridLayout>
 
@@ -530,7 +573,7 @@
 
                 <Spinner
                     android:id="@+id/FullCmdListSpinner"
-                    android:layout_width="300dp"
+                    android:layout_width="350dp"
                     android:layout_height="30dp"
                     android:layout_weight="1"
                     android:entries="@array/FullCommandList"
@@ -727,6 +770,30 @@
                     android:popupBackground="?colorAccentHighlight"
                     android:spinnerMode="dialog"
                     android:tag="LBUTTON_LONG=" />
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/buttonmy24" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="4dp"
+                    android:text="(REVE)"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/ButtonMyRevEBoardSpinner"
+                    android:layout_width="250dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:entries="@array/ButtonMyRevEBoards"
+                    android:gravity="right|center_vertical"
+                    android:popupBackground="?colorAccentHighlight"
+                    android:spinnerMode="dialog"
+                    android:tag="buttonmy=" />
 
                 <ImageView
                     android:layout_width="30dp"
