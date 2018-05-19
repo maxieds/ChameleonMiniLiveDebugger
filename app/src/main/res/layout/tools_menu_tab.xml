@@ -112,7 +112,9 @@
 
                 <Button
                     style="@style/GridButtons"
-                    android:text="" />
+                    android:drawableLeft="@drawable/configq24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="LIST CONFIG" />
 
             </GridLayout>
 

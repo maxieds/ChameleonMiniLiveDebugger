@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:background="?colorAccentHighlight"
         android:drawableLeft="@drawable/phonebubble24"
-        android:layout_marginLeft="3.5dp"
+        android:drawablePadding="3dp"
         android:textAllCaps="true"
         android:textStyle="bold" />
 

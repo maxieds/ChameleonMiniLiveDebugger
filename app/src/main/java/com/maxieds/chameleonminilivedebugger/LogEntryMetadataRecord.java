@@ -122,6 +122,7 @@ public class LogEntryMetadataRecord extends LogEntryBase {
         prefixIconMap.put("DUMP_MFU", R.drawable.phonebubble24);
         prefixIconMap.put("APDU", R.drawable.sendarrow24v2);
         prefixIconMap.put("CLONE", R.drawable.clone);
+        prefixIconMap.put("CONFIG?", R.drawable.configq24);
     }
 
     /**

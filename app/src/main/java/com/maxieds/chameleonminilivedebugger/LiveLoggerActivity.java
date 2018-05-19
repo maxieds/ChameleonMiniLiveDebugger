@@ -961,6 +961,15 @@ public class LiveLoggerActivity extends AppCompatActivity {
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }
+        else if(createCmd.equals("LIST CONFIG")) {
+            if(!ChameleonIO.REVE_BOARD)
+                msgParam = getSettingFromDevice(serialPort, "CONFIG=?");
+            else
+                msgParam = getSettingFromDevice(serialPort, "configmy");
+            msgParam = " => " + msgParam;
+            msgParam = msgParam.replaceAll(",", "\n => ");
+            createCmd = "CONFIG?";
+        }
         else if(createCmd.equals("RESET") || createCmd.equals("resetmy")) { // need to re-establish the usb connection:
             ChameleonIO.executeChameleonMiniCommand(serialPort, createCmd, ChameleonIO.TIMEOUT);
             ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);

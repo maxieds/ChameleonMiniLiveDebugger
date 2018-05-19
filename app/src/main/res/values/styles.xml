@@ -241,15 +241,16 @@
 
     <style name="ActionBarTheme" parent="Base.Theme.AppCompat.Light.DarkActionBar">
         <item name="logo">?actionBarLeftLogoIcon</item>
+        <item name="android:drawablePadding">10dp</item>
         <item name="android:background">?actionBarBackgroundColor</item>
         <item name="android:textColorPrimary">#ffffff</item>
         <item name="android:textColor">#ffffff</item>
-        <item name="android:textSize">6sp</item>
+        <item name="android:textSize">10sp</item>
         <item name="android:subtitleTextColor">#dcdcdc</item>
-        <item name="android:contentInsetEnd">0dp</item>
-        <item name="android:contentInsetStart">0dp</item>
-        <item name="android:contentInsetLeft">0dp</item>
-        <item name="android:titleMarginStart">5dp</item>
+        <item name="android:contentInsetEnd">5dp</item>
+        <item name="android:contentInsetStart">7dp</item>
+        <item name="android:contentInsetLeft">7dp</item>
+        <item name="android:titleMarginStart">15dp</item>
         <item name="android:titleTextStyle">@style/Actionbar.TitleText</item>
         <item name="android:actionOverflowMenuStyle">@style/Actionbar.PopupTheme</item>
         <item name="android:subtitleTextStyle">@style/Actionbar.TitleText</item>

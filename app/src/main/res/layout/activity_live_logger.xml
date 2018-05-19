@@ -63,7 +63,7 @@
                 android:layout_weight="0.53"
                 android:background="?deviceStatusBarBackgroundColor"
                 android:gravity="right"
-                android:text="MEM / LOG / DIP#"
+                android:text="MEM / LOG / LOGMODE / REVEG"
                 android:textColor="?deviceStatusBarTextColor"
                 android:textSize="10sp"
                 android:textStyle="normal|italic" />
@@ -85,7 +85,7 @@
                 android:layout_height="wrap_content"
                 android:background="?deviceStatusBarBackgroundColor"
                 android:gravity="right"
-                android:text="RO / FLD1 / NOCHRG"
+                android:text="DIP# / RO / FLD1 / NOCHRG"
                 android:textColor="?deviceStatusBarTextColor"
                 android:textSize="10sp"
                 android:textStyle="normal|italic" />

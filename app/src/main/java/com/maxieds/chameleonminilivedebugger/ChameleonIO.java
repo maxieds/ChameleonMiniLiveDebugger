@@ -189,6 +189,7 @@ public class ChameleonIO {
         public String CONFIG;
         public String UID;
         public String LASTUID = "00000000000000";
+        public String LOGMODE = "NONE";
         public int UIDSIZE;
         public int MEMSIZE;
         public int LOGSIZE;
@@ -230,6 +231,7 @@ public class ChameleonIO {
                 UID = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "UID?", UID);
                 UIDSIZE = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "UIDSIZE?", String.format("%d", UIDSIZE)));
                 MEMSIZE = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "MEMSIZE?", String.format("%d", MEMSIZE)));
+                LOGMODE = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "LOGMODE?", String.format("%d", LOGSIZE)).replaceAll(" \\(.*\\)", "");
                 LOGSIZE = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "LOGMEM?", String.format("%d", LOGSIZE)).replaceAll(" \\(.*\\)", ""));
                 DIP_SETTING = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "SETTING?", String.format("%d", DIP_SETTING)));
                 READONLY = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "READONLY?", String.format("%d", READONLY ? 1 : 0)).equals("1");
@@ -243,6 +245,7 @@ public class ChameleonIO {
                 UID = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "uidmy?", UID);
                 UIDSIZE = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "uidsizemy?", String.format("%d",UIDSIZE)));
                 MEMSIZE = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "memsizemy?", String.format("%d",MEMSIZE)));
+                LOGMODE = "NONE";
                 LOGSIZE = 0;
                 DIP_SETTING = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "settingmy?", String.format("%d", DIP_SETTING)));
                 READONLY = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "readonlymy?", String.format("%d", READONLY ? 1 : 0)).equals("1");
@@ -278,9 +281,9 @@ public class ChameleonIO {
             if (!UID.equals("NO UID."))
                 formattedUID = UID.replaceAll("..(?!$)", "$0:");
             ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceConfigUID)).setText(Utils.trimString(formattedUID, "DEVICE CONFIGURATION".length()));
-            String subStats1 = String.format(Locale.ENGLISH, "MEM-%dK/LOG-%dK/DIP#%d/REV%s", round(MEMSIZE / 1024), round(LOGSIZE / 1024), DIP_SETTING, ChameleonIO.REVE_BOARD ? "E" : "G");
+            String subStats1 = String.format(Locale.ENGLISH, "MEM-%dK/LMEM-%dK/LMD-%s/REV%s", round(MEMSIZE / 1024), round(LOGSIZE / 1024), LOGMODE, ChameleonIO.REVE_BOARD ? "E" : "G");
             ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceStats1)).setText(subStats1);
-            String subStats2 = String.format(Locale.ENGLISH, "%s/FLD-%d/%sCHRG", READONLY ? "RO" : "RW", FIELD ? 1 : 0, CHARGING ? "" : "NO-");
+            String subStats2 = String.format(Locale.ENGLISH, "DIP#%d/%s/FLD-%d/%sCHRG", DIP_SETTING, READONLY ? "RO" : "RW", FIELD ? 1 : 0, CHARGING ? "+" : "NO-");
             ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceStats2)).setText(subStats2);
             String subStats3 = String.format(Locale.ENGLISH, "THRS-%d mv/TMT-%s", THRESHOLD, TIMEOUT);
             ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceStats3)).setText(subStats3);
