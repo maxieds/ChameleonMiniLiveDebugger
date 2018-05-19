@@ -556,6 +556,12 @@ public class ExportTools {
      */
     public static boolean cloneBinaryDumpMFU(byte[] dataBytes) {
 
+        if(dataBytes.length % 4 != 0) { // realign array:
+            int dbPadding = (4 - (dataBytes.length % 4)) % 4;
+            byte[] fullDataBytes = new byte[dataBytes.length + dbPadding];
+            System.arraycopy(dataBytes, 0, fullDataBytes, 0, dataBytes.length);
+            dataBytes = fullDataBytes;
+        }
         ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "CONFIG=MF_ULTRALIGHT", ChameleonIO.TIMEOUT);
         ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
         for(int page = 0; page < dataBytes.length; page += 4) {
@@ -566,7 +572,7 @@ public class ExportTools {
                     (byte) (page / 4), // P2
             };
             byte[] apduSendBytesData = new byte[4];
-            System.arraycopy(dataBytes, 4 * page, apduSendBytesData, 4, 4);
+            System.arraycopy(dataBytes, page, apduSendBytesData, 0, 4);
             int sendBytesHdr = Utils.bytes2Integer32(apduSendBytesHdr);
             int sendBytesData = Utils.bytes2Integer32(apduSendBytesData);
             String chameleonCmd = String.format("SEND %08x%08x", sendBytesHdr, sendBytesData);

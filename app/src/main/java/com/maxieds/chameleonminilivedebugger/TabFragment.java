@@ -26,8 +26,6 @@ import com.shawnlin.numberpicker.NumberPicker;
 
 import java.util.Locale;
 
-import static android.content.ContentValues.TAG;
-
 /**
  * <h1>Tab Fragment</h1>
  * Implements a Fragment for individual tab data in the application.
@@ -36,6 +34,8 @@ import static android.content.ContentValues.TAG;
  * @since   12/31/17
  */
 public class TabFragment extends Fragment {
+
+    private static final String TAG = TabFragment.class.getSimpleName();
 
     /**
      * Definitions of the in-order tab indices.
@@ -216,6 +216,8 @@ public class TabFragment extends Fragment {
             LinearLayout logDataFeed = LiveLoggerActivity.logDataFeed;
             logDataFeed.setOrientation(LinearLayout.VERTICAL);
             logScroller.addView(logDataFeed);
+            logScroller.setFillViewport(true);
+            LiveLoggerActivity.logScrollView = logScroller;
             LiveLoggerActivity.logDataFeed = logDataFeed;
             LiveLoggerActivity.logDataFeedConfigured = true;
         }

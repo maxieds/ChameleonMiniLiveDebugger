@@ -100,6 +100,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
     public static List<LogEntryBase> logDataEntries = new ArrayList<LogEntryBase>();
     public static int RECORDID = 0;
     public static boolean logDataFeedConfigured = false;
+    public static ScrollView logScrollView;
     public static SpinnerAdapter spinnerRButtonAdapter;
     public static SpinnerAdapter spinnerRButtonLongAdapter;
     public static SpinnerAdapter spinnerLButtonAdapter;
@@ -137,6 +138,26 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
         logDataFeed.addView(logEntry.getLayoutContainer());
         logDataEntries.add(logEntry);
+        if(logEntry instanceof LogEntryMetadataRecord) { // switch to the log tab to display the results:
+            Log.i(TAG, String.format("LogEntryMetaData record height: %d", logEntry.getLayoutContainer().getHeight()));
+            TabLayout tabLayout = (TabLayout) LiveLoggerActivity.runningActivity.findViewById(R.id.tab_layout);
+            tabLayout.getTabAt(TAB_LOG).select();
+            if(logScrollView != null) {
+                logScrollView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        ScrollView logScroller = (ScrollView) LiveLoggerActivity.runningActivity.findViewById(R.id.log_scroll_view);
+                        //int bottomEltHeight = LiveLoggerActivity.logDataFeed.getChildAt(LiveLoggerActivity.logDataFeed.getChildCount() - 1).getHeight();
+                        LinearLayout lastLogElt = (LinearLayout) logDataFeed.getChildAt(logDataFeed.getChildCount() - 1);
+                        lastLogElt.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                        int bottomEltHeight = lastLogElt.getMeasuredHeight();
+                        Log.i(TAG, String.format("ScrollView bottom element height = %d + getBottom() = %d", bottomEltHeight, logScroller.getBottom()));
+                        logScroller.scrollTo(0, logScroller.getBottom() + bottomEltHeight);
+                        //logScroller.fullScroll(View.FOCUS_DOWN);
+                    }
+                }, 250);
+            }
+        }
     }
 
     /**
@@ -202,8 +223,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         // fix bug where the tabs are blank when the application is relaunched:
-        super.onCreate(savedInstanceState); // should fix most of the crashes in the ANR report on Play Store
         if(runningActivity == null || !isTaskRoot()) {
+            super.onCreate(savedInstanceState); // should fix most of the crashes in the ANR report on Play Store
             if(!BuildConfig.DEBUG) {
                 Log.w(TAG, "Loading crashlytics");
                 Fabric.with(this, new Crashlytics());
@@ -585,7 +606,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 break;
             }
         }
-        return ChameleonIO.DEVICE_RESPONSE[0];
+        String retValue = ChameleonIO.DEVICE_RESPONSE[0];
+        if(retValue.equals("201:INVALID COMMAND USAGE")) {
+            retValue += " (Are you in READER mode?)";
+        }
+        return retValue;
     }
 
     /**
@@ -981,7 +1006,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Input to send to card must be a _single hexadecimal_ byte!"));
                 return;
             }
-            msgParam = "Card Response (if any): " + getSettingFromDevice(serialPort, createCmd + " " + bytesToSend);
+            msgParam = "Card Response (if any): \n" + getSettingFromDevice(serialPort, createCmd + " " + bytesToSend);
         }
         else if(createCmd.equals("AUTOCAL")) {
             msgParam = getSettingFromDevice(serialPort, "AUTOCALIBRATE");
@@ -1600,9 +1625,15 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
     public void actionButtonSendAPDU(View view) {
         String apduCmd = ApduUtils.apduTransceiveCmd.assembleAPDUString();
-        String chameleonCmd = "SEND " + apduCmd;
-        String respData = getSettingFromDevice(serialPort, chameleonCmd);
-        String logMsg = String.format("Sent %s as %s ... \nResponse: %s", ApduUtils.apduTransceiveCmd.apduCmdDesc, apduCmd, respData);
+        String logMsg = String.format("Sent %s as %s ... \n", ApduUtils.apduTransceiveCmd.apduCmdDesc, apduCmd);
+        for(int b = 0; b < apduCmd.length(); b += 2) {
+            String apduByte = apduCmd.substring(b, b + 2);
+            String chameleonCmd = "SEND_RAW " + apduByte;
+            String respData = getSettingFromDevice(serialPort, chameleonCmd);
+            logMsg += String.format(" %s => Response: %s", apduByte, respData);
+            if (b + 2 < apduCmd.length())
+                logMsg += "\n";
+        }
         appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("APDU", logMsg));
     }
 

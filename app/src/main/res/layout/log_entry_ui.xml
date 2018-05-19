@@ -5,7 +5,10 @@
     style="@style/LogDataUITheme"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_marginLeft="0.5dp"
+    android:layout_marginRight="0.5dp"
+    android:orientation="vertical"
+    >
 
     <LinearLayout
         android:layout_width="fill_parent"

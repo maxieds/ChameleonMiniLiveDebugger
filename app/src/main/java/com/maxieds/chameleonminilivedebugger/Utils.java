@@ -261,11 +261,17 @@ public class Utils {
      * @return Pretty String Format of the MFU tag
      */
     public static String prettyPrintMFU(String mfuBytes) {
-        String pp = "PG | B0 B1 B2 B3 | LOCK AND/OR SPECIAL REGISTERS";
-        pp +=       "================================================";
+        String pp = " PG | B0 B1 B2 B3 | LOCK AND/OR SPECIAL REGISTERS\n";
+        pp +=       "=================================================\n";
         for(int page = 0; page < mfuBytes.length(); page += 8) {
             int pageNumber = page / 8;
-            byte[] pageData = Utils.hexString2Bytes(mfuBytes.substring(page, page + 8));
+            Log.i(TAG, String.format("prettyPrintMFU: page#% 2d, page=% 2d", pageNumber, page));
+            byte[] pageData = Utils.hexString2Bytes(mfuBytes.substring(page, Math.min(page + 8, mfuBytes.length()) - 1));
+            if(pageData.length < 4) {
+                byte[] pageDataResized = new byte[4];
+                System.arraycopy(pageData, 0, pageDataResized, 0, pageData.length);
+                pageData = pageDataResized;
+            }
             String specialRegs = "";
             int lockBits = 0;
             if(pageNumber == 0) {
@@ -300,7 +306,9 @@ public class Utils {
             else {
                 specialRegs = "ONE WAY CTRS";
             }
-            String pageLine = String.format("% 2d | %02x %02x %02x %02x | [%s]\n", pageNumber, pageData[0], pageData[1], pageData[2], pageData[3]);
+            String pageLine = String.format(" % 2d | %02x %02x %02x %02x | [%s]", pageNumber, pageData[0], pageData[1], pageData[2], pageData[3], specialRegs);
+            if(page + 4 < mfuBytes.length())
+                pageLine += "\n";
             pp += pageLine;
         }
         return pp;
