@@ -313,8 +313,16 @@
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/find24"
-                    android:onClick="actionButtonCreateNewEvent"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="IDENTIFY"
                     android:text="IDENTIFY" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/clone"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="CLONE"
+                    android:text="CLONE TAG" />
 
                 <Button
                     style="@style/GridButtons"
@@ -329,10 +337,6 @@
                     android:onClick="actionButtonRunCommand"
                     android:tag="detectionmy"
                     android:text="detectmy" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:text="" />
 
                 <Button
                     style="@style/GridButtons"

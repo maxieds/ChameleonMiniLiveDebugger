@@ -2,6 +2,7 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.os.Handler;
 import android.os.SystemClock;
+import android.util.Log;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -16,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.FALSE;
 import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.OK;
-import static java.lang.Math.min;
 import static java.lang.Math.round;
 
 /**
@@ -31,7 +31,6 @@ public class ChameleonIO {
 
     private static final String TAG = ChameleonIO.class.getSimpleName();
 
-
     /**
      * Chameleon Mini USB device ID information (hex codes).
      */
@@ -44,7 +43,7 @@ public class ChameleonIO {
     /**
      * Default timeout to use when communicating with the device.
      */
-    public static final int TIMEOUT = 2000;
+    public static int TIMEOUT = 3000;
     public static final int LOCK_TIMEOUT = 350;
 
     /**
@@ -124,12 +123,14 @@ public class ChameleonIO {
          * @ref ChameleonIO.isCommandResponse
          */
         public static final Map<String, SerialRespCode> RESP_CODE_TEXT_MAP = new HashMap<>();
+        public static final Map<String, SerialRespCode> RESP_CODE_TEXT_MAP2 = new HashMap<>();
 
         static {
             for (SerialRespCode respCode : values()) {
                 String rcode = String.valueOf(respCode.toInteger());
                 String rcodeText = respCode.name().replace("_", " ");
                 RESP_CODE_TEXT_MAP.put(rcode + ":" + rcodeText, respCode);
+                RESP_CODE_TEXT_MAP2.put(rcode, respCode);
             }
         }
 
@@ -163,12 +164,16 @@ public class ChameleonIO {
      * @ref LiveLoggerActivity.usbReaderCallback
      */
     public static boolean isCommandResponse(byte[] liveLogData) {
+        Log.i(TAG, "liveLogData: " + new String(liveLogData));
         String respText = new String(liveLogData).split("[\n\r]+")[0];
         String[] respText2 = new String(liveLogData).split("=");
-        if (SerialRespCode.RESP_CODE_TEXT_MAP.get(respText) != null)
+        if(SerialRespCode.RESP_CODE_TEXT_MAP.get(respText) != null)
             return true;
-        else if (respText2.length >= 2 && SerialRespCode.RESP_CODE_TEXT_MAP.get(LASTCMD.replace(respText2[1].substring(0, min(respText2[1].length(), LiveLoggerActivity.USB_DATA_BITS)), "")) != null)
-            return false;
+        respText = new String(liveLogData).split(":")[0];
+        if(respText.length() >= 3 && SerialRespCode.RESP_CODE_TEXT_MAP2.get(respText.substring(respText.length() - 3)) != null)
+            return true;
+        //else if (respText2.length >= 2 && SerialRespCode.RESP_CODE_TEXT_MAP.get(LASTCMD.replace(respText2[1].substring(0, min(respText2[1].length(), LiveLoggerActivity.USB_DATA_BITS)), "")) != null)
+        //    return false;
         return false;
     }
 

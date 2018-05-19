@@ -155,7 +155,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                         logScroller.scrollTo(0, logScroller.getBottom() + bottomEltHeight);
                         //logScroller.fullScroll(View.FOCUS_DOWN);
                     }
-                }, 250);
+                }, 100);
             }
         }
     }
@@ -590,7 +590,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
      */
     public static String getSettingFromDevice(UsbSerialDevice cmPort, String query, String hint) {
         ChameleonIO.DEVICE_RESPONSE = new String[1];
-        ChameleonIO.DEVICE_RESPONSE[0] = (hint == null) ? "0" : hint;
+        ChameleonIO.DEVICE_RESPONSE[0] = (hint == null) ? "TIMEOUT" : hint;
         ChameleonIO.LASTCMD = query;
         if(cmPort == null)
             return ChameleonIO.DEVICE_RESPONSE[0];
@@ -1202,15 +1202,22 @@ public class LiveLoggerActivity extends AppCompatActivity {
      */
     public void actionButtonRunCommand(View view) {
         String cmCmd = ((Button) view).getTag().toString();
-        if(cmCmd.equals("DUMP_MFU")) {
+        if(cmCmd.equals("DUMP_MFU") || cmCmd.equals("IDENTIFY") || cmCmd.equals("CLONE")) {
+            int oldTimeout = ChameleonIO.TIMEOUT;
+            ChameleonIO.TIMEOUT = 5000; // extend the timeout on these long commands
             String mfuBytes = getSettingFromDevice(serialPort, cmCmd);
+            ChameleonIO.TIMEOUT = oldTimeout;
             ChameleonIO.DEVICE_RESPONSE[0] = Arrays.toString(ChameleonIO.DEVICE_RESPONSE);
             ChameleonIO.DEVICE_RESPONSE[0] = ChameleonIO.DEVICE_RESPONSE[0].substring(1, ChameleonIO.DEVICE_RESPONSE[0].length() - 1);
             mfuBytes = mfuBytes.replace(",", "");
             mfuBytes = mfuBytes.replace("\n", "");
             mfuBytes = mfuBytes.replace("\r", "");
-            String mfuBytesPrettyPrint = Utils.prettyPrintMFU(mfuBytes);
-            appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("DUMP_MFU", mfuBytesPrettyPrint));
+            if(cmCmd.equals("DUMP_MFU")) {
+                String mfuBytesPrettyPrint = Utils.prettyPrintMFU(mfuBytes);
+                appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("DUMP_MFU", mfuBytesPrettyPrint));
+            }
+            else
+                appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord(cmCmd, mfuBytes));
         }
         else {
             String rdata = getSettingFromDevice(serialPort, cmCmd);
@@ -1293,7 +1300,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
      * @param view
      */
     public void actionButtonCloneMFU(View view) {
-        String mfuBytes = getSettingFromDevice(serialPort, "DUMP_MFU");
+        /*String mfuBytes = getSettingFromDevice(serialPort, "DUMP_MFU");
         ChameleonIO.DEVICE_RESPONSE[0] = Arrays.toString(ChameleonIO.DEVICE_RESPONSE);
         ChameleonIO.DEVICE_RESPONSE[0] = ChameleonIO.DEVICE_RESPONSE[0].substring(1, ChameleonIO.DEVICE_RESPONSE[0].length() - 1);
         mfuBytes = mfuBytes.replace(",", "");
@@ -1301,7 +1308,13 @@ public class LiveLoggerActivity extends AppCompatActivity {
         mfuBytes = mfuBytes.replace("\r", "");
         String mfuBytesPrettyPrint = Utils.prettyPrintMFU(mfuBytes);
         appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("DUMP_MFU", mfuBytesPrettyPrint));
-        ExportTools.cloneBinaryDumpMFU(Utils.hexString2Bytes(mfuBytes));
+        ExportTools.cloneBinaryDumpMFU(Utils.hexString2Bytes(mfuBytes));*/
+        String dumpMFUOutput = getSettingFromDevice(serialPort, "DUMP_MFU");
+        appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("DUMP_MFU", dumpMFUOutput));
+        ChameleonIO.executeChameleonMiniCommand(serialPort, "CLONE", ChameleonIO.TIMEOUT);
+        String cloneCmdOutput = ChameleonIO.DEVICE_RESPONSE_CODE;
+        cloneCmdOutput += Arrays.asList(ChameleonIO.DEVICE_RESPONSE).toString().replaceAll("(^\\[|\\]$)", "").replace(", ", "\n");
+        appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("CLONE", cloneCmdOutput));
     }
 
     /**
