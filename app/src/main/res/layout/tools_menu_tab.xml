@@ -295,6 +295,13 @@
 
                 <Button
                     style="@style/GridButtons"
+                    android:drawableLeft="@drawable/store24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="STORE"
+                    android:text="STORE" />
+
+                <Button
+                    style="@style/GridButtons"
                     android:drawableLeft="@drawable/wifibc24"
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="SEND" />
@@ -339,10 +346,6 @@
                     android:onClick="actionButtonRunCommand"
                     android:tag="detectionmy"
                     android:text="detectmy" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:text="" />
 
             </GridLayout>
 
