@@ -203,10 +203,13 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
         // fix bug where the tabs are blank when the application is relaunched:
         super.onCreate(savedInstanceState); // should fix most of the crashes in the ANR report on Play Store
-        if(!BuildConfig.DEBUG)
-            Fabric.with(this, new Crashlytics());
         if(runningActivity == null || !isTaskRoot()) {
-            Thread.setDefaultUncaughtExceptionHandler(unCaughtExceptionHandler);
+            if(!BuildConfig.DEBUG) {
+                Log.w(TAG, "Loading crashlytics");
+                Fabric.with(this, new Crashlytics());
+            }
+            Log.w(TAG, "Created new activity");
+            //Thread.setDefaultUncaughtExceptionHandler(unCaughtExceptionHandler);
         }
         if(!isTaskRoot()) {
             Log.w(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
@@ -711,7 +714,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 String[] strLogData = (new String(liveLogData)).split("[\n\r]+");
                 //Log.i(TAG, strLogData);
                 ChameleonIO.DEVICE_RESPONSE_CODE = strLogData[0];
-                ChameleonIO.DEVICE_RESPONSE = Arrays.copyOfRange(strLogData, 1, strLogData.length);
+                if(strLogData.length >= 2)
+                     ChameleonIO.DEVICE_RESPONSE = Arrays.copyOfRange(strLogData, 1, strLogData.length);
+                else
+                    ChameleonIO.DEVICE_RESPONSE[0] = strLogData[0];
                 if(ChameleonIO.EXPECTING_BINARY_DATA) {
                     int binaryBufSize = liveLogData.length - ChameleonIO.DEVICE_RESPONSE_CODE.length() - 2;
                     ChameleonIO.DEVICE_RESPONSE_BINARY = new byte[binaryBufSize];

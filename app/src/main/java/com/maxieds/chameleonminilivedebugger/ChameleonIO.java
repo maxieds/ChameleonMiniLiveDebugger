@@ -358,8 +358,8 @@ public class ChameleonIO {
             timeout *= -1;
             SystemClock.sleep(timeout);
         }
-        if (timeout != Utils.parseInt(deviceStatus.TIMEOUT))
-            setTimeout(cmPort, timeout);
+        //if (timeout != Utils.parseInt(deviceStatus.TIMEOUT))
+        //    setTimeout(cmPort, timeout);
         String deviceConfigCmd = rawCmd + "\n\r";
         byte[] sendBuf = deviceConfigCmd.getBytes(StandardCharsets.UTF_8);
         cmPort.write(sendBuf);
