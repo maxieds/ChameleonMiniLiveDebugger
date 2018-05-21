@@ -311,7 +311,10 @@ public class ChameleonIO {
      * @return SerialRespCode status code (OK)
      */
     public static SerialRespCode setLoggerConfigMode(UsbSerialDevice cmPort, int timeout) {
-        return executeChameleonMiniCommand(cmPort, "CONFIG=ISO14443A_SNIFF", timeout);
+        if(!REVE_BOARD)
+             return executeChameleonMiniCommand(cmPort, "CONFIG=ISO14443A_SNIFF", timeout);
+        else
+             return executeChameleonMiniCommand(cmPort, "configmy=ISO14443A_SNIFF", timeout);
     }
 
     /**
@@ -322,7 +325,10 @@ public class ChameleonIO {
      * @return SerialRespCode status code (OK)
      */
     public static SerialRespCode setReaderConfigMode(UsbSerialDevice cmPort, int timeout) {
-        return executeChameleonMiniCommand(cmPort, "CONFIG=ISO14443A_READER", timeout);
+        if(!REVE_BOARD)
+             return executeChameleonMiniCommand(cmPort, "CONFIG=ISO14443A_READER", timeout);
+        else
+             return executeChameleonMiniCommand(cmPort, "configmy=ISO14443A_READER", timeout);
     }
 
     /**

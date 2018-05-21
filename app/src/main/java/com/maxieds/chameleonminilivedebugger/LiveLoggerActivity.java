@@ -198,7 +198,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
      * @ref R.id.statusIconNewXFer
      */
     public void clearStatusIcon(int iconID) {
-        ((ImageView) findViewById(iconID)).setAlpha(0);
+        ((ImageView) findViewById(iconID)).setAlpha(127);
     }
 
     /**
@@ -904,6 +904,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }
+        else if(createCmd.equals("DETECT")) {
+            ChameleonIO.executeChameleonMiniCommand(serialPort, "configmy=MF_DETECTION", ChameleonIO.TIMEOUT);
+            ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+            return;
+        }
         else if(createCmd.equals("ULTRALIGHT")) {
             if(!ChameleonIO.REVE_BOARD)
                  ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_ULTRALIGHT", ChameleonIO.TIMEOUT);
@@ -929,12 +934,18 @@ public class LiveLoggerActivity extends AppCompatActivity {
             return;
         }
         else if(createCmd.equals("CLASSIC-1K7B")) {
-            ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_1K_7B", ChameleonIO.TIMEOUT);
+            if(!ChameleonIO.REVE_BOARD)
+                 ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_1K_7B", ChameleonIO.TIMEOUT);
+            else
+                ChameleonIO.executeChameleonMiniCommand(serialPort, "configmy=MF_CLASSIC_1K_7B", ChameleonIO.TIMEOUT);
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }
         else if(createCmd.equals("CLASSIC-4K7B")) {
-            ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_4K_7B", ChameleonIO.TIMEOUT);
+            if(!ChameleonIO.REVE_BOARD)
+                 ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_4K_7B", ChameleonIO.TIMEOUT);
+            else
+                ChameleonIO.executeChameleonMiniCommand(serialPort, "configmy=MF_CLASSIC_4K_7B", ChameleonIO.TIMEOUT);
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }
@@ -944,12 +955,18 @@ public class LiveLoggerActivity extends AppCompatActivity {
             msgParam = "NOTE: You must use the firmware from https://github.com/maxieds/ChameleonMini to have the DESFire chip support enabled.";
         }
         else if(createCmd.equals("MFU-EV1-80B")) {
-            ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_ULTRALIGHT_EV1_80B", ChameleonIO.TIMEOUT);
+            if(!ChameleonIO.REVE_BOARD)
+                 ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_ULTRALIGHT_EV1_80B", ChameleonIO.TIMEOUT);
+            else
+                 ChameleonIO.executeChameleonMiniCommand(serialPort, "configmy=MF_ULTRALIGHT_EV1_80B", ChameleonIO.TIMEOUT);
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }
         else if(createCmd.equals("MFU-EV1-164B")) {
-            ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_ULTRALIGHT_EV1_164B", ChameleonIO.TIMEOUT);
+            if(!ChameleonIO.REVE_BOARD)
+                ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_ULTRALIGHT_EV1_80B", ChameleonIO.TIMEOUT);
+            else
+                ChameleonIO.executeChameleonMiniCommand(serialPort, "configmy=MF_ULTRALIGHT_EV1_80B", ChameleonIO.TIMEOUT);
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }

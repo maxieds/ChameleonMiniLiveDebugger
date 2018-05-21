@@ -58,9 +58,9 @@
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/chip24v3"
+                    android:drawableLeft="@drawable/chipbrain2"
                     android:onClick="actionButtonCreateNewEvent"
-                    android:text="ULTRALIGHT" />
+                    android:text="DETECT" />
 
                 <Button
                     style="@style/GridButtons"
@@ -88,9 +88,9 @@
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/chipbrain2"
+                    android:drawableLeft="@drawable/chip24v3"
                     android:onClick="actionButtonCreateNewEvent"
-                    android:text="DESFIRE-EV1-4K" />
+                    android:text="ULTRALIGHT" />
 
                 <Button
                     style="@style/GridButtons"
