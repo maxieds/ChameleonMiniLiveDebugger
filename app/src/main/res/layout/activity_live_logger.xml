@@ -170,6 +170,19 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="5dp"
             android:background="?deviceStatusBarBackgroundColor"
+            android:drawableLeft="@drawable/help24"
+            android:drawablePadding="10dp"
+            android:gravity="left|center_vertical"
+            android:onClick="actionButtonDisplayHelp"
+            android:textColor="?deviceStatusBarTextColor" />
+
+        <Button
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="25dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:background="?deviceStatusBarBackgroundColor"
             android:drawableLeft="@drawable/info24"
             android:drawablePadding="10dp"
             android:gravity="left|center_vertical"

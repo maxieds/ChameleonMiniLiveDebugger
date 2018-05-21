@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
+
+    <GridLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="1dp"
+        android:background="?colorAccentLog"
+        android:columnCount="3"
+        android:padding="2dp"
+        android:rowCount="2">
+
+        <Button
+            android:id="@+id/cmdRespButton"
+            style="@style/GridButtons"
+            android:text="Command Responses" />
+
+        <Button
+            android:id="@+id/revECmdsButton"
+            style="@style/GridButtons"
+            android:text="RevE Commands" />
+
+        <Button
+            android:id="@+id/revGCmdsButton"
+            style="@style/GridButtons"
+            android:text="RevG Commands" />
+
+        <Button
+            android:id="@+id/buttonSettingsButton"
+            style="@style/GridButtons"
+            android:text="Button Settings" />
+
+        <Button
+            android:id="@+id/ledSettingsButton"
+            style="@style/GridButtons"
+            android:text="LED Settings" />
+
+        <Button
+            android:id="@+id/loggingButton"
+            style="@style/GridButtons"
+            android:text="Logging (RevG)" />
+
+    </GridLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
+
+    <WebView
+        android:id="@+id/wvDisplayHelpTopic"
+        android:layout_height="450dp"
+        android:layout_width="fill_parent"
+        android:layout_margin="10dp"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
+
+</LinearLayout>

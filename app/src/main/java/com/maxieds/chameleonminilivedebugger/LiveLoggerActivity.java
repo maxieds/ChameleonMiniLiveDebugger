@@ -1718,4 +1718,94 @@ public class LiveLoggerActivity extends AppCompatActivity {
             LiveLoggerActivity.runningActivity.setStatusIcon(R.id.signalStrength, R.drawable.signalbars1);
     }
 
+    public void actionButtonDisplayHelp(View view) {
+
+        AlertDialog.Builder adBuilder = new AlertDialog.Builder(this, R.style.SpinnerTheme);
+        View adView = defaultInflater.inflate(R.layout.help_dialog, null);
+        final View adViewFinal = adView;
+
+        Button cmdRespButton = (Button) adView.findViewById(R.id.cmdRespButton);
+        cmdRespButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WebView wv = (WebView) adViewFinal.findViewById(R.id.wvDisplayHelpTopic);
+                String rawHTMLString = getString(R.string.apphtmlheader) + getString(R.string.helpCmdResp) + getString(R.string.apphtmlfooter);
+                wv.loadData(rawHTMLString, "text/html", "UTF-8");
+            }
+        });
+        Button revECmdsButton = (Button) adView.findViewById(R.id.revECmdsButton);
+        revECmdsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WebView wv = (WebView) adViewFinal.findViewById(R.id.wvDisplayHelpTopic);
+                String rawHTMLString = getString(R.string.apphtmlheader) + getString(R.string.helpRevECmds) + getString(R.string.apphtmlfooter);
+                wv.loadDataWithBaseURL(null, rawHTMLString, "text/html", "UTF-8", "");
+            }
+        });
+        Button revGCmdsButton = (Button) adView.findViewById(R.id.revGCmdsButton);
+        revGCmdsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WebView wv = (WebView) adViewFinal.findViewById(R.id.wvDisplayHelpTopic);
+                String rawHTMLString = getString(R.string.apphtmlheader) + getString(R.string.helpRevGCmds) + getString(R.string.apphtmlfooter);
+                wv.loadData(rawHTMLString, "text/html", "UTF-8");
+            }
+        });
+        Button buttonSettingsButton = (Button) adView.findViewById(R.id.buttonSettingsButton);
+        buttonSettingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WebView wv = (WebView) adViewFinal.findViewById(R.id.wvDisplayHelpTopic);
+                String rawHTMLString = getString(R.string.apphtmlheader) + getString(R.string.helpButtonSettings) + getString(R.string.apphtmlfooter);
+                wv.loadData(rawHTMLString, "text/html", "UTF-8");
+            }
+        });
+        Button buttonLEDButton = (Button) adView.findViewById(R.id.ledSettingsButton);
+        buttonLEDButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WebView wv = (WebView) adViewFinal.findViewById(R.id.wvDisplayHelpTopic);
+                String rawHTMLString = getString(R.string.apphtmlheader) + getString(R.string.helpLEDSettings) + getString(R.string.apphtmlfooter);
+                wv.loadData(rawHTMLString, "text/html", "UTF-8");
+            }
+        });
+        Button loggingButton = (Button) adView.findViewById(R.id.loggingButton);
+        loggingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WebView wv = (WebView) adViewFinal.findViewById(R.id.wvDisplayHelpTopic);
+                String rawHTMLString = getString(R.string.apphtmlheader) + getString(R.string.helpLogging) + getString(R.string.apphtmlfooter);
+                wv.loadData(rawHTMLString, "text/html", "UTF-8");
+            }
+        });
+
+        WebView wv = (WebView) adView.findViewById(R.id.wvDisplayHelpTopic);
+        wv.getSettings().setJavaScriptEnabled(false);
+        wv.setBackgroundColor(getThemeColorVariant(R.attr.colorAccentHighlight));
+        wv.getSettings().setLoadWithOverviewMode(true);
+        wv.getSettings().setUseWideViewPort(true);
+        wv.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
+        wv.setInitialScale(10);
+
+        adBuilder.setCancelable(true);
+        adBuilder.setTitle("Application Help Topics:");
+        adBuilder.setMessage("This window displays help information for the following topics. Click on each button to display the respective help topic.");
+        adBuilder.setIcon(R.drawable.help64);
+        adBuilder.setPositiveButton(
+                "Done",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        adBuilder.setView(adView);
+        AlertDialog alertDialog = adBuilder.create();
+
+        alertDialog.show();
+
+
+
+
+    }
+
 }
