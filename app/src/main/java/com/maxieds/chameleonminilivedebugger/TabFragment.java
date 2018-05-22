@@ -253,7 +253,10 @@ public class TabFragment extends Fragment {
             SeekBar thresholdSeekbar = (SeekBar) view.findViewById(R.id.thresholdSeekbar);
             int threshold = 400;
             if(LiveLoggerActivity.serialPort != null) {
-                threshold = Integer.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "THRESHOLD?"));
+                try {
+                    threshold = Integer.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "THRESHOLD?"));
+                }
+                catch(NumberFormatException nfe) {}
                 thresholdSeekbar.setProgress(threshold);
             }
             thresholdSeekbar.incrementProgressBy(25);

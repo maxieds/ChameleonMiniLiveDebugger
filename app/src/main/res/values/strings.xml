@@ -67,7 +67,7 @@
         Performs the MF Classic Key attack to a reader.
     </string>
     <string name="helpRevGCmds">
-        &lt;h1>Chameleon RevG Command Set: &lt;/h1>
+        &lt;adh1>Chameleon RevG Command Set: &lt;/h1>
         &lt;p>The current firmware supports the following global commands. &lt;/p>&lt;table class="doxtable">
         &lt;tr>
         &lt;th>Command &lt;/th>&lt;th>Description  &lt;/th>&lt;/tr>

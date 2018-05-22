@@ -896,56 +896,57 @@ public class LiveLoggerActivity extends AppCompatActivity {
         String msgParam = "";
         if(createCmd.equals("READER")) {
             ChameleonIO.setReaderConfigMode(serialPort, ChameleonIO.TIMEOUT);
+            try {
+                Thread.sleep(100);
+            } catch(InterruptedException ie) {}
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }
         else if(createCmd.equals("SNIFFER")) {
             ChameleonIO.setLoggerConfigMode(serialPort, ChameleonIO.TIMEOUT);
+            try {
+                Thread.sleep(100);
+            } catch(InterruptedException ie) {}
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }
         else if(createCmd.equals("DETECT")) {
-            ChameleonIO.executeChameleonMiniCommand(serialPort, "configmy=MF_DETECTION", ChameleonIO.TIMEOUT);
+            msgParam = getSettingFromDevice(serialPort, "configmy=MF_DETECTION");
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-            return;
         }
         else if(createCmd.equals("ULTRALIGHT")) {
             if(!ChameleonIO.REVE_BOARD)
-                 ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_ULTRALIGHT", ChameleonIO.TIMEOUT);
+                msgParam = getSettingFromDevice(serialPort, "CONFIG=MF_ULTRALIGHT");
             else
-                 ChameleonIO.executeChameleonMiniCommand(serialPort, "configmy=MF_ULTRALIGHT", ChameleonIO.TIMEOUT);
+                msgParam = getSettingFromDevice(serialPort, "configmy=MF_ULTRALIGHT");
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-            return;
         }
         else if(createCmd.equals("CLASSIC-1K")) {
             if(!ChameleonIO.REVE_BOARD)
-                 ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_1K", ChameleonIO.TIMEOUT);
+                msgParam = getSettingFromDevice(serialPort, "CONFIG=MF_CLASSIC_1K");
             else
-                ChameleonIO.executeChameleonMiniCommand(serialPort, "configmy=MF_CLASSIC_1K", ChameleonIO.TIMEOUT);
+                msgParam = getSettingFromDevice(serialPort, "configmy=MF_CLASSIC_1K");
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-            return;
         }
         else if(createCmd.equals("CLASSIC-4K")) {
             if(!ChameleonIO.REVE_BOARD)
-                 ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_4K", ChameleonIO.TIMEOUT);
+                msgParam = getSettingFromDevice(serialPort, "CONFIG=MF_CLASSIC_4K");
             else
-                 ChameleonIO.executeChameleonMiniCommand(serialPort, "configmy=MF_CLASSIC_4K", ChameleonIO.TIMEOUT);
+                msgParam = getSettingFromDevice(serialPort, "configmy=MF_CLASSIC_4K");
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-            return;
         }
         else if(createCmd.equals("CLASSIC-1K7B")) {
             if(!ChameleonIO.REVE_BOARD)
-                 ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_1K_7B", ChameleonIO.TIMEOUT);
+                msgParam = getSettingFromDevice(serialPort, "CONFIG=MF_CLASSIC_1K_7B");
             else
-                ChameleonIO.executeChameleonMiniCommand(serialPort, "configmy=MF_CLASSIC_1K_7B", ChameleonIO.TIMEOUT);
+                msgParam = getSettingFromDevice(serialPort, "configmy=MF_CLASSIC_1K_7B");
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-            return;
         }
         else if(createCmd.equals("CLASSIC-4K7B")) {
             if(!ChameleonIO.REVE_BOARD)
-                 ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_CLASSIC_4K_7B", ChameleonIO.TIMEOUT);
+                msgParam = getSettingFromDevice(serialPort, "CONFIG=MF_CLASSIC_4K_7B");
             else
-                ChameleonIO.executeChameleonMiniCommand(serialPort, "configmy=MF_CLASSIC_4K_7B", ChameleonIO.TIMEOUT);
+                msgParam = getSettingFromDevice(serialPort, "configmy=MF_CLASSIC_4K_7B");
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return;
         }
@@ -956,27 +957,24 @@ public class LiveLoggerActivity extends AppCompatActivity {
         }
         else if(createCmd.equals("MFU-EV1-80B")) {
             if(!ChameleonIO.REVE_BOARD)
-                 ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_ULTRALIGHT_EV1_80B", ChameleonIO.TIMEOUT);
+                msgParam = getSettingFromDevice(serialPort, "CONFIG=MF_ULTRALIGHT_EV1_80B");
             else
-                 ChameleonIO.executeChameleonMiniCommand(serialPort, "configmy=MF_ULTRALIGHT_EV1_80B", ChameleonIO.TIMEOUT);
+                msgParam = getSettingFromDevice(serialPort, "configmy=MF_ULTRALIGHT_EV1_80B");
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-            return;
         }
         else if(createCmd.equals("MFU-EV1-164B")) {
             if(!ChameleonIO.REVE_BOARD)
-                ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_ULTRALIGHT_EV1_80B", ChameleonIO.TIMEOUT);
+                msgParam = getSettingFromDevice(serialPort, "CONFIG=MF_ULTRALIGHT_EV1_80B");
             else
-                ChameleonIO.executeChameleonMiniCommand(serialPort, "configmy=MF_ULTRALIGHT_EV1_80B", ChameleonIO.TIMEOUT);
+                msgParam = getSettingFromDevice(serialPort, "configmy=MF_ULTRALIGHT_EV1_80B");
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-            return;
         }
         else if(createCmd.equals("CFGNONE")) {
             if(!ChameleonIO.REVE_BOARD)
-                 ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=NONE", ChameleonIO.TIMEOUT);
+                msgParam = getSettingFromDevice(serialPort, "CONFIG=NONE");
             else
-                 ChameleonIO.executeChameleonMiniCommand(serialPort, "configmy=NONE", ChameleonIO.TIMEOUT);
+                msgParam = getSettingFromDevice(serialPort, "configmy=NONE");
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-            return;
         }
         else if(createCmd.equals("LIST CONFIG")) {
             if(!ChameleonIO.REVE_BOARD)
@@ -1228,7 +1226,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
      */
     public void actionButtonRunCommand(View view) {
         String cmCmd = ((Button) view).getTag().toString();
-        if(cmCmd.equals("DUMP_MFU") || cmCmd.equals("IDENTIFY") || cmCmd.equals("CLONE")) {
+        if(!ChameleonIO.REVE_BOARD && (cmCmd.equals("DUMP_MFU") || cmCmd.equals("IDENTIFY") || cmCmd.equals("CLONE"))) {
             int oldTimeout = ChameleonIO.TIMEOUT;
             ChameleonIO.TIMEOUT = 5000; // extend the timeout on these long commands
             String mfuBytes = getSettingFromDevice(serialPort, cmCmd);

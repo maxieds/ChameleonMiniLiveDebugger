@@ -273,8 +273,8 @@ public class ChameleonIO {
             if (LiveLoggerActivity.serialPort == null)
                 return;
             boolean haveUpdates = updateAllStatus(resetTimer);
-            if (!haveUpdates)
-                return;
+            //if (!haveUpdates)
+            //    return;
             ChameleonIO.WAITING_FOR_RESPONSE = true;
             ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceConfigText)).setText(CONFIG);
             String formattedUID = UID;

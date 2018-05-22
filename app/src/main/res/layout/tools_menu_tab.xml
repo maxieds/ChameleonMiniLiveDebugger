@@ -344,7 +344,7 @@
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/fingerprint"
                     android:onClick="actionButtonRunCommand"
-                    android:tag="detectionmy"
+                    android:tag="detectionmy?"
                     android:text="detectmy" />
 
             </GridLayout>
