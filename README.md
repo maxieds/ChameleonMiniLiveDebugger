@@ -21,6 +21,8 @@ This application is an interactive NFC debugging and logging tool for Android us
 
 The application is available in two flavors [free](https://play.google.com/store/apps/details?id=com.maxieds.chameleonminilivedebugger) and [paid](https://play.google.com/store/apps/details?id=com.maxieds.chameleonminilivedebugger.paid) on the Google Play Store. This is probably the easiest and most reliable way to install the application since updates will be automatically applied and installed on the target machines as they are rolled out into production (please use the production releases instead of the artifact beta testing APKs as they are updated much more frequently). Signed APKs (the same ones uploaded to Google) are also provided periodically on the [releases page](https://github.com/maxieds/ChameleonMiniLiveDebugger/releases/latest) for the project.
 
+A privacy policy has also been installed [here](https://github.com/maxieds/ChameleonMiniLiveDebugger/wiki/UserPrivacyPolicy) for reference.
+
 # Documentation
 
 * See the [Releases page](https://github.com/maxieds/ChameleonMiniLiveDebugger/releases) for current non-development source code snapshots and recent APK downloads
@@ -30,7 +32,11 @@ The application is available in two flavors [free](https://play.google.com/store
 
 # Licensing and Credits
 
-For all intensive reasonable non-commercial applications this app is free to use and modify provided a link to the original project webpage and the author information remain intact in the revisions (i.e., at minimum a copy of this README.md file and a link to the [source repo](https://github.com/maxieds/ChameleonMiniLiveDebugger) must be included with any re-distribution). Call this licensing scheme GPL-like. The bulk of the pretty stylized freeware icons used by the app were obtained from the [Flat Icon site](flaticon.com) and their lovely sized transparent PNG conversions of these images.
+For all intensive reasonable non-commercial applications this app is free to use and modify provided a link to the original project webpage and
+the author information remain intact in the revisions (i.e., at minimum a copy of this README.md file and a link to
+the [source repo](https://github.com/maxieds/ChameleonMiniLiveDebugger) must be included with any re-distribution).
+Call this licensing scheme GPL-like. The bulk of the pretty stylized freeware icons used by the app were obtained from the
+[Flat Icon site](flaticon.com) and their lovely sized transparent PNG conversions of these images.
 
 # Donations / Contributing to the Project
 
