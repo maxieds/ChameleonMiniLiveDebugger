@@ -292,6 +292,8 @@ public class TabFragment extends Fragment {
                 public void onScrollStateChange(NumberPicker numberPicker, int scrollState) {
                     if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
                         String settingCmd = ChameleonIO.REVE_BOARD ? "settingmy=" : "SETTING=";
+                        Log.i(TAG, "Number Picker Setting: " + numberPicker.getValue());
+                        Log.i(TAG, "Number Picker Setting Command: \"" + settingCmd + numberPicker.getValue() + "\"");
                         LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, settingCmd + numberPicker.getValue());
                         ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
                     }

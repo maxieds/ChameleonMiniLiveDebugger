@@ -52,7 +52,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
-import com.crashlytics.android.Crashlytics;
 import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
 
@@ -64,8 +63,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
-
-import io.fabric.sdk.android.Fabric;
 
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_APDU;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
@@ -227,7 +224,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
             super.onCreate(savedInstanceState); // should fix most of the crashes in the ANR report on Play Store
             if(!BuildConfig.DEBUG) {
                 Log.w(TAG, "Loading crashlytics");
-                Fabric.with(this, new Crashlytics());
+                //Fabric.with(this, new Crashlytics());
             }
             Log.w(TAG, "Created new activity");
             //Thread.setDefaultUncaughtExceptionHandler(unCaughtExceptionHandler);

@@ -343,19 +343,6 @@ public class ChameleonIO {
     }
 
     /**
-     * Resets the timeout on the Chameleon device (avoids zero timeouts from AUTOCALIBRATE) that make
-     * the app otherwise hang.
-     *
-     * @param cmPort
-     * @param timeout
-     */
-    private static void setTimeout(UsbSerialDevice cmPort, int timeout) {
-        String timeoutCmd = String.format("TIMEOUT=%d\n\r", timeout);
-        byte[] sendBuf = timeoutCmd.getBytes(StandardCharsets.UTF_8);
-        cmPort.write(sendBuf);
-    }
-
-    /**
      * Executes the passed command by sending the command to the device.
      * The response returned by the device is handled separately elsewhere in the program.
      *
@@ -374,7 +361,7 @@ public class ChameleonIO {
         }
         //if (timeout != Utils.parseInt(deviceStatus.TIMEOUT))
         //    setTimeout(cmPort, timeout);
-        String deviceConfigCmd = rawCmd + "\n\r";
+        String deviceConfigCmd = rawCmd + (REVE_BOARD ? "\r\n" : "\n\r");
         byte[] sendBuf = deviceConfigCmd.getBytes(StandardCharsets.UTF_8);
         cmPort.write(sendBuf);
         return OK;
