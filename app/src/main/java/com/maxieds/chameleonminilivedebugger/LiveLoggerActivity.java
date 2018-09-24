@@ -417,6 +417,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
             case "Lightblue":
                 themeID = R.style.AppThemeLightblue;
                 break;
+            case "Lightening":
+                themeID = R.style.AppThemeLightening;
+                break;
             case "Linux Green On Black":
                 themeID = R.style.AppThemeLinuxGreenOnBlack;
                 break;
@@ -473,6 +476,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 String themeID = ((RadioButton) dialogView.findViewById(getSelectedOption)).getText().toString();
                 String themeDesc = themeID.substring("Theme: ".length());
                 setLocalTheme(themeDesc);
+                if(themeDesc.equals("Lightening")) { // a special case #53, for which we can break form:
+                    ((ScrollView) findViewById(R.id.log_scroll_view)).setBackground(getResources().getDrawable(R.drawable.lightening_gradient));
+                    LiveLoggerActivity.logDataFeed.setBackgroundColor(0x0106000d);
+                }
 
                 // store the theme setting for when the app reopens:
                 SharedPreferences sharedPrefs = getSharedPreferences(LiveLoggerActivity.TAG, Context.MODE_PRIVATE);
@@ -1183,7 +1190,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
      */
     public void actionButtonAboutTheApp(View view) {
         AlertDialog.Builder adBuilder = new AlertDialog.Builder(this, R.style.SpinnerTheme);
-        String rawAboutStr = getString(R.string.apphtmlheader) + getString(R.string.aboutapp) + getString(R.string.apphtmlfooter);
+        String rawAboutStr = getString(R.string.apphtmlheader) + getString(R.string.aboutapp) + getString(R.string.privacyhtml) + getString(R.string.apphtmlfooter);
         rawAboutStr = rawAboutStr.replace("%%ANDROID_VERSION_CODE%%", String.valueOf(BuildConfig.VERSION_CODE));
         rawAboutStr = rawAboutStr.replace("%%ANDROID_VERSION_NAME%%", String.valueOf(BuildConfig.VERSION_NAME));
         rawAboutStr = rawAboutStr.replace("%%ANDROID_FLAVOR_NAME%%", String.valueOf(BuildConfig.FLAVOR) + ", " + BuildConfig.BUILD_TIMESTAMP);

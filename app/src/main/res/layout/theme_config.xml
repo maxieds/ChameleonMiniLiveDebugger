@@ -100,6 +100,16 @@
             android:text="Theme: Lightblue" />
 
         <RadioButton
+            android:id="@+id/themeRadioButtonLightening"
+            android:buttonTint="?colorPrimaryDark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:drawableLeft="@drawable/thememarker24"
+            android:drawablePadding="5dp"
+            android:text="Theme: Lightening" />
+
+        <RadioButton
             android:id="@+id/themeRadioButtonLinuxGOB"
             android:buttonTint="?colorPrimaryDark"
             android:layout_width="wrap_content"

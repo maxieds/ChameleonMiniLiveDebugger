@@ -221,6 +221,18 @@
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_rainbow</item>
     </style>
 
+    <style name="AppThemeLightening" parent="AppTheme">
+        <item name="colorPrimary">#d64abc</item>
+        <item name="colorPrimaryDark">#733b93</item>
+        <item name="colorAccent">#b970db</item>
+        <item name="colorPrimaryDarkLog">#35216f</item>
+        <item name="colorAccentLog">#8f7d97</item>
+        <item name="deviceMemoryLogHighlight">#EF2929</item>
+        <item name="colorAccentHighlight">#d64abc</item>
+        <item name="colorAboutLinkColor">#ffffff</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonicon64_lightening53</item>
+    </style>
+
     <style name="SpinnerTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="android:background">?colorAccentHighlight</item>
         <item name="buttonStyle">@style/AboutButtonTheme</item>
