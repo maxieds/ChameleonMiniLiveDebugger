@@ -1,6 +1,7 @@
 package com.maxieds.chameleonminilivedebugger;
 
 import android.content.Context;
+import android.support.annotation.DrawableRes;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,6 +50,7 @@ public class LogEntryUI extends LogEntryBase {
     private int logType;
     private String logLabel;
     private byte[] entryData;
+    private int dataDirection;
 
     /**
      * Effective constructor for the class.
@@ -80,7 +82,7 @@ public class LogEntryUI extends LogEntryBase {
         else
             System.arraycopy(rawLogBytes, 4, payloadBytes, 0, payloadBytes.length);
         LogEntryUI newLogDataEntry = new LogEntryUI();
-        return newLogDataEntry.configureLogEntry(LiveLoggerActivity.defaultContext, logLabel, diffTimeMs, logCode, payloadBytes);
+        return newLogDataEntry.configureLogEntry(LiveLoggerActivity.defaultContext, logLabel, diffTimeMs, LogUtils.getDataDirection(logCode), logCode, payloadBytes);
     }
 
     /**
@@ -93,13 +95,13 @@ public class LogEntryUI extends LogEntryBase {
      * @return LogEntryUI the configured log entry
      * @url http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/Page_Log.html
      */
-    public LogEntryUI configureLogEntry(Context context, String label, int diffTimeMs, int ltype, byte[] edata) {
+    public LogEntryUI configureLogEntry(Context context, String label, int diffTimeMs, int dataDir, int ltype, byte[] edata) {
         numBytes = edata.length;
         diffTimeMillis = diffTimeMs;
+        dataDirection = dataDir;
         logType = ltype;
         logLabel = label;
         entryData = edata;
-        //LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         LayoutInflater inflater = LiveLoggerActivity.defaultInflater;
         mainEntryContainer = (LinearLayout) inflater.inflate(R.layout.log_entry_ui, null);
         configureLayout(mainEntryContainer);
@@ -152,6 +154,7 @@ public class LogEntryUI extends LogEntryBase {
         mainEntryContainer = mainContainerRef;
         entrySelect = (CheckBox) mainContainerRef.findViewById(R.id.entrySelect);
         inoutDirIndicator = (ImageView) mainContainerRef.findViewById(R.id.inputDirIndicatorImg);
+        inoutDirIndicator.setImageDrawable(LiveLoggerActivity.runningActivity.getResources().getDrawable(getDataDirectionMarker()));
         apduParseStatus = (ImageView) mainContainerRef.findViewById(R.id.apduParseStatusImg);
         tvLabel = (TextView) mainContainerRef.findViewById(R.id.text_label);
         recordID = ++LiveLoggerActivity.RECORDID;
@@ -277,6 +280,15 @@ public class LogEntryUI extends LogEntryBase {
             Log.i(TAG, "Returning ascii: " + tvDataAscii.getText().toString());
             return tvDataAscii.getText().toString();
         }
+    }
+
+    public int getDataDirectionMarker() {
+        if(dataDirection == LogUtils.DATADIR_INCOMING)
+            return R.drawable.incoming_arrow16;
+        else if(dataDirection == LogUtils.DATADIR_OUTGOING)
+            return R.drawable.outgoing_arrow16;
+        else
+            return R.drawable.xfer16;
     }
 
     /**

@@ -147,7 +147,7 @@
         &lt;td>&lt;code>LOGSTORE&lt;/code> &lt;/td>&lt;td>Writes the current log from SRAM to FRAM and clears the SRAM log. &lt;dl class="section warning">&lt;dt>Warning&lt;/dt>&lt;dd>If the FRAM is full, currently no error message is shown. If calling &lt;code>LOGMEM?&lt;/code> after executing this command returns any other value than the maximum SRAM log size, there was not sufficient space in the FRAM and nothing has been done. &lt;/dd>&lt;/dl>
         &lt;/td>&lt;/tr>
         &lt;/table>
-        &lt;p>ChameleonMini provides eight 'slots' that can be configured to store different virtualized cards, or as active NFC reader, or as completely passive device for sniffing purposes. Each slot stores its configuration and, if applicable, card content. To select a particular slot, use the following command (or configure a button accordingly): &lt;/p>&lt;table class="doxtable">
+        &lt;p>ChameleonMini provides eight \'slots\' that can be configured to store different virtualized cards, or as active NFC reader, or as completely passive device for sniffing purposes. Each slot stores its configuration and, if applicable, card content. To select a particular slot, use the following command (or configure a button accordingly): &lt;/p>&lt;table class="doxtable">
         &lt;tr>
         &lt;th>Command &lt;/th>&lt;th>Description  &lt;/th>&lt;/tr>
         &lt;tr>

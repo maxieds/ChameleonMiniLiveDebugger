@@ -11,13 +11,13 @@ def getDateTimestamp() {
 
 android {
 
-    compileSdkVersion 25
+    compileSdkVersion 28
     defaultConfig {
         applicationId "com.maxieds.chameleonminilivedebugger"
-        minSdkVersion 21
-        targetSdkVersion 27
-        versionCode 53
-        versionName "0.5.3"
+        minSdkVersion 26
+        targetSdkVersion 28
+        versionCode 54
+        versionName "0.5.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -27,18 +27,14 @@ android {
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             crunchPngs false
-            //enableCrashlytics = true
-            //alwaysUpdateBuildId false
         }
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             crunchPngs false
-            //enableCrashlytics = true
-            //alwaysUpdateBuildId true
         }
     }
-    buildToolsVersion '27.0.3'
+    buildToolsVersion '28.0.2'
 
     flavorDimensions "mode"
     def configBuildTimeStamp = getDateTimestamp()
@@ -46,11 +42,10 @@ android {
         variant.outputs.each { output ->
             def directoryPath = "all-builds/"
             def apkName = "ChameleonMiniLiveDebugger-${variant.name}-vc${variant.versionCode}-v${variant.versionName}-${configBuildTimeStamp}.apk"
-            //output.outputFile = new File(directoryPath + apkName)
         }
     }
     productFlavors {
-        main {
+        free {
             versionNameSuffix "-free"
             dimension "mode"
             buildConfigField "boolean", "PAID_APP_VERSION", "false"
@@ -86,15 +81,13 @@ android {
         implementation fileTree(include: ['*.jar'], dir: 'libs')
         implementation 'com.android.support.constraint:constraint-layout:1.0.2'
         testImplementation 'junit:junit:4.12'
-        androidTestImplementation 'com.android.support.test:runner:1.0.1'
+        androidTestImplementation 'com.android.support.test:runner:1.0.2'
         androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-        implementation 'com.android.support:support-v4:25.4.0'
-        implementation 'com.android.support:appcompat-v7:25.4.0'
-        implementation 'com.android.support:design:25.4.0'
-        implementation 'com.github.felHR85:UsbSerial:4.5'
+        implementation 'com.android.support:support-v4:28.0.0'
+        implementation 'com.android.support:appcompat-v7:28.0.0'
+        implementation 'com.android.support:design:28.0.0'
+        implementation 'com.github.felHR85:UsbSerial:4.5.2'
         implementation 'com.shawnlin:number-picker:2.4.4'
-        //classpath 'io.fabric.tools:gradle:1.+'
-        //compile('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') { transitive = true; }
     }
 
     repositories {
@@ -102,7 +95,6 @@ android {
         google()
         maven { url "https://maven.google.com" }
         maven { url "https://jitpack.io" }
-        //maven { url "https://maven.fabric.io/public" }
     }
 
 }
