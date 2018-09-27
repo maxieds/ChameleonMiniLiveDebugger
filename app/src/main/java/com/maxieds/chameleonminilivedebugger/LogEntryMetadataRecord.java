@@ -40,10 +40,12 @@ public class LogEntryMetadataRecord extends LogEntryBase {
         recordText = text;
         recordTimestamp = Utils.getTimestamp();
         recordContainer = (LinearLayout) inflater.inflate(R.layout.log_metadata_record, null);
+        recordContainer.setAlpha(LOGENTRY_GUI_ALPHA);
         tvRecTitle = (TextView) recordContainer.findViewById(R.id.record_title_text);
         tvRecTitle.setText(recordTitle + " -- " + recordTimestamp);
         tvRecData = (TextView) recordContainer.findViewById(R.id.record_data_text);
         tvRecData.setText(recordText);
+        tvRecData.setAlpha(LOGENTRY_GUI_ALPHA);
         if(recordText.equals("")) {
             tvRecData.setVisibility(TextView.INVISIBLE);
             tvRecData.setEnabled(false);

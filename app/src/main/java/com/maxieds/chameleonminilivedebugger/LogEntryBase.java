@@ -14,6 +14,9 @@ import android.view.View;
  * @since   12/31/17
  */
 public abstract class LogEntryBase {
+
+    public static final float LOGENTRY_GUI_ALPHA = 0.95f;
+
     public abstract String writeXMLFragment(int indentLevel);
     public abstract String toString();
     public abstract View getLayoutContainer();

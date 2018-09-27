@@ -19,6 +19,7 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.provider.OpenableColumns;
 import android.support.annotation.ColorInt;
@@ -212,6 +213,20 @@ public class LiveLoggerActivity extends AppCompatActivity {
     };
 
     /**
+     * Attempts to set themes will a background before the current tab has been loaded will
+     * result in a NullPointerException getting issued by the system. We fix this by setting the
+     * theme about 1 second after the application's onCreate(...) method is invoked.
+     */
+    String storedAppTheme = "Light Green";
+    Handler setThemeHandler = new Handler();
+    Runnable setThemeRunner = new Runnable() {
+        @Override
+        public void run() {
+            setLocalTheme(storedAppTheme, true);
+        }
+    };
+
+    /**
      * Initializes the activity state and variables.
      * Called when the activity is created.
      * @param savedInstanceState
@@ -227,7 +242,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 //Fabric.with(this, new Crashlytics());
             }
             Log.w(TAG, "Created new activity");
-            //Thread.setDefaultUncaughtExceptionHandler(unCaughtExceptionHandler);
         }
         if(!isTaskRoot()) {
             Log.w(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
@@ -237,7 +251,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 Log.w(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead of re-launching.");
                 finish();
                 ChameleonIO.USB_CONFIGURED = false;
-                //LiveLoggerActivity.runningActivity.onNewIntent(intent);
                 return;
             }
         }
@@ -254,8 +267,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
         if(completeRestart) {
             SharedPreferences preferences = getSharedPreferences(LiveLoggerActivity.TAG, Context.MODE_PRIVATE);
-            String storedAppTheme = preferences.getString("ThemeUI", "Standard Green");
-            setLocalTheme(storedAppTheme);
+            storedAppTheme = preferences.getString("ThemeUI", "Standard Green");
+            setThemeHandler.postDelayed(setThemeRunner, 1000);
+            setLocalTheme(storedAppTheme, false); // set the base colors, not the backgrounds initially
         }
         setContentView(R.layout.activity_live_logger);
 
@@ -387,11 +401,18 @@ public class LiveLoggerActivity extends AppCompatActivity {
      * @param themeDesc
      * @ref res/values/style.xml
      */
-    private void setLocalTheme(String themeDesc) {
+    private void setLocalTheme(String themeDesc, boolean canResetBackgroundData) {
         int themeID;
+        boolean resetBackground = false;
+        int bgResID = 0;
         switch(themeDesc) {
             case "Amber":
                 themeID = R.style.AppThemeAmber;
+                break;
+            case "Animal":
+                themeID = R.style.AppThemeAnimal;
+                resetBackground = true;
+                bgResID = R.drawable.animal_print_background;
                 break;
             case "Atlanta":
                 themeID = R.style.AppThemeAtlanta;
@@ -419,9 +440,16 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 break;
             case "Lightening":
                 themeID = R.style.AppThemeLightening;
+                resetBackground = true;
+                bgResID = R.drawable.lightening_gradient;
                 break;
             case "Linux Green On Black":
                 themeID = R.style.AppThemeLinuxGreenOnBlack;
+                break;
+            case "Miss Swirly":
+                themeID = R.style.AppThemeMissSwirly;
+                resetBackground = true;
+                bgResID = R.drawable.mrswirly_background;
                 break;
             case "Purple":
                 themeID = R.style.AppThemePurple;
@@ -450,6 +478,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
         Log.w(TAG, themeDesc);
         Log.w(TAG, String.valueOf(themeID));
         setTheme(themeID);
+        if(canResetBackgroundData && resetBackground) {
+            ((ScrollView) findViewById(R.id.log_scroll_view)).setBackgroundColor(getResources().getColor(R.color.transparent, getTheme()));
+            ((ScrollView) findViewById(R.id.log_scroll_view)).setBackground(getResources().getDrawable(bgResID, getTheme()));
+            LiveLoggerActivity.logDataFeed.setBackgroundColor(getResources().getColor(R.color.transparent, getTheme()));
+        }
     }
 
     public void actionButtonAppSettings(View view) {
@@ -465,7 +498,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
             ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonUrbanaDesfire)).setEnabled(false);
             ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonWinter)).setEnabled(false);
         }
-        dialog.setView(dialogView);
+        ScrollView themesScroller = new ScrollView(this);
+        themesScroller.addView(dialogView);
+        dialog.setView(themesScroller);
         dialog.setIcon(R.drawable.settingsgears24);
         dialog.setTitle( "Application Theme Configuration: ");
         dialog.setPositiveButton( "Set Theme", new DialogInterface.OnClickListener(){
@@ -475,11 +510,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                 int getSelectedOption = ((RadioGroup) dialogView.findViewById(R.id.themeRadioGroup)).getCheckedRadioButtonId();
                 String themeID = ((RadioButton) dialogView.findViewById(getSelectedOption)).getText().toString();
                 String themeDesc = themeID.substring("Theme: ".length());
-                setLocalTheme(themeDesc);
-                if(themeDesc.equals("Lightening")) { // a special case #53, for which we can break form:
-                    ((ScrollView) findViewById(R.id.log_scroll_view)).setBackground(getResources().getDrawable(R.drawable.lightening_gradient));
-                    LiveLoggerActivity.logDataFeed.setBackgroundColor(0x0106000d);
-                }
+                setLocalTheme(themeDesc, true);
 
                 // store the theme setting for when the app reopens:
                 SharedPreferences sharedPrefs = getSharedPreferences(LiveLoggerActivity.TAG, Context.MODE_PRIVATE);

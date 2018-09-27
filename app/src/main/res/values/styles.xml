@@ -233,6 +233,30 @@
         <item name="actionBarLeftLogoIcon">@drawable/chameleonicon64_lightening53</item>
     </style>
 
+    <style name="AppThemeAnimal" parent="@style/AppTheme">
+        <item name="colorPrimary">#75a72c</item>
+        <item name="colorPrimaryDark">#3d5717</item>
+        <item name="colorAccent">#91cb3b</item>
+        <item name="colorPrimaryDarkLog">#6eb703</item>
+        <item name="colorAccentLog">#cfe8a9</item>
+        <item name="deviceMemoryLogHighlight">#EF2929</item>
+        <item name="colorAccentHighlight">#98fb98</item>
+        <item name="colorAboutLinkColor">#6eb703</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_animal</item>
+    </style>
+
+    <style name="AppThemeMissSwirly" parent="AppTheme">
+        <item name="colorPrimary">#2196F3</item>
+        <item name="colorPrimaryDark">#0D47A1</item>
+        <item name="colorAccent">#BBDEFB</item>
+        <item name="colorPrimaryDarkLog">#1E88E5</item>
+        <item name="colorAccentLog">#82B1FF</item>
+        <item name="deviceMemoryLogHighlight">#EF2929</item>
+        <item name="colorAccentHighlight">#00B0FF</item>
+        <item name="colorAboutLinkColor">#0D47A1</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleon32_mrswirly</item>
+    </style>
+
     <style name="SpinnerTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="android:background">?colorAccentHighlight</item>
         <item name="buttonStyle">@style/AboutButtonTheme</item>

@@ -152,6 +152,7 @@ public class LogEntryUI extends LogEntryBase {
      */
     public void configureLayout(LinearLayout mainContainerRef) {
         mainEntryContainer = mainContainerRef;
+        mainEntryContainer.setAlpha(LOGENTRY_GUI_ALPHA);
         entrySelect = (CheckBox) mainContainerRef.findViewById(R.id.entrySelect);
         inoutDirIndicator = (ImageView) mainContainerRef.findViewById(R.id.inputDirIndicatorImg);
         inoutDirIndicator.setImageDrawable(LiveLoggerActivity.runningActivity.getResources().getDrawable(getDataDirectionMarker()));
