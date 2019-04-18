@@ -9,6 +9,20 @@ def getDateTimestamp() {
     return new String("BuildTime=" + df.format(new Date()).toString());
 }
 
+def getShellCommandOutput(String shellCmd) {
+    def cmdResult = ['bash', '-c', shellCmd].execute();
+    cmdResult.waitFor();
+    return cmdResult.text[0..-2];
+}
+
+def getGitCommitHash() {
+    return getShellCommandOutput("git show | head -n 1 | sed -e \"s/commit //\" | cut -c-12");
+}
+
+def getGitCommitDate() {
+    return getShellCommandOutput("git show | grep Date: | head -n 1 | sed -e \"s/Date:[ ]*//\"");
+}
+
 android {
 
     compileSdkVersion 28
@@ -16,10 +30,13 @@ android {
         applicationId "com.maxieds.chameleonminilivedebugger"
         minSdkVersion 26
         targetSdkVersion 28
-        versionCode 54
-        versionName "0.5.4"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        versionCode 57
+        versionName "0.5.7"
+        //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+
+        buildConfigField "String", "GIT_COMMIT_HASH", "\"" + getGitCommitHash() + "\""
+        buildConfigField "String", "GIT_COMMIT_DATE", "\"" + getGitCommitDate() + "\""
     }
     buildTypes {
         release {
@@ -34,7 +51,7 @@ android {
             crunchPngs false
         }
     }
-    buildToolsVersion '28.0.2'
+    buildToolsVersion '28.0.3'
 
     flavorDimensions "mode"
     def configBuildTimeStamp = getDateTimestamp()
@@ -54,6 +71,7 @@ android {
             resConfigs "en", "en_US", "en_UK", "de"
             manifestPlaceholders = [
                     appIcon : "@drawable/chameleonicon_about64",
+                    appRoundIcon : "@drawable/chameleonicon_about64_roundicon",
                     appTheme: "@style/AppThemeGreen",
                     appDebug: "false",
                     installLocation: "internalOnly"
@@ -69,6 +87,7 @@ android {
             dimension "mode"
             manifestPlaceholders = [
                     appIcon : "@drawable/chameleonicon64_paid",
+                    appRoundIcon : "@drawable/chameleonicon64_paid",
                     appTheme: "@style/AppThemeGreen",
                     appDebug: "false",
                     installLocation: "auto"
