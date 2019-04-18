@@ -80,6 +80,7 @@ public class ChameleonIO {
          * List of the status codes and their corresponding text descriptions
          * (taken almost verbatim from the ChameleonMini source code).
          */
+        TIMEOUT(203),
         OK(100),
         OK_WITH_TEXT(101),
         WAITING_FOR_MODEM(110),
@@ -87,8 +88,7 @@ public class ChameleonIO {
         FALSE(120),
         UNKNOWN_COMMAND(200),
         INVALID_COMMAND_USAGE(201),
-        INVALID_PARAMETER(202),
-        TIMEOUT(203);
+        INVALID_PARAMETER(202);
 
         /**
          * Integer value associated with each enum value.
@@ -215,7 +215,7 @@ public class ChameleonIO {
          * Queries the live device for its status settings.
          */
         private boolean updateAllStatus(boolean resetTimer) {
-            try {
+            /*try {
                 if (!LiveLoggerActivity.serialPortLock.tryAcquire(ChameleonIO.LOCK_TIMEOUT, TimeUnit.MILLISECONDS)) {
                     if (resetTimer)
                         statsUpdateHandler.postDelayed(statsUpdateRunnable, STATS_UPDATE_INTERVAL / 4);
@@ -225,7 +225,7 @@ public class ChameleonIO {
                 if (resetTimer)
                     statsUpdateHandler.postDelayed(statsUpdateRunnable, STATS_UPDATE_INTERVAL / 4);
                 return false;
-            }
+            }*/
             if (!ChameleonIO.REVE_BOARD) {
                 CONFIG = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "CONFIG?", CONFIG);
                 UID = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "UID?", UID);
@@ -254,7 +254,7 @@ public class ChameleonIO {
                 THRESHOLD = 0;
                 TIMEOUT = "NA";
             }
-            LiveLoggerActivity.serialPortLock.release();
+            //LiveLoggerActivity.serialPortLock.release();
 
             // setup threshold signal bars:
             LiveLoggerActivity.setSignalStrengthIndicator(THRESHOLD);
@@ -275,7 +275,7 @@ public class ChameleonIO {
             boolean haveUpdates = updateAllStatus(resetTimer);
             //if (!haveUpdates)
             //    return;
-            ChameleonIO.WAITING_FOR_RESPONSE = true;
+            //ChameleonIO.WAITING_FOR_RESPONSE = true;
             ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceConfigText)).setText(CONFIG);
             String formattedUID = UID;
             if (!UID.equals("NO UID."))

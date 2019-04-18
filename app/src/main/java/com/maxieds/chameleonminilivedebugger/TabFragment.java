@@ -126,8 +126,8 @@ public class TabFragment extends Fragment {
             Spinner localSpinner = localSpinnerRef;
             String[] localSpinnerList = spinnerList;
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if(i == 0)
-                    return;
+                //if(i == 0)
+                //    return;
                 String setCmd = localSpinner.getTag().toString() + localSpinnerList[i];
                 ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, setCmd, ChameleonIO.TIMEOUT);
             }

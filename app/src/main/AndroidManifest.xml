@@ -13,7 +13,7 @@
         android:description="@string/app_desc"
         android:icon="${appIcon}"
         android:label="@string/app_name"
-        android:roundIcon="${appIcon}"
+        android:roundIcon="${appRoundIcon}"
         android:launchMode="singleTask"
         android:noHistory="true"
         android:excludeFromRecents="true"
@@ -50,9 +50,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <meta-data
-            android:name="io.fabric.ApiKey" android:value="1f8ca135bc85ac9d9672b7b8ec147721595d4466" />
-           <!-- android:value="e1f46b361ac26527c2bdc2e5aa4d2be73b341460" />-->
+
     </application>
 
 </manifest>
