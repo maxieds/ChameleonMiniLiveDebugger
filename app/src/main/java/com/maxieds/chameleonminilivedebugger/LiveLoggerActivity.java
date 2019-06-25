@@ -39,7 +39,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.ScrollView;
+import androidx.core.widget.NestedScrollView;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.Switch;
@@ -47,7 +47,6 @@ import android.widget.TextView;
 import android.widget.Toolbar;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.DrawableRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
@@ -102,7 +101,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
      public static List<LogEntryBase> logDataEntries = new ArrayList<LogEntryBase>();
      public static int RECORDID = 0;
      public static boolean logDataFeedConfigured = false;
-     public static ScrollView logScrollView;
+     public static NestedScrollView logScrollView;
      public static SpinnerAdapter spinnerRButtonAdapter;
      public static SpinnerAdapter spinnerRButtonLongAdapter;
      public static SpinnerAdapter spinnerLButtonAdapter;
@@ -148,7 +147,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     logScrollView.postDelayed(new Runnable() {
                          @Override
                          public void run() {
-                              ScrollView logScroller = (ScrollView) LiveLoggerActivity.runningActivity.findViewById(R.id.log_scroll_view);
+                              NestedScrollView logScroller = (NestedScrollView) LiveLoggerActivity.runningActivity.findViewById(R.id.log_scroll_view);
                               //int bottomEltHeight = LiveLoggerActivity.logDataFeed.getChildAt(LiveLoggerActivity.logDataFeed.getChildCount() - 1).getHeight();
                               LinearLayout lastLogElt = (LinearLayout) logDataFeed.getChildAt(logDataFeed.getChildCount() - 1);
                               lastLogElt.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
@@ -184,11 +183,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
      @ColorInt
      public int getThemeColorVariant(int attrID) {
           return getTheme().obtainStyledAttributes(new int[] {attrID}).getColor(0, attrID);
-     }
-
-     @DrawableRes
-     public Drawable getThemeDrawableVariant(int attrID) {
-          return getTheme().obtainStyledAttributes(new int[] {attrID}).getDrawable(0);
      }
 
      /**
@@ -260,25 +254,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
                }
                Log.w(TAG, "Created new activity");
           }
-          else { // try to fix something weird reported in the CRASH reports:
-               boolean fbIsInit = false;
-               try {
-                    super.onCreate(savedInstanceState);
-               } catch(IllegalStateException ise) {
-                    Log.e(TAG, String.format(Locale.ENGLISH, "ISE (on Android %s, API %s / %s): %s",
-                         android.os.Build.VERSION.RELEASE, android.os.Build.VERSION.SDK_INT,
-                         String.valueOf(android.os.Build.VERSION.RELEASE), ise.getMessage()));
-                    ise.printStackTrace();
-                    Fabric.with(this, new Crashlytics());
-                    fbIsInit = true;
-                    Crashlytics.log(Log.ERROR, TAG, "Encountered unexpected ISE (under UNEXPECTED conditions): " + ise.getMessage());
-                    Crashlytics.logException(ise);
-               }
-               if(!fbIsInit) {
-                    Fabric.with(this, new Crashlytics());
-               }
-               Log.w(TAG, "Created new activity (called super.onCreate under unexpected runtime condition!)");
-          }
           if(!isTaskRoot()) {
                Log.w(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
                final Intent intent = getIntent();
@@ -304,8 +279,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
           if(completeRestart) {
                SharedPreferences preferences = getSharedPreferences(LiveLoggerActivity.TAG, Context.MODE_PRIVATE);
                storedAppTheme = preferences.getString("ThemeUI", "Standard Green");
-               setThemeHandler.postDelayed(setThemeRunner, 1000);
                setLocalTheme(storedAppTheme, false); // set the base colors, not the backgrounds initially
+               setThemeHandler.postDelayed(setThemeRunner, 400);
           }
           setContentView(R.layout.activity_live_logger);
 
@@ -516,10 +491,20 @@ public class LiveLoggerActivity extends AppCompatActivity {
           Log.w(TAG, String.valueOf(themeID));
           setTheme(themeID);
           if(canResetBackgroundData && resetBackground) {
-               ((ScrollView) findViewById(R.id.log_scroll_view)).setBackgroundColor(getResources().getColor(R.color.transparent, getTheme()));
-               ((ScrollView) findViewById(R.id.log_scroll_view)).setBackground(getResources().getDrawable(bgResID, getTheme()));
+               ((NestedScrollView) findViewById(R.id.log_scroll_view)).setBackgroundColor(getResources().getColor(R.color.transparent, getTheme()));
+               ((NestedScrollView) findViewById(R.id.log_scroll_view)).setBackground(getResources().getDrawable(bgResID, getTheme()));
                LiveLoggerActivity.logDataFeed.setBackgroundColor(getResources().getColor(R.color.transparent, getTheme()));
           }
+          if(LiveLoggerActivity.logDataFeed != null && LiveLoggerActivity.logScrollView != null) {
+               //setContentView(R.layout.activity_live_logger);
+               LiveLoggerActivity.logScrollView.invalidate();
+               //LiveLoggerActivity.logScrollView.setVisibility(View.GONE);
+               //LiveLoggerActivity.logScrollView.setVisibility(View.VISIBLE);
+               LiveLoggerActivity.logDataFeed.invalidate();
+               //LiveLoggerActivity.logDataFeed.setVisibility(View.GONE);
+               //LiveLoggerActivity.logDataFeed.setVisibility(View.VISIBLE);
+          }
+
      }
 
      public void actionButtonAppSettings(View view) {
@@ -535,7 +520,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonUrbanaDesfire)).setEnabled(false);
                ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonWinter)).setEnabled(false);
           }
-          ScrollView themesScroller = new ScrollView(this);
+          NestedScrollView themesScroller = new NestedScrollView(this);
           themesScroller.addView(dialogView);
           dialog.setView(themesScroller);
           dialog.setIcon(R.drawable.settingsgears24);
@@ -778,7 +763,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
           }
 
           ChameleonIO.setLoggerConfigMode(serialPort, ChameleonIO.TIMEOUT);
-          //ChameleonIO.setReaderConfigMode(serialPort, ChameleonIO.TIMEOUT);
           ChameleonIO.enableLiveDebugging(serialPort, ChameleonIO.TIMEOUT);
           ChameleonIO.PAUSED = false;
           String usbDeviceData = String.format(Locale.ENGLISH, "Manufacturer: %s\nProduct Name: %s\nVersion: %s\nDevice Serial: %s\nUSB Dev: %s",
@@ -1627,7 +1611,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
           ExportTools.uploadCardFileByXModem(cardFilePath);
      }
 
-     // TODO: javadcocs
+     // TODO: javadocs
      public void actionButtonPerformSearch(View view) {
 
           // hide the search keyboard obstructing the results after the button press:
@@ -1639,7 +1623,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
           long startTime = System.currentTimeMillis();
 
           // clear out the existing search data first:
-          ScrollView searchResultsScroller = (ScrollView) findViewById(R.id.searchResultsScrollView);
+          NestedScrollView searchResultsScroller = (NestedScrollView) findViewById(R.id.searchResultsScrollView);
           if(searchResultsScroller.getChildCount() != 0) {
                searchResultsScroller.removeViewAt(0);
           }
@@ -1703,7 +1687,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
      public void actionButtonApduClear(View view) {
           ApduUtils.apduTransceiveCmd.clear();
           //((TextView) ((ScrollView) ApduUtils.tabView.findViewById(R.id.apduSearchResultsScrollView)).getChildAt(0)).setText("");
-          ((LinearLayout) ((ScrollView) ApduUtils.tabView.findViewById(R.id.apduSearchResultsScrollView)).getChildAt(0)).removeAllViewsInLayout();
+          ((LinearLayout) ((NestedScrollView) ApduUtils.tabView.findViewById(R.id.apduSearchResultsScrollView)).getChildAt(0)).removeAllViewsInLayout();
           ApduUtils.updateAssembledAPDUCmd();
      }
 
@@ -1786,7 +1770,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
      public void actionButtonAPDUSearchCmd(View view) {
           String searchText = ((TextView) ApduUtils.tabView.findViewById(R.id.apduSearchText)).getText().toString().toLowerCase();
-          LinearLayout layoutList = (LinearLayout) ((ScrollView) ApduUtils.tabView.findViewById(R.id.apduSearchResultsScrollView)).getChildAt(0);
+          LinearLayout layoutList = (LinearLayout) ((NestedScrollView) ApduUtils.tabView.findViewById(R.id.apduSearchResultsScrollView)).getChildAt(0);
           for(int cmd = 0; cmd < ApduUtils.fullInsList.length; cmd++) {
                String summaryStr = ApduUtils.fullInsList[cmd].getSummary();
                if(summaryStr.toLowerCase().contains(searchText)) {

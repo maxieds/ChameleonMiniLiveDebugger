@@ -53,6 +53,9 @@
                 <category android:name="android.intent.category.IOT_LAUNCHER" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+
+            <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
+
         </activity>
 
     </application>

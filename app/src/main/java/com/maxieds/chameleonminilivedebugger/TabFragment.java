@@ -15,7 +15,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
+import androidx.core.widget.NestedScrollView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
@@ -213,7 +213,7 @@ public class TabFragment extends Fragment {
         inflatedView = view;
         LiveLoggerActivity.defaultInflater = inflater;
         if(tabNumber == TAB_LOG && !LiveLoggerActivity.logDataFeedConfigured) {
-            ScrollView logScroller = (ScrollView) view.findViewById(R.id.log_scroll_view);
+            NestedScrollView logScroller = (NestedScrollView) view.findViewById(R.id.log_scroll_view);
             LinearLayout logDataFeed = LiveLoggerActivity.logDataFeed;
             logDataFeed.setOrientation(LinearLayout.VERTICAL);
             logScroller.addView(logDataFeed);
@@ -312,11 +312,7 @@ public class TabFragment extends Fragment {
         else if(tabNumber == TAB_APDU) {
             ApduUtils.buildFullInstructionsList();
             ApduUtils.tabView = inflatedView;
-            ScrollView sv = (ScrollView) inflatedView.findViewById(R.id.apduSearchResultsScrollView);
-            //TextView tvSearchResults = new TextView(inflatedView.getContext());
-            //tvSearchResults.setTextSize((float) 10.0);
-            //tvSearchResults.setTypeface(Typeface.MONOSPACE);
-            //sv.addView(tvSearchResults);
+            NestedScrollView sv = (NestedScrollView) inflatedView.findViewById(R.id.apduSearchResultsScrollView);
             LinearLayout searchResultsContainer = new LinearLayout(LiveLoggerActivity.runningActivity);
             searchResultsContainer.setOrientation(LinearLayout.VERTICAL);
             sv.addView(searchResultsContainer);

@@ -121,7 +121,8 @@ android {
         implementation 'com.google.android.material:material:1.1.0-alpha07'
         implementation 'com.github.felHR85:UsbSerial:4.5.2'
         implementation 'com.shawnlin:number-picker:2.4.4'
-        implementation 'com.google.firebase:firebase-core:17.0.0'
+        //implementation 'com.google.firebase:firebase-core:+'
+        implementation 'com.google.android.gms:play-services:12.0.1'
         implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
     }
 
