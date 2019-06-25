@@ -97,17 +97,27 @@ android {
             ]
         }
 
+        packagingOptions {
+            exclude 'META-INF/DEPENDENCIES'
+            exclude 'META-INF/LICENSE'
+            exclude 'META-INF/LICENSE.txt'
+            exclude 'META-INF/license.txt'
+            exclude 'META-INF/NOTICE'
+            exclude 'META-INF/NOTICE.txt'
+            exclude 'META-INF/notice.txt'
+            exclude 'META-INF/ASL2.0'
+            exclude 'META-INF/androidx*'
+        }
+
     }
 
     dependencies {
         implementation fileTree(include: ['*.jar'], dir: 'libs')
         implementation 'com.android.support.constraint:constraint-layout:1.0.2'
         testImplementation 'junit:junit:4.12'
-        androidTestImplementation 'com.android.support.test:runner:1.0.2'
-        androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-        implementation 'com.android.support:support-v4:28.0.0'
-        implementation 'com.android.support:appcompat-v7:28.0.0'
-        implementation 'com.android.support:design:28.0.0'
+        implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+        implementation 'androidx.appcompat:appcompat:1.0.0'
+        implementation 'com.google.android.material:material:1.0.0-rc01'
         implementation 'com.github.felHR85:UsbSerial:4.5.2'
         implementation 'com.shawnlin:number-picker:2.4.4'
         implementation 'com.google.firebase:firebase-core:17.0.0'
@@ -118,7 +128,10 @@ android {
         jcenter()
         google()
         mavenCentral()
-        maven { url "https://maven.google.com" }
+        maven {
+            url "https://maven.google.com"
+            name 'Google'
+        }
         maven { url "https://jitpack.io" }
     }
 

@@ -22,13 +22,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.OpenableColumns;
-import android.support.annotation.ColorInt;
-import android.support.annotation.DrawableRes;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -53,9 +46,16 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.viewpager.widget.ViewPager;
+
 import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
-
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.crash.FirebaseCrash;
 
 import java.io.File;
@@ -611,7 +611,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
           statusBarIconBuilder.setSmallIcon(R.drawable.chameleonstatusbaricon16);
           statusBarIconBuilder.setContentTitle(getResources().getString(R.string.app_name) + " -- v" + BuildConfig.VERSION_NAME);
           statusBarIconBuilder.setContentText(getResources().getString(R.string.app_desc));
-          //statusBarIconBuilder.setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
           statusBarIconBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
           Intent resultIntent = new Intent(this, LiveLoggerActivity.class);
           PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
