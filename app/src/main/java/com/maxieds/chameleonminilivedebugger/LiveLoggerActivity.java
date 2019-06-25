@@ -56,6 +56,8 @@ import android.widget.Toolbar;
 import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
 
+import com.google.firebase.crash.FirebaseCrash;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -205,9 +207,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
      private Thread.UncaughtExceptionHandler unCaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
           @Override
           public void uncaughtException(Thread thread, Throwable ex) {
-               String msgParam = "An unknown error happened in the app. Please upgrade to the latest version if a newer one is available, or ";
+               String msgParam = "An unknown error happened in the application. Please upgrade to the latest version if a newer one is available, or ";
                msgParam += "contact the developer at maxieds@gmail.com to report whatever action you took to generate this error!";
                appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("UNRECOGNIZED EXCEPTION", msgParam));
+               FirebaseCrash.logcat(Log.ERROR, TAG, msgParam + "\n\n" + Log.getStackTraceString(ex));
+               FirebaseCrash.report(ex);
                System.exit(-1);
           }
      };
@@ -236,12 +240,30 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
           // fix bug where the tabs are blank when the application is relaunched:
           if(runningActivity == null || !isTaskRoot()) {
-               super.onCreate(savedInstanceState); // should fix most of the crashes in the ANR report on Play Store
-               if(!BuildConfig.DEBUG) {
-                    Log.w(TAG, "Loading crashlytics");
-                    //Fabric.with(this, new Crashlytics());
+               try {
+                    super.onCreate(savedInstanceState); // should fix most of the crashes in the ANR report on Play Store
+               } catch(IllegalStateException ise) { // not sure why this gets reported on Android 8.0:
+                    Log.e(TAG, String.format(Locale.ENGLISH, "ISE (on Android %s, API %s / %s): %s",
+                          android.os.Build.VERSION.RELEASE, android.os.Build.VERSION.SDK_INT,
+                          String.valueOf(android.os.Build.VERSION.RELEASE), ise.getMessage()));
+                    ise.printStackTrace();
+                    FirebaseCrash.logcat(Log.ERROR, TAG, "Encountered unexpected ISE (under normal conditions): " + ise.getMessage());
+                    FirebaseCrash.report(ise);
                }
                Log.w(TAG, "Created new activity");
+          }
+          else { // try to fix something weird reported in the CRASH reports:
+               try {
+                    super.onCreate(savedInstanceState);
+               } catch(IllegalStateException ise) {
+                    Log.e(TAG, String.format(Locale.ENGLISH, "ISE (on Android %s, API %s / %s): %s",
+                         android.os.Build.VERSION.RELEASE, android.os.Build.VERSION.SDK_INT,
+                         String.valueOf(android.os.Build.VERSION.RELEASE), ise.getMessage()));
+                    ise.printStackTrace();
+                    FirebaseCrash.logcat(Log.ERROR, TAG, "Encountered unexpected ISE (under UNEXPECTED conditions): " + ise.getMessage());
+                    FirebaseCrash.report(ise);
+               }
+               Log.w(TAG, "Created new activity (called super.onCreate under unexpected runtime condition!)");
           }
           if(!isTaskRoot()) {
                Log.w(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
@@ -341,6 +363,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                logDataEntries.clear();
 
           viewPager = (ViewPager) findViewById(R.id.tab_pager);
+          viewPager.setId(View.generateViewId()); // should fix some ResourceNotFoundExceptions generated
           TabFragmentPagerAdapter tfPagerAdapter = new TabFragmentPagerAdapter(getSupportFragmentManager(), LiveLoggerActivity.this);
           viewPager.setAdapter(tfPagerAdapter);
           if(tabChangeListener != null) {
@@ -650,7 +673,23 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     break;
                }
           }
-          int deviceRespCode = Integer.valueOf(ChameleonIO.DEVICE_RESPONSE_CODE.substring(0, 3));
+          int deviceRespCode = -1;
+          try {
+               if(ChameleonIO.DEVICE_RESPONSE_CODE.length() >= 3) {
+                    deviceRespCode = Integer.valueOf(ChameleonIO.DEVICE_RESPONSE_CODE.substring(0, 3));
+               }
+               else {
+                    deviceRespCode = Integer.valueOf(ChameleonIO.DEVICE_RESPONSE_CODE);
+               }
+          } catch(NumberFormatException nfe) {
+               Log.e(TAG, "NFE encountered: " + nfe.getMessage());
+               nfe.printStackTrace();
+               FirebaseCrash.logcat(Log.ERROR, TAG, "Encountered unexpected NFE: " +
+                                    nfe.getMessage() + "(DEVICE_RESPONSE_CODE = " + ChameleonIO.DEVICE_RESPONSE_CODE + ")");
+               FirebaseCrash.report(nfe);
+               serialPortLock.release();
+               return ChameleonIO.DEVICE_RESPONSE_CODE;
+          }
           serialPortLock.release();
           if(deviceRespCode != ChameleonIO.SerialRespCode.OK.toInteger() &&
              deviceRespCode != ChameleonIO.SerialRespCode.OK_WITH_TEXT.toInteger()) {
@@ -659,6 +698,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
           String retValue = ChameleonIO.DEVICE_RESPONSE[0];
           if(retValue.equals("201:INVALID COMMAND USAGE")) {
                retValue += " (Are you in READER mode?)";
+               FirebaseCrash.logcat(Log.WARN, TAG, "201: INVALID COMMAND USAGE for RESPONSE_CODE = " + ChameleonIO.DEVICE_RESPONSE_CODE);
           }
           return retValue;
      }

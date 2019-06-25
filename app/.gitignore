@@ -1,1 +1,5 @@
 /build
+app/free
+app/free*
+app/paid
+app/paid*

@@ -145,7 +145,8 @@ public class LogUtils {
               return false;
          }
          for(int lc = 0; lc < LogCode.LOG_CODE_MAP.size(); lc++) {
-              if(logCodeByte == LogCode.LOG_CODE_MAP.get(lc).toByte()) {
+              LogCode lcAtIndex = LogCode.LOG_CODE_MAP.get(lc);
+              if(lcAtIndex != null && logCodeByte == lcAtIndex.toByte()) {
                    return true;
               }
          }

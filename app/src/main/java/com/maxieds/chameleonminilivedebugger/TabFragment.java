@@ -86,7 +86,8 @@ public class TabFragment extends Fragment {
                 fragment.layoutResRef = R.layout.apdu_tab;
                 break;
             default:
-                break;
+                 fragment.layoutResRef = R.layout.logging_tab;
+                 break;
         }
         return fragment;
     }

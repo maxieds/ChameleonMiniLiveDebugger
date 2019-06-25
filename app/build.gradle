@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+//apply plugin: 'com.google.gms.google-services'
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -38,6 +39,10 @@ android {
         buildConfigField "String", "GIT_COMMIT_HASH", "\"" + getGitCommitHash() + "\""
         buildConfigField "String", "GIT_COMMIT_DATE", "\"" + getGitCommitDate() + "\""
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -70,10 +75,10 @@ android {
             buildConfigField "String", "BUILD_TIMESTAMP", "\"" + configBuildTimeStamp + "\""
             resConfigs "en", "en_US", "en_UK", "de"
             manifestPlaceholders = [
-                    appIcon : "@drawable/chameleonicon_about64",
-                    appRoundIcon : "@drawable/chameleonicon_about64_roundicon",
-                    appTheme: "@style/AppThemeGreen",
-                    appDebug: "false",
+                    appIcon        : "@drawable/chameleonicon_about64",
+                    appRoundIcon   : "@drawable/chameleonicon_about64_roundicon",
+                    appTheme       : "@style/AppThemeGreen",
+                    appDebug       : "false",
                     installLocation: "internalOnly"
             ]
         }
@@ -86,10 +91,10 @@ android {
             resConfigs "en", "en_US", "en_UK", "de"
             dimension "mode"
             manifestPlaceholders = [
-                    appIcon : "@drawable/chameleonicon64_paid",
-                    appRoundIcon : "@drawable/chameleonicon64_paid",
-                    appTheme: "@style/AppThemeGreen",
-                    appDebug: "false",
+                    appIcon        : "@drawable/chameleonicon64_paid",
+                    appRoundIcon   : "@drawable/chameleonicon64_paid",
+                    appTheme       : "@style/AppThemeGreen",
+                    appDebug       : "false",
                     installLocation: "auto"
             ]
         }
@@ -107,6 +112,8 @@ android {
         implementation 'com.android.support:design:28.0.0'
         implementation 'com.github.felHR85:UsbSerial:4.5.2'
         implementation 'com.shawnlin:number-picker:2.4.4'
+        implementation 'com.google.firebase:firebase-core:17.0.0'
+        implementation 'com.google.firebase:firebase-crash:16.2.1'
     }
 
     repositories {
@@ -116,4 +123,8 @@ android {
         maven { url "https://jitpack.io" }
     }
 
+}
+
+dependencies {
+    implementation 'com.google.firebase:firebase-crash:16.2.0'
 }
