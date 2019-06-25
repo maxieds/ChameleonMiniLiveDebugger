@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-//apply plugin: 'com.google.gms.google-services'
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -44,13 +43,13 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             crunchPngs false
         }
         debug {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             crunchPngs false
         }
@@ -118,12 +117,11 @@ android {
     repositories {
         jcenter()
         google()
+        mavenCentral()
         maven { url "https://maven.google.com" }
         maven { url "https://jitpack.io" }
     }
 
 }
 
-dependencies {
-    implementation 'com.google.firebase:firebase-crash:16.2.0'
-}
+apply plugin: 'com.google.gms.google-services'
