@@ -53,10 +53,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.viewpager.widget.ViewPager;
 
+import com.crashlytics.android.Crashlytics;
 import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
 import com.google.android.material.tabs.TabLayout;
-import com.google.firebase.crash.FirebaseCrash;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -66,6 +66,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
+
+import io.fabric.sdk.android.Fabric;
 
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_APDU;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
@@ -210,8 +212,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
                String msgParam = "An unknown error happened in the application. Please upgrade to the latest version if a newer one is available, or ";
                msgParam += "contact the developer at maxieds@gmail.com to report whatever action you took to generate this error!";
                appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("UNRECOGNIZED EXCEPTION", msgParam));
-               FirebaseCrash.logcat(Log.ERROR, TAG, msgParam + "\n\n" + Log.getStackTraceString(ex));
-               FirebaseCrash.report(ex);
+               Crashlytics.log(Log.ERROR, TAG, msgParam + "\n\n" + Log.getStackTraceString(ex));
+               Crashlytics.logException(ex);
                System.exit(-1);
           }
      };
@@ -240,6 +242,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
           // fix bug where the tabs are blank when the application is relaunched:
           if(runningActivity == null || !isTaskRoot()) {
+               boolean fbIsInit = false;
                try {
                     super.onCreate(savedInstanceState); // should fix most of the crashes in the ANR report on Play Store
                } catch(IllegalStateException ise) { // not sure why this gets reported on Android 8.0:
@@ -247,12 +250,18 @@ public class LiveLoggerActivity extends AppCompatActivity {
                           android.os.Build.VERSION.RELEASE, android.os.Build.VERSION.SDK_INT,
                           String.valueOf(android.os.Build.VERSION.RELEASE), ise.getMessage()));
                     ise.printStackTrace();
-                    FirebaseCrash.logcat(Log.ERROR, TAG, "Encountered unexpected ISE (under normal conditions): " + ise.getMessage());
-                    FirebaseCrash.report(ise);
+                    Fabric.with(this, new Crashlytics());
+                    fbIsInit = true;
+                    Crashlytics.log(Log.ERROR, TAG, "Encountered unexpected ISE (under normal conditions): " + ise.getMessage());
+                    Crashlytics.logException(ise);
+               }
+               if(!fbIsInit) {
+                    Fabric.with(this, new Crashlytics());
                }
                Log.w(TAG, "Created new activity");
           }
           else { // try to fix something weird reported in the CRASH reports:
+               boolean fbIsInit = false;
                try {
                     super.onCreate(savedInstanceState);
                } catch(IllegalStateException ise) {
@@ -260,8 +269,13 @@ public class LiveLoggerActivity extends AppCompatActivity {
                          android.os.Build.VERSION.RELEASE, android.os.Build.VERSION.SDK_INT,
                          String.valueOf(android.os.Build.VERSION.RELEASE), ise.getMessage()));
                     ise.printStackTrace();
-                    FirebaseCrash.logcat(Log.ERROR, TAG, "Encountered unexpected ISE (under UNEXPECTED conditions): " + ise.getMessage());
-                    FirebaseCrash.report(ise);
+                    Fabric.with(this, new Crashlytics());
+                    fbIsInit = true;
+                    Crashlytics.log(Log.ERROR, TAG, "Encountered unexpected ISE (under UNEXPECTED conditions): " + ise.getMessage());
+                    Crashlytics.logException(ise);
+               }
+               if(!fbIsInit) {
+                    Fabric.with(this, new Crashlytics());
                }
                Log.w(TAG, "Created new activity (called super.onCreate under unexpected runtime condition!)");
           }
@@ -683,9 +697,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
           } catch(NumberFormatException nfe) {
                Log.e(TAG, "NFE encountered: " + nfe.getMessage());
                nfe.printStackTrace();
-               FirebaseCrash.logcat(Log.ERROR, TAG, "Encountered unexpected NFE: " +
-                                    nfe.getMessage() + "(DEVICE_RESPONSE_CODE = " + ChameleonIO.DEVICE_RESPONSE_CODE + ")");
-               FirebaseCrash.report(nfe);
+               if(ChameleonIO.DEVICE_RESPONSE_CODE == null) {
+                    ChameleonIO.DEVICE_RESPONSE_CODE = "";
+               }
+               Crashlytics.log(Log.ERROR, TAG, "Encountered unexpected NFE: " +
+                               nfe.getMessage() + "(DEVICE_RESPONSE_CODE = \"" + ChameleonIO.DEVICE_RESPONSE_CODE + "\")");
+               Crashlytics.logException(nfe);
                serialPortLock.release();
                return ChameleonIO.DEVICE_RESPONSE_CODE;
           }
@@ -694,10 +711,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
              deviceRespCode != ChameleonIO.SerialRespCode.OK_WITH_TEXT.toInteger()) {
                return ChameleonIO.DEVICE_RESPONSE_CODE;
           }
-          String retValue = ChameleonIO.DEVICE_RESPONSE[0];
+          String retValue = ChameleonIO.DEVICE_RESPONSE[0] != null ? ChameleonIO.DEVICE_RESPONSE[0] : "";
           if(retValue.equals("201:INVALID COMMAND USAGE")) {
                retValue += " (Are you in READER mode?)";
-               FirebaseCrash.logcat(Log.WARN, TAG, "201: INVALID COMMAND USAGE for RESPONSE_CODE = " + ChameleonIO.DEVICE_RESPONSE_CODE);
+               Crashlytics.log(Log.WARN, TAG, "201: INVALID COMMAND USAGE for RESPONSE_CODE = " + ChameleonIO.DEVICE_RESPONSE_CODE);
           }
           return retValue;
      }

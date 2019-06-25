@@ -228,7 +228,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintVertical_bias="1.0">
 
-            <android.support.design.widget.TabLayout
+            <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tab_layout"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -244,7 +244,7 @@
                 app:tabPaddingStart="-1dp"
                 app:tabTextAppearance="?android:attr/textAppearanceSmall">
 
-            </android.support.design.widget.TabLayout>
+            </com.google.android.material.tabs.TabLayout>
 
         </TabHost>
 
@@ -253,7 +253,7 @@
             android:layout_height="2dp"
             android:background="?colorPrimaryDark" />
 
-        <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+        <androidx.viewpager.widget.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/tab_pager"
             android:layout_width="match_parent"
@@ -263,7 +263,7 @@
             android:padding="8dp"
             tools:context="net.voidynullness.android.tabitytabs.TabLayoutActivity">
 
-        </android.support.v4.view.ViewPager>
+        </androidx.viewpager.widget.ViewPager>
 
     </LinearLayout>
 

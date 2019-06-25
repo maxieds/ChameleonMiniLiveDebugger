@@ -3,7 +3,7 @@ package com.maxieds.chameleonminilivedebugger;
 import android.text.format.Time;
 import android.util.Log;
 
-import com.google.firebase.crash.FirebaseCrash;
+import com.crashlytics.android.Crashlytics;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class Utils {
     public static byte hexString2Byte(String byteStr) {
         if (byteStr.length() != 2) {
             Log.e(TAG, "Invalid Byte String: " + byteStr);
-            FirebaseCrash.logcat(Log.WARN, TAG, "Invalid Byte String Encountered: " + byteStr);
+            Crashlytics.log(Log.WARN, TAG, "Invalid Byte String Encountered: " + byteStr);
             return 0x00;
         }
         int lsb = Character.digit(byteStr.charAt(1), 16);
