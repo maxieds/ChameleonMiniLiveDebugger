@@ -540,7 +540,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
           for(int rb = 0; rb < themeRadioGroup.getChildCount(); rb++) {
                RadioButton curThemeBtn = (RadioButton) themeRadioGroup.getChildAt(rb);
                if(curThemeBtn.isEnabled() && curThemeBtn.getText().toString().equals("Theme: " + storedAppTheme)) {
-                    curThemeBtn.setSelected(true);
+                    curThemeBtn.setChecked(true);
                     break;
                }
           }
