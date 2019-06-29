@@ -1640,7 +1640,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
           ExportTools.uploadCardFileByXModem(cardFilePath);
      }
 
-     // TODO: javadocs
      public void actionButtonPerformSearch(View view) {
 
           // hide the search keyboard obstructing the results after the button press:
@@ -1671,6 +1670,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
           else if(selectedBytes) {
                searchString = searchString.replace("[\n\t\r]+", "").replaceAll("..(?!$)", "$0 ");
           }
+          searchString = searchString.toLowerCase(Locale.ENGLISH);
 
           boolean searchStatus = ((CheckBox) findViewById(R.id.entrySearchIncludeStatus)).isChecked();
           boolean searchAPDU = ((CheckBox) findViewById(R.id.entrySearchAPDU)).isChecked();
@@ -1680,16 +1680,16 @@ public class LiveLoggerActivity extends AppCompatActivity {
           Log.i(TAG, "Searching for: " + searchString);
           for(int vi = 0; vi < logDataEntries.size(); vi++) {
                if (logDataEntries.get(vi) instanceof LogEntryMetadataRecord) {
-                    if (searchStatus && logDataEntries.get(vi).toString().contains(searchString)) {
+                    if (searchStatus && logDataEntries.get(vi).toString().toLowerCase(Locale.ENGLISH).contains(searchString)) {
                          searchResultsContainer.addView(logDataEntries.get(vi).cloneLayoutContainer());
                          matchCount++;
                     }
                     continue;
                }
                Log.i(TAG, ((LogEntryUI) logDataEntries.get(vi)).getPayloadDataString(selectedBytes));
-               if (searchAPDU && ((LogEntryUI) logDataEntries.get(vi)).getAPDUString().contains(searchString) ||
-                    searchLogHeaders && ((LogEntryUI) logDataEntries.get(vi)).getLogCodeName().contains(searchString) ||
-                    searchLogPayload && ((LogEntryUI) logDataEntries.get(vi)).getPayloadDataString(selectedBytes).contains(searchString)) {
+               if (searchAPDU && ((LogEntryUI) logDataEntries.get(vi)).getAPDUString().toLowerCase(Locale.ENGLISH).contains(searchString) ||
+                    searchLogHeaders && ((LogEntryUI) logDataEntries.get(vi)).getLogCodeName().toLowerCase(Locale.ENGLISH).contains(searchString) ||
+                    searchLogPayload && ((LogEntryUI) logDataEntries.get(vi)).getPayloadDataString(selectedBytes).toLowerCase(Locale.ENGLISH).contains(searchString)) {
                     LinearLayout searchResult = (LinearLayout) logDataEntries.get(vi).cloneLayoutContainer();
                     searchResult.setVisibility(LinearLayout.VISIBLE);
                     searchResult.setEnabled(true);
@@ -1802,7 +1802,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
           LinearLayout layoutList = (LinearLayout) ((ScrollView) ApduUtils.tabView.findViewById(R.id.apduSearchResultsScrollView)).getChildAt(0);
           for(int cmd = 0; cmd < ApduUtils.fullInsList.length; cmd++) {
                String summaryStr = ApduUtils.fullInsList[cmd].getSummary();
-               if(summaryStr.toLowerCase().contains(searchText)) {
+               if(summaryStr.toLowerCase(Locale.ENGLISH).contains(searchText)) {
                     LinearLayout searchResult = (LinearLayout) LiveLoggerActivity.defaultInflater.inflate(R.layout.apdu_search_result, null);
                     String[] cmdDescParts = ApduUtils.fullInsList[cmd].apduCmdDesc.split("[\\(\\)]");
                     ((TextView) searchResult.findViewById(R.id.apduCmdDesc)).setText(cmdDescParts[0]);
