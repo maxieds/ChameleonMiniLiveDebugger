@@ -19,7 +19,9 @@
         android:drawableLeft="@drawable/phonebubble24"
         android:drawablePadding="3dp"
         android:textAllCaps="true"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:singleLine="true"
+        />
 
     <View
         android:layout_width="match_parent"
@@ -33,7 +35,9 @@
         android:background="?colorAccentLog"
         android:textSize="10sp"
         android:textStyle="normal"
-        android:typeface="monospace" />
+        android:typeface="monospace"
+        android:singleLine="false"
+        />
 
     <View
         android:layout_width="match_parent"

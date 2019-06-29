@@ -53,7 +53,6 @@ public class LogEntryMetadataRecord extends LogEntryBase {
         }
     }
 
-    // TODO: javadoc
     public View cloneLayoutContainer() {
         LinearLayout recordContainerClone = (LinearLayout) LiveLoggerActivity.defaultInflater.inflate(R.layout.log_metadata_record, null);
         TextView tvRecTitleClone = (TextView) recordContainerClone.findViewById(R.id.record_title_text);

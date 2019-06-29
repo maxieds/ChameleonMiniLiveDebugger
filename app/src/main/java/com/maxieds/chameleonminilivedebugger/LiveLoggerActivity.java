@@ -1026,7 +1026,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     Thread.sleep(100);
                } catch(InterruptedException ie) {}
                ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-               return;
+               msgParam = "Set Chameleon mode to READER.";
           }
           else if(createCmd.equals("SNIFFER")) {
                ChameleonIO.setLoggerConfigMode(serialPort, ChameleonIO.TIMEOUT);
@@ -1034,7 +1034,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     Thread.sleep(100);
                } catch(InterruptedException ie) {}
                ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-               return;
+               msgParam = "Set Chameleon mode to SNIFFER.";
           }
           else if(createCmd.equals("DETECT")) {
                msgParam = getSettingFromDevice(serialPort, "configmy=MF_DETECTION");
@@ -1074,7 +1074,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
                else
                     msgParam = getSettingFromDevice(serialPort, "configmy=MF_CLASSIC_4K_7B");
                ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-               return;
           }
           else if(createCmd.equals("MF-DESFIRE-EV1-4K")) {
                ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_DESFIRE_EV1_4K", ChameleonIO.TIMEOUT);
@@ -1117,7 +1116,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                closeSerialPort(serialPort);
                configureSerialPort(null, usbReaderCallback);
                ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
-               return;
+               msgParam = "Reconfigured the Chameleon USB settings.";
           }
           else if(createCmd.equals("RANDOM UID")) {
                ChameleonIO.deviceStatus.LASTUID = ChameleonIO.deviceStatus.UID;
@@ -1125,7 +1124,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                byte[] randomBytes = Utils.getRandomBytes(ChameleonIO.deviceStatus.UIDSIZE);
                String sendCmd = uidCmd + Utils.bytes2Hex(randomBytes).replace(" ", "").toUpperCase();
                Log.d(TAG, "RANDOM UID: (sendCmd = " + sendCmd + ")");
-               getSettingFromDevice(serialPort, sendCmd);
+               msgParam = getSettingFromDevice(serialPort, sendCmd);
                ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
           }
           else if(createCmd.equals("Log Replay")) {
@@ -1304,6 +1303,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
           getSettingFromDevice(serialPort, String.format(Locale.ENGLISH, "%s=%s", uidCmd, Utils.bytes2Hex(uid).replace(" ", "")));
           ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
           appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("UID", "Next device UID set to " + Utils.bytes2Hex(uid).replace(" ", ":")));
+          ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
      }
 
      /**
