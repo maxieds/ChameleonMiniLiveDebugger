@@ -33,7 +33,7 @@ android {
         targetSdkVersion 28
         versionCode 58
         versionName "0.5.8"
-        multiDexEnabled true
+        //multiDexEnabled true
 
         buildConfigField "String", "GIT_COMMIT_HASH", "\"" + getGitCommitHash() + "\""
         buildConfigField "String", "GIT_COMMIT_DATE", "\"" + getGitCommitDate() + "\""
@@ -44,13 +44,13 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             crunchPngs false
         }
         debug {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             crunchPngs false
         }
@@ -107,7 +107,7 @@ android {
             exclude 'META-INF/NOTICE.txt'
             exclude 'META-INF/notice.txt'
             exclude 'META-INF/ASL2.0'
-            exclude 'META-INF/androidx*'
+            //exclude 'META-INF/androidx*'
         }
 
     }
@@ -121,7 +121,6 @@ android {
         implementation 'com.google.android.material:material:1.1.0-alpha07'
         implementation 'com.github.felHR85:UsbSerial:4.5.2'
         implementation 'com.shawnlin:number-picker:2.4.4'
-        //implementation 'com.google.firebase:firebase-core:+'
         implementation 'com.google.android.gms:play-services:12.0.1'
         implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
     }
