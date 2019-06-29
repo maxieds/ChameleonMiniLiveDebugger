@@ -1025,7 +1025,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                try {
                     Thread.sleep(100);
                } catch(InterruptedException ie) {}
-               ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+               ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
                msgParam = "Set Chameleon mode to READER.";
           }
           else if(createCmd.equals("SNIFFER")) {
@@ -1033,51 +1033,51 @@ public class LiveLoggerActivity extends AppCompatActivity {
                try {
                     Thread.sleep(100);
                } catch(InterruptedException ie) {}
-               ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+               ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
                msgParam = "Set Chameleon mode to SNIFFER.";
           }
           else if(createCmd.equals("DETECT")) {
                msgParam = getSettingFromDevice(serialPort, "configmy=MF_DETECTION");
-               ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+               ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
           }
           else if(createCmd.equals("ULTRALIGHT")) {
                if(!ChameleonIO.REVE_BOARD)
                     msgParam = getSettingFromDevice(serialPort, "CONFIG=MF_ULTRALIGHT");
                else
                     msgParam = getSettingFromDevice(serialPort, "configmy=MF_ULTRALIGHT");
-               ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+               ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
           }
           else if(createCmd.equals("CLASSIC-1K")) {
                if(!ChameleonIO.REVE_BOARD)
                     msgParam = getSettingFromDevice(serialPort, "CONFIG=MF_CLASSIC_1K");
                else
                     msgParam = getSettingFromDevice(serialPort, "configmy=MF_CLASSIC_1K");
-               ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+               ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
           }
           else if(createCmd.equals("CLASSIC-4K")) {
                if(!ChameleonIO.REVE_BOARD)
                     msgParam = getSettingFromDevice(serialPort, "CONFIG=MF_CLASSIC_4K");
                else
                     msgParam = getSettingFromDevice(serialPort, "configmy=MF_CLASSIC_4K");
-               ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+               ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
           }
           else if(createCmd.equals("CLASSIC-1K7B")) {
                if(!ChameleonIO.REVE_BOARD)
                     msgParam = getSettingFromDevice(serialPort, "CONFIG=MF_CLASSIC_1K_7B");
                else
                     msgParam = getSettingFromDevice(serialPort, "configmy=MF_CLASSIC_1K_7B");
-               ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+               ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
           }
           else if(createCmd.equals("CLASSIC-4K7B")) {
                if(!ChameleonIO.REVE_BOARD)
                     msgParam = getSettingFromDevice(serialPort, "CONFIG=MF_CLASSIC_4K_7B");
                else
                     msgParam = getSettingFromDevice(serialPort, "configmy=MF_CLASSIC_4K_7B");
-               ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+               ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
           }
           else if(createCmd.equals("MF-DESFIRE-EV1-4K")) {
                ChameleonIO.executeChameleonMiniCommand(serialPort, "CONFIG=MF_DESFIRE_EV1_4K", ChameleonIO.TIMEOUT);
-               ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+               ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
                msgParam = "NOTE: You must use the firmware from https://github.com/maxieds/ChameleonMini to have the DESFire chip support enabled.";
           }
           else if(createCmd.equals("MFU-EV1-80B")) {
@@ -1085,21 +1085,21 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     msgParam = getSettingFromDevice(serialPort, "CONFIG=MF_ULTRALIGHT_EV1_80B");
                else
                     msgParam = getSettingFromDevice(serialPort, "configmy=MF_ULTRALIGHT_EV1_80B");
-               ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+               ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
           }
           else if(createCmd.equals("MFU-EV1-164B")) {
                if(!ChameleonIO.REVE_BOARD)
                     msgParam = getSettingFromDevice(serialPort, "CONFIG=MF_ULTRALIGHT_EV1_80B");
                else
                     msgParam = getSettingFromDevice(serialPort, "configmy=MF_ULTRALIGHT_EV1_80B");
-               ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+               ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
           }
           else if(createCmd.equals("CFGNONE")) {
                if(!ChameleonIO.REVE_BOARD)
                     msgParam = getSettingFromDevice(serialPort, "CONFIG=NONE");
                else
                     msgParam = getSettingFromDevice(serialPort, "configmy=NONE");
-               ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+               ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
           }
           else if(createCmd.equals("LIST CONFIG")) {
                if(!ChameleonIO.REVE_BOARD)
@@ -1124,8 +1124,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
                byte[] randomBytes = Utils.getRandomBytes(ChameleonIO.deviceStatus.UIDSIZE);
                String sendCmd = uidCmd + Utils.bytes2Hex(randomBytes).replace(" ", "").toUpperCase();
                Log.d(TAG, "RANDOM UID: (sendCmd = " + sendCmd + ")");
-               msgParam = getSettingFromDevice(serialPort, sendCmd);
-               ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+               getSettingFromDevice(serialPort, sendCmd);
+               msgParam = "Next UID set to " + Utils.bytes2Hex(randomBytes).replace(" ", ":").toUpperCase();
+               ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
           }
           else if(createCmd.equals("Log Replay")) {
                appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "RE: LOG REPLAY: This is a wishlist feature. It might be necessary to add it to the firmware and implement it in hardware. Not currently implemented."));
@@ -1301,9 +1302,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
           }
           String uidCmd = ChameleonIO.REVE_BOARD ? "uidmy" : "UID";
           getSettingFromDevice(serialPort, String.format(Locale.ENGLISH, "%s=%s", uidCmd, Utils.bytes2Hex(uid).replace(" ", "")));
-          ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+          ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
           appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("UID", "Next device UID set to " + Utils.bytes2Hex(uid).replace(" ", ":")));
-          ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
      }
 
      /**

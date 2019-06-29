@@ -215,17 +215,6 @@ public class ChameleonIO {
          * Queries the live device for its status settings.
          */
         private boolean updateAllStatus(boolean resetTimer) {
-            /*try {
-                if (!LiveLoggerActivity.serialPortLock.tryAcquire(ChameleonIO.LOCK_TIMEOUT, TimeUnit.MILLISECONDS)) {
-                    if (resetTimer)
-                        statsUpdateHandler.postDelayed(statsUpdateRunnable, STATS_UPDATE_INTERVAL / 4);
-                    return false;
-                }
-            } catch (InterruptedException ie) {
-                if (resetTimer)
-                    statsUpdateHandler.postDelayed(statsUpdateRunnable, STATS_UPDATE_INTERVAL / 4);
-                return false;
-            }*/
             if (!ChameleonIO.REVE_BOARD) {
                 CONFIG = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "CONFIG?", CONFIG);
                 UID = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "UID?", UID);
@@ -254,11 +243,8 @@ public class ChameleonIO {
                 THRESHOLD = 0;
                 TIMEOUT = "NA";
             }
-            //LiveLoggerActivity.serialPortLock.release();
-
             // setup threshold signal bars:
             LiveLoggerActivity.setSignalStrengthIndicator(THRESHOLD);
-
             return true;
         }
 
@@ -273,9 +259,6 @@ public class ChameleonIO {
             if (LiveLoggerActivity.serialPort == null)
                 return;
             boolean haveUpdates = updateAllStatus(resetTimer);
-            //if (!haveUpdates)
-            //    return;
-            //ChameleonIO.WAITING_FOR_RESPONSE = true;
             ((TextView) LiveLoggerActivity.runningActivity.findViewById(R.id.deviceConfigText)).setText(CONFIG);
             String formattedUID = UID;
             if (!UID.equals("NO UID."))
@@ -296,8 +279,10 @@ public class ChameleonIO {
             if (settingsNumberPicker != null) {
                 settingsNumberPicker.setValue(DIP_SETTING);
             }
-            if (resetTimer)
+            if (resetTimer) {
+                statsUpdateHandler.removeCallbacks(statsUpdateRunnable);
                 statsUpdateHandler.postDelayed(statsUpdateRunnable, STATS_UPDATE_INTERVAL);
+            }
         }
     }
 
