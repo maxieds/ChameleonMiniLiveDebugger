@@ -140,6 +140,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
           logDataFeed.addView(logEntry.getLayoutContainer());
           logDataEntries.add(logEntry);
           if(logEntry instanceof LogEntryMetadataRecord) { // switch to the log tab to display the results:
+               if(LiveLoggerActivity.runningActivity == null) {
+                    return;
+               }
                Log.i(TAG, String.format("LogEntryMetaData record height: %d", logEntry.getLayoutContainer().getHeight()));
                TabLayout tabLayout = (TabLayout) LiveLoggerActivity.runningActivity.findViewById(R.id.tab_layout);
                if(tabLayout != null) {
@@ -1301,9 +1304,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
                ChameleonIO.deviceStatus.LASTUID = ChameleonIO.deviceStatus.UID;
           }
           String uidCmd = ChameleonIO.REVE_BOARD ? "uidmy" : "UID";
-          getSettingFromDevice(serialPort, String.format(Locale.ENGLISH, "%s=%s", uidCmd, Utils.bytes2Hex(uid).replace(" ", "")));
+          String cmdStatus = getSettingFromDevice(serialPort, String.format(Locale.ENGLISH, "%s=%s", uidCmd, Utils.bytes2Hex(uid).replace(" ", "").toUpperCase()));
           ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
-          appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("UID", "Next device UID set to " + Utils.bytes2Hex(uid).replace(" ", ":")));
+          appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("UID", "Next device UID set to " + Utils.bytes2Hex(uid).replace(" ", ":").toUpperCase()));
      }
 
      /**
