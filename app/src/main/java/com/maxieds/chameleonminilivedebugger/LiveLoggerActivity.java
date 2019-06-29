@@ -535,6 +535,14 @@ public class LiveLoggerActivity extends AppCompatActivity {
                ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonUrbanaDesfire)).setEnabled(false);
                ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonWinter)).setEnabled(false);
           }
+          // set the correct current theme as the selected radio button:
+          RadioGroup themeRadioGroup = (RadioGroup) dialogView.findViewById(R.id.themeRadioGroup);
+          ArrayList<View> curThemeRadioBtns = new ArrayList<View>();
+          themeRadioGroup.findViewsWithText(curThemeRadioBtns, "Theme: " + storedAppTheme, 0);
+          if(curThemeRadioBtns.size() > 0) {
+               ((RadioButton) curThemeRadioBtns.get(0)).setSelected(true);
+          }
+          // finish constructing the theme selection dialog:
           ScrollView themesScroller = new ScrollView(this);
           themesScroller.addView(dialogView);
           dialog.setView(themesScroller);
@@ -548,6 +556,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     String themeID = ((RadioButton) dialogView.findViewById(getSelectedOption)).getText().toString();
                     String themeDesc = themeID.substring("Theme: ".length());
                     setLocalTheme(themeDesc, true);
+                    storedAppTheme = themeDesc;
 
                     // store the theme setting for when the app reopens:
                     SharedPreferences sharedPrefs = getSharedPreferences(LiveLoggerActivity.TAG, Context.MODE_PRIVATE);
@@ -558,6 +567,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     // finally, apply the theme settings by (essentially) restarting the activity UI:
                     //onCreate(localSavedInstanceState);
                     appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("THEME", "New theme installed: " + themeDesc));
+
                     LiveLoggerActivity.runningActivity.recreate();
 
                }
