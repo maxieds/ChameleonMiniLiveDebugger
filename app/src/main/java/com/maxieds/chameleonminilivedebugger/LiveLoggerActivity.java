@@ -131,7 +131,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
       * @see LogEntryMetadataRecord
       */
      public static void appendNewLog(LogEntryBase logEntry) {
-          if(LiveLoggerActivity.selectedTab != TAB_LOG) {
+          if(LiveLoggerActivity.selectedTab != TAB_LOG && LiveLoggerActivity.runningActivity != null) {
                if(logEntry instanceof LogEntryUI)
                     runningActivity.setStatusIcon(R.id.statusIconNewXFer, R.drawable.statusxfer16);
                else
@@ -139,10 +139,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
           }
           logDataFeed.addView(logEntry.getLayoutContainer());
           logDataEntries.add(logEntry);
+          if(LiveLoggerActivity.runningActivity == null) {
+               return;
+          }
           if(logEntry instanceof LogEntryMetadataRecord) { // switch to the log tab to display the results:
-               if(LiveLoggerActivity.runningActivity == null) {
-                    return;
-               }
                Log.i(TAG, String.format("LogEntryMetaData record height: %d", logEntry.getLayoutContainer().getHeight()));
                TabLayout tabLayout = (TabLayout) LiveLoggerActivity.runningActivity.findViewById(R.id.tab_layout);
                if(tabLayout != null) {
