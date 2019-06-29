@@ -137,8 +137,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
                else
                     runningActivity.setStatusIcon(R.id.statusIconNewMsg, R.drawable.statusnewmsg16);
           }
-          logDataFeed.addView(logEntry.getLayoutContainer());
-          logDataEntries.add(logEntry);
+          if(logDataFeed != null && logDataEntries != null) {
+               logDataFeed.addView(logEntry.getLayoutContainer());
+               logDataEntries.add(logEntry);
+          }
           if(LiveLoggerActivity.runningActivity == null) {
                return;
           }
