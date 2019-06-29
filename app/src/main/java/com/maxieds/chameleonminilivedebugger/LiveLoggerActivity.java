@@ -352,10 +352,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
      @Override
      public void recreate() {
 
-          unregisterReceiver(usbActionReceiver);
-          usbReceiversRegistered = false;
-          runningActivity = null;
-
+          if(usbActionReceiver != null) {
+               unregisterReceiver(usbActionReceiver);
+               usbReceiversRegistered = false;
+          }
+          //runningActivity = null;
           //super.recreate();
           Intent intent = getIntent();
           intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
