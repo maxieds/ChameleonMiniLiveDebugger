@@ -538,7 +538,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
           // set the correct current theme as the selected radio button:
           RadioGroup themeRadioGroup = (RadioGroup) dialogView.findViewById(R.id.themeRadioGroup);
           ArrayList<View> curThemeRadioBtns = new ArrayList<View>();
-          themeRadioGroup.findViewsWithText(curThemeRadioBtns, "Theme: " + storedAppTheme, 0);
+          themeRadioGroup.findViewsWithText(curThemeRadioBtns, "Theme: " + storedAppTheme, android.view.View.FIND_VIEWS_WITH_TEXT);
           if(curThemeRadioBtns.size() > 0) {
                ((RadioButton) curThemeRadioBtns.get(0)).setSelected(true);
           }
