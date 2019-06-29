@@ -557,11 +557,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
                     // finally, apply the theme settings by (essentially) restarting the activity UI:
                     //onCreate(localSavedInstanceState);
-                    LiveLoggerActivity.runningActivity.recreate();
-                    //if(selectedThemeMenuItem != null) {
-                    //     selectedThemeMenuItem.setIcon(R.drawable.thememarker24);
-                    //}
                     appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("THEME", "New theme installed: " + themeDesc));
+                    LiveLoggerActivity.runningActivity.recreate();
 
                }
 
