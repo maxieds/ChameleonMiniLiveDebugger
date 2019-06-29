@@ -537,10 +537,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
           }
           // set the correct current theme as the selected radio button:
           RadioGroup themeRadioGroup = (RadioGroup) dialogView.findViewById(R.id.themeRadioGroup);
-          ArrayList<View> curThemeRadioBtns = new ArrayList<View>();
-          themeRadioGroup.findViewsWithText(curThemeRadioBtns, "Theme: " + storedAppTheme, android.view.View.FIND_VIEWS_WITH_TEXT);
-          if(curThemeRadioBtns.size() > 0) {
-               ((RadioButton) curThemeRadioBtns.get(0)).setSelected(true);
+          for(int rb = 0; rb < themeRadioGroup.getChildCount(); rb++) {
+               RadioButton curThemeBtn = (RadioButton) themeRadioGroup.getChildAt(rb);
+               if(curThemeBtn.isEnabled() && curThemeBtn.getText().toString().equals("Theme: " + storedAppTheme)) {
+                    curThemeBtn.setSelected(true);
+                    break;
+               }
           }
           // finish constructing the theme selection dialog:
           ScrollView themesScroller = new ScrollView(this);
