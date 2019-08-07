@@ -230,7 +230,7 @@ public class TabFragment extends Fragment {
             connectPeripheralSpinnerAdapter(view, R.id.LButtonLongSpinner, R.array.LButtonLongOptions, LiveLoggerActivity.spinnerLButtonLongAdapter, "LBUTTON_LONG?");
             connectPeripheralSpinnerAdapter(view, R.id.LEDRedSpinner, R.array.LEDRedOptions, LiveLoggerActivity.spinnerLEDRedAdapter, "LEDRED?");
             connectPeripheralSpinnerAdapter(view, R.id.LEDGreenSpinner, R.array.LEDGreenOptions, LiveLoggerActivity.spinnerLEDGreenAdapter, "LEDGREEN?");
-            connectPeripheralSpinnerAdapter(view, R.id.ButtonMyRevEBoardSpinner, R.array.ButtonMyRevEBoards, LiveLoggerActivity.spinnerButtonMyAdapter, "buttonmy?");
+            connectPeripheralSpinnerAdapter(view, R.id.ButtonMyRevEBoardSpinner, R.array.ButtonMyRevEBoards, LiveLoggerActivity.spinnerButtonMyAdapter, "button?");
             connectPeripheralSpinnerAdapter(view, R.id.LogModeSpinner, R.array.LogModeOptions, LiveLoggerActivity.spinnerLogModeAdapter, "LOGMODE?");
             connectCommandListSpinnerAdapter(view, R.id.FullCmdListSpinner, R.array.FullCommandList, LiveLoggerActivity.spinnerCmdShellAdapter, "");
 
@@ -292,7 +292,7 @@ public class TabFragment extends Fragment {
                 @Override
                 public void onScrollStateChange(NumberPicker numberPicker, int scrollState) {
                     if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
-                        String settingCmd = ChameleonIO.REVE_BOARD ? "settingmy=" : "SETTING=";
+                        String settingCmd = ChameleonIO.REVE_BOARD ? "setting=" : "SETTING=";
                         Log.i(TAG, "Number Picker Setting: " + numberPicker.getValue());
                         Log.i(TAG, "Number Picker Setting Command: \"" + settingCmd + numberPicker.getValue() + "\"");
                         LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, settingCmd + numberPicker.getValue());

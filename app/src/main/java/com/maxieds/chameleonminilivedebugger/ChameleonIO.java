@@ -230,14 +230,14 @@ public class ChameleonIO {
                 TIMEOUT = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "TIMEOUT?", TIMEOUT);
             }
             else {
-                CONFIG = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "configmy?", CONFIG);
-                UID = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "uidmy?", UID);
-                UIDSIZE = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "uidsizemy?", String.format("%d",UIDSIZE)));
-                MEMSIZE = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "memsizemy?", String.format("%d",MEMSIZE)));
+                CONFIG = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "config?", CONFIG);
+                UID = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "uid?", UID);
+                UIDSIZE = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "uidsize?", String.format("%d",UIDSIZE)));
+                MEMSIZE = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "memsize?", String.format("%d",MEMSIZE)));
                 LOGMODE = "NONE";
                 LOGSIZE = 0;
-                DIP_SETTING = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "settingmy?", String.format("%d", DIP_SETTING)));
-                READONLY = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "readonlymy?", String.format("%d", READONLY ? 1 : 0)).equals("1");
+                DIP_SETTING = Utils.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "setting?", String.format("%d", DIP_SETTING)));
+                READONLY = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "readonly?", String.format("%d", READONLY ? 1 : 0)).equals("1");
                 FIELD = false;
                 CHARGING = false;
                 THRESHOLD = 0;
@@ -299,7 +299,7 @@ public class ChameleonIO {
         if(!REVE_BOARD)
              return executeChameleonMiniCommand(cmPort, "CONFIG=ISO14443A_SNIFF", timeout);
         else
-             return executeChameleonMiniCommand(cmPort, "configmy=ISO14443A_SNIFF", timeout);
+             return executeChameleonMiniCommand(cmPort, "config=ISO14443A_SNIFF", timeout);
     }
 
     /**
@@ -313,7 +313,7 @@ public class ChameleonIO {
         if(!REVE_BOARD)
              return executeChameleonMiniCommand(cmPort, "CONFIG=ISO14443A_READER", timeout);
         else
-             return executeChameleonMiniCommand(cmPort, "configmy=ISO14443A_READER", timeout);
+             return executeChameleonMiniCommand(cmPort, "config=ISO14443A_READER", timeout);
     }
 
     /**

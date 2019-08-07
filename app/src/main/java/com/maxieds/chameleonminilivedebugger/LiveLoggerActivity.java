@@ -932,7 +932,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     "LBUTTON_LONG?",
                     "LEDRED?",
                     "LEDGREEN?",
-                    "buttonmy?"
+                    "button?"
                };
                for (int i = 0; i < spinnerIDs.length; i++) {
                     Log.i(TAG, queryCmds[i]);
@@ -943,7 +943,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                // handle FIELD and READ-ONLY switches:
                String fieldSetting = getSettingFromDevice(LiveLoggerActivity.serialPort, "FIELD?");
                ((Switch) findViewById(R.id.fieldOnOffSwitch)).setChecked(fieldSetting.equals("0") ? false : true);
-               String roQueryCmd = ChameleonIO.REVE_BOARD ? "readonlymy?" : "READONLY?";
+               String roQueryCmd = ChameleonIO.REVE_BOARD ? "readonly?" : "READONLY?";
                String roSetting = getSettingFromDevice(LiveLoggerActivity.serialPort, roQueryCmd);
                ((Switch) findViewById(R.id.readonlyOnOffSwitch)).setChecked(roSetting.equals("0") ? false : true);
           }
@@ -1043,42 +1043,42 @@ public class LiveLoggerActivity extends AppCompatActivity {
                msgParam = "Set Chameleon mode to SNIFFER.";
           }
           else if(createCmd.equals("DETECT")) {
-               msgParam = getSettingFromDevice(serialPort, "configmy=MF_DETECTION");
+               msgParam = getSettingFromDevice(serialPort, "config=MF_DETECTION");
                ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
           }
           else if(createCmd.equals("ULTRALIGHT")) {
                if(!ChameleonIO.REVE_BOARD)
                     msgParam = getSettingFromDevice(serialPort, "CONFIG=MF_ULTRALIGHT");
                else
-                    msgParam = getSettingFromDevice(serialPort, "configmy=MF_ULTRALIGHT");
+                    msgParam = getSettingFromDevice(serialPort, "config=MF_ULTRALIGHT");
                ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
           }
           else if(createCmd.equals("CLASSIC-1K")) {
                if(!ChameleonIO.REVE_BOARD)
                     msgParam = getSettingFromDevice(serialPort, "CONFIG=MF_CLASSIC_1K");
                else
-                    msgParam = getSettingFromDevice(serialPort, "configmy=MF_CLASSIC_1K");
+                    msgParam = getSettingFromDevice(serialPort, "config=MF_CLASSIC_1K");
                ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
           }
           else if(createCmd.equals("CLASSIC-4K")) {
                if(!ChameleonIO.REVE_BOARD)
                     msgParam = getSettingFromDevice(serialPort, "CONFIG=MF_CLASSIC_4K");
                else
-                    msgParam = getSettingFromDevice(serialPort, "configmy=MF_CLASSIC_4K");
+                    msgParam = getSettingFromDevice(serialPort, "config=MF_CLASSIC_4K");
                ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
           }
           else if(createCmd.equals("CLASSIC-1K7B")) {
                if(!ChameleonIO.REVE_BOARD)
                     msgParam = getSettingFromDevice(serialPort, "CONFIG=MF_CLASSIC_1K_7B");
                else
-                    msgParam = getSettingFromDevice(serialPort, "configmy=MF_CLASSIC_1K_7B");
+                    msgParam = getSettingFromDevice(serialPort, "config=MF_CLASSIC_1K_7B");
                ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
           }
           else if(createCmd.equals("CLASSIC-4K7B")) {
                if(!ChameleonIO.REVE_BOARD)
                     msgParam = getSettingFromDevice(serialPort, "CONFIG=MF_CLASSIC_4K_7B");
                else
-                    msgParam = getSettingFromDevice(serialPort, "configmy=MF_CLASSIC_4K_7B");
+                    msgParam = getSettingFromDevice(serialPort, "config=MF_CLASSIC_4K_7B");
                ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
           }
           else if(createCmd.equals("MF-DESFIRE-EV1-4K")) {
@@ -1090,21 +1090,21 @@ public class LiveLoggerActivity extends AppCompatActivity {
                if(!ChameleonIO.REVE_BOARD)
                     msgParam = getSettingFromDevice(serialPort, "CONFIG=MF_ULTRALIGHT_EV1_80B");
                else
-                    msgParam = getSettingFromDevice(serialPort, "configmy=MF_ULTRALIGHT_EV1_80B");
+                    msgParam = getSettingFromDevice(serialPort, "config=MF_ULTRALIGHT_EV1_80B");
                ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
           }
           else if(createCmd.equals("MFU-EV1-164B")) {
                if(!ChameleonIO.REVE_BOARD)
                     msgParam = getSettingFromDevice(serialPort, "CONFIG=MF_ULTRALIGHT_EV1_80B");
                else
-                    msgParam = getSettingFromDevice(serialPort, "configmy=MF_ULTRALIGHT_EV1_80B");
+                    msgParam = getSettingFromDevice(serialPort, "config=MF_ULTRALIGHT_EV1_80B");
                ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
           }
           else if(createCmd.equals("CFGNONE")) {
                if(!ChameleonIO.REVE_BOARD)
                     msgParam = getSettingFromDevice(serialPort, "CONFIG=NONE");
                else
-                    msgParam = getSettingFromDevice(serialPort, "configmy=NONE");
+                    msgParam = getSettingFromDevice(serialPort, "config=NONE");
                ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
           }
           else if(createCmd.equals("LIST CONFIG")) {
@@ -1126,7 +1126,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
           }
           else if(createCmd.equals("RANDOM UID")) {
                ChameleonIO.deviceStatus.LASTUID = ChameleonIO.deviceStatus.UID;
-               String uidCmd = ChameleonIO.REVE_BOARD ? "uidmy=" : "UID=";
+               String uidCmd = ChameleonIO.REVE_BOARD ? "uid=" : "UID=";
                byte[] randomBytes = Utils.getRandomBytes(ChameleonIO.deviceStatus.UIDSIZE);
                String sendCmd = uidCmd + Utils.bytes2Hex(randomBytes).replace(" ", "").toUpperCase();
                Log.d(TAG, "RANDOM UID: (sendCmd = " + sendCmd + ")");
@@ -1153,7 +1153,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                msgParam = "SYSTICK Millis := " + getSettingFromDevice(serialPort, "SYSTICK?");
           }
           else if(createCmd.equals("GETUID")) {
-               String queryCmd = ChameleonIO.REVE_BOARD ? "uidmy?" : "GETUID";
+               String queryCmd = ChameleonIO.REVE_BOARD ? "uid?" : "GETUID";
                String rParam = getSettingFromDevice(serialPort, queryCmd);
                msgParam = "GETUID: " + rParam;
           }
