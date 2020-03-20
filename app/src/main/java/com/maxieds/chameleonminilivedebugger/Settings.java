@@ -5,7 +5,7 @@ public class Settings {
     private static final String TAG = Settings.class.getSimpleName();
 
     public static boolean allowWiredUSB = true;
-    public static boolean allowBluetooth = false;
+    public static boolean allowBluetooth = true;
     public static int serialBaudRate = 115200;
 
     public static String chameleonDeviceSerialNumber = "<UNKNOWN>";

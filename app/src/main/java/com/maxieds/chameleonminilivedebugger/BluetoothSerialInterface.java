@@ -12,6 +12,7 @@ import java.util.Locale;
 import java.util.concurrent.Semaphore;
 
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
+import app.akexorcist.bluetotohspp.library.BluetoothState;
 
 public class BluetoothSerialInterface implements ChameleonSerialIOInterface {
 
@@ -22,7 +23,6 @@ public class BluetoothSerialInterface implements ChameleonSerialIOInterface {
     private Context notifyContext;
     private BluetoothSPP serialPort;
     private BluetoothDevice activeDevice;
-    private UsbSerialInterface.UsbReadCallback serialReaderCallback;
     private int baudRate; // irrelevant?
     private boolean serialConfigured;
     private boolean receiversRegistered;
@@ -59,7 +59,6 @@ public class BluetoothSerialInterface implements ChameleonSerialIOInterface {
         serialPort = new BluetoothSPP(notifyContext);
         serialPort.setDeviceTarget(false);
         activeDevice = null;
-        serialReaderCallback = null;
         baudRate = Settings.serialBaudRate;
         serialConfigured = false;
         receiversRegistered = false;
@@ -117,7 +116,6 @@ public class BluetoothSerialInterface implements ChameleonSerialIOInterface {
         baudRate = brate;
         Settings.serialBaudRate = baudRate;
         if(serialPort != null) {
-            //serialPort.setBaudRate(baudRate);
             return baudRate;
         }
         return 0;
@@ -131,6 +129,21 @@ public class BluetoothSerialInterface implements ChameleonSerialIOInterface {
 
     public boolean startScanningDevices() {
         configureSerial();
+        serialPort.setAutoConnectionListener(new BluetoothSPP.AutoConnectionListener() {
+            public void onNewConnection(String name, String address) {
+                if(name.equals(CHAMELEON_REVG_NAME)) {
+                    serialConfigured = true;
+                    stopScanningDevices();
+                    Settings.chameleonDeviceSerialNumber = address;
+                    Settings.SERIALIO_IFACE_ACTIVE_INDEX = Settings.BTIO_IFACE_INDEX;
+                    LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
+                    ChameleonIO.PAUSED = false;
+                    notifyBluetoothChameleonDeviceConnected();
+                    notifyStatus("USB STATUS: ", "Successfully configured the device in passive logging mode...\n" + getActiveDeviceInfo());
+                }
+            }
+            public void onAutoConnectionStarted() {}
+        });
         serialPort.autoConnect(CHAMELEON_REVG_NAME);
         return true;
     }
@@ -153,16 +166,16 @@ public class BluetoothSerialInterface implements ChameleonSerialIOInterface {
     }
 
     public int configureSerial() {
-        if(serialConfigured()) {
+        if(serialConfigured() || serialPort.isAutoConnecting()) {
             return 1;
         }
-        serialPort.startService(false);
+        serialPort.startService(BluetoothState.DEVICE_OTHER);
         serialPort.setBluetoothConnectionListener(new BluetoothSPP.BluetoothConnectionListener() {
             public void onDeviceConnected(String name, String address) {
                 if(name.equals(CHAMELEON_REVG_NAME)) {
                     serialConfigured = true;
                     stopScanningDevices();
-                    Settings.chameleonDeviceSerialNumber = serialPort.getConnectedDeviceAddress();
+                    Settings.chameleonDeviceSerialNumber = address;
                     Settings.SERIALIO_IFACE_ACTIVE_INDEX = Settings.BTIO_IFACE_INDEX;
                     LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
                     ChameleonIO.PAUSED = false;

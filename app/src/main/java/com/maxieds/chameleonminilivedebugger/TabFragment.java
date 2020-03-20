@@ -239,7 +239,6 @@ public class TabFragment extends Fragment {
                         "Export Logs",
                         "Download",
                         "Upload",
-                        "Android NFC",
                         "Clone MFC Tags"
                 },
                 new int[]{
@@ -255,8 +254,7 @@ public class TabFragment extends Fragment {
                 "Config",
                 new String[] {
                         "Connect to Devices",
-                        "General",
-                        "Device"
+                        "General Settings"
                 },
                 new int[] {
                         R.layout.config_tab_connect,

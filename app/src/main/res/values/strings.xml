@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Chameleon Mini Live Debugger</string>
-    <string name="app_display_short_name">CMLD</string>
+    <string name="app_display_short_name">Chameleon Mini Logger</string>
     <string name="app_desc">GUI and portable logging interface for the Chameleon Mini NFC pentesting boards</string>
     <string name="aboutapp">
         &lt;h1>About the CMLD application&lt;/h1>

@@ -164,7 +164,7 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
             }
         }
         if(device == null || connection == null) {
-            notifyStatus("USB STATUS: ", "Connection to device unavailable.");
+        //    notifyStatus("USB STATUS: ", "Connection to device unavailable.");
             serialPort = null;
             return 0;
         }
