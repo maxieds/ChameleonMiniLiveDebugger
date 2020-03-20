@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?colorPrimaryDarkLog"
+        android:drawableLeft="@drawable/exportarrow16"
+        android:drawablePadding="5dp"
+        android:singleLine="true"
+        android:text="Other Import Features: "
+        android:textSize="14sp"
+        android:textAllCaps="true"
+        android:textStyle="bold|italic" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
+
+    <GridLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:background="?colorAccentLog"
+        android:columnCount="2"
+        android:orientation="horizontal"
+        android:padding="2dp"
+        android:rowCount="1">
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/dumpmfuchip24"
+            android:tag="DUMP_MFU"
+            android:onClick="actionButtonCloneMFU"
+            android:text="Clone MFU Tag" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/idcard24"
+            android:tag="UPLOAD"
+            android:onClick="actionButtonUploadCard"
+            android:text="UPLOAD CARD MFD/BIN" />
+
+    </GridLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?colorPrimaryDarkLog"
+        android:drawableLeft="@drawable/uploadbutton16"
+        android:drawablePadding="5dp"
+        android:singleLine="true"
+        android:text="Clone Stock Chip Image Dumps: "
+        android:textSize="14sp"
+        android:textAllCaps="true"
+        android:textStyle="bold|italic" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
+
+    <GridLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:background="?colorAccentLog"
+        android:columnCount="2"
+        android:orientation="horizontal"
+        android:padding="2dp"
+        android:rowCount="2">
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/brainchip"
+            android:tag="MFC1K_RCFK"
+            android:onClick="actionButtonCloneStockDumpImages"
+            android:text="MFC1K Random / FxdKey" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/qr"
+            android:tag="MFC4K_RCFK"
+            android:onClick="actionButtonCloneStockDumpImages"
+            android:text="MFC4K Random / FxdKey" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/coding2"
+            android:tag="MFC1K"
+            android:onClick="actionButtonCloneStockDumpImages"
+            android:text="MIFARE Classic 1K" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/binaryfile2"
+            android:tag="MFU"
+            android:onClick="actionButtonCloneStockDumpImages"
+            android:text="MIFARE Ultralight" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/chip24v11"
+            android:tag="MFU"
+            android:onClick="actionButtonCloneStockDumpImages"
+            android:text="EM4233 Tag" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/chip24v13"
+            android:text="TODO/DESFire"/>
+
+    </GridLayout>
+
+
+</LinearLayout>

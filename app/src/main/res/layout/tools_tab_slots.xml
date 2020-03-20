@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:id="@+id/tools_menu_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fadeScrollbars="false"
+        android:orientation="vertical"
+        android:scrollbarSize="25dp"
+        android:verticalScrollbarPosition="right">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_margin="3dp"
+            android:orientation="vertical"
+            android:padding="3dp">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?colorPrimaryDark" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="1dp"
+                android:background="?colorAccentLog"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="5dp"
+                    android:paddingLeft="5dp"
+                    android:src="@drawable/dipswitch24" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text="SLOT SETTING: "
+                    android:textStyle="bold|italic"
+                    android:textColor="#000000" />
+
+                <com.shawnlin.numberpicker.NumberPicker
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/settingsNumberPicker"
+                    android:layout_width="300dp"
+                    android:layout_weight="1"
+                    android:layout_height="24dp"
+                    android:layout_centerInParent="true"
+                    app:np_dividerColor="?colorPrimaryDark"
+                    app:np_max="8"
+                    app:np_min="1"
+                    app:np_selectedTextColor="#000000"
+                    app:np_selectedTextSize="16sp"
+                    app:np_textColor="#000000"
+                    app:np_textSize="12sp"
+                    app:np_wheelItemCount="3"
+                    app:np_wrapSelectorWheel="false"
+                    app:np_orientation="horizontal"
+                    />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?colorPrimaryDark" />
+
+        <LinearLayout
+            android:id="@+id/slotConfigLayoutsContainer"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_margin="2dp"
+            android:orientation="vertical"
+            android:padding="2dp" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

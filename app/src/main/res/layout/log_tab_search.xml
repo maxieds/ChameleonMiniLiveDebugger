@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?colorPrimaryDarkLog"
+        android:drawableLeft="@drawable/searchicon16"
+        android:drawablePadding="5dp"
+        android:singleLine="true"
+        android:text="Enter Search Data:"
+        android:textAllCaps="true"
+        android:textSize="14sp"
+        android:textStyle="bold|italic" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
+
+    <GridLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="1dp"
+        android:background="?colorAccentLog"
+        android:columnCount="2"
+        android:orientation="horizontal"
+        android:padding="2dp"
+        android:rowCount="1">
+
+        <EditText
+            android:id="@+id/userInputSearchData"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_columnWeight="0.75"
+            android:layout_marginLeft="0dp"
+            android:background="?colorAccentLog"
+            android:drawablePadding="11dp"
+            android:hint="search text"
+            android:paddingLeft="5dp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/searchbidir24"
+            android:onClick="actionButtonPerformSearch"
+            android:paddingLeft="5dp"
+            android:text="Search Logs"
+            android:textSize="11sp"
+            android:textStyle="bold|italic" />
+
+    </GridLayout>
+
+    <RadioGroup
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radio_search_bytes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="?colorPrimaryDark"
+            android:checked="false"
+            android:drawableLeft="@drawable/num12316"
+            android:drawablePadding="5dp"
+            android:text="search bytes" />
+
+        <RadioButton
+            android:id="@+id/radio_search_ascii"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="?colorPrimaryDark"
+            android:checked="true"
+            android:drawableLeft="@drawable/abc16"
+            android:drawablePadding="5dp"
+            android:text="ascii string" />
+
+    </RadioGroup>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?colorPrimaryDarkLog"
+        android:drawableLeft="@drawable/searchparams16"
+        android:drawablePadding="5dp"
+        android:singleLine="true"
+        android:text="Search Parameters:"
+        android:textAllCaps="true"
+        android:textSize="14sp"
+        android:textStyle="bold|italic" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
+
+    <GridLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="1dp"
+        android:background="?colorAccentLog"
+        android:columnCount="2"
+        android:padding="2dp"
+        android:rowCount="1">
+
+        <CheckBox
+            android:id="@+id/entrySearchIncludeStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:checked="true"
+            android:gravity="center_horizontal"
+            android:text="Status messages"
+            android:theme="@style/CheckBoxTheme" />
+
+        <CheckBox
+            android:id="@+id/entrySearchAPDU"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center_vertical"
+            android:checked="true"
+            android:gravity="center_horizontal"
+            android:text="APDU codes"
+            android:theme="@style/CheckBoxTheme" />
+
+        <CheckBox
+            android:id="@+id/entrySearchRawLogData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center_vertical"
+            android:checked="true"
+            android:gravity="center_horizontal"
+            android:text="Log payload data"
+            android:theme="@style/CheckBoxTheme" />
+
+        <CheckBox
+            android:id="@+id/entrySearchLogHeaders"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center_vertical"
+            android:checked="true"
+            android:gravity="center_horizontal"
+            android:text="Log headers"
+            android:theme="@style/CheckBoxTheme" />
+
+    </GridLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?colorPrimaryDarkLog"
+        android:drawableLeft="@drawable/searchresults16"
+        android:drawablePadding="5dp"
+        android:singleLine="true"
+        android:text="Search Results:"
+        android:textAllCaps="true"
+        android:textSize="14sp"
+        android:textStyle="bold|italic" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginBottom="10dp"
+        android:background="?colorPrimaryDark" />
+
+    <ScrollView
+        android:id="@+id/searchResultsScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:orientation="vertical"
+        android:verticalScrollbarPosition="right" />
+
+</LinearLayout>

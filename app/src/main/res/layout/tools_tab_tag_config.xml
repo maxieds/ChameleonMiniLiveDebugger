@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:id="@+id/tools_menu_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fadeScrollbars="false"
+        android:orientation="vertical"
+        android:scrollbarSize="25dp"
+        android:verticalScrollbarPosition="right">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_margin="2dp"
+            android:orientation="vertical"
+            android:padding="2dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/settings16"
+                android:drawablePadding="5dp"
+                android:singleLine="true"
+                android:text="Set configurations:"
+                android:textAllCaps="true"
+                android:textStyle="bold|italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="3"
+                android:padding="2dp"
+                android:rowCount="10">
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/binarymobile24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="READER" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/binarysearch24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="SNIFFER" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/chipbrain2"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="DETECT" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/chip24v2"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="CLASSIC-1K" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/card24v9"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="CLASSIC-4K" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/card24v8"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="CLASSIC-1K7B" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/chip24v4"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="CLASSIC-4K7B" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/chip24v3"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="ULTRALIGHT" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/card24v6"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="MFU-EV1-80B" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/chip24v1"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="MFU-EV1-164B" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/blankchip24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="CFGNONE" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/configq24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="LIST CONFIG" />
+
+            </GridLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

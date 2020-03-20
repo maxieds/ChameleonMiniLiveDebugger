@@ -1,28 +1,18 @@
 package com.maxieds.chameleonminilivedebugger;
 
-import android.content.res.ColorStateList;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.fragment.app.Fragment;
-import androidx.core.widget.CompoundButtonCompat;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
+import android.widget.Button;
+import android.widget.GridLayout;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
-import android.widget.SeekBar;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
-import android.widget.Switch;
-import android.widget.TextView;
-
-import com.shawnlin.numberpicker.NumberPicker;
 
 import java.util.Locale;
 
@@ -37,23 +27,250 @@ public class TabFragment extends Fragment {
 
     private static final String TAG = TabFragment.class.getSimpleName();
 
+    private static int TAB_MENU_ITEM_COLUMNS = 3;
+    private static final int TAB_COUNT = 4;
+
     /**
      * Definitions of the in-order tab indices.
      */
     public static final String ARG_PAGE = "ARG_PAGE";
     public static final int TAB_LOG = 0;
     public static final int TAB_TOOLS = 1;
-    public static final int TAB_LOG_TOOLS = 2;
-    public static final int TAB_EXPORT = 3;
-    public static final int TAB_SEARCH = 4;
-    public static final int TAB_APDU = 5;
+    public static final int TAB_EXPORT = 2;
+    public static final int TAB_CONFIG = 3;
+
+    public static final int TAB_LOG_MITEM_LOGS = 0;
+    public static final int TAB_LOG_MITEM_LOGTOOLS = 1;
+    public static final int TAB_LOG_MITEM_SEARCH = 2;
+
+    public static final int TAB_TOOLS_MITEM_SLOTS = 0;
+    public static final int TAB_TOOLS_MITEM_TAGCONFIG = 1;
+    public static final int TAB_TOOLS_MITEM_SCRIPTING = 2;
+    public static final int TAB_TOOLS_MITEM_CMDS = 3;
+    public static final int TAB_TOOLS_MITEM_PERIPHERALS = 4;
+    public static final int TAB_TOOLS_MITEM_APDU = 5;
+
+    public static final int TAB_EXPORT_MITEM_EXPORTLOGS = 0;
+    public static final int TAB_EXPORT_MITEM_DOWNLOAD = 1;
+    public static final int TAB_EXPORT_MITEM_UPLOAD = 2;
+
+    public static final int TAB_CONFIG_MITEM_CONNECT = 0;
+    public static final int TAB_CONFIG_MITEM_SETTINGS = 1;
+    public static final int TAB_CONFIG_MITEM_DEVINFO = 2;
+
+    public static class UITab {
+
+        public int tabIndex;
+        public int tabIcon;
+        public String tabText;
+        public int lastMenuIndex;
+        public View tabInflatedView;
+        public boolean tabViewInit;
+        public boolean firstTabLoad;
+
+        public String[] menuItemText;
+        public int[] menuItemLayout;
+
+        public UITab(int tidx, int ticon, String text,
+                     String[] mitemText, int[] mitemLayout) {
+            tabIndex = tidx;
+            tabIcon = ticon;
+            tabText = text;
+            initializeLayout();
+            menuItemText = new String[mitemText.length];
+            menuItemLayout = new int[mitemLayout.length];
+            System.arraycopy(mitemText, 0, menuItemText, 0, mitemText.length);
+            System.arraycopy(mitemLayout, 0, menuItemLayout, 0, mitemLayout.length);
+        }
+
+        public void initializeLayout() {
+            lastMenuIndex = 0;
+            tabInflatedView = null;
+            tabViewInit = false;
+            firstTabLoad = true;
+        }
+
+        public boolean selectMenuItem(int midx) {
+            if((midx == lastMenuIndex && !firstTabLoad) || midx < 0 || midx >= menuItemText.length) {
+                return false;
+            }
+            else if(tabInflatedView == null) {
+                return false;
+            }
+            deselectMenuItem(lastMenuIndex);
+            lastMenuIndex = midx;
+            GridLayout menuItemsNav = (GridLayout) tabInflatedView.findViewById(R.id.tabMenuItemsNav);
+            String indexRefTag = String.format(Locale.ENGLISH, "%d:%d", tabIndex, midx);
+            Button menuItem = (Button) menuItemsNav.findViewWithTag(indexRefTag);
+            menuItem.setTypeface(Typeface.DEFAULT, Typeface.BOLD_ITALIC);
+            return true;
+        }
+
+        private boolean deselectMenuItem(int midx) {
+            if(midx < 0 || midx >= menuItemText.length) {
+                return false;
+            }
+            else if(tabInflatedView == null) {
+                return false;
+            }
+            GridLayout menuItemsNav = (GridLayout) tabInflatedView.findViewById(R.id.tabMenuItemsNav);
+            String indexRefTag = String.format(Locale.ENGLISH, "%d:%d", tabIndex, midx);
+            Button menuItem = (Button) menuItemsNav.findViewWithTag(indexRefTag);
+            menuItem.setBackgroundColor(tabInflatedView.getContext().getResources().getColor(android.R.color.transparent));
+            menuItem.setTextColor(Utils.getColorFromTheme(R.attr.colorPrimaryDark));
+            menuItem.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
+            return true;
+        }
+
+        //@SuppressLint("ResourceType")
+        public View createTabView() {
+            if(tabViewInit || tabInflatedView == null) {
+                return null;
+            }
+            GridLayout menuItemsNav = (GridLayout) tabInflatedView.findViewById(R.id.tabMenuItemsNav);
+            GradientDrawable gradientBg = new GradientDrawable(
+                    GradientDrawable.Orientation.BL_TR,
+                    new int[] {
+                            Utils.getColorFromTheme(R.attr.colorAccent),
+                            Utils.getColorFromTheme(R.attr.colorAccentHighlight)
+            });
+            menuItemsNav.setBackgroundColor(Utils.getColorFromTheme(R.attr.colorPrimaryDark));
+            menuItemsNav.setBackgroundDrawable(gradientBg);
+            gradientBg.setCornerRadius(56f);
+            int totalItems = 0;
+            while(totalItems < menuItemText.length) {
+                int themeResID = ThemesConfiguration.appThemeResID;
+                Button menuItemClick = new Button(new ContextThemeWrapper(tabInflatedView.getContext(), themeResID), null, themeResID);
+                menuItemClick.setText(menuItemText[totalItems]);
+                menuItemClick.setBackgroundColor(Utils.getColorFromTheme(android.R.color.transparent));
+                menuItemClick.setTextColor(Utils.getColorFromTheme(R.attr.colorPrimaryDark));
+                menuItemClick.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
+                menuItemClick.offsetTopAndBottom(0);
+                menuItemClick.setPadding(20, 8, 20, 8);
+                menuItemClick.setMaxHeight(100);
+                menuItemClick.setMinWidth(menuItemsNav.getMeasuredWidth() / 3);
+                String indexRefTag = String.format(Locale.ENGLISH, "%d:%d", tabIndex, totalItems);
+                menuItemClick.setTag(indexRefTag);
+                menuItemClick.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        UITab.onMenuItemClick(view);
+                    }
+                });
+                menuItemsNav.addView(menuItemClick);
+                totalItems++;
+            }
+            tabViewInit = true;
+            return tabInflatedView;
+        }
+
+        public static void onMenuItemClick(View btn) {
+            Button btnClicked = (Button) btn;
+            String[] tagIndices = btnClicked.getTag().toString().split(":");
+            if(tagIndices.length != 2) {
+                return;
+            }
+            int tabIdx = Integer.parseInt(tagIndices[0]);
+            int menuItemIdx = Integer.parseInt(tagIndices[1]);
+            TabFragment.UITAB_DATA[tabIdx].changeMenuItemDisplay(menuItemIdx);
+        }
+
+        public boolean changeMenuItemDisplay(int mitemIdx) {
+            if((mitemIdx == lastMenuIndex && !firstTabLoad) ||
+                    mitemIdx < 0 || mitemIdx >= menuItemText.length) {
+                return false;
+            }
+            else if(tabInflatedView == null) {
+                return false;
+            }
+            LinearLayout containerLayout = (LinearLayout) tabInflatedView.findViewById(R.id.tabMainContent);
+            containerLayout.removeAllViews();
+            View tabMainLayoutView = TabFragment.defaultInflater.inflate(menuItemLayout[mitemIdx], containerLayout, false);
+            containerLayout.addView(tabMainLayoutView);
+            UITabUtils.initializeTabMainContent(tabIndex, mitemIdx, tabMainLayoutView);
+            selectMenuItem(mitemIdx);
+            firstTabLoad = false;
+            return true;
+        }
+
+    }
+
+    public static UITab[] UITAB_DATA = new UITab[TAB_COUNT];
+    static {
+        UITAB_DATA[TAB_LOG] = new UITab(
+                TAB_LOG,
+                R.drawable.nfc24v1,
+                "Logging",
+                new String[] {
+                        "Live Logs",
+                        "Log Tools",
+                        "Search Logs"
+                },
+                new int[]{
+                        R.layout.log_tab_logs,
+                        R.layout.log_tab_logtools,
+                        R.layout.log_tab_search
+                });
+        UITAB_DATA[TAB_TOOLS] = new UITab(
+                TAB_TOOLS,
+                R.drawable.tools24,
+                "Tools",
+                new String[] {
+                        "Config Slots",
+                        "Tag Config",
+                        "Scripting",
+                        "Commands",
+                        "Peripherals",
+                        "APDU"
+                },
+                new int[]{
+                        R.layout.tools_tab_slots,
+                        R.layout.tools_tab_tag_config,
+                        R.layout.tools_tab_scripting,
+                        R.layout.tools_tab_commands,
+                        R.layout.tools_tab_peripherals,
+                        R.layout.tools_tab_apdu
+                });
+        UITAB_DATA[TAB_EXPORT] = new UITab(
+                TAB_EXPORT,
+                R.drawable.insertbinary24,
+                "Export",
+                new String[] {
+                        "Export Logs",
+                        "Download",
+                        "Upload",
+                        "Android NFC",
+                        "Clone MFC Tags"
+                },
+                new int[]{
+                        R.layout.export_tab_save_logs,
+                        R.layout.export_tab_download,
+                        R.layout.export_tab_upload,
+                        R.layout.export_tab_android_interfaces,
+                        R.layout.export_tab_android_interfaces
+                });
+        UITAB_DATA[TAB_CONFIG] = new UITab(
+                TAB_CONFIG,
+                R.drawable.configtab24,
+                "Config",
+                new String[] {
+                        "Connect to Devices",
+                        "General",
+                        "Device"
+                },
+                new int[] {
+                        R.layout.config_tab_connect,
+                        R.layout.config_tab_settings,
+                        R.layout.config_tab_device_settings
+                });
+    }
 
     /**
      * Local tab-specific data stored by the class.
      */
+    private static int tabLayoutResRef = R.layout.tab_menu_item_template;
+    public static LayoutInflater defaultInflater = null;
     private int tabNumber;
-    private int layoutResRef;
-    private View inflatedView;
 
     /**
      * Effectively the default constructor used to obtain a new tab of the specified index.
@@ -66,30 +283,15 @@ public class TabFragment extends Fragment {
         TabFragment fragment = new TabFragment();
         fragment.tabNumber = page;
         fragment.setArguments(args);
-        switch(page) {
-            case TAB_LOG:
-                fragment.layoutResRef = R.layout.logging_tab;
-                break;
-            case TAB_TOOLS:
-                fragment.layoutResRef = R.layout.tools_menu_tab;
-                break;
-            case TAB_EXPORT:
-                fragment.layoutResRef = R.layout.export_tab;
-                break;
-            case TAB_LOG_TOOLS:
-                fragment.layoutResRef = R.layout.log_tools_tab;
-                break;
-            case TAB_SEARCH:
-                fragment.layoutResRef = R.layout.search_tab;
-                break;
-            case TAB_APDU:
-                fragment.layoutResRef = R.layout.apdu_tab;
-                break;
-            default:
-                 fragment.layoutResRef = R.layout.logging_tab;
-                 break;
-        }
         return fragment;
+    }
+
+    public String getTabTitle() {
+        return UITAB_DATA[tabNumber].tabText;
+    }
+
+    public int getTabIcon() {
+        return UITAB_DATA[tabNumber].tabIcon;
     }
 
     /**
@@ -103,103 +305,6 @@ public class TabFragment extends Fragment {
     }
 
     /**
-     * Helper method to setup a peripheral spinner.
-     * @param view
-     * @param spinnerID
-     * @param spinnerStringList
-     * @param spinnerAdapter
-     * @param queryCmd
-     * @ref TabFragment.onCreateView
-     * @see res/layout/tools_menu_tab.xml
-     */
-    private void connectPeripheralSpinnerAdapter(View view, int spinnerID, int spinnerStringList, SpinnerAdapter spinnerAdapter, String queryCmd) {
-        final String[] spinnerList = getResources().getStringArray(spinnerStringList);
-        spinnerAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, spinnerList);
-        Spinner spinner = (Spinner) view.findViewById(spinnerID);
-        spinner.setAdapter(spinnerAdapter);
-        if(queryCmd != null && LiveLoggerActivity.serialPort != null) {
-            String deviceSetting = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, queryCmd);
-            Log.i(TAG, "Returned deviceSetting: " + deviceSetting);
-            spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(deviceSetting));
-        }
-        final Spinner localSpinnerRef = spinner;
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            Spinner localSpinner = localSpinnerRef;
-            String[] localSpinnerList = spinnerList;
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                //if(i == 0)
-                //    return;
-                String setCmd = localSpinner.getTag().toString() + localSpinnerList[i];
-                ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, setCmd, ChameleonIO.TIMEOUT);
-            }
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                return;
-            }
-        });
-    }
-
-    /**
-     * Helper method to setup the advanced Chameleon Mini command-line spinner.
-     * @param view
-     * @param spinnerID
-     * @param spinnerStringList
-     * @param spinnerAdapter
-     * @param queryCmd
-     * @ref TabFragment.onCreateView
-     * @see res/layout/tools_menu_tab.xml
-     */
-    private void connectCommandListSpinnerAdapter(View view, final int spinnerID, int spinnerStringList, SpinnerAdapter spinnerAdapter, String queryCmd) {
-        final String[] spinnerList = getResources().getStringArray(spinnerStringList);
-        spinnerAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, spinnerList);
-        Spinner spinner = (Spinner) view.findViewById(spinnerID);
-        spinner.setAdapter(spinnerAdapter);
-        final View localFinalView = view;
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            View localView = localFinalView;
-            String[] localSpinnerList = spinnerList;
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String setCmd = localSpinnerList[i];
-                if(setCmd.charAt(0) != '-') {
-                    String userInputBytes = ((EditText) LiveLoggerActivity.runningActivity.findViewById(R.id.userInputFormattedBytes)).getText().toString();
-                    userInputBytes = userInputBytes.replace(" ", "").replace(":", "").replace("-", ""); // remove pretty printing / spaces formatting
-                    boolean errorFlag = false, resetStatus = false;
-                    if(setCmd.equals("UID=") && (!Utils.stringIsHexadecimal(userInputBytes) || userInputBytes.length() != 2 * ChameleonIO.deviceStatus.UIDSIZE)) {
-                        errorFlag = true;
-                    }
-                    else if(setCmd.equals("SETTING=") && !userInputBytes.matches("-?[0-9]")) {
-                        errorFlag = true;
-                    }
-                    else if((setCmd.equals("THRESHOLD=") || setCmd.equals("TIMEOUT=")) && !Utils.stringIsDecimal(userInputBytes)) {
-                        errorFlag = true;
-                    }
-                    else if(setCmd.equals("UID=") || setCmd.equals("SETTING=") || setCmd.equals("THRESHOLD=") || setCmd.equals("TIMEOUT=")) {
-                        setCmd += userInputBytes;
-                        resetStatus = true;
-                    }
-                    else if(setCmd.equals("RANDOM UID")) {
-                        byte[] randomBytes = Utils.getRandomBytes(ChameleonIO.deviceStatus.UIDSIZE);
-                        setCmd = "UID=" + Utils.bytes2Hex(randomBytes).replace(" ", "");
-                        resetStatus = true;
-                    }
-                    if(!errorFlag) {
-                        String deviceSetting = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, setCmd);
-                        LiveLoggerActivity.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "INFO: Shell command of " + setCmd + " returned status " + ChameleonIO.DEVICE_RESPONSE_CODE, ChameleonIO.DEVICE_RESPONSE[0]));
-                        if(resetStatus)
-                            ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-                    }
-                    else {
-                        LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Command formatting error: the input user bytes are invalid or not of the correct length"));
-                    }
-                    ((Spinner) localView.findViewById(spinnerID)).setSelection(0);
-                }
-            }
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                return;
-            }
-        });
-    }
-
-    /**
      * Inflates the layout and sets up the configuration of the widgets associated with each tab index.
      * @param inflater
      * @param container
@@ -209,115 +314,17 @@ public class TabFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(layoutResRef, container, false);
-        inflatedView = view;
         LiveLoggerActivity.defaultInflater = inflater;
-        if(tabNumber == TAB_LOG && !LiveLoggerActivity.logDataFeedConfigured) {
-            ScrollView logScroller = (ScrollView) view.findViewById(R.id.log_scroll_view);
-            LinearLayout logDataFeed = LiveLoggerActivity.logDataFeed;
-            logDataFeed.setOrientation(LinearLayout.VERTICAL);
-            logScroller.addView(logDataFeed);
-            logScroller.setFillViewport(true);
-            LiveLoggerActivity.logScrollView = logScroller;
-            LiveLoggerActivity.logDataFeed = logDataFeed;
-            LiveLoggerActivity.logDataFeedConfigured = true;
+        TabFragment.defaultInflater = inflater;
+        View view = inflater.inflate(tabLayoutResRef, container, false);
+        UITAB_DATA[tabNumber].initializeLayout();
+        if(UITAB_DATA[tabNumber].tabInflatedView != null) {
+            ((LinearLayout) UITAB_DATA[tabNumber].tabInflatedView).removeAllViews();
         }
-        else if(tabNumber == TAB_TOOLS && LiveLoggerActivity.spinnerRButtonLongAdapter == null) {
-            // first connect the spinners to their resp. adapters so something will happen when a new option is selected:
-            connectPeripheralSpinnerAdapter(view, R.id.RButtonSpinner, R.array.RButtonOptions, LiveLoggerActivity.spinnerRButtonAdapter, "RBUTTON?");
-            connectPeripheralSpinnerAdapter(view, R.id.RButtonLongSpinner, R.array.RButtonLongOptions, LiveLoggerActivity.spinnerRButtonLongAdapter, "RBUTTON_LONG?");
-            connectPeripheralSpinnerAdapter(view, R.id.LButtonSpinner, R.array.LButtonOptions, LiveLoggerActivity.spinnerLButtonAdapter, "LBUTTON?");
-            connectPeripheralSpinnerAdapter(view, R.id.LButtonLongSpinner, R.array.LButtonLongOptions, LiveLoggerActivity.spinnerLButtonLongAdapter, "LBUTTON_LONG?");
-            connectPeripheralSpinnerAdapter(view, R.id.LEDRedSpinner, R.array.LEDRedOptions, LiveLoggerActivity.spinnerLEDRedAdapter, "LEDRED?");
-            connectPeripheralSpinnerAdapter(view, R.id.LEDGreenSpinner, R.array.LEDGreenOptions, LiveLoggerActivity.spinnerLEDGreenAdapter, "LEDGREEN?");
-            connectPeripheralSpinnerAdapter(view, R.id.ButtonMyRevEBoardSpinner, R.array.ButtonMyRevEBoards, LiveLoggerActivity.spinnerButtonMyAdapter, "button?");
-            connectPeripheralSpinnerAdapter(view, R.id.LogModeSpinner, R.array.LogModeOptions, LiveLoggerActivity.spinnerLogModeAdapter, "LOGMODE?");
-            connectCommandListSpinnerAdapter(view, R.id.FullCmdListSpinner, R.array.FullCommandList, LiveLoggerActivity.spinnerCmdShellAdapter, "");
-
-            Switch fieldSwitch = (Switch) view.findViewById(R.id.fieldOnOffSwitch);
-            fieldSwitch.setChecked(ChameleonIO.deviceStatus.FIELD);
-            fieldSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "FIELD=" + (isChecked ? "1" : "0"), ChameleonIO.TIMEOUT);
-                }
-            });
-
-
-            Switch roSwitch = (Switch) view.findViewById(R.id.readonlyOnOffSwitch);
-            roSwitch.setChecked(ChameleonIO.deviceStatus.READONLY);
-            roSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "READONLY=" + (isChecked ? "1" : "0"), ChameleonIO.TIMEOUT);
-                }
-            });
-
-            SeekBar thresholdSeekbar = (SeekBar) view.findViewById(R.id.thresholdSeekbar);
-            int threshold = 400;
-            if(LiveLoggerActivity.serialPort != null) {
-                try {
-                    threshold = Integer.parseInt(LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "THRESHOLD?"));
-                }
-                catch(NumberFormatException nfe) {}
-                thresholdSeekbar.setProgress(threshold);
-            }
-            thresholdSeekbar.incrementProgressBy(25);
-            ((TextView) view.findViewById(R.id.thresholdSeekbarValueText)).setText(String.format(Locale.ENGLISH, "% 5d mV", threshold));
-            final View seekbarView = view;
-            thresholdSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
-                TextView labelText = (TextView) seekbarView.findViewById(R.id.thresholdSeekbarValueText);
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    labelText.setText(String.format(Locale.ENGLISH, "% 5d mV", progress));
-                }
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {}
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                    int nextThreshold = seekBar.getProgress();
-                    LiveLoggerActivity.setSignalStrengthIndicator(nextThreshold);
-                    ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "THRESHOLD=" + String.valueOf(nextThreshold), ChameleonIO.TIMEOUT);
-                    ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-                }
-            });
-            LiveLoggerActivity.setSignalStrengthIndicator(thresholdSeekbar.getProgress());
-
-            NumberPicker settingsNumberPicker = (NumberPicker) view.findViewById(R.id.settingsNumberPicker);
-            settingsNumberPicker.setDividerThickness(1);
-            settingsNumberPicker.setOrientation(LinearLayout.HORIZONTAL);
-            settingsNumberPicker.setValue(ChameleonIO.deviceStatus.DIP_SETTING);
-            settingsNumberPicker.setFormatter("%02d");
-            settingsNumberPicker.setTypeface("sans-serif", Typeface.BOLD_ITALIC);
-            settingsNumberPicker.setOnLongPressUpdateInterval(25);
-            settingsNumberPicker.setOnScrollListener(new NumberPicker.OnScrollListener() {
-                @Override
-                public void onScrollStateChange(NumberPicker numberPicker, int scrollState) {
-                    if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
-                        String settingCmd = ChameleonIO.REVE_BOARD ? "setting=" : "SETTING=";
-                        Log.i(TAG, "Number Picker Setting: " + numberPicker.getValue());
-                        Log.i(TAG, "Number Picker Setting Command: \"" + settingCmd + numberPicker.getValue() + "\"");
-                        LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, settingCmd + numberPicker.getValue());
-                        ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-                    }
-                }
-            });
-        }
-        else if(tabNumber == TAB_SEARCH) {
-            int states[][] = {{android.R.attr.state_checked}, {}};
-            int colors[] = {LiveLoggerActivity.runningActivity.getThemeColorVariant(R.attr.colorPrimaryDark), LiveLoggerActivity.runningActivity.getThemeColorVariant(R.attr.colorPrimaryDark)};
-            CompoundButtonCompat.setButtonTintList((CheckBox) view.findViewById(R.id.entrySearchIncludeStatus), new ColorStateList(states, colors));
-            CompoundButtonCompat.setButtonTintList((CheckBox) view.findViewById(R.id.entrySearchAPDU), new ColorStateList(states, colors));
-            CompoundButtonCompat.setButtonTintList((CheckBox) view.findViewById(R.id.entrySearchRawLogData), new ColorStateList(states, colors));
-            CompoundButtonCompat.setButtonTintList((CheckBox) view.findViewById(R.id.entrySearchLogHeaders), new ColorStateList(states, colors));
-        }
-        else if(tabNumber == TAB_APDU) {
-            ApduUtils.buildFullInstructionsList();
-            ApduUtils.tabView = inflatedView;
-            ScrollView sv = (ScrollView) inflatedView.findViewById(R.id.apduSearchResultsScrollView);
-            LinearLayout searchResultsContainer = new LinearLayout(LiveLoggerActivity.runningActivity);
-            searchResultsContainer.setOrientation(LinearLayout.VERTICAL);
-            sv.addView(searchResultsContainer);
-        }
-        return inflatedView;
+        UITAB_DATA[tabNumber].tabInflatedView = view;
+        UITAB_DATA[tabNumber].createTabView();
+        UITAB_DATA[tabNumber].changeMenuItemDisplay(UITAB_DATA[tabNumber].lastMenuIndex);
+        return view;
     }
 
     /**

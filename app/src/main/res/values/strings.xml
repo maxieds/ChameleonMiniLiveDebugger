@@ -1,17 +1,101 @@
 <resources>
     <string name="app_name">Chameleon Mini Live Debugger</string>
-    <string name="app_desc">GUI and portable logging interface for the Chameleon Mini Rev G boards</string>
-    <string name="aboutapp">This application is copyright (&lt;i>© 2017-2018&lt;/i>) and developed in the free time of its author Maxie D. Schmidt (&lt;a href="mailto:maxieds@gmail.com">maxieds@gmail.com&lt;/a>). The current Android version of the application is &lt;b>&lt;i>build version %%ANDROID_VERSION_CODE%%&lt;/i>&lt;/b> (&lt;b>&lt;i>revision %%ANDROID_VERSION_NAME%%, flavor %%ANDROID_FLAVOR_NAME%%; Git revision %%GIT_COMMIT_HASH%% commited at %%GIT_COMMIT_DATE%%&lt;/i>&lt;/b>).&lt;br/>&lt;br/>
-        &lt;b>&lt;u>Licensing&lt;/u>&lt;/b>: For all intensive reasonable non-commercial applications this app is free to use and modify provided a link to the original project webpage and the author information remain intact in the revisions: &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger">GitHub/ChameleonMiniLiveDebugger&lt;/a> (Call it GPL-like).&lt;br/>&lt;br/>
-        &lt;b>&lt;u>Support&lt;/u>&lt;/b>: Documentation for the app is found on the project webpage, though most of the buttons are self explanatory after some mild tinkering (which is of course encouraged in this sort of application). Testing data, feedback, and future feature requests can all be issued &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger/issues">here&lt;/a> in official form.&lt;br/>&lt;br/>
-        &lt;b>&lt;u>Credits&lt;/u>&lt;/b>: The pretty freeware icons used by the app were obtained from &lt;a href="flaticon.com">flaticon.com&lt;/a> and their lovely sized transparent PNG conversions of these images. &lt;br/>&lt;br/>
-        &lt;b>&lt;u>Donations&lt;/u>&lt;/b>: If you find this application particularly useful, the author requests donations in the form of more Chameleon Mini and other related hardware in place of cash transactions (see &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger/issues/3">issue #3&lt;/a>).&lt;br/>&lt;hr/></string>
-    <string name="privacyhtml">&lt;b>&lt;u>User Privacy Policy&lt;/u>&lt;/b>: A privacy policy for the application is now required and has been posted at the following link for the benefit of users: &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger/wiki/UserPrivacyPolicy">UserPrivacyPolicy&lt;/a>. The wisdom from this app is to think more of
-    the ethically minded policies which we work hard to provide here, and correspondingly much less of registering your device with Google if you can avoid it. If you have discovered this app by
-    a search on the Google Play Store, notice that unmodified signed binaries are provided by the developer on the project website. The binaries installed by Google are a repackaged and modified version of what is uploaded on the releases page there.
+    <string name="app_display_short_name">CMLD</string>
+    <string name="app_desc">GUI and portable logging interface for the Chameleon Mini NFC pentesting boards</string>
+    <string name="aboutapp">
+        &lt;h1>About the CMLD application&lt;/h1>
+        This application is copyright (&lt;i>© 2017-2020&lt;/i>) and developed in the free time of its author Maxie D. Schmidt
+        (&lt;a href="mailto:maxieds@gmail.com">maxieds@gmail.com&lt;/a>).
+        For all intensive reasonable non-commercial applications this Android application is free to use and modify under the
+        GPL provided a link to the original project webpage and the author information remain intact in the revisions:
+        &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger">maxieds/ChameleonMiniLiveDebugger&lt;/a>.&lt;br/>&lt;br/>
+
+        &lt;h1>Information about the currently running build&lt;/h1>
+        &lt;ul>
+            &lt;li>The Android version of the application is &lt;i>build version &lt;b>%%ANDROID_VERSION_CODE%%&lt;/b>&lt;/i>&lt;/li>
+            &lt;li>Android revision &lt;b>&lt;i>%%ANDROID_VERSION_NAME%%&lt;/b>&lt;/i>&lt;/li>
+            &lt;li>Application build flavor &lt;b>&lt;i>%%ANDROID_FLAVOR_NAME%%&lt;/b>&lt;/i>&lt;/li>
+            &lt;li>Git revision &lt;b>&lt;i>%%GIT_COMMIT_HASH%%&lt;/b>&lt;/i> commited at &lt;b>&lt;i>%%GIT_COMMIT_DATE%%&lt;/b>&lt;/i>&lt;/li>
+        &lt;/ul>
+
+        &lt;h1>Support&lt;/h1>
+        Official documentation for the CMLD application is found on the project
+        &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger/wiki">WIKI webpage&lt;/a>. Though the developer has made
+        a sincere effort to keep most of the user interface and the command buttons self explanatory after some mild tinkering
+        with the Chameleon Mini devices. Testing data, feedback, and future feature requests can all be compiled
+        &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger/issues">here&lt;/a> in the official issues queue.
+
+        &lt;h1>Credits&lt;/h1>
+        The pretty freeware icons used by the app were obtained from &lt;a href="flaticon.com">flaticon.com&lt;/a> and their
+        lovely sized transparent PNG enabled conversions of these images to standard sizes. The GIMP image editor on
+        Linux has also been used to create custom icons and colored logos for this application.
+        &lt;br/>&lt;br/>
+        The author additionally thanks
+        users, labs and Chameleon Mini device resalers who have donated time and hardware to helping me keep this
+        CMLD application running at high quality. Donations of Chameleon Mini hardware have been made available to the
+        developer of this application at free or reduced cost by the following contributors and third parties:
+        &lt;ul>
+            &lt;li>The &lt;b>&lt;i>&lt;u>KAOS team&lt;/u>&lt;/b>&lt;/i> (Kasper and Oswald) and original proprietors of the Chameleon RevG hardware / firmware (&lt;a href="https://shop.kasper.it/">their retail site&lt;/a>)&lt;/li>
+            &lt;li>The &lt;b>&lt;i>&lt;u>Lab401 team&lt;/u>&lt;/b>&lt;/i> who have customized the Chameleom RevG devices into the Proxgrind revisions (with Bluetooth) and the Tiny variations (&lt;a href="https://www.facebook.com/pages/category/Electronics/Lab401-306470190007231/">their social media profile&lt;/a>)&lt;/b>&lt;/i>&lt;/li>
+        &lt;/ul>
+
+        &lt;h1>Donations and other ways to get involved&lt;/h1>
+        If you find this application particularly useful, the author requests donations in the form of more
+        Chameleon Mini and other related hardware (e.g., a Proxmark device would be nice to have on hand for me).
+        After you have gotten to know how to use it, and all of its unique features and customizations, please consider
+        &lt;a href="https://play.google.com/store/apps/details?id=com.maxieds.chameleonminilivedebugger">rating the CMLD app&lt;/a> on Google Play Store!
+        &lt;br/>&lt;br/>
+        As this software is licensed as GPL open source software that will always remain freely available to users in the
+        Chameleon Mini and NFC pentesting community, and since I have not been paid for my 100s of hours in
+        developing this unique tool, please consider contributing to the developer in other ways if you have the resources.
+        Users can purchase a
+        &lt;a href="https://play.google.com/store/apps/details?id=com.maxieds.chameleonminilivedebugger.paid">PAID
+        flavor of the application&lt;/a>
+        for a small $4.99 one-time fee which contains extra themes. The proceeds go directly
+        to the developer to continue to keep the application functional and current.
+        &lt;br/>&lt;br/>
+        The developer of the CMLD application (Maxie D. Schmidt) can also be contacted for independent paid freelance
+        work and general software engineering or mathematical research consultation. Such freelance work includes,
+        but certainly is not limited to, customizing this CMLD application for commercial uses and re-theming, creating
+        modified Chameleon Mini firmware to include new features, NFC tag functionality, and/or userland commands, and
+        for other NFC and/or Android related library creation work.
+    </string>
+    <string name="privacyhtml">
+        &lt;h1>User Privacy Policy&lt;/h1>
+        A privacy policy for the application is now required and has been posted at the following link for the
+        benefit of users:
+        &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger/wiki/UserPrivacyPolicy">UserPrivacyPolicy&lt;/a>.
+        The wisdom from this app is to think more of the ethically minded policies which we work hard to provide here,
+        and correspondingly much less of registering your device with Google if you can avoid it.
+        If you have discovered this app by a search on the Google Play Store, notice that unmodified signed
+        binaries are provided by the developer on the project website. The binaries installed by Google are a
+        repackaged and modified version of what is uploaded on the releases page there.
     </string>
     <string name="apphtmlheader">&lt;html>&lt;head>&lt;style>a { text-decoration: underline; color: %%ABOUTLINKCOLOR%%; font-weight: bold; font-style: italic; }&lt;/style>&lt;/head>&lt;body></string>
     <string name="apphtmlfooter">&lt;/body>&lt;/html></string>
+    <string name="initialUserGreetingMsg">Thank you for using and testing this Android application.
+               A detailed man page and instructions for using the Chameleon Mini Live Debugger (CMLD) are
+               found on the project WIKI pages at https://github.com/maxieds/ChameleonMiniLiveDebugger/wiki.\n\n
+               If you consistently enjoy using this app, please consider upgrading to the _PAID_ flavor on the
+               Google Play Store, rating the application on the Play Store, or making a hardware donation to the
+               developer to keep the application current and chugging strong!
+    </string>
+    <string name="chameleonCmdAppendixTroubleshooting">
+        Note that all of the different variations of the Chameleon Mini hardware devices do not all support the same
+        commands. The commands supported by the device are programmed into the firmware that must be flashed onto the
+        Chameleon device before you can use it.\n\n
+        In particular, if you try to run a command with this CMLD application, and it fails for some reason, then most
+        likely the device firmware you are using does not support this command. Some commands also require that they be
+        run in a READER mode, whereas some commands must be run while the current active slot on the Chameleon is set to
+        a configuration in SNIFFER mode.\n\n
+        A list of commands and NFC Tag / READER / SNIFFER configurations supported by the firmware on your attached
+        device can be viewed under the "Config" tab.
+    </string>
+    <string name="apduEntryInstructions">
+        Enter the APDU command components manually into the following box.\n
+        The bytes are in hexadecimal in the following order: CLA | INS | P1 | P2 | [LE] | DATA | [LC].
+        Note that the LE/LC fields should not be included and will be calculated based on your input later.
+    </string>
     <string name="helpCmdResp">
         &lt;h1>Command Responses: &lt;/h1>
         Subsequent to any command sent, the Chameleon responds with a status number and a corresponding status message, separated by a colon and terminated with a carriage return and line feed (CR+LF, 0D+0A hexadecimal). Status numbers are of a three-digit decimal format with the first digit showing the severity of the answer. Status numbers beginning with a \'1\' denote an informational item and those beginning with a \'2\' denote an error.
@@ -473,6 +557,28 @@
         <item>TIMEOUT=?</item>
         <item>UID=</item>
         <item>UID?</item>
+    </string-array>
+
+    <string-array name="FullTagConfigModes">
+        <item>NONE</item>
+        <item>MF_DETECTION</item>
+        <item>MF_DETECTION_4K</item>
+        <item>MF_CLASSIC_MINI_4B</item>
+        <item>MF_CLASSIC_1K</item>
+        <item>MF_CLASSIC_1K_7B</item>
+        <item>MF_CLASSIC_4K</item>
+        <item>MF_CLASSIC_4K_7B</item>
+        <item>MF_ULTRALIGHT</item>
+        <item>MF_ULTRALIGHT_C</item>
+        <item>MF_ULTRALIGHT_EV1_80B</item>
+        <item>MF_ULTRALIGHT_EV1_164B</item>
+        <item>ISO14443A_SNIFF</item>
+        <item>ISO14443A_READER</item>
+        <item>VICINITY</item>
+        <item>SL2S2002</item>
+        <item>TITAGITSTANDARD</item>
+        <item>ISO15693_SNIFF</item>
+        <item>EM4233</item>
     </string-array>
 
 

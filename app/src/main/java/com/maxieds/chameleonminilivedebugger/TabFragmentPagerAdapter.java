@@ -7,11 +7,9 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import android.util.Log;
 import android.view.View;
 
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_APDU;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_TOOLS;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_SEARCH;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS;
 
 /**
@@ -28,23 +26,14 @@ public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
     /**
      * Stores the data for each tab (only one instance created at runtime).
      */
-    public static final int TAB_COUNT = 6;
+    public static final int TAB_COUNT = 4;
     public TabFragment[] tabFragments = {
             TabFragment.newInstance(TAB_LOG),
             TabFragment.newInstance(TAB_TOOLS),
-            TabFragment.newInstance(TAB_LOG_TOOLS),
             TabFragment.newInstance(TAB_EXPORT),
-            TabFragment.newInstance(TAB_SEARCH),
-            TabFragment.newInstance(TAB_APDU),
+            TabFragment.newInstance(TAB_CONFIG),
     };
     FragmentManager fm;
-
-    /**
-     * Corresponding titles of each tab.
-     */
-    private String tabTitles[] = new String[]{
-            "Log", "Tools", "Log Tools", "Export", "Search", "APDU",
-    };
 
     /**
      * Store the context used to initialize the object.
@@ -90,7 +79,6 @@ public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int tabid) {
         return tabFragments[tabid];
-        //return TabFragment.newInstance(tabid);
     }
 
     /**
@@ -100,8 +88,10 @@ public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
      */
     @Override
     public CharSequence getPageTitle(int position) {
-        return tabTitles[position];
+        return tabFragments[position].getTabTitle();
     }
+
+    public int getTabIcon(int position) { return tabFragments[position].getTabIcon(); }
 
     @Override
     public void destroyItem(View collection, int position, Object view) {

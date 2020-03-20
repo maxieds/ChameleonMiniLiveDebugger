@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+
+<ScrollView
+    android:id="@+id/tools_menu_scroll_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fadeScrollbars="false"
+    android:orientation="vertical"
+    android:scrollbarSize="25dp"
+    android:verticalScrollbarPosition="right">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_margin="2dp"
+        android:orientation="vertical"
+        android:padding="2dp">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/peripheral16"
+                android:drawablePadding="5dp"
+                android:singleLine="true"
+                android:text="Configure device peripherals: "
+                android:textAllCaps="true"
+                android:textStyle="bold|italic" />
+
+            <Button
+                style="@style/GridButtons"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:background="?colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/querydefaults16"
+                android:onClick="actionButtonRestorePeripheralDefaults"
+                android:text="[Query Device]"
+                android:textSize="10sp" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="?colorPrimaryDark" />
+
+        <GridLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:background="?colorAccentLog"
+            android:columnCount="3"
+            android:padding="2dp"
+            android:rowCount="10">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ledred24" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/LEDRedSpinner"
+                android:layout_width="250dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:entries="@array/LEDRedOptions"
+                android:gravity="right|center_vertical"
+                android:popupBackground="?colorAccentHighlight"
+                android:spinnerMode="dialog"
+                android:tag="LEDRED=" />
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ledgreen24" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/LEDGreenSpinner"
+                android:layout_width="250dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:entries="@array/LEDGreenOptions"
+                android:gravity="right|center_vertical"
+                android:popupBackground="?colorAccentHighlight"
+                android:spinnerMode="dialog"
+                android:tag="LEDGREEN=" />
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/circlebutton32" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="4dp"
+                android:text="(RBS)"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/RButtonSpinner"
+                android:layout_width="250dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:entries="@array/RButtonOptions"
+                android:gravity="right|center_vertical"
+                android:popupBackground="?colorAccentHighlight"
+                android:spinnerMode="dialog"
+                android:tag="RBUTTON=" />
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/squarebutton32" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="4dp"
+                android:text="(RBL)"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/RButtonLongSpinner"
+                android:layout_width="250dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:entries="@array/RButtonLongOptions"
+                android:gravity="right|center_vertical"
+                android:popupBackground="?colorAccentHighlight"
+                android:spinnerMode="dialog"
+                android:tag="RBUTTON_LONG=" />
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/rectbutton32" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="4dp"
+                android:text="(LBS)"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/LButtonSpinner"
+                android:layout_width="250dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:entries="@array/LButtonOptions"
+                android:gravity="right|center_vertical"
+                android:popupBackground="?colorAccentHighlight"
+                android:spinnerMode="dialog"
+                android:tag="LBUTTON=" />
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/twocircbutton32" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="4dp"
+                android:text="(LBL)"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/LButtonLongSpinner"
+                android:layout_width="250dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:entries="@array/LButtonLongOptions"
+                android:gravity="right|center_vertical"
+                android:popupBackground="?colorAccentHighlight"
+                android:spinnerMode="dialog"
+                android:tag="LBUTTON_LONG=" />
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/buttonmy24" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="4dp"
+                android:text="(REVE)"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/ButtonMyRevEBoardSpinner"
+                android:layout_width="250dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:entries="@array/ButtonMyRevEBoards"
+                android:gravity="right|center_vertical"
+                android:popupBackground="?colorAccentHighlight"
+                android:spinnerMode="dialog"
+                android:tag="buttonmy=" />
+
+
+
+        </GridLayout>
+
+    </LinearLayout>
+
+</ScrollView>
+
+</LinearLayout>

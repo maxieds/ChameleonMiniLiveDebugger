@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <resources>
     <!-- ChameleonMini Rev. G Board Firmware Device Specs -->
-    <usb-device vendor-id="5840" product-id="1202" />
+    <usb-device vendor-id="5840" product-id="1202" name="Chameleon Mini (RevG)" />
     <!-- Add prospective support for the untested ChameleonMini Rev. E Boards -->
-    <usb-device vendor-id="1003" product-id="8260" />
-    <!--<usb-device vendor-id="7531" product-id="2" />-->
+    <usb-device vendor-id="1003" product-id="8260"  name="Chameleon Mini (RevE)" />
+    <!-- ChameleonMini DFU programmer modes (if a user plugs in an un-flashed board) -->
+    <usb-device vendor-id="1003" product-id="12254" name="Chameleon Mini (DFU Mode)"/>
 </resources>

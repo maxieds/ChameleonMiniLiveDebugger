@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="0dp"
+    android:padding="0dp"
+    android:orientation="vertical">
+
+    <GridLayout
+        android:id="@+id/tabMenuItemsNav"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="0dp"
+        android:background="?colorPrimaryDark"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:columnCount="3"
+        android:paddingTop="0dp"
+        android:paddingBottom="0dp"
+        android:paddingLeft="15dp"
+        android:rowCount="1">
+    </GridLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tabMainContent"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_columnWeight="0.33"
+        android:orientation="vertical"></LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
+
+</LinearLayout>

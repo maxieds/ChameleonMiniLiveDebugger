@@ -7,22 +7,28 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
 
-    <uses-feature android:name="android.hardware.usb.host" android:required="true"/>
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <uses-feature android:name="android.hardware.usb.host" android:required="true" />
+    <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
 
     <application
         android:theme="${appTheme}"
         android:description="@string/app_desc"
         android:icon="${appIcon}"
-        android:label="@string/app_name"
+        android:label="@string/app_display_short_name"
         android:roundIcon="${appRoundIcon}"
-        android:launchMode="singleTask"
+        android:launchMode="singleTop"
         android:noHistory="true"
         android:excludeFromRecents="true"
         android:testOnly="${appDebug}"
         android:hardwareAccelerated="true"
         android:manageSpaceActivity=".LiveLoggerActivity"
         android:defaultToDeviceProtectedStorage="true"
-        android:usesCleartextTraffic="true"
+        android:usesCleartextTraffic="false"
         android:installLocation="${installLocation}"
         tools:replace="android:icon"
         tools:node="replace"
@@ -43,6 +49,10 @@
             <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" android:resource="@xml/usb_device_filter"/>
             <meta-data android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" android:resource="@xml/usb_device_filter"/>
 
+            <intent-filter>
+                <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
+                <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
+            </intent-filter>
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -55,8 +65,6 @@
             </intent-filter>
 
         </activity>
-
-        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
 
     </application>
 

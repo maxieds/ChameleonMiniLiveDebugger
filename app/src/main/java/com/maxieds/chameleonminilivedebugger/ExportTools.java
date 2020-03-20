@@ -77,6 +77,10 @@ public class ExportTools {
      */
     public static Runnable eotSleepRunnable = new Runnable() {
         public void run() {
+            ChameleonSerialIOInterface serialIOPort = Settings.getActiveSerialIOPort();
+            if(serialIOPort == null || !serialIOPort.serialConfigured()) {
+                return;
+            }
             if (!ExportTools.EOT) {
                 eotSleepHandler.postDelayed(this, 50);
             }
@@ -84,12 +88,12 @@ public class ExportTools {
                 try {
                     streamDest.close();
                 } catch (Exception ioe) {
-                    LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
+                    MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
                     ioe.printStackTrace();
                 } finally {
                     ChameleonIO.DOWNLOAD = false;
-                    ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "LOGMODE=" + currentLogMode, ChameleonIO.TIMEOUT);
-                    LiveLoggerActivity.serialPortLock.release();
+                    ChameleonIO.executeChameleonMiniCommand("LOGMODE=" + currentLogMode, ChameleonIO.TIMEOUT);
+                    serialIOPort.releaseSerialPortLock();
                 }
                 if(!ExportTools.transmissionErrorOccurred) {
                     DownloadManager downloadManager = (DownloadManager) LiveLoggerActivity.defaultContext.getSystemService(DOWNLOAD_SERVICE);
@@ -97,15 +101,15 @@ public class ExportTools {
                             outfile.getAbsolutePath(), outfile.length(), true);
                     String statusMsg = "Write internal log data to file " + outfile.getName() + "(+" + outfile.length() + " / " + fileSize + " bytes).\n";
                     statusMsg += "If you are not seeing the expected output, try running the LOGSTORE command from the tools menu first.";
-                    LiveLoggerActivity.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "EXPORT", statusMsg));
+                    MainActivityLogUtils.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "EXPORT", statusMsg));
                     if (throwToLive) {
                         throwDeviceLogDataToLive(outfile);
                     }
                 }
                 else {
                     outfile.delete();
-                    LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
-                    LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Maximum number of NAK errors exceeded. Download of data aborted."));
+                    LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+                    MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Maximum number of NAK errors exceeded. Download of data aborted."));
                 }
             }
             else if(ChameleonIO.UPLOAD) {
@@ -113,19 +117,19 @@ public class ExportTools {
                 try {
                     streamSrc.close();
                 } catch (Exception ioe) {
-                    LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
+                    MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
                     ioe.printStackTrace();
                 } finally {
                     ChameleonIO.UPLOAD = false;
-                    LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "READONLY=" + (ChameleonIO.deviceStatus.READONLY ? "1" : "0"));
-                    LiveLoggerActivity.serialPortLock.release();
+                    ChameleonIO.getSettingFromDevice("READONLY=" + (ChameleonIO.deviceStatus.READONLY ? "1" : "0"));
+                    serialIOPort.releaseSerialPortLock();
                 }
                 if(!ExportTools.transmissionErrorOccurred) {
                     ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
                 }
                 else {
-                    LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
-                    LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "File transmission errors encountered. Maximum number of NAK errors exceeded. Download of data aborted."));
+                    LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+                    MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "File transmission errors encountered. Maximum number of NAK errors exceeded. Download of data aborted."));
                 }
             }
         }
@@ -153,6 +157,10 @@ public class ExportTools {
      * @ref LiveLoggerActivity.usbReaderCallback
      */
     public static void performXModemSerialDownload(byte[] liveLogData) {
+        ChameleonSerialIOInterface serialIOPort = Settings.getActiveSerialIOPort();
+        if(serialIOPort == null || !serialIOPort.serialConfigured()) {
+            return;
+        }
         if(ExportTools.EOT)
             return; // waiting for conclusion of timer to cleanup the download files
         Log.i(TAG, "Received XModem data (#bytes=" + liveLogData.length + ") ..." + Utils.bytes2Hex(liveLogData));
@@ -167,14 +175,14 @@ public class ExportTools {
                 ExportTools.Checksum = ExportTools.CalcChecksum(frameBuffer, ExportTools.XMODEM_BLOCK_SIZE);
                 if (ExportTools.Checksum != checksumByte && currentNAKCount < MAX_NAK_COUNT) {
                     Log.w(TAG, "Sent another NAK (invalid checksum) : # = " + currentNAKCount);
-                    LiveLoggerActivity.serialPort.write(new byte[]{ExportTools.BYTE_NAK});
+                    serialIOPort.sendDataBuffer(new byte[]{ExportTools.BYTE_NAK});
                     currentNAKCount++;
                     return;
                 }
                 else if(ExportTools.Checksum != checksumByte) {
                     ExportTools.EOT = true;
                     ExportTools.transmissionErrorOccurred = true;
-                    LiveLoggerActivity.serialPort.write(new byte[] {ExportTools.BYTE_CAN});
+                    serialIOPort.sendDataBuffer(new byte[] {ExportTools.BYTE_CAN});
                     return;
                 }
                 try {
@@ -182,7 +190,7 @@ public class ExportTools {
                     ExportTools.streamDest.write(frameBuffer);
                     ExportTools.streamDest.flush();
                     ExportTools.CurrentFrameNumber++;
-                    LiveLoggerActivity.serialPort.write(new byte[]{BYTE_ACK});
+                    serialIOPort.sendDataBuffer(new byte[]{BYTE_ACK});
                 } catch (Exception e) {
                     ExportTools.EOT = true;
                     e.printStackTrace();
@@ -192,17 +200,17 @@ public class ExportTools {
                 if(currentNAKCount >= MAX_NAK_COUNT) {
                     ExportTools.EOT = true;
                     ExportTools.transmissionErrorOccurred = true;
-                    LiveLoggerActivity.serialPort.write(new byte[] {ExportTools.BYTE_CAN});
+                    serialIOPort.sendDataBuffer(new byte[] {ExportTools.BYTE_CAN});
                     return;
                 }
                 Log.w(TAG, "Sent another NAK (header bytes) : # = " + currentNAKCount);
-                LiveLoggerActivity.serialPort.write(new byte[]{ExportTools.BYTE_NAK});
+                serialIOPort.sendDataBuffer(new byte[]{ExportTools.BYTE_NAK});
                 currentNAKCount++;
             }
         }
         else {
             try {
-                LiveLoggerActivity.serialPort.write(new byte[]{ExportTools.BYTE_ACK});
+                serialIOPort.sendDataBuffer(new byte[]{ExportTools.BYTE_ACK});
             } catch (Exception ioe) {
                 ioe.printStackTrace();
             }
@@ -219,9 +227,11 @@ public class ExportTools {
      * @ref LiveLoggerActivity.actionButtonExportLogDownload
      */
     public static boolean downloadByXModem(String issueCmd, String outfilePrefix, boolean throwToLiveParam) {
-        if(LiveLoggerActivity.serialPort == null)
+        ChameleonSerialIOInterface serialIOPort = Settings.getActiveSerialIOPort();
+        if(serialIOPort == null || !serialIOPort.serialConfigured()) {
             return false;
-        LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
+        }
+        LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
         String outfilePath = outfilePrefix + "-" + Utils.getTimestamp().replace(":", "") + ".bin";
         File downloadsFolder = new File("//sdcard//Download//");
         boolean docsFolderExists = true;
@@ -232,8 +242,8 @@ public class ExportTools {
             outfile = new File(downloadsFolder.getAbsolutePath(), outfilePath);
         }
         else {
-            LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to save output in Downloads folder."));
-            LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconUlDl);
+            MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to save output in Downloads folder."));
+            LiveLoggerActivity.getInstance().clearStatusIcon(R.id.statusIconUlDl);
             return false;
         }
 
@@ -241,19 +251,19 @@ public class ExportTools {
             outfile.createNewFile();
             streamDest = new FileOutputStream(outfile);
         } catch(Exception ioe) {
-            LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
+            MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
             ioe.printStackTrace();
-            LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconUlDl);
+            LiveLoggerActivity.getInstance().clearStatusIcon(R.id.statusIconUlDl);
             return false;
         }
 
-        LiveLoggerActivity.serialPortLock.acquireUninterruptibly();
+        serialIOPort.acquireSerialPortNoInterrupt();
         throwToLive = throwToLiveParam;
         // turn of logging so the transfer doesn't get accidentally logged:
-        currentLogMode = LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "LOGMODE?");
-        ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "LOGMODE=OFF", ChameleonIO.TIMEOUT);
+        currentLogMode = ChameleonIO.getSettingFromDevice("LOGMODE?");
+        ChameleonIO.executeChameleonMiniCommand("LOGMODE=OFF", ChameleonIO.TIMEOUT);
         ChameleonIO.WAITING_FOR_XMODEM = true;
-        LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, issueCmd);
+        ChameleonIO.getSettingFromDevice(issueCmd);
         fileSize = 0;
         CurrentFrameNumber = FIRST_FRAME_NUMBER;
         currentNAKCount = 0;
@@ -266,7 +276,7 @@ public class ExportTools {
             }
         }
         ChameleonIO.DOWNLOAD = true;
-        LiveLoggerActivity.serialPort.write(new byte[]{BYTE_NAK});
+        serialIOPort.sendDataBuffer(new byte[]{BYTE_NAK});
         eotSleepHandler.postDelayed(eotSleepRunnable, 50);
         return true;
     }
@@ -286,12 +296,12 @@ public class ExportTools {
                 fin.read(payloadBytes, 4, dlen);
                 LogEntryUI nextLogEntry = LogEntryUI.newInstance(payloadBytes, "");
                 // highlight the entries so it's clear they're from the device's logs:
-                nextLogEntry.getMainEntryContainer().setBackgroundColor(LiveLoggerActivity.runningActivity.getThemeColorVariant(R.attr.deviceMemoryLogHighlight));
-                LiveLoggerActivity.appendNewLog(nextLogEntry);
+                nextLogEntry.getMainEntryContainer().setBackgroundColor(ThemesConfiguration.getThemeColorVariant(R.attr.deviceMemoryLogHighlight));
+                MainActivityLogUtils.appendNewLog(nextLogEntry);
             }
             fin.close();
         } catch(Exception ioe) {
-            LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
+            MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
             ioe.printStackTrace();
         }
     }
@@ -302,6 +312,10 @@ public class ExportTools {
      * @param liveLogData
      */
     public static void performXModemSerialUpload(byte[] liveLogData) {
+        ChameleonSerialIOInterface serialIOPort = Settings.getActiveSerialIOPort();
+        if(serialIOPort == null || !serialIOPort.serialConfigured()) {
+            return;
+        }
         Log.i(TAG, "Received Upload Data (#=" + liveLogData.length + ") ... " + Utils.bytes2Hex(liveLogData));
         Log.i(TAG, "    => " + Utils.bytes2Ascii(liveLogData));
         if(ExportTools.EOT || liveLogData == null || liveLogData.length == 0)
@@ -320,7 +334,7 @@ public class ExportTools {
                 if(streamSrc.available() == 0) {
                     Log.i(TAG, "Upload / Sending EOT to device.");
                     EOT = true;
-                    LiveLoggerActivity.serialPort.write(new byte[]{BYTE_EOT});
+                    serialIOPort.sendDataBuffer(new byte[]{BYTE_EOT});
                     return;
                 }
                 streamSrc.read(payloadBytes, 0, XMODEM_BLOCK_SIZE);
@@ -328,22 +342,22 @@ public class ExportTools {
             } catch(IOException ioe) {
                 EOT = true;
                 transmissionErrorOccurred = true;
-                LiveLoggerActivity.serialPort.write(new byte[]{BYTE_CAN});
+                serialIOPort.sendDataBuffer(new byte[]{BYTE_CAN});
                 return;
             }
             uploadFramebuffer[XMODEM_BLOCK_SIZE + 3] = CalcChecksum(payloadBytes, XMODEM_BLOCK_SIZE);
             Log.i(TAG, "Upload Writing Data: frame=" + CurrentFrameNumber + ": " + Utils.bytes2Hex(uploadFramebuffer));
-            LiveLoggerActivity.serialPort.write(uploadFramebuffer);
+            serialIOPort.sendDataBuffer(uploadFramebuffer);
         }
         else if(statusByte == BYTE_NAK && currentNAKCount <= MAX_NAK_COUNT) {
             Log.i(TAG, "Upload / Sending Another NAK response (#=" + currentNAKCount + ")");
             currentNAKCount++;
-            LiveLoggerActivity.serialPort.write(uploadFramebuffer);
+            serialIOPort.sendDataBuffer(uploadFramebuffer);
         }
         else {
             EOT = true;
             transmissionErrorOccurred = true;
-            LiveLoggerActivity.serialPort.write(new byte[]{BYTE_CAN});
+            serialIOPort.sendDataBuffer(new byte[]{BYTE_CAN});
             return;
         }
     }
@@ -359,8 +373,8 @@ public class ExportTools {
             uploadCardFileByXModem(istream);
         } catch(Exception ioe) {
             String cardFilePath = LiveLoggerActivity.defaultContext.getResources().getResourceName(rawResID);
-            LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to open chosen resource \"" + cardFilePath + "\": " + ioe.getMessage()));
-            LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to open chosen resource \"" + cardFilePath + "\": " + ioe.getMessage()));
+            LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             return;
         }
     }
@@ -372,16 +386,16 @@ public class ExportTools {
      */
     public static void uploadCardFileByXModem(String cardFilePath) {
         if(new File(cardFilePath).length() % XMODEM_BLOCK_SIZE != 0) {
-            LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Invalid file size for the selected card file \"" + cardFilePath + "\". Aborting."));
-            LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Invalid file size for the selected card file \"" + cardFilePath + "\". Aborting."));
+            LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             return;
         }
         try {
             InputStream istream = new FileInputStream(cardFilePath);
             uploadCardFileByXModem(istream);
         } catch(IOException ioe) {
-            LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to open chosen file \"" + cardFilePath + "\": " + ioe.getMessage()));
-            LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to open chosen file \"" + cardFilePath + "\": " + ioe.getMessage()));
+            LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             return;
         }
     }
@@ -392,14 +406,15 @@ public class ExportTools {
      * @ref LiveLoggerActivity.actionButtonUploadCard
      */
     public static void uploadCardFileByXModem(InputStream cardInputStream) {
-        if(LiveLoggerActivity.serialPort == null || cardInputStream == null)
+        ChameleonSerialIOInterface serialIOPort = Settings.getActiveSerialIOPort();
+        if(serialIOPort == null || !serialIOPort.serialConfigured() || cardInputStream == null)
             return;
-        LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusupload16);
+        LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusupload16);
         streamSrc = cardInputStream;
-        LiveLoggerActivity.serialPortLock.acquireUninterruptibly();
+        serialIOPort.acquireSerialPortNoInterrupt();
         ChameleonIO.WAITING_FOR_XMODEM = true;
-        LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "READONLY=0");
-        ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "UPLOAD", ChameleonIO.TIMEOUT);
+        ChameleonIO.getSettingFromDevice("READONLY=0");
+        ChameleonIO.executeChameleonMiniCommand("UPLOAD", ChameleonIO.TIMEOUT);
         fileSize = 0;
         CurrentFrameNumber = FIRST_FRAME_NUMBER;
         currentNAKCount = -1;
@@ -412,7 +427,7 @@ public class ExportTools {
             } catch (InterruptedException ie) {}
         }
         ChameleonIO.UPLOAD = true;
-        LiveLoggerActivity.serialPort.write(new byte[]{BYTE_NAK});
+        serialIOPort.sendDataBuffer(new byte[]{BYTE_NAK});
         eotSleepHandler.postDelayed(eotSleepRunnable, 50);
     }
 
@@ -428,14 +443,14 @@ public class ExportTools {
         Log.i(TAG, String.valueOf("00".getBytes(StandardCharsets.US_ASCII)));
 
         FileOutputStream fout = new FileOutputStream(fd);
-        for (int vi = 0; vi < LiveLoggerActivity.logDataFeed.getChildCount(); vi++) {
-            View logEntryView = LiveLoggerActivity.logDataFeed.getChildAt(vi);
-            if (LiveLoggerActivity.logDataEntries.get(vi) instanceof LogEntryUI) {
-                String dataLine = ((LogEntryUI) LiveLoggerActivity.logDataEntries.get(vi)).toString() + "\n";
+        for (int vi = 0; vi < MainActivityLogUtils.logDataFeed.getChildCount(); vi++) {
+            View logEntryView = MainActivityLogUtils.logDataFeed.getChildAt(vi);
+            if (MainActivityLogUtils.logDataEntries.get(vi) instanceof LogEntryUI) {
+                String dataLine = ((LogEntryUI) MainActivityLogUtils.logDataEntries.get(vi)).toString() + "\n";
                 fout.write(dataLine.getBytes(StandardCharsets.US_ASCII));
             }
             else {
-                String lineStr = "\n## " + ((LogEntryMetadataRecord) LiveLoggerActivity.logDataEntries.get(vi)).toString() + "\n";
+                String lineStr = "\n## " + ((LogEntryMetadataRecord) MainActivityLogUtils.logDataEntries.get(vi)).toString() + "\n";
                 fout.write(lineStr.getBytes(StandardCharsets.US_ASCII));
             }
         }
@@ -455,18 +470,18 @@ public class ExportTools {
         FileOutputStream fout = new FileOutputStream(fd);
         String htmlHeader = "<html><head><title>Chameleon Mini Live Debugger -- Logging Output</title></head><body>\n\n";
         fout.write(htmlHeader.getBytes(StandardCharsets.US_ASCII));
-        String defaultBgColor = String.format(Locale.ENGLISH, "#%06X", (0xFFFFFF & LiveLoggerActivity.runningActivity.getThemeColorVariant(R.attr.colorPrimaryDarkLog)));
-        for (int vi = 0; vi < LiveLoggerActivity.logDataFeed.getChildCount(); vi++) {
-            View logEntryView = LiveLoggerActivity.logDataFeed.getChildAt(vi);
-            if (LiveLoggerActivity.logDataEntries.get(vi) instanceof LogEntryUI) {
+        String defaultBgColor = String.format(Locale.ENGLISH, "#%06X", (0xFFFFFF & ThemesConfiguration.getThemeColorVariant(R.attr.colorPrimaryDarkLog)));
+        for (int vi = 0; vi < MainActivityLogUtils.logDataFeed.getChildCount(); vi++) {
+            View logEntryView = MainActivityLogUtils.logDataFeed.getChildAt(vi);
+            if (MainActivityLogUtils.logDataEntries.get(vi) instanceof LogEntryUI) {
                 String bgColor = String.format(Locale.ENGLISH, "#%06X", (0xFFFFFF & logEntryView.getDrawingCacheBackgroundColor()));
                 if(bgColor.equals(defaultBgColor))
                     bgColor = "#ffffff";
-                String lineData = "<code bgcolor='" + bgColor + "'>" + ((LogEntryUI) LiveLoggerActivity.logDataEntries.get(vi)).toString() + "</code><br/>\n";
+                String lineData = "<code bgcolor='" + bgColor + "'>" + ((LogEntryUI) MainActivityLogUtils.logDataEntries.get(vi)).toString() + "</code><br/>\n";
                 fout.write(lineData.getBytes(StandardCharsets.US_ASCII));
             }
             else {
-                String lineData = "<b><code>" + ((LogEntryMetadataRecord) LiveLoggerActivity.logDataEntries.get(vi)).toString() + "</code></b><br/>\n";
+                String lineData = "<b><code>" + ((LogEntryMetadataRecord) MainActivityLogUtils.logDataEntries.get(vi)).toString() + "</code></b><br/>\n";
                 fout.write(lineData.getBytes(StandardCharsets.US_ASCII));
             }
         }
@@ -487,10 +502,10 @@ public class ExportTools {
     public static boolean writeBinaryLogFile(File fd) throws Exception {
         FileOutputStream fout = new FileOutputStream(fd);
         short localTicks = 0;
-        for (int vi = 0; vi < LiveLoggerActivity.logDataFeed.getChildCount(); vi++) {
-            View logEntryView = LiveLoggerActivity.logDataFeed.getChildAt(vi);
-            if (LiveLoggerActivity.logDataEntries.get(vi) instanceof LogEntryUI) {
-                LogEntryUI logEntry = (LogEntryUI) LiveLoggerActivity.logDataEntries.get(vi);
+        for (int vi = 0; vi < MainActivityLogUtils.logDataFeed.getChildCount(); vi++) {
+            View logEntryView = MainActivityLogUtils.logDataFeed.getChildAt(vi);
+            if (MainActivityLogUtils.logDataEntries.get(vi) instanceof LogEntryUI) {
+                LogEntryUI logEntry = (LogEntryUI) MainActivityLogUtils.logDataEntries.get(vi);
                 byte[] entryBytes = logEntry.packageBinaryLogData(localTicks);
                 localTicks = logEntry.getNextOffsetTime(localTicks);
                 fout.write(entryBytes);
@@ -507,7 +522,7 @@ public class ExportTools {
      * @ref LiveLoggerActivity.actionButtonDumpMFU
      */
     public static boolean saveBinaryDumpMFU(String filePathPrefix) {
-        LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
+        LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
         String mimeType = "application/octet-stream";
         String outfilePath = filePathPrefix + Utils.getTimestamp().replace(":", "") + ".bin";
         File downloadsFolder = new File("//sdcard//Download//");
@@ -520,21 +535,21 @@ public class ExportTools {
             outfile = new File(downloadsFolder.getAbsolutePath(),outfilePath);
         }
         else {
-            LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to save output in Downloads folder."));
-            LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to save output in Downloads folder."));
+            LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             return false;
         }
         try {
             outfile.createNewFile();
             FileOutputStream fout = new FileOutputStream(outfile);
             ChameleonIO.EXPECTING_BINARY_DATA = true;
-            LiveLoggerActivity.getSettingFromDevice(LiveLoggerActivity.serialPort, "DUMP_MFU");
+            ChameleonIO.getSettingFromDevice("DUMP_MFU");
             fout.write(ChameleonIO.DEVICE_RESPONSE_BINARY);
             fout.flush();
             fout.close();
         } catch(Exception ioe) {
-            LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
-            LiveLoggerActivity.runningActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
+            LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             ioe.printStackTrace();
             return false;
         }
@@ -542,7 +557,7 @@ public class ExportTools {
         downloadManager.addCompletedDownload(outfile.getName(), outfile.getName(), true, mimeType,
                 outfile.getAbsolutePath(), outfile.length(),true);
         String statusMsg = "Dumped MFU binary data to " + outfilePath + " (" + String.valueOf(outfile.length()) + " bytes).";
-        LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("EXPORT", statusMsg));
+        MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("EXPORT", statusMsg));
         return true;
     }
 
@@ -562,8 +577,8 @@ public class ExportTools {
             System.arraycopy(dataBytes, 0, fullDataBytes, 0, dataBytes.length);
             dataBytes = fullDataBytes;
         }
-        ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, "CONFIG=MF_ULTRALIGHT", ChameleonIO.TIMEOUT);
-        ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
+        ChameleonIO.executeChameleonMiniCommand("CONFIG=MF_ULTRALIGHT", ChameleonIO.TIMEOUT);
+        ChameleonIO.deviceStatus.startPostingStats(250);
         for(int page = 0; page < dataBytes.length; page += 4) {
             byte[] apduSendBytesHdr = {
                     (byte) 0xff, // CLA
@@ -576,10 +591,21 @@ public class ExportTools {
             int sendBytesHdr = Utils.bytes2Integer32(apduSendBytesHdr);
             int sendBytesData = Utils.bytes2Integer32(apduSendBytesData);
             String chameleonCmd = String.format("SEND %08x%08x", sendBytesHdr, sendBytesData);
-            ChameleonIO.executeChameleonMiniCommand(LiveLoggerActivity.serialPort, chameleonCmd, ChameleonIO.TIMEOUT);
+            ChameleonIO.executeChameleonMiniCommand(chameleonCmd, ChameleonIO.TIMEOUT);
         }
         return true;
 
+    }
+
+    public static void exportLogDownload(String action) {
+        if(action.equals("LOGDOWNLOAD"))
+            ExportTools.downloadByXModem("LOGDOWNLOAD", "devicelog", false);
+        else if(action.equals("LOGDOWNLOAD2LIVE"))
+            ExportTools.downloadByXModem("LOGDOWNLOAD", "devicelog", true);
+        else if(action.equals("DOWNLOAD")) {
+            String dldCmd = ChameleonIO.REVE_BOARD ? "downloadmy" : "DOWNLOAD";
+            ExportTools.downloadByXModem(dldCmd, "carddata-" + ChameleonIO.deviceStatus.CONFIG, false);
+        }
     }
 
 }

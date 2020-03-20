@@ -81,7 +81,7 @@ public class LogEntryUI extends LogEntryBase {
         else
             System.arraycopy(rawLogBytes, 4, payloadBytes, 0, payloadBytes.length);
         LogEntryUI newLogDataEntry = new LogEntryUI();
-        return newLogDataEntry.configureLogEntry(LiveLoggerActivity.defaultContext, logLabel, diffTimeMs, LogUtils.getDataDirection(logCode), logCode, payloadBytes);
+        return newLogDataEntry.configureLogEntry(LiveLoggerActivity.defaultContext, logLabel, diffTimeMs, ChameleonLogUtils.getDataDirection(logCode), logCode, payloadBytes);
     }
 
     /**
@@ -154,17 +154,17 @@ public class LogEntryUI extends LogEntryBase {
         mainEntryContainer.setAlpha(LOGENTRY_GUI_ALPHA);
         entrySelect = (CheckBox) mainContainerRef.findViewById(R.id.entrySelect);
         inoutDirIndicator = (ImageView) mainContainerRef.findViewById(R.id.inputDirIndicatorImg);
-        inoutDirIndicator.setImageDrawable(LiveLoggerActivity.runningActivity.getResources().getDrawable(getDataDirectionMarker()));
+        inoutDirIndicator.setImageDrawable(LiveLoggerActivity.getInstance().getResources().getDrawable(getDataDirectionMarker()));
         apduParseStatus = (ImageView) mainContainerRef.findViewById(R.id.apduParseStatusImg);
         tvLabel = (TextView) mainContainerRef.findViewById(R.id.text_label);
-        recordID = ++LiveLoggerActivity.RECORDID;
-        tvLabel.setText(logLabel + String.format(Locale.ENGLISH, "%06d", LiveLoggerActivity.RECORDID));
+        recordID = ++MainActivityLogUtils.RECORDID;
+        tvLabel.setText(logLabel + String.format(Locale.ENGLISH, "%06d", MainActivityLogUtils.RECORDID));
         tvNumBytes = (TextView) mainContainerRef.findViewById(R.id.text_data_num_bytes);
         tvNumBytes.setText(String.valueOf(numBytes) + "B");
         tvNumMillis = (TextView) mainContainerRef.findViewById(R.id.text_offset_millis);
         tvNumMillis.setText((diffTimeMillis >=0 ? "+" : "~") + String.valueOf(abs(diffTimeMillis)) + "ms");
         tvLogType = (TextView) mainContainerRef.findViewById(R.id.text_log_type);
-        tvLogType.setText(LogUtils.LogCode.lookupByLogCode(logType).getShortCodeName(logType));
+        tvLogType.setText(ChameleonLogUtils.LogCode.lookupByLogCode(logType).getShortCodeName(logType));
         tvEntropy = (TextView) mainContainerRef.findViewById(R.id.text_entropy_compression_ratio);
         tvEntropy.setText(String.format(Locale.ENGLISH, "CPR/ENT: %1.4g", Utils.computeByteArrayEntropy(entryData)));
         tvDataHexBytes = (TextView) mainContainerRef.findViewById(R.id.text_logdata_hex);
@@ -226,7 +226,7 @@ public class LogEntryUI extends LogEntryBase {
      */
     public byte[] packageBinaryLogData(short offsetTimeMillis) {
         byte[] headerBytes = {
-                (byte) LogUtils.LogCode.lookupByLogCode(logType).toInteger(),
+                (byte) ChameleonLogUtils.LogCode.lookupByLogCode(logType).toInteger(),
                 (byte) entryData.length,
                 (byte) ((offsetTimeMillis & 0x0000ff00) >>> 8),
                 (byte) (offsetTimeMillis & 0x000000ff),
@@ -253,7 +253,7 @@ public class LogEntryUI extends LogEntryBase {
      */
     @Override
     public String toString() {
-        LogUtils.LogCode logCode = LogUtils.LogCode.lookupByLogCode(logType);
+        ChameleonLogUtils.LogCode logCode = ChameleonLogUtils.LogCode.lookupByLogCode(logType);
         String recordFmt = String.format(Locale.ENGLISH, "%06d -- %-32s [%-3s bytes] (%s%-6s ms) [%s] {%s}", recordID, logCode.name(),
                 String.valueOf(entryData.length), diffTimeMillis >= 0 ? "+" : "~", String.valueOf(abs(diffTimeMillis)),
                 Utils.bytes2Hex(entryData), tvApdu.getText().toString());
@@ -262,7 +262,7 @@ public class LogEntryUI extends LogEntryBase {
 
     // TODO: javadoc
     public String getLogCodeName() {
-        return LogUtils.LogCode.lookupByLogCode(logType).name();
+        return ChameleonLogUtils.LogCode.lookupByLogCode(logType).name();
     }
 
     // TODO: javadoc
@@ -283,9 +283,9 @@ public class LogEntryUI extends LogEntryBase {
     }
 
     public int getDataDirectionMarker() {
-        if(dataDirection == LogUtils.DATADIR_INCOMING)
+        if(dataDirection == ChameleonLogUtils.DATADIR_INCOMING)
             return R.drawable.incoming_arrow16;
-        else if(dataDirection == LogUtils.DATADIR_OUTGOING)
+        else if(dataDirection == ChameleonLogUtils.DATADIR_OUTGOING)
             return R.drawable.outgoing_arrow16;
         else
             return R.drawable.xfer16;

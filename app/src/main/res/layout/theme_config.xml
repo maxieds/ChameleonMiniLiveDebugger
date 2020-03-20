@@ -20,16 +20,6 @@
             android:text="Theme: Amber" />
 
         <RadioButton
-            android:id="@+id/themeRadioButtonAnimal"
-            android:buttonTint="?colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:drawableLeft="@drawable/thememarker24"
-            android:drawablePadding="5dp"
-            android:text="Theme: Animal" />
-
-        <RadioButton
             android:id="@+id/themeRadioButtonAtlanta"
             android:buttonTint="?colorPrimaryDark"
             android:layout_width="wrap_content"
@@ -100,6 +90,16 @@
             android:text="Theme: Standard Green" />
 
         <RadioButton
+            android:id="@+id/themeRadioButtonLab401"
+            android:buttonTint="?colorPrimaryDark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:drawableLeft="@drawable/thememarker24"
+            android:drawablePadding="5dp"
+            android:text="Theme: Lab 401" />
+
+        <RadioButton
             android:id="@+id/themeRadioButtonLightblue"
             android:buttonTint="?colorPrimaryDark"
             android:layout_width="wrap_content"
@@ -110,16 +110,6 @@
             android:text="Theme: Lightblue" />
 
         <RadioButton
-            android:id="@+id/themeRadioButtonLightening"
-            android:buttonTint="?colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:drawableLeft="@drawable/thememarker24"
-            android:drawablePadding="5dp"
-            android:text="Theme: Lightening" />
-
-        <RadioButton
             android:id="@+id/themeRadioButtonLinuxGOB"
             android:buttonTint="?colorPrimaryDark"
             android:layout_width="wrap_content"
@@ -128,16 +118,6 @@
             android:drawableLeft="@drawable/thememarker24"
             android:drawablePadding="5dp"
             android:text="Theme: Linux Green On Black" />
-
-        <RadioButton
-            android:id="@+id/themeRadioButtonLinuxMissSwirly"
-            android:buttonTint="?colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:drawableLeft="@drawable/thememarker24"
-            android:drawablePadding="5dp"
-            android:text="Theme: Miss Swirly" />
 
         <RadioButton
             android:id="@+id/themeRadioButtonPurple"

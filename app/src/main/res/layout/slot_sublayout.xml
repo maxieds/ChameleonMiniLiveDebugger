@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:id="@+id/tools_menu_scroll_view"
+        android:background="@android:color/transparent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fadeScrollbars="false"
+        android:orientation="vertical"
+        android:scrollbarSize="16dp"
+        android:verticalScrollbarPosition="right">
+
+        <LinearLayout
+            android:background="@android:color/transparent"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_margin="3dp"
+            android:orientation="vertical"
+            android:padding="3dp">
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@android:color/transparent"
+                android:columnCount="2"
+                android:padding="6dp" >
+
+                <ImageView
+                    android:id="@+id/slotOnOffMarker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|left"
+                    android:src="@drawable/slot_off"
+                    android:padding="3dp" />
+
+                <View android:background="@android:color/transparent" />
+
+                <TextView
+                    android:id="@+id/slotOnOffNumberText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text="SLOT #00"
+                    android:textSize="18sp"
+                    android:textStyle="bold|italic"
+                    android:textColor="?colorPrimaryDark" />
+
+                <EditText
+                    android:id="@+id/slotNicknameText"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Slot Nickname"
+                    android:singleLine="true"
+                    android:textColor="?colorPrimaryDarkLog" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:drawableLeft="@drawable/chip24v8"
+                    android:drawablePadding="2dp"
+                    android:singleLine="true"
+                    android:text="CFG MODE: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?colorPrimaryDark" />
+
+                <Spinner
+                    android:id="@+id/tagConfigModeSpinner"
+                    android:layout_width="200dp"
+                    android:layout_height="20dp"
+                    android:layout_weight="1"
+                    android:entries="@array/FullTagConfigModes"
+                    android:gravity="left|center_vertical"
+                    android:popupBackground="?colorAccentHighlight"
+                    android:spinnerMode="dialog"
+                    android:paddingLeft="0dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:drawableLeft="@drawable/slot_config_uid24"
+                    android:drawablePadding="2dp"
+                    android:singleLine="true"
+                    android:text="UID: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?colorPrimaryDark" />
+
+                <TextView
+                    android:id="@+id/uidBytesText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text=""
+                    android:textStyle="normal|bold"
+                    android:typeface="monospace"
+                    android:textColor="?colorPrimaryDarkLog" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:drawableLeft="@drawable/slot_memory_size24"
+                    android:drawablePadding="2dp"
+                    android:singleLine="true"
+                    android:text="MEM SIZE: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?colorPrimaryDark" />
+
+                <TextView
+                    android:id="@+id/memorySizeText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text=""
+                    android:textStyle="normal|bold"
+                    android:typeface="monospace"
+                    android:textColor="?colorPrimaryDarkLog" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:drawableLeft="@drawable/padlock24locked"
+                    android:drawablePadding="2dp"
+                    android:singleLine="true"
+                    android:text="LOCK TAG: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?colorPrimaryDark" />
+
+                <Switch
+                    android:id="@+id/readonlyOnOffSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|left"
+                    android:checked="true"
+                    android:gravity="center"
+                    android:paddingLeft="0dp"
+                    android:scrollHorizontally="true"
+                    android:showText="false"
+                    android:switchMinWidth="50dp"
+                    android:textOff="RW"
+                    android:textOn="RO"
+                    android:textColor="?colorPrimaryDarkLog"
+                    android:textStyle="bold|italic"
+                    android:thumbTint="?colorPrimaryDark" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:drawableLeft="@drawable/padlock24locked"
+                    android:drawablePadding="2dp"
+                    android:singleLine="true"
+                    android:text="UID MODIFY: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?colorPrimaryDark" />
+
+                <Switch
+                    android:id="@+id/uidModeOnOffSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|left"
+                    android:checked="true"
+                    android:gravity="center"
+                    android:paddingLeft="0dp"
+                    android:scrollHorizontally="true"
+                    android:showText="false"
+                    android:switchMinWidth="50dp"
+                    android:textOff="OFF"
+                    android:textOn="ON"
+                    android:textStyle="bold|italic"
+                    android:thumbTint="?colorPrimaryDark" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:drawableLeft="@drawable/padlock24locked"
+                    android:drawablePadding="2dp"
+                    android:singleLine="true"
+                    android:text="SAK MODIFY: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?colorPrimaryDark" />
+
+                <Switch
+                    android:id="@+id/sakAtqaModifyModeOnOffSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|left"
+                    android:checked="true"
+                    android:gravity="center"
+                    android:paddingLeft="0dp"
+                    android:scrollHorizontally="true"
+                    android:showText="false"
+                    android:switchMinWidth="50dp"
+                    android:textOff="OFF"
+                    android:textOn="ON"
+                    android:textStyle="bold|italic"
+                    android:thumbTint="?colorPrimaryDark" />
+
+            </GridLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

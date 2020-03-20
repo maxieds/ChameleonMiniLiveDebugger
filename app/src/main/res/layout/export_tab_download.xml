@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?colorPrimaryDarkLog"
+        android:drawableLeft="@drawable/modemplug16"
+        android:drawablePadding="5dp"
+        android:singleLine="true"
+        android:text="Download Binary Data via ~XMODEM~:"
+        android:textSize="14sp"
+        android:textAllCaps="true"
+        android:textStyle="bold|italic" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
+
+    <GridLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="1dp"
+        android:background="?colorAccentLog"
+        android:columnCount="13"
+        android:orientation="horizontal"
+        android:padding="2dp"
+        android:rowCount="1">
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/logdownload"
+            android:tag="LOGDOWNLOAD"
+            android:onClick="actionButtonExportLogDownload"
+            android:text="Log DLD to File" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/uploaddownload24"
+            android:tag="LOGDOWNLOAD2LIVE"
+            android:onClick="actionButtonExportLogDownload"
+            android:text="Log DLD to Live" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/binarybraces24"
+            android:tag="DOWNLOAD"
+            android:onClick="actionButtonExportLogDownload"
+            android:text="DLD Card" />
+
+    </GridLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
+
+</LinearLayout>

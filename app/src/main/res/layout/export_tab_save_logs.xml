@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?colorPrimaryDarkLog"
+        android:drawableLeft="@drawable/filesystem16"
+        android:drawablePadding="5dp"
+        android:singleLine="true"
+        android:text="Export Live Logging Data to File:"
+        android:textSize="14sp"
+        android:textAllCaps="true"
+        android:textStyle="bold|italic" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
+
+    <GridLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="1dp"
+        android:background="?colorAccentLog"
+        android:columnCount="13"
+        android:orientation="horizontal"
+        android:padding="2dp"
+        android:rowCount="1">
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/xmltag24"
+            android:onClick="actionButtonWriteFile"
+            android:tag="html"
+            android:text="EXPORT HTML" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/binfile24"
+            android:onClick="actionButtonWriteFile"
+            android:tag="bin"
+            android:text="Export BIN" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/textfile24"
+            android:onClick="actionButtonWriteFile"
+            android:tag="out"
+            android:text="Export Ascii" />
+
+    </GridLayout>
+
+    <RadioGroup
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/radio_save_storage"
+            android:buttonTint="?colorPrimaryDark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:drawableLeft="@drawable/sdcard16"
+            android:drawablePadding="5dp"
+            android:text="Save" />
+
+        <RadioButton
+            android:id="@+id/radio_save_email"
+            android:buttonTint="?colorPrimaryDark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/mailicon16"
+            android:drawablePadding="5dp"
+            android:text="Email" />
+
+        <RadioButton
+            android:id="@+id/radio_save_share"
+            android:buttonTint="?colorPrimaryDark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/shareicon16"
+            android:drawablePadding="5dp"
+            android:text="Share" />
+    </RadioGroup>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
+
+</LinearLayout>

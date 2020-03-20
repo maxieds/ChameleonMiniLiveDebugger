@@ -311,7 +311,7 @@ public class ApduUtils {
             apduStringFormattedSpecs.addAll(Utils.readCSVFile(LiveLoggerActivity.defaultContext.getResources().openRawResource(R.raw.detailed_common_ins)));
         }
         catch(IOException ioe) {
-            LiveLoggerActivity.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
+            MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
             fullInsList = null;
             return;
         }
@@ -322,7 +322,6 @@ public class ApduUtils {
             fullInsList[a].loadFromStringArray(apduStringFormattedSpecs.get(a));
             fullInsDescList[a] = fullInsList[a].apduCmdDesc;
         }
-        //Arrays.sort(fullInsList);
     }
 
     public static void updateAssembledAPDUCmd() {
