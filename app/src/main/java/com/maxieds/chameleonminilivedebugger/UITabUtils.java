@@ -34,6 +34,7 @@ import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_CMDS;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_PERIPHERALS;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_SLOTS;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_TAGCONFIG;
 
 public class UITabUtils {
 
@@ -139,6 +140,31 @@ public class UITabUtils {
                 ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].readParametersFromChameleonSlot();
                 ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].updateLayoutParameters();
                 ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].enableLayout();
+            }
+        }
+        else if(menuItemIdx == TAB_TOOLS_MITEM_TAGCONFIG) {
+            Spinner tagConfigModeSpinner = tabMainLayoutView.findViewById(R.id.tagConfigModeSpinner);
+            if(tagConfigModeSpinner == null) {
+                return false;
+            }
+            ChameleonSerialIOInterface serialPort = Settings.getActiveSerialIOPort();
+            if(serialPort == null) {
+                String[] tagConfigModesArray = LiveLoggerActivity.getInstance().getResources().getStringArray(R.array.FullTagConfigModes);
+                tagConfigModeSpinner.setAdapter(new ArrayAdapter<String>(tabMainLayoutView.getContext(),
+                        android.R.layout.simple_list_item_1, tagConfigModesArray));
+            }
+            else {
+                String configModesList = ChameleonIO.getSettingFromDevice("CONFIG=?");
+                String[] tagConfigModesArray = configModesList.replace(" ", "").split(",");
+                tagConfigModeSpinner.setAdapter(new ArrayAdapter<String>(tabMainLayoutView.getContext(),
+                        android.R.layout.simple_list_item_1, tagConfigModesArray));
+                String activeConfigMode = ChameleonIO.getSettingFromDevice("CONFIG?");
+                for (int si = 0; si < tagConfigModeSpinner.getAdapter().getCount(); si++) {
+                    if (tagConfigModeSpinner.getAdapter().getItem(si).toString().equals(activeConfigMode)) {
+                        tagConfigModeSpinner.setSelection(si, false);
+                        break;
+                    }
+                }
             }
         }
         else if(menuItemIdx == TAB_TOOLS_MITEM_CMDS) {

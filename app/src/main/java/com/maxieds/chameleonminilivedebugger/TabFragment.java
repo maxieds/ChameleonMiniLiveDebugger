@@ -245,8 +245,7 @@ public class TabFragment extends Fragment {
                         R.layout.export_tab_save_logs,
                         R.layout.export_tab_download,
                         R.layout.export_tab_upload,
-                        R.layout.export_tab_android_interfaces,
-                        R.layout.export_tab_android_interfaces
+                        R.layout.export_tab_clone_mfc
                 });
         UITAB_DATA[TAB_CONFIG] = new UITab(
                 TAB_CONFIG,
@@ -258,8 +257,7 @@ public class TabFragment extends Fragment {
                 },
                 new int[] {
                         R.layout.config_tab_connect,
-                        R.layout.config_tab_settings,
-                        R.layout.config_tab_device_settings
+                        R.layout.config_tab_general_settings
                 });
     }
 

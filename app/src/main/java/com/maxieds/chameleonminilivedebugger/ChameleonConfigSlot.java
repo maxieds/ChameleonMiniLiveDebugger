@@ -34,14 +34,14 @@ public class ChameleonConfigSlot {
         }
         else {
             CHAMELEON_SLOT_NAMES = new String[] {
-                    "Slot #1 Nickname",
-                    "Slot #2 Nickname",
-                    "Slot #3 Nickname",
-                    "Slot #4 Nickname",
-                    "Slot #5 Nickname",
-                    "Slot #6 Nickname",
-                    "Slot #7 Nickname",
-                    "Slot #8 Nickname"
+                    "Slot Nickname",
+                    "Slot Nickname",
+                    "Slot Nickname",
+                    "Slot Nickname",
+                    "Slot Nickname",
+                    "Slot Nickname",
+                    "Slot Nickname",
+                    "Slot Nickname"
             };
         }
         for(int slotNum = 1; slotNum <= CHAMELEON_DEVICE_CONFIG_SLOT_COUNT; slotNum++) {
@@ -158,7 +158,6 @@ public class ChameleonConfigSlot {
     }
 
     private boolean getTagConfigurationsListFromDevice() {
-         new RuntimeException("Why is this getting called so much?").printStackTrace();
          if(Settings.getActiveSerialIOPort() == null) {
              return false;
          }

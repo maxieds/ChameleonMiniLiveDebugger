@@ -3,4 +3,5 @@
     <color name="colorBigVeryBadError">#ff0000</color>
     <color name="transparent">#00ff0000</color>
     <color name="appIconBGGreen">#28b91f</color>
+    <color name="toastBGColor">#565c55</color>
 </resources>

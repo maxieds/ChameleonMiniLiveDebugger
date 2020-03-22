@@ -1,10 +1,13 @@
 package com.maxieds.chameleonminilivedebugger;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.location.Location;
 import android.location.LocationManager;
 import android.text.format.Time;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -358,9 +361,26 @@ public class Utils {
 
     public static String getGPSLocationString() {
         String[] gpsCoords = Utils.getGPSLocationCoordinates();
-        String gpsLocStr = String.format(Locale.ENGLISH, " -- Location at %s long. %s lat. -- ",
+        String gpsLocStr = String.format(Locale.ENGLISH, " -- Location at %s LONG, %s LAT -- ",
                 gpsCoords[Utils.GPS_LONGITUDE_CINDEX], gpsCoords[Utils.GPS_LATITUDE_CINDEX]);
         return gpsLocStr;
+    }
+
+    public static void displayToastMessage(String toastMsg, int msgDuration) {
+        Toast toastDisplay = Toast.makeText(LiveLoggerActivity.getInstance(), toastMsg, msgDuration);
+        toastDisplay.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 0, 0);
+        int toastBackgroundColor = LiveLoggerActivity.getInstance().getResources().getColor(R.color.toastBGColor);
+        toastDisplay.getView().getBackground().setColorFilter(toastBackgroundColor, PorterDuff.Mode.SRC_IN);
+        toastDisplay.show();
+        Log.i(TAG, "TOAST MSG DISPLAYED: " + toastMsg);
+    }
+
+    public static void displayToastMessageShort(String toastMsg) {
+         Utils.displayToastMessage(toastMsg, Toast.LENGTH_SHORT);
+    }
+
+    public static void displayToastMessageLong(String toastMsg) {
+        Utils.displayToastMessage(toastMsg, Toast.LENGTH_LONG);
     }
 
 }

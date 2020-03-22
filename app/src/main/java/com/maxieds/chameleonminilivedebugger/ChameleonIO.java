@@ -3,6 +3,7 @@ package com.maxieds.chameleonminilivedebugger;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -56,32 +57,36 @@ public class ChameleonIO {
     public static int CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_UNKNOWN;
 
     public static int detectChameleonType() {
+        String chameleonDeviceType = "Unknown";
         CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_UNKNOWN;
         if(CHAMELEON_DEVICE_USBVID == CMUSB_DFUMODE_VENDORID &&
            CHAMELEON_DEVICE_USBPID == CMUSB_DFUMODE_PRODUCTID) {
             CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_DFUMODE;
-            return CHAMELEON_MINI_BOARD_TYPE;
+            chameleonDeviceType = "DFU Bootloader Programmer Mode";
         }
         else if(REVE_BOARD) {
             CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_REVE;
-            return CHAMELEON_MINI_BOARD_TYPE;
+            chameleonDeviceType = "RevE Device";
         }
-        String firmwareVersion = getSettingFromDevice("VERSION?");
-        String commandsList = getSettingFromDevice("HELP");
-        if(firmwareVersion.contains("RevG") && firmwareVersion.contains("emsec")) {
-            if(commandsList.contains("SAKMODE")) {
-                CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_PROXGRIND_REVG;
+        else {
+            String firmwareVersion = getSettingFromDevice("VERSION?");
+            String commandsList = getSettingFromDevice("HELP");
+            if (firmwareVersion.contains("RevG") && firmwareVersion.contains("emsec")) {
+                if (commandsList.contains("SAKMODE")) {
+                    CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_PROXGRIND_REVG;
+                    chameleonDeviceType = "Proxgrind RevG Device";
+                } else if (commandsList.contains("MEMORYINFO")) {
+                    CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_PROXGRIND_REVG_TINY;
+                    chameleonDeviceType = "Proxgrind Tiny Device";
+                } else {
+                    CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_KAOS_REVG;
+                    chameleonDeviceType = "KAOS RevG Device";
+                }
             }
-            else if(commandsList.contains("MEMORYINFO")) {
-                CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_PROXGRIND_REVG_TINY;
-            }
-            else {
-                CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_KAOS_REVG;
-            }
-            return CHAMELEON_MINI_BOARD_TYPE;
         }
-        // TODO ...
-        // and setup settings + make Toast notification about the discovered device ...
+        String deviceConnType = Settings.getActiveSerialIOPort().isWiredUSB() ? "USB" : "Bluetooth";
+        String statusMsg = String.format(Locale.ENGLISH, "New Chameleon discovered over %s: %s.", deviceConnType, chameleonDeviceType);
+        Utils.displayToastMessageShort(statusMsg);
         return CHAMELEON_MINI_BOARD_TYPE;
     }
 
@@ -100,7 +105,13 @@ public class ChameleonIO {
                 return false;
             }
         }
-        // setup bi-directional sniffing if necessary ...
+        else {
+            int selectedTab = LiveLoggerActivity.getSelectedTab();
+            int selectedMenuIdx = TabFragment.UITAB_DATA[selectedTab].lastMenuIndex;
+            View tabView = TabFragment.UITAB_DATA[selectedTab].tabInflatedView;
+            UITabUtils.initializeTabMainContent(selectedTab, selectedMenuIdx, tabView);
+        }
+        Log.i(TAG, "TODO: setup bi-directional sniffing if necessary ...");
         return true;
     }
 

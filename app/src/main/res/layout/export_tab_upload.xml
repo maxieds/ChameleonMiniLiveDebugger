@@ -118,7 +118,7 @@
         <Button
             style="@style/GridButtons"
             android:drawableLeft="@drawable/chip24v13"
-            android:text="TODO/DESFire"/>
+            android:text="DESFire (TODO)"/>
 
     </GridLayout>
 
