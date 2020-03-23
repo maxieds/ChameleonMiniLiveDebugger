@@ -26,6 +26,7 @@ public class AndroidSettingsStorage {
     public static final String SERIAL_BAUDRATE_PREFERENCE = "serialBaudRate";
     public static final String ALLOW_USB_PREFERENCE = "allowWiredUSB";
     public static final String ALLOW_BLUETOOTH_PREFERENCE = "allowBluetooth";
+    public static final String ALLOW_ANDROID_NFC_PREFERENCE = "allowAndroidNFC";
     public static final String SNIFFING_MODE_PREFERENCE = "sniffingModeDirection";
     public static final String KEY_CONFIG_PREFERENCE = "keyConfigurations";
     public static final String CWD_PREFERENCE = "currentWorkingDirectory";
@@ -39,6 +40,7 @@ public class AndroidSettingsStorage {
         updateValueByKey(profileID, SERIAL_BAUDRATE_PREFERENCE);
         updateValueByKey(profileID, ALLOW_USB_PREFERENCE);
         updateValueByKey(profileID, ALLOW_BLUETOOTH_PREFERENCE);
+        updateValueByKey(profileID, ALLOW_ANDROID_NFC_PREFERENCE);
         updateValueByKey(profileID, SNIFFING_MODE_PREFERENCE);
         updateValueByKey(profileID, CWD_PREFERENCE);
         updateValueByKey(profileID, LAST_TAB_INDEX_PREFERENCE);
@@ -57,6 +59,7 @@ public class AndroidSettingsStorage {
             Settings.serialBaudRate = Integer.parseInt(getStringValueByKey(profileID, SERIAL_BAUDRATE_PREFERENCE));
             Settings.allowWiredUSB = Boolean.valueOf(getStringValueByKey(profileID, ALLOW_USB_PREFERENCE));
             Settings.allowBluetooth = Boolean.valueOf(getStringValueByKey(profileID, ALLOW_BLUETOOTH_PREFERENCE));
+            Settings.allowAndroidNFC = Boolean.valueOf(getStringValueByKey(profileID, ALLOW_ANDROID_NFC_PREFERENCE));
             Settings.sniffingMode = Integer.parseInt(getStringValueByKey(profileID, SNIFFING_MODE_PREFERENCE));
             ExternalFileIO.CURRENT_WORKING_DIRECTORY = getStringValueByKey(profileID, CWD_PREFERENCE);
             LiveLoggerActivity.setSelectedTab(Integer.parseInt(getStringValueByKey(profileID, LAST_TAB_INDEX_PREFERENCE)));
@@ -91,6 +94,9 @@ public class AndroidSettingsStorage {
         }
         else if(prefsKey.equals(ALLOW_BLUETOOTH_PREFERENCE)) {
             spEditor.putBoolean(prefsKey, Settings.allowBluetooth);
+        }
+        else if(prefsKey.equals(ALLOW_ANDROID_NFC_PREFERENCE)) {
+            spEditor.putBoolean(prefsKey, Settings.allowAndroidNFC);
         }
         else if(prefsKey.equals(SNIFFING_MODE_PREFERENCE)) {
             spEditor.putInt(prefsKey, Settings.sniffingMode);
@@ -138,6 +144,9 @@ public class AndroidSettingsStorage {
         }
         else if(prefsKey.equals(ALLOW_BLUETOOTH_PREFERENCE)) {
             return sharedPrefs.getBoolean(prefsKey, Settings.allowBluetooth) ? "true" : "false";
+        }
+        else if(prefsKey.equals(ALLOW_ANDROID_NFC_PREFERENCE)) {
+            return sharedPrefs.getBoolean(prefsKey, Settings.allowAndroidNFC) ? "true" : "false";
         }
         else if(prefsKey.equals(SNIFFING_MODE_PREFERENCE)) {
             return String.format(Locale.ENGLISH, "%d", sharedPrefs.getInt(prefsKey, Settings.sniffingMode));

@@ -53,10 +53,10 @@ public class TabFragment extends Fragment {
     public static final int TAB_EXPORT_MITEM_EXPORTLOGS = 0;
     public static final int TAB_EXPORT_MITEM_DOWNLOAD = 1;
     public static final int TAB_EXPORT_MITEM_UPLOAD = 2;
+    public static final int TAB_EXPORT_MITEM_CLONEMFC = 3;
 
     public static final int TAB_CONFIG_MITEM_CONNECT = 0;
     public static final int TAB_CONFIG_MITEM_SETTINGS = 1;
-    public static final int TAB_CONFIG_MITEM_DEVINFO = 2;
 
     public static class UITab {
 

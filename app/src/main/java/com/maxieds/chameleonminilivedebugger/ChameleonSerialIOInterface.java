@@ -26,7 +26,7 @@ public interface ChameleonSerialIOInterface {
 
     public final int HIGH_SPEED_BAUD_RATE = 256000;
     public final int LIMITED_SPEED_BAUD_RATE = 115200;
-    public final int[] UART_BAUD_RATES = {
+    public final Integer[] UART_BAUD_RATES = {
             50,
             75,
             110,

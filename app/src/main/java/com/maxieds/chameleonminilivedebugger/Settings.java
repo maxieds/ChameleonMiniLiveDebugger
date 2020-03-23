@@ -5,7 +5,8 @@ public class Settings {
     private static final String TAG = Settings.class.getSimpleName();
 
     public static boolean allowWiredUSB = true;
-    public static boolean allowBluetooth = true;
+    public static boolean allowBluetooth = false;
+    public static boolean allowAndroidNFC = false;
     public static int serialBaudRate = 115200;
 
     public static String chameleonDeviceSerialNumber = "<UNKNOWN>";
@@ -13,7 +14,7 @@ public class Settings {
 
     public static final int SNIFFING_MODE_UNIDIRECTIONAL = 1;
     public static final int SNIFFING_MODE_BIDIRECTIONAL = 2;
-    public static int sniffingMode = SNIFFING_MODE_UNIDIRECTIONAL;
+    public static int sniffingMode = SNIFFING_MODE_BIDIRECTIONAL;
 
     public static final int USBIO_IFACE_INDEX = 0;
     public static final int BTIO_IFACE_INDEX = 1;
@@ -36,7 +37,7 @@ public class Settings {
 
     public static void initializeSerialIOConnections() {
         for(int si = 0; si < serialIOPorts.length; si++) {
-            if(si != BTIO_IFACE_INDEX ||
+            if((si == USBIO_IFACE_INDEX && allowWiredUSB) ||
                     (allowBluetooth && ((BluetoothSerialInterface) serialIOPorts[si]).isBluetoothEnabled())) {
                 serialIOPorts[si].startScanningDevices();
             }

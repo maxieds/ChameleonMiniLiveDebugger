@@ -24,6 +24,8 @@ import java.util.Locale;
 
 import static android.widget.NumberPicker.OnScrollListener.SCROLL_STATE_IDLE;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG_MITEM_CONNECT;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG_MITEM_SETTINGS;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_MITEM_LOGS;
@@ -229,7 +231,7 @@ public class UITabUtils {
             searchResultsContainer.setOrientation(LinearLayout.VERTICAL);
             sv.addView(searchResultsContainer);
         }
-        return true; // TODO
+        return true;
     }
 
     public static boolean initializeExportTab(int menuItemIdx, View tabMainLayoutView) {
@@ -237,7 +239,84 @@ public class UITabUtils {
     }
 
     public static boolean initializeConfigTab(int menuItemIdx, View tabMainLayoutView) {
-        return true; // TODO
+        if(menuItemIdx == TAB_CONFIG_MITEM_SETTINGS) {
+             // allow USB checkbox setup:
+             CheckBox cbAllowUSB = tabMainLayoutView.findViewById(R.id.settingsAllowWiredUSB);
+             cbAllowUSB.setChecked(Settings.allowWiredUSB);
+             cbAllowUSB.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
+                 @Override
+                 public void onCheckedChanged(CompoundButton cb, boolean checked) {
+                     Settings.allowWiredUSB = checked;
+                     if(Settings.getActiveSerialIOPort() == null) {
+                         Settings.stopSerialIOConnectionDiscovery();
+                         Settings.initializeSerialIOConnections();
+                     }
+                 }
+             });
+             // allow bluetooth checkbox setup:
+             CheckBox cbAllowBT = tabMainLayoutView.findViewById(R.id.settingsAllowBluetooth);
+             cbAllowBT.setChecked(Settings.allowBluetooth);
+             cbAllowBT.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
+                 @Override
+                 public void onCheckedChanged(CompoundButton cb, boolean checked) {
+                     Settings.allowBluetooth = checked;
+                     if(Settings.getActiveSerialIOPort() == null) {
+                         Settings.stopSerialIOConnectionDiscovery();
+                         Settings.initializeSerialIOConnections();
+                     }
+                 }
+             });
+             // allow NFC checkbox setup:
+             CheckBox cbAllowNFC = tabMainLayoutView.findViewById(R.id.settingsAllowAndroidNFC);
+             cbAllowNFC.setChecked(Settings.allowAndroidNFC);
+             cbAllowNFC.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
+                 @Override
+                 public void onCheckedChanged(CompoundButton cb, boolean checked) {
+                     Settings.allowAndroidNFC = checked;
+                     // TODO: init NFC in library for MFC cloning ...
+                 }
+             });
+             // bi/unidirectional sniffing checkbox setup:
+             CheckBox cbUseBidirSniff = tabMainLayoutView.findViewById(R.id.settingsUseBidirectionalSniffing);
+             cbUseBidirSniff.setChecked(Settings.sniffingMode == Settings.SNIFFING_MODE_BIDIRECTIONAL);
+             cbUseBidirSniff.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
+                 @Override
+                 public void onCheckedChanged(CompoundButton cb, boolean checked) {
+                     Settings.sniffingMode = checked ? Settings.SNIFFING_MODE_BIDIRECTIONAL : Settings.SNIFFING_MODE_UNIDIRECTIONAL;
+                     // TODO: configure unidirectional versus bidirectional sniffing mode ...
+                 }
+             });
+             // serial baud rate spinner setup:
+             Spinner serialBaudRateSpinner = tabMainLayoutView.findViewById(R.id.serialBaudRateSpinner);
+             serialBaudRateSpinner.setAdapter(new ArrayAdapter<Integer>(tabMainLayoutView.getContext(),
+                     android.R.layout.simple_list_item_1, ChameleonSerialIOInterface.UART_BAUD_RATES));
+             for (int si = 0; si <  serialBaudRateSpinner.getAdapter().getCount(); si++) {
+                 if (serialBaudRateSpinner.getAdapter().getItem(si).equals(Integer.valueOf(Settings.serialBaudRate))) {
+                     serialBaudRateSpinner.setSelection(si, false);
+                     break;
+                 }
+             }
+             serialBaudRateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                 Integer[] localSpinnerList = ChameleonSerialIOInterface.UART_BAUD_RATES;
+                 int lastSelectedPosition = 0;
+                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                     if(Settings.getActiveSerialIOPort() == null) {
+                         return;
+                     }
+                     else if(i == lastSelectedPosition) {
+                         return;
+                     }
+                     lastSelectedPosition = i;
+                     Settings.serialBaudRate = localSpinnerList[i].intValue();
+                     Settings.getActiveSerialIOPort().setSerialBaudRate(Settings.serialBaudRate);
+                 }
+                 public void onNothingSelected(AdapterView<?> adapterView) {
+                     return;
+                 }
+             });
+        }
+        else if(menuItemIdx == TAB_CONFIG_MITEM_CONNECT) {}
+        return true;
     }
 
     /**
