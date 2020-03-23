@@ -3,11 +3,16 @@ package com.maxieds.chameleonminilivedebugger;
 import android.annotation.SuppressLint;
 import android.content.res.ColorStateList;
 import android.graphics.Typeface;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
@@ -315,7 +320,86 @@ public class UITabUtils {
                  }
              });
         }
-        else if(menuItemIdx == TAB_CONFIG_MITEM_CONNECT) {}
+        else if(menuItemIdx == TAB_CONFIG_MITEM_CONNECT) {
+            // Android bluetooth settings config:
+            TextView btStatusText = tabMainLayoutView.findViewById(R.id.androidBluetoothStatusText);
+            String btStatus = ((BluetoothSerialInterface) Settings.serialIOPorts[Settings.BTIO_IFACE_INDEX]).isBluetoothEnabled() ? "Enabled" : "Disabled";
+            btStatusText.setText(btStatus);
+            Button btSettingsBtn = tabMainLayoutView.findViewById(R.id.androidBTSettingsButton);
+            btSettingsBtn.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View btn) {
+                    BluetoothSerialInterface.displayAndroidBluetoothSettings();
+                }
+            });
+            // Android NFC settings config:
+            TextView nfcStatusText = tabMainLayoutView.findViewById(R.id.androidNFCStatusText);
+            String nfcStatus = AndroidNFCExchange.isNFCEnabled() ? "Enabled" : "Disabled";
+            nfcStatusText.setText(nfcStatus);
+            Button nfcSettingsBtn = tabMainLayoutView.findViewById(R.id.androidNFCSettingsButton);
+            nfcSettingsBtn.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View btn) {
+                    AndroidNFCExchange.displayAndroidNFCSettings();
+                }
+            });
+            // Chameleon device connection information:
+            boolean isChameleonDevConn = Settings.getActiveSerialIOPort() != null;
+            EditText deviceNameText = tabMainLayoutView.findViewById(R.id.slotNicknameText);
+            deviceNameText.addTextChangedListener(new TextWatcher() {
+                public void afterTextChanged(Editable editStr) {}
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    Settings.chameleonDeviceNickname = s.toString();
+                    AndroidSettingsStorage.updateValueByKey(Settings.chameleonDeviceSerialNumber, AndroidSettingsStorage.PROFILE_NAME_PREFERENCE);
+                }
+            });
+            TextView chamTypeText = tabMainLayoutView.findViewById(R.id.chameleonTypeText);
+            TextView hardwareIDText = tabMainLayoutView.findViewById(R.id.hardwareSerialIDText);
+            TextView connStatusText = tabMainLayoutView.findViewById(R.id.connectionStatusText);
+            if(isChameleonDevConn) {
+                deviceNameText.setText(AndroidSettingsStorage.getStringValueByKey(Settings.chameleonDeviceSerialNumber, AndroidSettingsStorage.PROFILE_NAME_PREFERENCE));
+                chamTypeText.setText(ChameleonIO.getDeviceDescription(ChameleonIO.CHAMELEON_MINI_BOARD_TYPE));
+                hardwareIDText.setText(Settings.chameleonDeviceSerialNumber);
+                connStatusText.setText(Settings.getActiveSerialIOPort().isWiredUSB() ? "USB connection" : "BT connection");
+            }
+            else {
+                deviceNameText.setText(Settings.chameleonDeviceNickname);
+                chamTypeText.setText("None");
+                hardwareIDText.setText("None");
+                connStatusText.setText("Not connected");
+            }
+            // Chameleon device connect / disconnect buttons:
+            Button chamConnectBtn = tabMainLayoutView.findViewById(R.id.connectToDeviceButton);
+            chamConnectBtn.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View btn) {
+                    if(Settings.getActiveSerialIOPort() != null) {
+                        Utils.displayToastMessageShort("Chameleon device already connected.");
+                    }
+                    else {
+                        Settings.stopSerialIOConnectionDiscovery();
+                        Settings.initializeSerialIOConnections();
+                        Utils.displayToastMessageShort("Attempting to connect to chameleon device.");
+                    }
+                }
+            });
+            Button chamDisconnectBtn = tabMainLayoutView.findViewById(R.id.disconnectFromDeviceButton);
+            chamDisconnectBtn.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View btn) {
+                    if(Settings.getActiveSerialIOPort() == null) {
+                        Utils.displayToastMessageShort("Chameleon device not yet connected.");
+                    }
+                    else {
+                        Settings.stopSerialIOConnectionDiscovery();
+                        ChameleonSerialIOInterface serialPort = Settings.getActiveSerialIOPort();
+                        serialPort.shutdownSerial();
+                        Utils.displayToastMessageShort("Shutdown connection to active chameleon device.");
+                    }
+                }
+            });
+        }
         return true;
     }
 

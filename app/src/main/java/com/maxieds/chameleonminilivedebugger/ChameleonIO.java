@@ -56,17 +56,31 @@ public class ChameleonIO {
     public static int CHAMELEON_DEVICE_USBPID = 0x00;
     public static int CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_UNKNOWN;
 
+    public static String getDeviceDescription(int chameleonBoardType) {
+        switch(chameleonBoardType) {
+            case CHAMELEON_TYPE_DFUMODE:
+                return "DFU Bootloader Programmer Mode";
+            case CHAMELEON_TYPE_REVE:
+                return "RevE Device";
+            case CHAMELEON_TYPE_PROXGRIND_REVG:
+                return "Proxgrind RevG Device";
+            case CHAMELEON_TYPE_PROXGRIND_REVG_TINY:
+                return "Proxgrind Tiny Device";
+            case CHAMELEON_TYPE_KAOS_REVG:
+                return "KAOS RevG Device";
+            default:
+                return "Unknown";
+        }
+    }
+
     public static int detectChameleonType() {
-        String chameleonDeviceType = "Unknown";
         CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_UNKNOWN;
         if(CHAMELEON_DEVICE_USBVID == CMUSB_DFUMODE_VENDORID &&
            CHAMELEON_DEVICE_USBPID == CMUSB_DFUMODE_PRODUCTID) {
             CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_DFUMODE;
-            chameleonDeviceType = "DFU Bootloader Programmer Mode";
         }
         else if(REVE_BOARD) {
             CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_REVE;
-            chameleonDeviceType = "RevE Device";
         }
         else {
             String firmwareVersion = getSettingFromDevice("VERSION?");
@@ -74,16 +88,14 @@ public class ChameleonIO {
             if (firmwareVersion.contains("RevG") && firmwareVersion.contains("emsec")) {
                 if (commandsList.contains("SAKMODE")) {
                     CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_PROXGRIND_REVG;
-                    chameleonDeviceType = "Proxgrind RevG Device";
                 } else if (commandsList.contains("MEMORYINFO")) {
                     CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_PROXGRIND_REVG_TINY;
-                    chameleonDeviceType = "Proxgrind Tiny Device";
                 } else {
                     CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_KAOS_REVG;
-                    chameleonDeviceType = "KAOS RevG Device";
                 }
             }
         }
+        String chameleonDeviceType = getDeviceDescription(CHAMELEON_MINI_BOARD_TYPE);
         String deviceConnType = Settings.getActiveSerialIOPort().isWiredUSB() ? "USB" : "Bluetooth";
         String statusMsg = String.format(Locale.ENGLISH, "New Chameleon discovered over %s: %s.", deviceConnType, chameleonDeviceType);
         Utils.displayToastMessageShort(statusMsg);

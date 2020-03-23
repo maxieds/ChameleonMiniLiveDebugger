@@ -211,7 +211,7 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
         activeDevice = null;
         serialConfigured = false;
         receiversRegistered = false;
-        //notifyDeviceConnectionTerminated();
+        notifyDeviceConnectionTerminated();
         return 1;
     }
 

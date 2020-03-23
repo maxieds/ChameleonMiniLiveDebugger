@@ -371,6 +371,7 @@ public class Utils {
         toastDisplay.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 0, 0);
         int toastBackgroundColor = LiveLoggerActivity.getInstance().getResources().getColor(R.color.toastBGColor);
         toastDisplay.getView().getBackground().setColorFilter(toastBackgroundColor, PorterDuff.Mode.SRC_IN);
+        toastDisplay.getView().setAlpha(0.80f);
         toastDisplay.show();
         Log.i(TAG, "TOAST MSG DISPLAYED: " + toastMsg);
     }

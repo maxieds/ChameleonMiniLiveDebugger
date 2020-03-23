@@ -3,4 +3,300 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ScrollView
+        android:id="@+id/tools_menu_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fadeScrollbars="false"
+        android:orientation="vertical"
+        android:scrollbarSize="25dp"
+        android:verticalScrollbarPosition="right">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_margin="3dp"
+            android:orientation="vertical"
+            android:background="?colorAccentLog"
+            android:padding="3dp">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/android_phone_logo24"
+                android:drawablePadding="5dp"
+                android:singleLine="true"
+                android:text="Phone connection type configuration: "
+                android:textAllCaps="true"
+                android:textStyle="bold|italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="4"
+                android:padding="2dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|center_vertical"
+                    android:src="@drawable/bluetooth_icon24"
+                    android:paddingRight="5dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:singleLine="true"
+                    android:text="Android Bluetooth: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?android:colorPrimaryDark" />
+
+                <TextView
+                    android:id="@+id/androidBluetoothStatusText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:singleLine="true"
+                    android:text="Disabled"
+                    android:textStyle="normal"
+                    android:textColor="?android:colorPrimaryDark" />
+
+                <Button
+                    style="@style/GridButtonsNoWidth"
+                    android:layout_width="wrap_content"
+                    android:id="@+id/androidBTSettingsButton"
+                    android:drawableLeft="@drawable/info_icon24"
+                    android:drawablePadding="3dp"
+                    android:text="BT Settings" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|center_vertical"
+                    android:src="@drawable/nfc_icon24"
+                    android:paddingRight="5dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:singleLine="true"
+                    android:text="Android NFC: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?android:colorPrimaryDark" />
+
+                <TextView
+                    android:id="@+id/androidNFCStatusText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:singleLine="true"
+                    android:text="Disabled"
+                    android:textStyle="normal"
+                    android:textColor="?android:colorPrimaryDark" />
+
+                <Button
+                    style="@style/GridButtonsNoWidth"
+                    android:layout_width="wrap_content"
+                    android:id="@+id/androidNFCSettingsButton"
+                    android:drawableLeft="@drawable/info_icon24"
+                    android:drawablePadding="3dp"
+                    android:text="NFC Settings" />
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/chameleon_device_logo24"
+                android:drawablePadding="5dp"
+                android:singleLine="true"
+                android:text="Chameleon Device Connection: "
+                android:textAllCaps="true"
+                android:textStyle="bold|italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="3"
+                android:layout_marginVertical="4dp"
+                android:padding="4dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:src="@drawable/device_board_logo24"
+                    android:paddingRight="3dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:singleLine="true"
+                    android:text="Device Name: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?android:colorPrimaryDark" />
+
+                <EditText
+                    android:id="@+id/slotNicknameText"
+                    android:layout_width="150dp"
+                    android:layout_columnWeight="1"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="4dp"
+                    android:hint="Chameleon Mini Nickname"
+                    android:singleLine="true"
+                    android:textColor="?colorPrimaryDarkLog" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/chameleon_type_logo24"
+                    android:paddingRight="3dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:singleLine="true"
+                    android:text="Chameleon Type: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?colorPrimaryDark" />
+
+                <TextView
+                    android:id="@+id/chameleonTypeText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:paddingLeft="8dp"
+                    android:singleLine="true"
+                    android:text="Unknown"
+                    android:textStyle="normal"
+                    android:textColor="?colorPrimaryDark" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/serial_id_logo24"
+                    android:paddingRight="3dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:singleLine="true"
+                    android:text="Hardware Serial ID: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?colorPrimaryDark" />
+
+                <TextView
+                    android:id="@+id/hardwareSerialIDText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:paddingLeft="8dp"
+                    android:singleLine="true"
+                    android:text="None"
+                    android:textStyle="normal"
+                    android:textColor="?colorPrimaryDark" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/connection_status_logo24"
+                    android:paddingRight="3dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:singleLine="true"
+                    android:text="Connection Status: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?colorPrimaryDark" />
+
+                <TextView
+                    android:id="@+id/connectionStatusText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:paddingLeft="8dp"
+                    android:singleLine="true"
+                    android:text="Not connected"
+                    android:textStyle="normal"
+                    android:textColor="?colorPrimaryDark" />
+
+            </GridLayout>
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="2"
+                android:layout_marginVertical="4dp"
+                android:padding="4dp">
+
+                <Button
+                    style="@style/GridButtons"
+                    android:id="@+id/connectToDeviceButton"
+                    android:drawableLeft="@drawable/connect_button_logo24"
+                    android:text="Connect to Chameleon" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:id="@+id/disconnectFromDeviceButton"
+                    android:drawableLeft="@drawable/disconnect_button_logo24"
+                    android:text="Disconnect Device" />
+
+            </GridLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
 </LinearLayout>

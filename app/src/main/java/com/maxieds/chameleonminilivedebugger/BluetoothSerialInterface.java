@@ -42,6 +42,8 @@ public class BluetoothSerialInterface implements ChameleonSerialIOInterface {
         return serialPort.isBluetoothEnabled();
     }
 
+    public static void displayAndroidBluetoothSettings() {}
+
     public boolean configureSerialConnection(BluetoothDevice btDev) {
         if(!btDev.getName().equals(CHAMELEON_REVG_NAME)) {
             return false;

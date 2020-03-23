@@ -321,6 +321,15 @@
         <item name="android:textStyle">normal|bold</item>
     </style>
 
+    <style name="GridButtonsNoWidth">
+        <item name="android:background">?colorAccentLog</item>
+        <item name="android:maxButtonHeight">8dp</item>
+        <item name="android:maxHeight">40dp</item>
+        <item name="android:layout_weight">0.29</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">normal|bold</item>
+    </style>
+
     <style name="ColorHighlightButtons">
         <item name="android:maxButtonHeight">8dp</item>
         <item name="android:layout_columnWeight">0.075</item>
