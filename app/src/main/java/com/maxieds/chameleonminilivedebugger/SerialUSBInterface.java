@@ -185,7 +185,7 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
             return 0;
         }
         activeDevice = device;
-        Settings.chameleonDeviceSerialNumber = activeDevice.getSerialNumber();
+        Settings.chameleonDeviceSerialNumber = String.format(Locale.ENGLISH, "%s-%s", activeDevice.getProductName(), activeDevice.getVersion());
         ChameleonIO.PAUSED = false;
         serialConfigured = true;
         receiversRegistered = true;

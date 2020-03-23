@@ -55,8 +55,8 @@ public class TabFragment extends Fragment {
     public static final int TAB_EXPORT_MITEM_UPLOAD = 2;
     public static final int TAB_EXPORT_MITEM_CLONEMFC = 3;
 
-    public static final int TAB_CONFIG_MITEM_CONNECT = 0;
-    public static final int TAB_CONFIG_MITEM_SETTINGS = 1;
+    public static final int TAB_CONFIG_MITEM_SETTINGS = 0;
+    public static final int TAB_CONFIG_MITEM_CONNECT = 1;
 
     public static class UITab {
 
@@ -252,12 +252,12 @@ public class TabFragment extends Fragment {
                 R.drawable.configtab24,
                 "Config",
                 new String[] {
-                        "Connect to Devices",
-                        "General Settings"
+                        "General Settings",
+                        "Connect to Devices"
                 },
                 new int[] {
-                        R.layout.config_tab_connect,
-                        R.layout.config_tab_general_settings
+                        R.layout.config_tab_general_settings,
+                        R.layout.config_tab_connect
                 });
     }
 
