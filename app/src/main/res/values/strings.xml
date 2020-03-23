@@ -87,9 +87,7 @@
         In particular, if you try to run a command with this CMLD application, and it fails for some reason, then most
         likely the device firmware you are using does not support this command. Some commands also require that they be
         run in a READER mode, whereas some commands must be run while the current active slot on the Chameleon is set to
-        a configuration in SNIFFER mode.\n\n
-        A list of commands and NFC Tag / READER / SNIFFER configurations supported by the firmware on your attached
-        device can be viewed under the "Config" tab.
+        a configuration in SNIFFER mode.
     </string>
     <string name="apduEntryInstructions">
         Enter the APDU command components manually into the following box.\n
