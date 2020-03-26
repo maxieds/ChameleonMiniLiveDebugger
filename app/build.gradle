@@ -122,7 +122,7 @@ android {
         implementation 'com.github.felHR85:UsbSerial:4.5.2'
         implementation 'com.akexorcist:bluetoothspp:1.0.0'
         implementation 'com.shawnlin:number-picker:2.4.9'
-        implementation 'com.github.maxieds:ParklinkMifareClassicToolLibrary:1.1.8'
+        implementation 'com.github.maxieds:MifareClassicToolLibrary:1.1.8'
     }
 
     repositories {
