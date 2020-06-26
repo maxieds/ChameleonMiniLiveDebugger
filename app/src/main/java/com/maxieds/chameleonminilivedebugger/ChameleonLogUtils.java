@@ -69,12 +69,12 @@ public class ChameleonLogUtils {
         LOG_INFO_DESFIRE_PICC_RESET_FROM_MEMORY((byte) 0xEB, DATADIR_BIDIRECTIONAL, ""),
         LOG_INFO_DESFIRE_PROTECTED_DATA_SET((byte) 0xEC, DATADIR_BIDIRECTIONAL, ""),
         LOG_INFO_DESFIRE_PROTECTED_DATA_SET_VERBOSE((byte) 0xED, DATADIR_BIDIRECTIONAL, ""),
-        LOG_APP_AUTH_KEY((byte) 0xD0, DATADIR_BIDIRECTIONAL, "The key used for authentication"),
-        LOG_APP_NONCE_B((byte) 0xD1, DATADIR_BIDIRECTIONAL, "Nonce B's value (generated)"),
-        LOG_APP_NONCE_AB((byte) 0xD2, DATADIR_BIDIRECTIONAL, "Nonces A and B values (received)"),
+        LOG_INFO_APP_AUTH_KEY((byte) 0xD0, DATADIR_BIDIRECTIONAL, "The key used for authentication"),
+        LOG_INFO_APP_NONCE_B((byte) 0xD1, DATADIR_BIDIRECTIONAL, "Nonce B's value (generated)"),
+        LOG_INFO_APP_NONCE_AB((byte) 0xD2, DATADIR_BIDIRECTIONAL, "Nonces A and B values (received)"),
         /* ISO14443-3A,4 related logging */
-        LOG_ISO14443_3A_STATE((byte) 0x53, DATADIR_BIDIRECTIONAL, ""),
-        LOG_ISO14443_4_STATE((byte) 0x54, DATADIR_BIDIRECTIONAL, ""),
+        LOG_INFO_ISO14443_3A_STATE((byte) 0x53, DATADIR_BIDIRECTIONAL, ""),
+        LOG_INFO_ISO14443_4_STATE((byte) 0x54, DATADIR_BIDIRECTIONAL, ""),
         /* Other Chameleon-specific */
         LOG_INFO_SYSTEM_BOOT((byte) 0xFF, DATADIR_BIDIRECTIONAL, "Chameleon boots"),
         LOG_EMPTY((byte) 0x00, DATADIR_BIDIRECTIONAL, "Empty Log Entry. This is not followed by a length byte nor the two systick bytes nor any data."),
