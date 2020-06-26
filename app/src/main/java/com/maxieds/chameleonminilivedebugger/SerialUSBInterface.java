@@ -183,7 +183,7 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
             notifyStatus("USB ERROR: ", "Unable to configure serial device.");
             serialPort = null;
             return 0;
-        }e
+        }
         activeDevice = device;
         Settings.chameleonDeviceSerialNumber = String.format(Locale.ENGLISH, "%s-%s", activeDevice.getProductName(), activeDevice.getVersion());
         ChameleonIO.PAUSED = false;

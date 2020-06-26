@@ -464,6 +464,7 @@
         <item>RECALL_MEM</item>
         <item>TOGGLE_FIELD</item>
         <item>STORE_LOG</item>
+        <item>PRINT_STATE</item>
     </string-array>
 
     <string-array name="LButtonOptions">
@@ -479,6 +480,7 @@
         <item>RECALL_MEM</item>
         <item>TOGGLE_FIELD</item>
         <item>STORE_LOG</item>
+        <item>PRINT_STATE</item>
     </string-array>
 
     <string-array name="LButtonLongOptions">
@@ -559,24 +561,29 @@
 
     <string-array name="FullTagConfigModes">
         <item>NONE</item>
-        <item>MF_DETECTION</item>
-        <item>MF_DETECTION_4K</item>
+        <item>EM4233</item>
+        <item>ISO14443A_SNIFF</item>
+        <item>ISO14443A_READER</item>
+        <item>ISO15693_SNIFF</item>
         <item>MF_CLASSIC_MINI_4B</item>
         <item>MF_CLASSIC_1K</item>
         <item>MF_CLASSIC_1K_7B</item>
         <item>MF_CLASSIC_4K</item>
         <item>MF_CLASSIC_4K_7B</item>
+        <item>MF_DESFIRE</item>
+        <item>MF_DESFIRE_EV1_2K</item>
+        <item>MF_DESFIRE_EV1_4K</item>
+        <item>MF_DESFIRE_EV1_8K</item>
+        <item>MF_DETECTION</item>
+        <item>MF_DETECTION_4K</item>
         <item>MF_ULTRALIGHT</item>
         <item>MF_ULTRALIGHT_C</item>
         <item>MF_ULTRALIGHT_EV1_80B</item>
         <item>MF_ULTRALIGHT_EV1_164B</item>
-        <item>ISO14443A_SNIFF</item>
-        <item>ISO14443A_READER</item>
-        <item>VICINITY</item>
+        <item>NTAG215</item>
         <item>SL2S2002</item>
         <item>TITAGITSTANDARD</item>
-        <item>ISO15693_SNIFF</item>
-        <item>EM4233</item>
+        <item>VICINITY</item>
     </string-array>
 
 
