@@ -115,9 +115,12 @@ public class ChameleonIO {
         if(LiveLoggerActivity.getSelectedTab() == TAB_TOOLS &&
            TabFragment.UITAB_DATA[LiveLoggerActivity.getSelectedTab()].lastMenuIndex == TAB_TOOLS_MITEM_SLOTS) {
             try {
+                int activeSlot = ChameleonIO.DeviceStatusSettings.DIP_SETTING;
+                ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlot - 1].readParametersFromChameleonSlot(activeSlot, activeSlot);
                 for (int si = 0; si < ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOT_COUNT; si++) {
-                    int activeSlot = ChameleonIO.DeviceStatusSettings.DIP_SETTING;
-                    ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[si].readParametersFromChameleonSlot(si + 1, activeSlot + 1);
+                    //int activeSlot = ChameleonIO.DeviceStatusSettings.DIP_SETTING;
+                    //ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[si].readParametersFromChameleonSlot(si + 1, activeSlot);
+                    ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[si].resetLayoutParameters(si + 1);
                     ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[si].updateLayoutParameters();
                 }
             } catch(NumberFormatException nfe) {
@@ -287,7 +290,7 @@ public class ChameleonIO {
         public static int UIDSIZE;
         public static int MEMSIZE;
         public static int LOGSIZE;
-        public static int DIP_SETTING;
+        public static int DIP_SETTING = 1;
         public static boolean FIELD;
         public static boolean READONLY;
         public static boolean CHARGING;

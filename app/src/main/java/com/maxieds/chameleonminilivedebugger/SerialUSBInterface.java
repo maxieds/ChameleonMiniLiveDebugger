@@ -250,8 +250,7 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
                     }
                 }
                 else if(ChameleonIO.WAITING_FOR_RESPONSE && ChameleonIO.isCommandResponse(liveLogData)) {
-                    String[] strLogData = (new String(liveLogData)).split("[\n\r\t]+");
-                    //String[] strLogData = (new String(liveLogData)).split("\\.\\.");
+                    String[] strLogData = (new String(liveLogData)).split("[\n\r\t][\n\r\t]+");
                     ChameleonIO.DEVICE_RESPONSE_CODE =  strLogData[0];
                     int respCodeStartIndex = Utils.getFirstResponseCodeIndex(ChameleonIO.DEVICE_RESPONSE_CODE);
                     ChameleonIO.DEVICE_RESPONSE_CODE = ChameleonIO.DEVICE_RESPONSE_CODE.substring(respCodeStartIndex);

@@ -111,7 +111,7 @@ public class ChameleonLogUtils {
          * @param ldesc
          */
         private LogCode(byte lcode, int ldd, String ldesc) {
-            logCode = (int) lcode;
+            logCode = Byte.toUnsignedInt(lcode);
             logByteCode = lcode;
             logDataDirection = ldd;
             logDesc = ldesc;
@@ -134,7 +134,7 @@ public class ChameleonLogUtils {
          * @return LogCode enum value
          */
         public static LogCode lookupByLogCode(int lcode) {
-            LogCode lc = LOG_CODE_MAP.get(lcode);
+            LogCode lc = LOG_CODE_MAP.get((byte) lcode);
             if(lc == null)
                 return LOG_CODE_DNE;
             else
@@ -166,16 +166,12 @@ public class ChameleonLogUtils {
               return false;
          }
          byte logCodeByte = loggingBytes[0];
-         int logDataLength = (int) loggingBytes[1];
+         int logDataLength = Byte.toUnsignedInt(loggingBytes[1]);
          if(loggingBytes.length != 4 + logDataLength) {
-              Log.d(TAG, String.format(Locale.ENGLISH, "CHECKING LOG RESPONSE COND: %d, %d", logDataLength, loggingBytes.length));
               return false;
          }
-         for(int lc = 0; lc < LogCode.LOG_CODE_MAP.size(); lc++) {
-              LogCode lcAtIndex = LogCode.LOG_CODE_MAP.get(lc);
-              if(lcAtIndex != null && logCodeByte == lcAtIndex.toByte()) {
-                   return true;
-              }
+         if(LogCode.LOG_CODE_MAP.get(logCodeByte) != null) {
+             return true;
          }
          return false;
     }
