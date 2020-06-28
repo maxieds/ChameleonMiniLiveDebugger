@@ -48,6 +48,8 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED);
         notifyIntent.putExtra("DATA", serialData);
         notifyContext.sendBroadcast(notifyIntent);
+        Log.i(TAG, "SERIALIO_DATA_RECEIVED: (HEX)" + Utils.bytes2Hex(serialData));
+        Log.i(TAG, "SERIALIO_DATA_RECEIVED: (TXT)" + Utils.bytes2Ascii(serialData));
         return true;
     }
 
@@ -55,6 +57,8 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED);
         notifyIntent.putExtra("DATA", serialData);
         notifyContext.sendBroadcast(notifyIntent);
+        Log.i(TAG, "SERIALIO_LOGDATA_RECEIVED: (HEX)" + Utils.bytes2Hex(serialData));
+        Log.i(TAG, "SERIALIO_LOGDATA_RECEIVED: (TXT)" + Utils.bytes2Ascii(serialData));
         return true;
     }
 
@@ -219,8 +223,7 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
         return new UsbSerialInterface.UsbReadCallback() {
             @Override
             public void onReceivedData(byte[] liveLogData) {
-                Log.d(TAG, "USBReaderCallback Received Data: " + Utils.bytes2Hex(liveLogData));
-                Log.d(TAG, "    => " + Utils.bytes2Ascii(liveLogData));
+                Log.d(TAG, "USBReaderCallback Received Data: (HEX)" + Utils.bytes2Hex(liveLogData));
                 if(ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData)) {
                     notifyLogDataReceived(liveLogData);
                     return;

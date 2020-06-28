@@ -50,6 +50,7 @@ public class ChameleonIO {
     public static final int CHAMELEON_TYPE_PROXGRIND_REVG_TINY = 2;
     public static final int CHAMELEON_TYPE_REVE = 3;
     public static final int CHAMELEON_TYPE_DFUMODE = 4;
+    public static final int CHAMELEON_TYPE_DESFIRE_FWMOD = 5;
 
     public static boolean REVE_BOARD = false;
     public static int CHAMELEON_DEVICE_USBVID = 0x00;
@@ -68,12 +69,16 @@ public class ChameleonIO {
                 return "Proxgrind Tiny Device";
             case CHAMELEON_TYPE_KAOS_REVG:
                 return "KAOS RevG Device";
+            case CHAMELEON_TYPE_DESFIRE_FWMOD:
+                return "DESFire Firmware Mod (Device ~ RevG)";
             default:
                 return "Unknown";
         }
     }
 
     public static int detectChameleonType() {
+        ChameleonSerialIOInterface deviceActiveSerialIOPort = Settings.getActiveSerialIOPort();
+        String deviceConnType = deviceActiveSerialIOPort.isWiredUSB() ? "USB" : "Bluetooth";
         CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_UNKNOWN;
         if(CHAMELEON_DEVICE_USBVID == CMUSB_DFUMODE_VENDORID &&
            CHAMELEON_DEVICE_USBPID == CMUSB_DFUMODE_PRODUCTID) {
@@ -85,7 +90,11 @@ public class ChameleonIO {
         else {
             String firmwareVersion = getSettingFromDevice("VERSION?");
             String commandsList = getSettingFromDevice("HELP");
-            if (firmwareVersion.contains("RevG") && firmwareVersion.contains("emsec")) {
+            if(firmwareVersion.contains("DESFire") ||
+                    (deviceConnType.equals("USB") && deviceActiveSerialIOPort.getActiveDeviceInfo().contains("DESFireMod"))) {
+                CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_DESFIRE_FWMOD;
+            }
+            else if (firmwareVersion.contains("RevG") && firmwareVersion.contains("emsec")) {
                 if (commandsList.contains("SAKMODE")) {
                     CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_PROXGRIND_REVG;
                 } else if (commandsList.contains("MEMORYINFO")) {
@@ -96,7 +105,6 @@ public class ChameleonIO {
             }
         }
         String chameleonDeviceType = getDeviceDescription(CHAMELEON_MINI_BOARD_TYPE);
-        String deviceConnType = Settings.getActiveSerialIOPort().isWiredUSB() ? "USB" : "Bluetooth";
         String statusMsg = String.format(Locale.ENGLISH, "New Chameleon discovered over %s: %s.", deviceConnType, chameleonDeviceType);
         Utils.displayToastMessageShort(statusMsg);
         return CHAMELEON_MINI_BOARD_TYPE;
@@ -301,7 +309,6 @@ public class ChameleonIO {
         };
 
         public static void startPostingStats(int msDelay) {
-            //return;
             statsUpdateHandler.removeCallbacksAndMessages(statsUpdateRunnable);
             statsUpdateHandler.postDelayed(statsUpdateRunnable, msDelay);
         }

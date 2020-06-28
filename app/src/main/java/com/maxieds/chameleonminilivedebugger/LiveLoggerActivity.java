@@ -133,6 +133,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                if (intentAction != null && (intentAction.equals(UsbManager.ACTION_USB_DEVICE_DETACHED) || intentAction.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED))) {
                     Log.w(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead of re-launching.");
                     finish();
+                    serialIOReceiversRegistered = false;
                     Settings.initializeSerialIOConnections();
                     return;
                }
@@ -176,8 +177,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
           if(!serialIOReceiversRegistered) {
                Settings.initializeSerialIOConnections();
-               if(Settings.getActiveSerialIOPort() != null)
-                    ChameleonIO.deviceStatus.startPostingStats(1000);
+               if(Settings.getActiveSerialIOPort() != null) {
+                    ChameleonIO.deviceStatus.startPostingStats(750);
+               }
                serialIOActionReceiver = new BroadcastReceiver() {
                     public void onReceive(Context context, Intent intent) {
                          Log.i(TAG, intent.getAction());
@@ -463,6 +465,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
       */
      public void actionButtonRefreshDeviceStatus(View view) {
           ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+     }
+
+     public void actionButtonAppSettings(View view) {
+          ThemesConfiguration.actionButtonAppSettings(view);
      }
 
      /**
