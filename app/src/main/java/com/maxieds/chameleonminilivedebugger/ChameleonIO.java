@@ -260,8 +260,9 @@ public class ChameleonIO {
      * @ref LiveLoggerActivity.usbReaderCallback
      */
     public static boolean isCommandResponse(byte[] liveLogData) {
-        String respText = new String(liveLogData).split("[\n\r]+")[0];
-        String[] respText2 = new String(liveLogData).split("=");
+        String[] respTextArray = new String(liveLogData).split("[\n\r][\n\r]+");
+        String respText = respTextArray[0];
+        respText.replaceAll("(\\d+):.+", "$1").replaceAll(".+(\\d+)", "$1");
         if(SerialRespCode.RESP_CODE_TEXT_MAP.get(respText) != null)
             return true;
         respText = new String(liveLogData).split(":")[0];
@@ -297,12 +298,13 @@ public class ChameleonIO {
          * How often do we update / refresh the stats at the top of the window?
          */
         public static final int STATS_UPDATE_INTERVAL = 4500; // 4.5 seconds
+        public static boolean postingStatsInProgress = false;
         public static Handler statsUpdateHandler = new Handler();
         public static Runnable statsUpdateRunnable = new Runnable() {
             public void run() {
-                statsUpdateHandler.removeCallbacksAndMessages(statsUpdateRunnable);
                 if(Settings.getActiveSerialIOPort() == null) {
                     statsUpdateHandler.removeCallbacksAndMessages(this);
+                    postingStatsInProgress = false;
                 }
                 else {
                     updateAllStatusAndPost(true);
@@ -312,10 +314,14 @@ public class ChameleonIO {
 
         public static void stopPostingStats() {
             statsUpdateHandler.removeCallbacksAndMessages(statsUpdateRunnable);
+            postingStatsInProgress = false;
         }
 
         public static void startPostingStats(int msDelay) {
-            statsUpdateHandler.removeCallbacksAndMessages(statsUpdateRunnable);
+            if(postingStatsInProgress) {
+                return;
+            }
+            postingStatsInProgress = true;
             statsUpdateHandler.postDelayed(statsUpdateRunnable, msDelay);
         }
 
@@ -381,10 +387,10 @@ public class ChameleonIO {
                 thresholdSeekbar.setProgress(THRESHOLD);
                 ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.thresholdSeekbarValueText)).setText(String.format(Locale.ENGLISH, "% 5d mV", THRESHOLD));
             }
-            NumberPicker settingsNumberPicker = (NumberPicker) LiveLoggerActivity.getInstance().findViewById(R.id.settingsNumberPicker);
-            if (settingsNumberPicker != null) {
-                settingsNumberPicker.setValue(DIP_SETTING);
-            }
+            //NumberPicker settingsNumberPicker = (NumberPicker) LiveLoggerActivity.getInstance().findViewById(R.id.settingsNumberPicker);
+            //if (settingsNumberPicker != null) {
+            //    settingsNumberPicker.setValue(DIP_SETTING);
+            //}
             if (resetTimer) {
                 statsUpdateHandler.removeCallbacksAndMessages(statsUpdateRunnable);
                 statsUpdateHandler.postDelayed(statsUpdateRunnable, STATS_UPDATE_INTERVAL);
@@ -479,7 +485,7 @@ public class ChameleonIO {
             return ChameleonIO.DEVICE_RESPONSE[0];
         }
         ChameleonIO.WAITING_FOR_RESPONSE = true;
-        ChameleonIO.SerialRespCode rcode = ChameleonIO.executeChameleonMiniCommand(query, TIMEOUT);
+        ChameleonIO.executeChameleonMiniCommand(query, TIMEOUT);
         for(int i = 0; i < ChameleonIO.TIMEOUT / 50; i++) {
             if(!ChameleonIO.WAITING_FOR_RESPONSE)
                 break;

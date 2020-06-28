@@ -1,6 +1,9 @@
 package com.maxieds.chameleonminilivedebugger;
 
+import android.util.Log;
+
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -17,6 +20,8 @@ import java.util.Map;
  * @url http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/_log_8h.html#a34112fbd78128ae58dc7801690dfa6e0
  */
 public class ChameleonLogUtils {
+
+    private static final String TAG = ChameleonLogUtils.class.getSimpleName();
 
     public static final int DATADIR_INCOMING = 0;
     public static final int DATADIR_OUTGOING = 1;
@@ -163,6 +168,7 @@ public class ChameleonLogUtils {
          byte logCodeByte = loggingBytes[0];
          int logDataLength = (int) loggingBytes[1];
          if(loggingBytes.length != 4 + logDataLength) {
+              Log.d(TAG, String.format(Locale.ENGLISH, "CHECKING LOG RESPONSE COND: %d, %d", logDataLength, loggingBytes.length));
               return false;
          }
          for(int lc = 0; lc < LogCode.LOG_CODE_MAP.size(); lc++) {

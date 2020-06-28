@@ -119,13 +119,14 @@ public class UITabUtils {
                     if(scrollState == SCROLL_STATE_IDLE) {
                         int previousSlotNumber = ChameleonIO.DeviceStatusSettings.DIP_SETTING;
                         String settingCmd = ChameleonIO.REVE_BOARD ? "setting=" : "SETTING=";
-                        ChameleonIO.getSettingFromDevice(settingCmd + numberPicker.getValue());
-                        ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+                        ChameleonIO.getSettingFromDevice(String.format(Locale.ENGLISH, "%s%d", settingCmd, numberPicker.getValue()));
+                        //ChameleonIO.DeviceStatusSettings.stopPostingStats();
                         int activeSlotNumber = numberPicker.getValue();
+                        ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[previousSlotNumber - 1].disableLayout();
                         ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].readParametersFromChameleonSlot();
                         ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].updateLayoutParameters();
                         ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].enableLayout();
-                        ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[previousSlotNumber].disableLayout();
+                        //ChameleonIO.deviceStatus.startPostingStats(0);
                     }
                 }
             });
@@ -139,7 +140,10 @@ public class UITabUtils {
                         ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[si].disableLayout();
                     }
                     else {
-                        ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[si].enableLayout();
+                        ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].getTagConfigurationsListFromDevice();
+                        ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].readParametersFromChameleonSlot();
+                        ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].updateLayoutParameters();
+                        ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].enableLayout();
                     }
                 }
             }
@@ -151,7 +155,7 @@ public class UITabUtils {
             }
         }
         else if(menuItemIdx == TAB_TOOLS_MITEM_TAGCONFIG) {
-            Spinner tagConfigModeSpinner = tabMainLayoutView.findViewById(R.id.tagConfigModeSpinner);
+            /*Spinner tagConfigModeSpinner = tabMainLayoutView.findViewById(R.id.tagConfigModeSpinner);
             if(tagConfigModeSpinner == null) {
                 return false;
             }
@@ -174,11 +178,7 @@ public class UITabUtils {
                 }
                 tagConfigModeSpinner.setAdapter(new ArrayAdapter<String>(tabMainLayoutView.getContext(),
                         android.R.layout.simple_list_item_1, tagConfigModesArray));
-
-                //String[] tagConfigModesArray = LiveLoggerActivity.getInstance().getResources().getStringArray(R.array.FullTagConfigModes);
-                //tagConfigModeSpinner.setAdapter(new ArrayAdapter<String>(tabMainLayoutView.getContext(),
-                //        android.R.layout.simple_list_item_1, tagConfigModesArray));
-            }
+            }*/
         }
         else if(menuItemIdx == TAB_TOOLS_MITEM_CMDS) {
             Switch fieldSwitch = (Switch) tabMainLayoutView.findViewById(R.id.fieldOnOffSwitch);

@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SerialUSBInterface implements ChameleonSerialIOInterface {
 
@@ -249,9 +251,22 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
                 }
                 else if(ChameleonIO.WAITING_FOR_RESPONSE && ChameleonIO.isCommandResponse(liveLogData)) {
                     String[] strLogData = (new String(liveLogData)).split("[\n\r\t]+");
-                    ChameleonIO.DEVICE_RESPONSE_CODE = strLogData[0];
-                    if(strLogData.length >= 2)
-                        ChameleonIO.DEVICE_RESPONSE = Arrays.copyOfRange(strLogData, 1, strLogData.length);
+                    //String[] strLogData = (new String(liveLogData)).split("\\.\\.");
+                    ChameleonIO.DEVICE_RESPONSE_CODE =  strLogData[0];
+                    int respCodeStartIndex = Utils.getFirstResponseCodeIndex(ChameleonIO.DEVICE_RESPONSE_CODE);
+                    ChameleonIO.DEVICE_RESPONSE_CODE = ChameleonIO.DEVICE_RESPONSE_CODE.substring(respCodeStartIndex);
+                    boolean respCodeHasPreText = respCodeStartIndex > 0;
+                    if(respCodeHasPreText) {
+                        strLogData[0] = strLogData[0].substring(0, respCodeStartIndex - 1);
+                    }
+                    if(strLogData.length >= 2) {
+                        if(respCodeHasPreText) {
+                            ChameleonIO.DEVICE_RESPONSE = Arrays.copyOfRange(strLogData, 0, strLogData.length);
+                        }
+                        else {
+                            ChameleonIO.DEVICE_RESPONSE = Arrays.copyOfRange(strLogData, 1, strLogData.length);
+                        }
+                    }
                     else
                         ChameleonIO.DEVICE_RESPONSE[0] = strLogData[0];
                     if(ChameleonIO.EXPECTING_BINARY_DATA) {
