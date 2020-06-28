@@ -50,8 +50,8 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED);
         notifyIntent.putExtra("DATA", serialData);
         notifyContext.sendBroadcast(notifyIntent);
-        Log.i(TAG, "SERIALIO_DATA_RECEIVED: (HEX)" + Utils.bytes2Hex(serialData));
-        Log.i(TAG, "SERIALIO_DATA_RECEIVED: (TXT)" + Utils.bytes2Ascii(serialData));
+        Log.i(TAG, "SERIALIO_DATA_RECEIVED: (HEX) " + Utils.bytes2Hex(serialData));
+        Log.i(TAG, "SERIALIO_DATA_RECEIVED: (TXT) " + Utils.bytes2Ascii(serialData));
         return true;
     }
 
@@ -59,8 +59,8 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED);
         notifyIntent.putExtra("DATA", serialData);
         notifyContext.sendBroadcast(notifyIntent);
-        Log.i(TAG, "SERIALIO_LOGDATA_RECEIVED: (HEX)" + Utils.bytes2Hex(serialData));
-        Log.i(TAG, "SERIALIO_LOGDATA_RECEIVED: (TXT)" + Utils.bytes2Ascii(serialData));
+        Log.i(TAG, "SERIALIO_LOGDATA_RECEIVED: (HEX) " + Utils.bytes2Hex(serialData));
+        Log.i(TAG, "SERIALIO_LOGDATA_RECEIVED: (TXT) " + Utils.bytes2Ascii(serialData));
         return true;
     }
 
@@ -213,6 +213,8 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
         ChameleonIO.WAITING_FOR_RESPONSE = false;
         ChameleonIO.EXPECTING_BINARY_DATA = false;
         ChameleonIO.LASTCMD = "";
+        ChameleonIO.APPEND_PRIOR_BUFFER_DATA = false;
+        ChameleonIO.PRIOR_BUFFER_DATA = new byte[0];
         serialPort = null;
         activeDevice = null;
         serialConfigured = false;
@@ -227,11 +229,20 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
             public void onReceivedData(byte[] liveLogData) {
                 Log.d(TAG, "USBReaderCallback Received Data: (HEX) " + Utils.bytes2Hex(liveLogData));
                 Log.d(TAG, "USBReaderCallback Received Data: (TXT) " + Utils.bytes2Ascii(liveLogData));
-                if(ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData)) {
-                    notifyLogDataReceived(liveLogData);
-                    return;
+                int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData);
+                boolean appendNextBufferData = false;
+                if(!ChameleonIO.APPEND_PRIOR_BUFFER_DATA && loggingRespSize > 0) {
+                    if(loggingRespSize == liveLogData.length) {
+                        notifyLogDataReceived(liveLogData);
+                        return;
+                    }
+                    else {
+                        notifyLogDataReceived(Arrays.copyOfRange(liveLogData, 0, loggingRespSize));
+                        liveLogData = Arrays.copyOfRange(liveLogData, loggingRespSize, liveLogData.length);
+                        appendNextBufferData = true;
+                    }
                 }
-                else if(ChameleonIO.PAUSED) {
+                if(ChameleonIO.PAUSED) {
                     return;
                 }
                 else if(ChameleonIO.DOWNLOAD) {
@@ -250,8 +261,12 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
                     }
                 }
                 else if(ChameleonIO.WAITING_FOR_RESPONSE && ChameleonIO.isCommandResponse(liveLogData)) {
-                    String[] strLogData = (new String(liveLogData)).split("[\n\r\t]+");
-                    //String[] strLogData = (new String(liveLogData)).split("\\.\\.");
+                    String[] strLogData = (new String(liveLogData)).split("[\n\r\t][\n\r\t]+");
+                    if(ChameleonIO.APPEND_PRIOR_BUFFER_DATA) {
+                        strLogData[0] = String.valueOf(ChameleonIO.PRIOR_BUFFER_DATA) + strLogData[0];
+                        ChameleonIO.PRIOR_BUFFER_DATA = new byte[0];
+                        ChameleonIO.APPEND_PRIOR_BUFFER_DATA = false;
+                    }
                     ChameleonIO.DEVICE_RESPONSE_CODE =  strLogData[0];
                     int respCodeStartIndex = Utils.getFirstResponseCodeIndex(ChameleonIO.DEVICE_RESPONSE_CODE);
                     ChameleonIO.DEVICE_RESPONSE_CODE = ChameleonIO.DEVICE_RESPONSE_CODE.substring(respCodeStartIndex);
@@ -276,6 +291,12 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
                         ChameleonIO.EXPECTING_BINARY_DATA = false;
                     }
                     ChameleonIO.WAITING_FOR_RESPONSE = false;
+                    return;
+                }
+                else if(appendNextBufferData) {
+                    ChameleonIO.APPEND_PRIOR_BUFFER_DATA = true;
+                    ChameleonIO.PRIOR_BUFFER_DATA = new byte[liveLogData.length];
+                    System.arraycopy(liveLogData, 0, ChameleonIO.PRIOR_BUFFER_DATA, 0, liveLogData.length);
                     return;
                 }
                 notifySerialDataReceived(liveLogData);

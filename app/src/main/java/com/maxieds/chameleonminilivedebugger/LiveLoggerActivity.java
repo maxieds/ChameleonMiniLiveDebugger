@@ -182,12 +182,14 @@ public class LiveLoggerActivity extends AppCompatActivity {
                          public void run() {
                               ChameleonIO.detectChameleonType();
                               ChameleonIO.initializeDevice();
-                              //UITabUtils.initializeToolsTab(TAB_TOOLS_MITEM_SLOTS, TabFragment.UITAB_DATA[TAB_TOOLS].tabInflatedView);
                               ChameleonIO.DeviceStatusSettings.startPostingStats(0);
                          }
                     };
                     ChameleonIO.DeviceStatusSettings.stopPostingStats();
                     configDeviceHandler.postDelayed(configDeviceRunnable, 400);
+               }
+               if(serialIOActionReceiver != null) {
+                    unregisterReceiver(serialIOActionReceiver);
                }
                serialIOActionReceiver = new BroadcastReceiver() {
                     public void onReceive(Context context, Intent intent) {

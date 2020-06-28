@@ -68,6 +68,14 @@ public class ChameleonConfigSlot {
     private View slotConfigLayout;
 
     public ChameleonConfigSlot(int slotNumber, boolean readDeviceParams) {
+        slotConfigLayout = null;
+        resetLayoutParameters(slotNumber);
+        if(readDeviceParams) {
+            readParametersFromChameleonSlot();
+        }
+    }
+
+    public void resetLayoutParameters(int slotNumber) {
         slotNickname = String.format(Locale.ENGLISH, "Slot %02d", slotNumber);
         slotIndex = slotNumber;
         uidHexBytes = "";
@@ -83,10 +91,6 @@ public class ChameleonConfigSlot {
         storedKeys = new String[0];
         tagSectorSize = tagBlockSize = 0;
         tagConfigModes = LiveLoggerActivity.getInstance().getResources().getStringArray(R.array.FullTagConfigModes);
-        slotConfigLayout = null;
-        if(readDeviceParams) {
-            readParametersFromChameleonSlot();
-        }
     }
 
     public View createSlotConfigUILayout(int slotNumber) {
@@ -149,7 +153,7 @@ public class ChameleonConfigSlot {
         try {
             ChameleonIO.getSettingFromDevice(String.format(Locale.ENGLISH, "SETTING=%d", nextSlot));
             readParametersFromChameleonSlot();
-            ChameleonIO.getSettingFromDevice(String.format(Locale.ENGLISH, "SETTING=%d", activeSlot));
+            //ChameleonIO.getSettingFromDevice(String.format(Locale.ENGLISH, "SETTING=%d", activeSlot));
         } catch(Exception exe) {
             exe.printStackTrace();
             return false;
@@ -237,12 +241,10 @@ public class ChameleonConfigSlot {
                 }
                 lastSelectedPosition = i;
                 String nextConfigMode = localSpinnerList[i];
-                //ChameleonIO.DeviceStatusSettings.stopPostingStats();
                 String setConfigCmd = String.format(Locale.ENGLISH, "CONFIG=%s", nextConfigMode);
                 ChameleonIO.getSettingFromDevice(setConfigCmd);
                 readParametersFromChameleonSlot();
                 updateLayoutParameters();
-                //ChameleonIO.deviceStatus.startPostingStats(0);
             }
             public void onNothingSelected(AdapterView<?> adapterView) {
                 return;

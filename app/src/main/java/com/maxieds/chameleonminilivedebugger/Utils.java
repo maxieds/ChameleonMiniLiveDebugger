@@ -34,10 +34,14 @@ public class Utils {
     private static final String TAG = Utils.class.getSimpleName();
 
     public static int getFirstResponseCodeIndex(String s) {
-        Pattern pattern = Pattern.compile("^\\D*([1-9][0-9][0-9])");
+        Pattern pattern = Pattern.compile("^\\w*(\\d{3})");
         Matcher matcher = pattern.matcher(s);
-        matcher.find();
-        return matcher.start(1);
+        if(matcher.find()) {
+            return matcher.start(1);
+        }
+        else {
+            return 0;
+        }
     }
 
     public static String formatUIDString(String hexBytesStr, String delim) {
