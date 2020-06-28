@@ -161,19 +161,19 @@ public class ChameleonLogUtils {
 
     }
 
-    public static boolean ResponseIsLiveLoggingBytes(byte[] loggingBytes) {
+    public static int ResponseIsLiveLoggingBytes(byte[] loggingBytes) {
          if(loggingBytes.length < 4) {
-              return false;
+              return 0;
          }
          byte logCodeByte = loggingBytes[0];
          int logDataLength = Byte.toUnsignedInt(loggingBytes[1]);
-         if(loggingBytes.length != 4 + logDataLength) {
-              return false;
+         if(loggingBytes.length < 4 + logDataLength) {
+              return 0;
          }
          if(LogCode.LOG_CODE_MAP.get(logCodeByte) != null) {
-             return true;
+             return 4 + logDataLength;
          }
-         return false;
+         return 0;
     }
 
     /**

@@ -227,11 +227,18 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
             public void onReceivedData(byte[] liveLogData) {
                 Log.d(TAG, "USBReaderCallback Received Data: (HEX) " + Utils.bytes2Hex(liveLogData));
                 Log.d(TAG, "USBReaderCallback Received Data: (TXT) " + Utils.bytes2Ascii(liveLogData));
-                if(ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData)) {
-                    notifyLogDataReceived(liveLogData);
-                    return;
+                int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData);
+                if(loggingRespSize > 0) {
+                    if(loggingRespSize == liveLogData.length) {
+                        notifyLogDataReceived(liveLogData);
+                        return;
+                    }
+                    else {
+                        notifyLogDataReceived(Arrays.copyOfRange(liveLogData, 0, loggingRespSize));
+                        liveLogData = Arrays.copyOfRange(liveLogData, loggingRespSize, liveLogData.length - loggingRespSize);
+                    }
                 }
-                else if(ChameleonIO.PAUSED) {
+                if(ChameleonIO.PAUSED) {
                     return;
                 }
                 else if(ChameleonIO.DOWNLOAD) {

@@ -228,13 +228,21 @@ public class BluetoothSerialInterface implements ChameleonSerialIOInterface {
     private BluetoothSPP.OnDataReceivedListener createSerialReaderCallback() {
         return new BluetoothSPP.OnDataReceivedListener() {
             public void onDataReceived(byte[] liveLogData, String message) {
-                Log.d(TAG, "BTReaderCallback Received Data: " + Utils.bytes2Hex(liveLogData));
-                Log.d(TAG, "    => " + Utils.bytes2Ascii(liveLogData));
-                Log.d(TAG, "With message: " + message);
-                if (ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData)) {
-                    notifyLogDataReceived(liveLogData);
-                    return;
-                } else if (ChameleonIO.PAUSED) {
+                Log.d(TAG, "BTReaderCallback Received Data: (HEX) " + Utils.bytes2Hex(liveLogData));
+                Log.d(TAG, "BTReaderCallback Received Data: (TXT) " + Utils.bytes2Ascii(liveLogData));
+                Log.d(TAG, "BTReaderCallback Received Data: (MSG) " + message);
+                int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData);
+                if(loggingRespSize > 0) {
+                    if(loggingRespSize == liveLogData.length) {
+                        notifyLogDataReceived(liveLogData);
+                        return;
+                    }
+                    else {
+                        notifyLogDataReceived(Arrays.copyOfRange(liveLogData, 0, loggingRespSize));
+                        liveLogData = Arrays.copyOfRange(liveLogData, loggingRespSize, liveLogData.length - loggingRespSize);
+                    }
+                }
+                if (ChameleonIO.PAUSED) {
                     return;
                 } else if (ChameleonIO.DOWNLOAD) {
                     ExportTools.performXModemSerialDownload(liveLogData);
