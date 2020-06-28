@@ -1,5 +1,10 @@
-/build
-app/free
-app/free*
-app/paid
-app/paid*
+build
+build/*
+free
+free/*
+paid
+paid/*
+*.aab
+*.apk
+*.zip 
+*.json
