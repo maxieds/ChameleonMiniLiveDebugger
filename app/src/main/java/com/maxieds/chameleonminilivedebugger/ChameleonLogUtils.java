@@ -162,7 +162,7 @@ public class ChameleonLogUtils {
          }
          byte logCodeByte = loggingBytes[0];
          int logDataLength = (int) loggingBytes[1];
-         if(loggingBytes.length != 3 + logDataLength) {
+         if(loggingBytes.length != 4 + logDataLength) {
               return false;
          }
          for(int lc = 0; lc < LogCode.LOG_CODE_MAP.size(); lc++) {

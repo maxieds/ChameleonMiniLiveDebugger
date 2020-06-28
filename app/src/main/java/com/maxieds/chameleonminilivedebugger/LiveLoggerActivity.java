@@ -341,10 +341,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
                          public void run() {
                               ChameleonIO.detectChameleonType();
                               ChameleonIO.initializeDevice();
-                              ChameleonIO.DeviceStatusSettings.startPostingStats(1000);
+                              ChameleonIO.DeviceStatusSettings.startPostingStats(500);
                          }
                     };
-                    configDeviceHandler.postDelayed(configDeviceRunnable, 3000);
+                    configDeviceHandler.postDelayed(configDeviceRunnable, 750);
                     ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
                     setStatusIcon(R.id.statusIconUSB, R.drawable.usbconnected16);
                }

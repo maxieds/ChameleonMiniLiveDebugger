@@ -161,8 +161,11 @@ public class UITabUtils {
                         android.R.layout.simple_list_item_1, tagConfigModesArray));
             }
             else {
-                String configModesList = ChameleonIO.getSettingFromDevice("CONFIG=?");
-                String[] tagConfigModesArray = configModesList.replace(" ", "").split(",");
+                //String configModesList = ChameleonIO.getSettingFromDevice("CONFIG=?");
+                //String[] tagConfigModesArray = configModesList.replace(" ", "").split(",");
+                //tagConfigModeSpinner.setAdapter(new ArrayAdapter<String>(tabMainLayoutView.getContext(),
+                //        android.R.layout.simple_list_item_1, tagConfigModesArray));
+                String[] tagConfigModesArray = LiveLoggerActivity.getInstance().getResources().getStringArray(R.array.FullTagConfigModes);
                 tagConfigModeSpinner.setAdapter(new ArrayAdapter<String>(tabMainLayoutView.getContext(),
                         android.R.layout.simple_list_item_1, tagConfigModesArray));
                 String activeConfigMode = ChameleonIO.getSettingFromDevice("CONFIG?");

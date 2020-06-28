@@ -163,7 +163,7 @@ public class ChameleonConfigSlot {
          }
          String configModesList = ChameleonIO.getSettingFromDevice("CONFIG=?");
          String[] configModesArray = configModesList.replace(" ", "").split(",");
-         tagConfigModes = configModesArray;
+         //tagConfigModes = configModesArray;
          String activeConfigMode = ChameleonIO.getSettingFromDevice("CONFIG?");
          tagConfigType = activeConfigMode;
          Spinner configModeSpinner = (Spinner) slotConfigLayout.findViewById(R.id.tagConfigModeSpinner);
@@ -193,7 +193,7 @@ public class ChameleonConfigSlot {
              }
          }
          TextView uidBytes = (TextView) slotConfigLayout.findViewById(R.id.uidBytesText);
-         uidBytes.setText(uidHexBytes);
+         uidBytes.setText(uidHexDisplayStr);
          TextView memSizeText = (TextView) slotConfigLayout.findViewById(R.id.memorySizeText);
          memSizeText.setText(String.format(Locale.ENGLISH, "%dB / %dK", tagMemorySize, tagMemorySize / 1024));
          Switch lockSwitch = (Switch) slotConfigLayout.findViewById(R.id.readonlyOnOffSwitch);
