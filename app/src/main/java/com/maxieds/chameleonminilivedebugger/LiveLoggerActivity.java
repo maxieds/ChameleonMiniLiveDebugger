@@ -39,6 +39,7 @@ import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_SLOTS;
 
 /**
  * <h1>Live Logger Activity</h1>
@@ -124,17 +125,17 @@ public class LiveLoggerActivity extends AppCompatActivity {
           // fix bug where the tabs are blank when the application is relaunched:
           super.onCreate(savedInstanceState);
           if(runningActivity == null || !isTaskRoot()) {
-               Log.w(TAG, "Created new activity");
+               Log.i(TAG, "Created new activity");
           }
           if(!isTaskRoot()) {
-               Log.w(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
+               Log.i(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
                final Intent intent = getIntent();
                final String intentAction = intent.getAction();
                if (intentAction != null && (intentAction.equals(UsbManager.ACTION_USB_DEVICE_DETACHED) || intentAction.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED))) {
-                    Log.w(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead of re-launching.");
+                    Log.i(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead of re-launching.");
                     finish();
-                    serialIOReceiversRegistered = false;
                     Settings.initializeSerialIOConnections();
+                    serialIOReceiversRegistered = false;
                     return;
                }
           }
@@ -176,9 +177,18 @@ public class LiveLoggerActivity extends AppCompatActivity {
           }
 
           if(!serialIOReceiversRegistered) {
-               Settings.initializeSerialIOConnections();
-               if(Settings.getActiveSerialIOPort() != null) {
-                    ChameleonIO.deviceStatus.startPostingStats(750);
+               if((Settings.serialIOPorts[Settings.USBIO_IFACE_INDEX].configureSerial() != 0) && (Settings.getActiveSerialIOPort() != null)) {
+                    Handler configDeviceHandler = new Handler();
+                    Runnable configDeviceRunnable = new Runnable() {
+                         public void run() {
+                              ChameleonIO.detectChameleonType();
+                              ChameleonIO.initializeDevice();
+                              UITabUtils.initializeToolsTab(TAB_TOOLS_MITEM_SLOTS, TabFragment.UITAB_DATA[TAB_TOOLS].tabInflatedView);
+                              ChameleonIO.DeviceStatusSettings.startPostingStats(0);
+                         }
+                    };
+                    ChameleonIO.DeviceStatusSettings.stopPostingStats();
+                    configDeviceHandler.postDelayed(configDeviceRunnable, ChameleonIO.DeviceStatusSettings.STATS_UPDATE_INTERVAL);
                }
                serialIOActionReceiver = new BroadcastReceiver() {
                     public void onReceive(Context context, Intent intent) {
@@ -343,10 +353,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
                          public void run() {
                               ChameleonIO.detectChameleonType();
                               ChameleonIO.initializeDevice();
-                              ChameleonIO.DeviceStatusSettings.startPostingStats(500);
+                              UITabUtils.initializeToolsTab(TAB_TOOLS_MITEM_SLOTS, TabFragment.UITAB_DATA[TAB_TOOLS].tabInflatedView);
+                              ChameleonIO.DeviceStatusSettings.startPostingStats(0);
                          }
                     };
-                    configDeviceHandler.postDelayed(configDeviceRunnable, 750);
+                    ChameleonIO.DeviceStatusSettings.stopPostingStats();
+                    configDeviceHandler.postDelayed(configDeviceRunnable, ChameleonIO.DeviceStatusSettings.STATS_UPDATE_INTERVAL);
                     ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
                     setStatusIcon(R.id.statusIconUSB, R.drawable.usbconnected16);
                }
@@ -375,7 +387,17 @@ public class LiveLoggerActivity extends AppCompatActivity {
                Settings.stopSerialIOConnectionDiscovery();
                ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
                Settings.SERIALIO_IFACE_ACTIVE_INDEX = Settings.BTIO_IFACE_INDEX;
-               ChameleonIO.DeviceStatusSettings.startPostingStats(1000);
+               Handler configDeviceHandler = new Handler();
+               Runnable configDeviceRunnable = new Runnable() {
+                    public void run() {
+                         ChameleonIO.detectChameleonType();
+                         ChameleonIO.initializeDevice();
+                         UITabUtils.initializeToolsTab(TAB_TOOLS_MITEM_SLOTS, TabFragment.UITAB_DATA[TAB_TOOLS].tabInflatedView);
+                         ChameleonIO.DeviceStatusSettings.startPostingStats(0);
+                    }
+               };
+               ChameleonIO.DeviceStatusSettings.stopPostingStats();
+               configDeviceHandler.postDelayed(configDeviceRunnable, ChameleonIO.DeviceStatusSettings.STATS_UPDATE_INTERVAL);
                setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
           }
           else if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
@@ -389,11 +411,13 @@ public class LiveLoggerActivity extends AppCompatActivity {
                          public void run() {
                               ChameleonIO.detectChameleonType();
                               ChameleonIO.initializeDevice();
+                              UITabUtils.initializeToolsTab(TAB_TOOLS_MITEM_SLOTS, TabFragment.UITAB_DATA[TAB_TOOLS].tabInflatedView);
+                              ChameleonIO.DeviceStatusSettings.startPostingStats(0);
                          }
                     };
-                    configDeviceHandler.postDelayed(configDeviceRunnable, 3000);
+                    ChameleonIO.DeviceStatusSettings.stopPostingStats();
+                    configDeviceHandler.postDelayed(configDeviceRunnable, ChameleonIO.DeviceStatusSettings.STATS_UPDATE_INTERVAL);
                     ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
-                    ChameleonIO.DeviceStatusSettings.startPostingStats(1000);
                     setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
                }
           }

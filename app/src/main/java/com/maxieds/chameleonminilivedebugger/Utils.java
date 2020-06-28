@@ -35,11 +35,7 @@ public class Utils {
         if(hexBytesStr.length() == 0) {
             return "<uid-unknown>";
         }
-        String[] bytesArray = hexBytesStr.split("[0-9a-fA-f][0-9a-fA-f]");
-        if(bytesArray.length == 0) {
-            return "<uid-unknown>";
-        }
-        return String.join(delim, bytesArray);
+        return hexBytesStr.replaceAll("..(?!$)", "$0" + delim);
     }
 
     /**
