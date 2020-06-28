@@ -145,7 +145,7 @@ public class ChameleonCommands {
                 msgParam = ChameleonIO.getSettingFromDevice("CONFIG=MF_CLASSIC_1K_7B");
             else
                 msgParam = ChameleonIO.getSettingFromDevice("config=MF_CLASSIC_1K_7B");
-            ChameleonIO.deviceStatus.updateAllStatusAndPost(true);
+            ChameleonIO.deviceStatus.startPostingStats(250);
         }
         else if(createCmd.equals("CLASSIC-4K7B")) {
             if(!ChameleonIO.REVE_BOARD)

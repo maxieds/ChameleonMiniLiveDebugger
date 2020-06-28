@@ -237,10 +237,12 @@ public class ChameleonConfigSlot {
                 }
                 lastSelectedPosition = i;
                 String nextConfigMode = localSpinnerList[i];
+                //ChameleonIO.DeviceStatusSettings.stopPostingStats();
                 String setConfigCmd = String.format(Locale.ENGLISH, "CONFIG=%s", nextConfigMode);
                 ChameleonIO.getSettingFromDevice(setConfigCmd);
                 readParametersFromChameleonSlot();
                 updateLayoutParameters();
+                //ChameleonIO.deviceStatus.startPostingStats(0);
             }
             public void onNothingSelected(AdapterView<?> adapterView) {
                 return;

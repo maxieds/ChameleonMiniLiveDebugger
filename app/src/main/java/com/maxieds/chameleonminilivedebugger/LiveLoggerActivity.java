@@ -134,7 +134,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
                if (intentAction != null && (intentAction.equals(UsbManager.ACTION_USB_DEVICE_DETACHED) || intentAction.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED))) {
                     Log.i(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead of re-launching.");
                     finish();
-                    Settings.initializeSerialIOConnections();
                     serialIOReceiversRegistered = false;
                     return;
                }
@@ -183,12 +182,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
                          public void run() {
                               ChameleonIO.detectChameleonType();
                               ChameleonIO.initializeDevice();
-                              UITabUtils.initializeToolsTab(TAB_TOOLS_MITEM_SLOTS, TabFragment.UITAB_DATA[TAB_TOOLS].tabInflatedView);
+                              //UITabUtils.initializeToolsTab(TAB_TOOLS_MITEM_SLOTS, TabFragment.UITAB_DATA[TAB_TOOLS].tabInflatedView);
                               ChameleonIO.DeviceStatusSettings.startPostingStats(0);
                          }
                     };
                     ChameleonIO.DeviceStatusSettings.stopPostingStats();
-                    configDeviceHandler.postDelayed(configDeviceRunnable, ChameleonIO.DeviceStatusSettings.STATS_UPDATE_INTERVAL);
+                    configDeviceHandler.postDelayed(configDeviceRunnable, 400);
                }
                serialIOActionReceiver = new BroadcastReceiver() {
                     public void onReceive(Context context, Intent intent) {
@@ -236,7 +235,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
                registerReceiver(serialIOActionReceiver, serialIOActionFilter);
                serialIOReceiversRegistered = true;
           }
-          Settings.initializeSerialIOConnections();
 
           String userGreeting = getString(R.string.initialUserGreetingMsg);
           MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", userGreeting));
@@ -358,13 +356,13 @@ public class LiveLoggerActivity extends AppCompatActivity {
                          }
                     };
                     ChameleonIO.DeviceStatusSettings.stopPostingStats();
-                    configDeviceHandler.postDelayed(configDeviceRunnable, ChameleonIO.DeviceStatusSettings.STATS_UPDATE_INTERVAL);
+                    configDeviceHandler.postDelayed(configDeviceRunnable, 400);
                     ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
                     setStatusIcon(R.id.statusIconUSB, R.drawable.usbconnected16);
                }
           }
           else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
-               ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
+               ChameleonIO.DeviceStatusSettings.stopPostingStats();
                if(ChameleonIO.WAITING_FOR_RESPONSE) {
                     ChameleonIO.WAITING_FOR_RESPONSE = false;
                }
@@ -384,8 +382,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
                if(!((BluetoothSerialInterface) Settings.serialIOPorts[Settings.BTIO_IFACE_INDEX]).configureSerialConnection(btDev)) {
                     return;
                }
+               ChameleonIO.DeviceStatusSettings.stopPostingStats();
                Settings.stopSerialIOConnectionDiscovery();
-               ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
                Settings.SERIALIO_IFACE_ACTIVE_INDEX = Settings.BTIO_IFACE_INDEX;
                Handler configDeviceHandler = new Handler();
                Runnable configDeviceRunnable = new Runnable() {
@@ -397,12 +395,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     }
                };
                ChameleonIO.DeviceStatusSettings.stopPostingStats();
-               configDeviceHandler.postDelayed(configDeviceRunnable, ChameleonIO.DeviceStatusSettings.STATS_UPDATE_INTERVAL);
+               configDeviceHandler.postDelayed(configDeviceRunnable, 400);
                setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
           }
           else if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
                   intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED)) {
-               ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
+               ChameleonIO.DeviceStatusSettings.stopPostingStats();
                Settings.stopSerialIOConnectionDiscovery();
                if(Settings.serialIOPorts[Settings.BTIO_IFACE_INDEX].configureSerial() != 0) {
                     Settings.SERIALIO_IFACE_ACTIVE_INDEX = Settings.BTIO_IFACE_INDEX;
@@ -416,14 +414,14 @@ public class LiveLoggerActivity extends AppCompatActivity {
                          }
                     };
                     ChameleonIO.DeviceStatusSettings.stopPostingStats();
-                    configDeviceHandler.postDelayed(configDeviceRunnable, ChameleonIO.DeviceStatusSettings.STATS_UPDATE_INTERVAL);
+                    configDeviceHandler.postDelayed(configDeviceRunnable, 400);
                     ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
                     setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
                }
           }
           else if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_DISCONNECTED) ||
                   intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST)) {
-               ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
+               ChameleonIO.DeviceStatusSettings.stopPostingStats();
                if(ChameleonIO.WAITING_FOR_RESPONSE) {
                     ChameleonIO.WAITING_FOR_RESPONSE = false;
                }

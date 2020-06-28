@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.Deflater;
 import java.util.UUID;
 
@@ -30,6 +32,13 @@ import java.util.UUID;
 public class Utils {
 
     private static final String TAG = Utils.class.getSimpleName();
+
+    public static int getFirstResponseCodeIndex(String s) {
+        Pattern pattern = Pattern.compile("^\\D*([1-9][0-9][0-9])");
+        Matcher matcher = pattern.matcher(s);
+        matcher.find();
+        return matcher.start(1);
+    }
 
     public static String formatUIDString(String hexBytesStr, String delim) {
         if(hexBytesStr.length() == 0) {
