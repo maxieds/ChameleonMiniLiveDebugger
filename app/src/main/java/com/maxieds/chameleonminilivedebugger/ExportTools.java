@@ -603,7 +603,7 @@ public class ExportTools {
         else if(action.equals("LOGDOWNLOAD2LIVE"))
             ExportTools.downloadByXModem("LOGDOWNLOAD", "devicelog", true);
         else if(action.equals("DOWNLOAD")) {
-            String dldCmd = ChameleonIO.REVE_BOARD ? "downloadmy" : "DOWNLOAD";
+            String dldCmd = ChameleonIO.REVE_BOARD ? "download" : "DOWNLOAD";
             ExportTools.downloadByXModem(dldCmd, "carddata-" + ChameleonIO.deviceStatus.CONFIG, false);
         }
     }

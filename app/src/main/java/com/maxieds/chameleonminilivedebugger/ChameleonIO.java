@@ -50,6 +50,7 @@ public class ChameleonIO {
     public static final int CHAMELEON_TYPE_PROXGRIND_REVG_TINY = 2;
     public static final int CHAMELEON_TYPE_REVE = 3;
     public static final int CHAMELEON_TYPE_DFUMODE = 4;
+    public static final int CHAMELEON_TYPE_DESFIRE_FWMOD = 5;
 
     public static boolean REVE_BOARD = false;
     public static int CHAMELEON_DEVICE_USBVID = 0x00;
@@ -68,12 +69,16 @@ public class ChameleonIO {
                 return "Proxgrind Tiny Device";
             case CHAMELEON_TYPE_KAOS_REVG:
                 return "KAOS RevG Device";
+            case CHAMELEON_TYPE_DESFIRE_FWMOD:
+                return "DESFire Firmware Mod (Device ~ RevG)";
             default:
                 return "Unknown";
         }
     }
 
     public static int detectChameleonType() {
+        ChameleonSerialIOInterface deviceActiveSerialIOPort = Settings.getActiveSerialIOPort();
+        String deviceConnType = deviceActiveSerialIOPort.isWiredUSB() ? "USB" : "Bluetooth";
         CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_UNKNOWN;
         if(CHAMELEON_DEVICE_USBVID == CMUSB_DFUMODE_VENDORID &&
            CHAMELEON_DEVICE_USBPID == CMUSB_DFUMODE_PRODUCTID) {
@@ -85,7 +90,11 @@ public class ChameleonIO {
         else {
             String firmwareVersion = getSettingFromDevice("VERSION?");
             String commandsList = getSettingFromDevice("HELP");
-            if (firmwareVersion.contains("RevG") && firmwareVersion.contains("emsec")) {
+            if(firmwareVersion.contains("DESFire") ||
+                    (deviceConnType.equals("USB") && deviceActiveSerialIOPort.getActiveDeviceInfo().contains("DESFireMod"))) {
+                CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_DESFIRE_FWMOD;
+            }
+            else if (firmwareVersion.contains("RevG") && firmwareVersion.contains("emsec")) {
                 if (commandsList.contains("SAKMODE")) {
                     CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_PROXGRIND_REVG;
                 } else if (commandsList.contains("MEMORYINFO")) {
@@ -96,7 +105,6 @@ public class ChameleonIO {
             }
         }
         String chameleonDeviceType = getDeviceDescription(CHAMELEON_MINI_BOARD_TYPE);
-        String deviceConnType = Settings.getActiveSerialIOPort().isWiredUSB() ? "USB" : "Bluetooth";
         String statusMsg = String.format(Locale.ENGLISH, "New Chameleon discovered over %s: %s.", deviceConnType, chameleonDeviceType);
         Utils.displayToastMessageShort(statusMsg);
         return CHAMELEON_MINI_BOARD_TYPE;
@@ -109,7 +117,7 @@ public class ChameleonIO {
             try {
                 for (int si = 0; si < ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOT_COUNT; si++) {
                     int activeSlot = ChameleonIO.DeviceStatusSettings.DIP_SETTING;
-                    ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[si].readParametersFromChameleonSlot(si + 1, activeSlot);
+                    ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[si].readParametersFromChameleonSlot(si + 1, activeSlot + 1);
                     ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[si].updateLayoutParameters();
                 }
             } catch(NumberFormatException nfe) {
@@ -122,6 +130,8 @@ public class ChameleonIO {
             int selectedMenuIdx = TabFragment.UITAB_DATA[selectedTab].lastMenuIndex;
             View tabView = TabFragment.UITAB_DATA[selectedTab].tabInflatedView;
             UITabUtils.initializeTabMainContent(selectedTab, selectedMenuIdx, tabView);
+            int activeSlot = ChameleonIO.DeviceStatusSettings.DIP_SETTING;
+            ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlot].readParametersFromChameleonSlot();
         }
         Log.i(TAG, "TODO: setup bi-directional sniffing if necessary ...");
         return true;
@@ -286,7 +296,7 @@ public class ChameleonIO {
         /**
          * How often do we update / refresh the stats at the top of the window?
          */
-        public static final int STATS_UPDATE_INTERVAL = 6500; // 6.5 seconds
+        public static final int STATS_UPDATE_INTERVAL = 4500; // 4.5 seconds
         public static Handler statsUpdateHandler = new Handler();
         public static Runnable statsUpdateRunnable = new Runnable() {
             public void run() {
@@ -300,8 +310,11 @@ public class ChameleonIO {
             }
         };
 
+        public static void stopPostingStats() {
+            statsUpdateHandler.removeCallbacksAndMessages(statsUpdateRunnable);
+        }
+
         public static void startPostingStats(int msDelay) {
-            //return;
             statsUpdateHandler.removeCallbacksAndMessages(statsUpdateRunnable);
             statsUpdateHandler.postDelayed(statsUpdateRunnable, msDelay);
         }
@@ -355,10 +368,8 @@ public class ChameleonIO {
                 return;
             boolean haveUpdates = updateAllStatus(resetTimer);
             ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceConfigText)).setText(CONFIG);
-            String formattedUID = UID;
-            if (!UID.equals("NO UID."))
-                formattedUID = UID.replaceAll("..(?!$)", "$0:");
-            ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceConfigUID)).setText(Utils.trimString(formattedUID, "DEVICE CONF".length()));
+            String formattedUID = Utils.formatUIDString(UID, ":");
+            ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceConfigUID)).setText(formattedUID);
             String subStats1 = String.format(Locale.ENGLISH, "MEM-%dK/LMEM-%dK/LMD-%s/REV%s", round(MEMSIZE / 1024), round(LOGSIZE / 1024), LOGMODE, ChameleonIO.REVE_BOARD ? "E" : "G");
             ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceStats1)).setText(subStats1);
             String subStats2 = String.format(Locale.ENGLISH, "DIP#%d/%s/FLD-%d/%sCHRG", DIP_SETTING, READONLY ? "RO" : "RW", FIELD ? 1 : 0, CHARGING ? "+" : "NO-");

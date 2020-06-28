@@ -144,6 +144,7 @@ public class UITabUtils {
                 }
             }
             else {
+                ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].getTagConfigurationsListFromDevice();
                 ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].readParametersFromChameleonSlot();
                 ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].updateLayoutParameters();
                 ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].enableLayout();
@@ -163,15 +164,20 @@ public class UITabUtils {
             else {
                 String configModesList = ChameleonIO.getSettingFromDevice("CONFIG=?");
                 String[] tagConfigModesArray = configModesList.replace(" ", "").split(",");
-                tagConfigModeSpinner.setAdapter(new ArrayAdapter<String>(tabMainLayoutView.getContext(),
-                        android.R.layout.simple_list_item_1, tagConfigModesArray));
                 String activeConfigMode = ChameleonIO.getSettingFromDevice("CONFIG?");
+                int selectionIndex = 0;
                 for (int si = 0; si < tagConfigModeSpinner.getAdapter().getCount(); si++) {
                     if (tagConfigModeSpinner.getAdapter().getItem(si).toString().equals(activeConfigMode)) {
                         tagConfigModeSpinner.setSelection(si, false);
                         break;
                     }
                 }
+                tagConfigModeSpinner.setAdapter(new ArrayAdapter<String>(tabMainLayoutView.getContext(),
+                        android.R.layout.simple_list_item_1, tagConfigModesArray));
+
+                //String[] tagConfigModesArray = LiveLoggerActivity.getInstance().getResources().getStringArray(R.array.FullTagConfigModes);
+                //tagConfigModeSpinner.setAdapter(new ArrayAdapter<String>(tabMainLayoutView.getContext(),
+                //        android.R.layout.simple_list_item_1, tagConfigModesArray));
             }
         }
         else if(menuItemIdx == TAB_TOOLS_MITEM_CMDS) {

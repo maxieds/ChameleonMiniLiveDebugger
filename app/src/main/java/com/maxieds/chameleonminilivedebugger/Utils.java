@@ -32,8 +32,10 @@ public class Utils {
     private static final String TAG = Utils.class.getSimpleName();
 
     public static String formatUIDString(String hexBytesStr, String delim) {
-        String[] bytesArray = hexBytesStr.split("[0-9a-fA-f][0-9a-fA-f]");
-        return String.join(delim, bytesArray);
+        if(hexBytesStr.length() == 0) {
+            return "<uid-unknown>";
+        }
+        return hexBytesStr.replaceAll("..(?!$)", "$0" + delim);
     }
 
     /**

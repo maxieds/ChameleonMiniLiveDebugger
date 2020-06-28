@@ -117,7 +117,7 @@ public class ThemesConfiguration {
 
     }
 
-    public void actionButtonAppSettings(View view) {
+    public static void actionButtonAppSettings(View view) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(LiveLoggerActivity.getInstance());
         final View dialogView = LiveLoggerActivity.getInstance().getLayoutInflater().inflate(R.layout.theme_config, null);
         if(!BuildConfig.FLAVOR.equals("paid")) { // restore the "bonus" for upgrading to the paid flavor:

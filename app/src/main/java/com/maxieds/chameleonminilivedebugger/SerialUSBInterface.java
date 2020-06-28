@@ -48,6 +48,8 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED);
         notifyIntent.putExtra("DATA", serialData);
         notifyContext.sendBroadcast(notifyIntent);
+        Log.i(TAG, "SERIALIO_DATA_RECEIVED: (HEX)" + Utils.bytes2Hex(serialData));
+        Log.i(TAG, "SERIALIO_DATA_RECEIVED: (TXT)" + Utils.bytes2Ascii(serialData));
         return true;
     }
 
@@ -55,6 +57,8 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED);
         notifyIntent.putExtra("DATA", serialData);
         notifyContext.sendBroadcast(notifyIntent);
+        Log.i(TAG, "SERIALIO_LOGDATA_RECEIVED: (HEX)" + Utils.bytes2Hex(serialData));
+        Log.i(TAG, "SERIALIO_LOGDATA_RECEIVED: (TXT)" + Utils.bytes2Ascii(serialData));
         return true;
     }
 
@@ -109,7 +113,7 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
             }
         }
     };
-    private static final int SCAN_POST_TIME_DELAY = 1250;
+    private static final int SCAN_POST_TIME_DELAY = 750;
 
     public boolean startScanningDevices() {
         scanDeviceHandler.post(scanDeviceRunnable);
@@ -164,7 +168,7 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
             }
         }
         if(device == null || connection == null) {
-        //    notifyStatus("USB STATUS: ", "Connection to device unavailable.");
+            //notifyStatus("USB STATUS: ", "Connection to device unavailable.");
             serialPort = null;
             return 0;
         }
@@ -183,7 +187,7 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
             notifyStatus("USB ERROR: ", "Unable to configure serial device.");
             serialPort = null;
             return 0;
-        }e
+        }
         activeDevice = device;
         Settings.chameleonDeviceSerialNumber = String.format(Locale.ENGLISH, "%s-%s", activeDevice.getProductName(), activeDevice.getVersion());
         ChameleonIO.PAUSED = false;
@@ -219,8 +223,8 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
         return new UsbSerialInterface.UsbReadCallback() {
             @Override
             public void onReceivedData(byte[] liveLogData) {
-                Log.d(TAG, "USBReaderCallback Received Data: " + Utils.bytes2Hex(liveLogData));
-                Log.d(TAG, "    => " + Utils.bytes2Ascii(liveLogData));
+                Log.d(TAG, "USBReaderCallback Received Data: (HEX) " + Utils.bytes2Hex(liveLogData));
+                Log.d(TAG, "USBReaderCallback Received Data: (TXT) " + Utils.bytes2Ascii(liveLogData));
                 if(ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData)) {
                     notifyLogDataReceived(liveLogData);
                     return;
@@ -314,6 +318,8 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
         else if(!serialConfigured()) {
             return 0;
         }
+        Log.d(TAG, "USBReaderCallback Send Data: (HEX) " + Utils.bytes2Hex(dataWriteBuffer));
+        Log.d(TAG, "USBReaderCallback Send Data: (TXT) " + Utils.bytes2Ascii(dataWriteBuffer));
         serialPort.write(dataWriteBuffer);
         return 1;
     }

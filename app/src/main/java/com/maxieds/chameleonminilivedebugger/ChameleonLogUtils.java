@@ -54,6 +54,27 @@ public class ChameleonLogUtils {
         LOG_ERR_APP_AUTH_FAIL((byte) 0xC0, DATADIR_BIDIRECTIONAL, "Application authentication failed."),
         LOG_ERR_APP_CHECKSUM_FAIL((byte) 0xC1, DATADIR_BIDIRECTIONAL, "Application had a checksum fail."),
         LOG_ERR_APP_NOT_AUTHED((byte) 0xC2, DATADIR_BIDIRECTIONAL, "Application is not authenticated."),
+        /* DESFire firmware stack specific */
+        LOG_ERR_DESFIRE_GENERIC_ERROR((byte) 0xE0, DATADIR_BIDIRECTIONAL, ""),
+        LOG_INFO_DESFIRE_STATUS_INFO((byte) 0xE1, DATADIR_BIDIRECTIONAL, ""),
+        LOG_INFO_DESFIRE_DEBUGGING_OUTPUT((byte) 0xE2, DATADIR_BIDIRECTIONAL, ""),
+        LOG_INFO_DESFIRE_INCOMING_DATA((byte) 0xE3, DATADIR_INCOMING, ""),
+        LOG_INFO_DESFIRE_INCOMING_DATA_ENC((byte) 0xE4, DATADIR_INCOMING, ""),
+        LOG_INFO_DESFIRE_OUTGOING_DATA((byte) 0xE5, DATADIR_OUTGOING, ""),
+        LOG_INFO_DESFIRE_OUTGOING_DATA_ENC((byte) 0xE6, DATADIR_OUTGOING, ""),
+        LOG_INFO_DESFIRE_NATIVE_COMMAND((byte) 0xE7, DATADIR_BIDIRECTIONAL, ""),
+        LOG_INFO_DESFIRE_ISO1443_COMMAND((byte) 0xE8, DATADIR_BIDIRECTIONAL, ""),
+        LOG_INFO_DESFIRE_ISO7816_COMMAND((byte) 0xE9, DATADIR_BIDIRECTIONAL, ""),
+        LOG_INFO_DESFIRE_PICC_RESET((byte) 0xEA, DATADIR_BIDIRECTIONAL, ""),
+        LOG_INFO_DESFIRE_PICC_RESET_FROM_MEMORY((byte) 0xEB, DATADIR_BIDIRECTIONAL, ""),
+        LOG_INFO_DESFIRE_PROTECTED_DATA_SET((byte) 0xEC, DATADIR_BIDIRECTIONAL, ""),
+        LOG_INFO_DESFIRE_PROTECTED_DATA_SET_VERBOSE((byte) 0xED, DATADIR_BIDIRECTIONAL, ""),
+        LOG_INFO_APP_AUTH_KEY((byte) 0xD0, DATADIR_BIDIRECTIONAL, "The key used for authentication"),
+        LOG_INFO_APP_NONCE_B((byte) 0xD1, DATADIR_BIDIRECTIONAL, "Nonce B's value (generated)"),
+        LOG_INFO_APP_NONCE_AB((byte) 0xD2, DATADIR_BIDIRECTIONAL, "Nonces A and B values (received)"),
+        /* ISO14443-3A,4 related logging */
+        LOG_INFO_ISO14443_3A_STATE((byte) 0x53, DATADIR_BIDIRECTIONAL, ""),
+        LOG_INFO_ISO14443_4_STATE((byte) 0x54, DATADIR_BIDIRECTIONAL, ""),
         /* Other Chameleon-specific */
         LOG_INFO_SYSTEM_BOOT((byte) 0xFF, DATADIR_BIDIRECTIONAL, "Chameleon boots"),
         LOG_EMPTY((byte) 0x00, DATADIR_BIDIRECTIONAL, "Empty Log Entry. This is not followed by a length byte nor the two systick bytes nor any data."),
@@ -141,7 +162,7 @@ public class ChameleonLogUtils {
          }
          byte logCodeByte = loggingBytes[0];
          int logDataLength = (int) loggingBytes[1];
-         if(loggingBytes.length != 3 + logDataLength) {
+         if(loggingBytes.length != 4 + logDataLength) {
               return false;
          }
          for(int lc = 0; lc < LogCode.LOG_CODE_MAP.size(); lc++) {
