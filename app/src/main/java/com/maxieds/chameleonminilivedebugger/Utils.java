@@ -34,7 +34,7 @@ public class Utils {
     private static final String TAG = Utils.class.getSimpleName();
 
     public static int getFirstResponseCodeIndex(String s) {
-        Pattern pattern = Pattern.compile("^\\w*([1-2]\\d{2})");
+        Pattern pattern = Pattern.compile("^\\w*(\\d{3})");
         Matcher matcher = pattern.matcher(s);
         if(matcher.find()) {
             return matcher.start(1);

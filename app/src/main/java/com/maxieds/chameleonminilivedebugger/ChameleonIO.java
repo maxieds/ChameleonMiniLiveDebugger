@@ -118,8 +118,6 @@ public class ChameleonIO {
                 int activeSlot = ChameleonIO.DeviceStatusSettings.DIP_SETTING;
                 ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlot - 1].readParametersFromChameleonSlot(activeSlot, activeSlot);
                 for (int si = 0; si < ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOT_COUNT; si++) {
-                    //int activeSlot = ChameleonIO.DeviceStatusSettings.DIP_SETTING;
-                    //ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[si].readParametersFromChameleonSlot(si + 1, activeSlot);
                     ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[si].resetLayoutParameters(si + 1);
                     ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[si].updateLayoutParameters();
                 }
@@ -156,6 +154,8 @@ public class ChameleonIO {
     public static boolean UPLOAD = false;
     public static boolean EXPECTING_BINARY_DATA = false;
     public static String LASTCMD = "";
+    public static byte[] PRIOR_BUFFER_DATA = new byte[0];
+    public static boolean APPEND_PRIOR_BUFFER_DATA = false;
 
     /**
      * Static storage for command return values.
