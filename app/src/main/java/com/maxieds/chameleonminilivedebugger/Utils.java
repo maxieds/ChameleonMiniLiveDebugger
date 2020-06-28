@@ -35,6 +35,9 @@ public class Utils {
         if(hexBytesStr.length() == 0) {
             return "<uid-unknown>";
         }
+        else if(hexBytesStr.equals("NO UID.")) {
+            return hexBytesStr;
+        }
         return hexBytesStr.replaceAll("..(?!$)", "$0" + delim);
     }
 
