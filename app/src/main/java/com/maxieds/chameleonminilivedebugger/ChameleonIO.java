@@ -117,7 +117,7 @@ public class ChameleonIO {
             try {
                 for (int si = 0; si < ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOT_COUNT; si++) {
                     int activeSlot = ChameleonIO.DeviceStatusSettings.DIP_SETTING;
-                    ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[si].readParametersFromChameleonSlot(si + 1, activeSlot);
+                    ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[si].readParametersFromChameleonSlot(si + 1, activeSlot + 1);
                     ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[si].updateLayoutParameters();
                 }
             } catch(NumberFormatException nfe) {
@@ -130,6 +130,8 @@ public class ChameleonIO {
             int selectedMenuIdx = TabFragment.UITAB_DATA[selectedTab].lastMenuIndex;
             View tabView = TabFragment.UITAB_DATA[selectedTab].tabInflatedView;
             UITabUtils.initializeTabMainContent(selectedTab, selectedMenuIdx, tabView);
+            int activeSlot = ChameleonIO.DeviceStatusSettings.DIP_SETTING;
+            ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlot].readParametersFromChameleonSlot();
         }
         Log.i(TAG, "TODO: setup bi-directional sniffing if necessary ...");
         return true;
@@ -294,7 +296,7 @@ public class ChameleonIO {
         /**
          * How often do we update / refresh the stats at the top of the window?
          */
-        public static final int STATS_UPDATE_INTERVAL = 2500; // 2.5 seconds
+        public static final int STATS_UPDATE_INTERVAL = 4500; // 4.5 seconds
         public static Handler statsUpdateHandler = new Handler();
         public static Runnable statsUpdateRunnable = new Runnable() {
             public void run() {
@@ -307,6 +309,10 @@ public class ChameleonIO {
                 }
             }
         };
+
+        public static void stopPostingStats() {
+            statsUpdateHandler.removeCallbacksAndMessages(statsUpdateRunnable);
+        }
 
         public static void startPostingStats(int msDelay) {
             statsUpdateHandler.removeCallbacksAndMessages(statsUpdateRunnable);
@@ -362,10 +368,8 @@ public class ChameleonIO {
                 return;
             boolean haveUpdates = updateAllStatus(resetTimer);
             ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceConfigText)).setText(CONFIG);
-            String formattedUID = UID;
-            if (!UID.equals("NO UID."))
-                formattedUID = UID.replaceAll("..(?!$)", "$0:");
-            ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceConfigUID)).setText(Utils.trimString(formattedUID, "DEVICE CONF".length()));
+            String formattedUID = Utils.formatUIDString(UID, ":");
+            ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceConfigUID)).setText(formattedUID);
             String subStats1 = String.format(Locale.ENGLISH, "MEM-%dK/LMEM-%dK/LMD-%s/REV%s", round(MEMSIZE / 1024), round(LOGSIZE / 1024), LOGMODE, ChameleonIO.REVE_BOARD ? "E" : "G");
             ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceStats1)).setText(subStats1);
             String subStats2 = String.format(Locale.ENGLISH, "DIP#%d/%s/FLD-%d/%sCHRG", DIP_SETTING, READONLY ? "RO" : "RW", FIELD ? 1 : 0, CHARGING ? "+" : "NO-");

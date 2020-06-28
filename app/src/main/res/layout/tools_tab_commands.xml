@@ -140,12 +140,6 @@
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/reset24v2"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="resetmy" />
-
-                <Button
-                    style="@style/GridButtons"
                     android:drawableLeft="@drawable/clearmy24"
                     android:onClick="actionButtonRunCommand"
                     android:tag="clearmy"
@@ -153,16 +147,16 @@
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/rssi24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="RSSI?" />
+                    android:drawableLeft="@drawable/clearicon24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="clearall"
+                    android:text="clearall" />
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/rssimy24"
-                    android:onClick="actionButtonRunCommand"
-                    android:tag="rssimy"
-                    android:text="rssimy" />
+                    android:drawableLeft="@drawable/rssi24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="RSSI?" />
 
                 <Button
                     style="@style/GridButtons"
@@ -180,7 +174,7 @@
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/versionmy24"
                     android:onClick="actionButtonCreateNewEvent"
-                    android:text="versionmy?" />
+                    android:text="memoryinfo" />
 
                 <Button
                     style="@style/GridButtons"
@@ -232,7 +226,7 @@
                     android:drawableLeft="@drawable/clone"
                     android:onClick="actionButtonRunCommand"
                     android:tag="CLONE"
-                    android:text="CLONE TAG" />
+                    android:text="CLONE" />
 
                 <Button
                     style="@style/GridButtons"
@@ -243,10 +237,18 @@
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/fingerprint"
+                    android:drawableLeft="@drawable/atqaicon24"
                     android:onClick="actionButtonRunCommand"
-                    android:tag="detectionmy?"
-                    android:text="detectmy" />
+                    android:tag="atqa?"
+                    android:text="ATQA" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/sakicon24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="sak?"
+                    android:text="SAK" />
+
 
             </GridLayout>
 

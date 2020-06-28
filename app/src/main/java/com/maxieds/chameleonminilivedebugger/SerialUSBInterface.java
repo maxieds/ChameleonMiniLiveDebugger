@@ -113,7 +113,7 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
             }
         }
     };
-    private static final int SCAN_POST_TIME_DELAY = 1250;
+    private static final int SCAN_POST_TIME_DELAY = 750;
 
     public boolean startScanningDevices() {
         scanDeviceHandler.post(scanDeviceRunnable);
@@ -223,7 +223,8 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
         return new UsbSerialInterface.UsbReadCallback() {
             @Override
             public void onReceivedData(byte[] liveLogData) {
-                Log.d(TAG, "USBReaderCallback Received Data: (HEX)" + Utils.bytes2Hex(liveLogData));
+                Log.d(TAG, "USBReaderCallback Received Data: (HEX) " + Utils.bytes2Hex(liveLogData));
+                Log.d(TAG, "USBReaderCallback Received Data: (TXT) " + Utils.bytes2Ascii(liveLogData));
                 if(ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData)) {
                     notifyLogDataReceived(liveLogData);
                     return;
@@ -317,6 +318,8 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
         else if(!serialConfigured()) {
             return 0;
         }
+        Log.d(TAG, "USBReaderCallback Send Data: (HEX) " + Utils.bytes2Hex(dataWriteBuffer));
+        Log.d(TAG, "USBReaderCallback Send Data: (TXT) " + Utils.bytes2Ascii(dataWriteBuffer));
         serialPort.write(dataWriteBuffer);
         return 1;
     }
