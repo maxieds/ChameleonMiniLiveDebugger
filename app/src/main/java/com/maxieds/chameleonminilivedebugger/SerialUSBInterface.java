@@ -235,7 +235,7 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
                     }
                     else {
                         notifyLogDataReceived(Arrays.copyOfRange(liveLogData, 0, loggingRespSize));
-                        liveLogData = Arrays.copyOfRange(liveLogData, loggingRespSize, liveLogData.length - loggingRespSize);
+                        liveLogData = Arrays.copyOfRange(liveLogData, loggingRespSize, liveLogData.length);
                     }
                 }
                 if(ChameleonIO.PAUSED) {
