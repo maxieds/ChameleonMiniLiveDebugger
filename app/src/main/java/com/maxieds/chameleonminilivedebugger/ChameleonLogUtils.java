@@ -23,6 +23,8 @@ public class ChameleonLogUtils {
 
     private static final String TAG = ChameleonLogUtils.class.getSimpleName();
 
+    public static int LOGGING_MIN_DATA_BYTES = 0;
+
     public static final int DATADIR_INCOMING = 0;
     public static final int DATADIR_OUTGOING = 1;
     public static final int DATADIR_BIDIRECTIONAL = 2;
@@ -167,9 +169,9 @@ public class ChameleonLogUtils {
          }
          byte logCodeByte = loggingBytes[0];
          int logDataLength = Byte.toUnsignedInt(loggingBytes[1]);
-         if(loggingBytes.length < 4 + logDataLength) {
-              return 0;
-         }
+         //if(loggingBytes.length < 4 + logDataLength) {
+         //     return 0;
+         //}
          if(LogCode.LOG_CODE_MAP.get(logCodeByte) != null) {
              return 4 + logDataLength;
          }

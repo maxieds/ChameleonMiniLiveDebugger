@@ -23,6 +23,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -34,6 +35,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
+
+import java.util.Locale;
 
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
@@ -145,7 +148,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
           defaultInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
           defaultContext = getApplicationContext();
 
-          AndroidSettingsStorage.loadDefaultSettings(Settings.chameleonDeviceSerialNumber);
+          AndroidSettingsStorage.loadDefaultSettings(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE);
           ThemesConfiguration.setLocalTheme(ThemesConfiguration.storedAppTheme, false); // set the base colors, not the backgrounds initially
           ThemesConfiguration.setThemeHandler.postDelayed(ThemesConfiguration.setThemeRunner, 400);
 
@@ -436,7 +439,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
                Settings.initializeSerialIOConnections();
           }
           else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED)) {
-               String dataMsg = Utils.bytes2Ascii(intent.getByteArrayExtra("DATA"));
+               byte[] serialByteData = intent.getByteArrayExtra("DATA");
+               String dataMsg = String.format(Locale.ENGLISH, "Unexpected serial I/O data received:\n%s\n%s",
+                       Utils.bytes2Hex(serialByteData), Utils.bytes2Ascii(serialByteData));
                MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", dataMsg));
           }
           else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED)) {
@@ -727,6 +732,28 @@ public class LiveLoggerActivity extends AppCompatActivity {
      public void actionButtonDisplayHelp(View view) {
           AlertDialog alertDialog = MainActivityNavActions.getHelpTopicsDialog();
           alertDialog.show();
+     }
+
+     public void actionButtonSetMinimumLogDataLength(View view) {
+          EditText logMinDataLengthField = (EditText) findViewById(R.id.loggingLogDataMinBytesField);
+          String fieldText = logMinDataLengthField.getText().toString();
+          if(fieldText.length() == 0) {
+               return;
+          }
+          int loggingMinDataLength = ChameleonLogUtils.LOGGING_MIN_DATA_BYTES;
+          try {
+               loggingMinDataLength = Integer.parseInt(fieldText, 10);
+               if(loggingMinDataLength < 0) {
+                    return;
+               }
+               ChameleonLogUtils.LOGGING_MIN_DATA_BYTES = loggingMinDataLength;
+               AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_MIN_DATA_BYTES);
+          }
+          catch(Exception ex) {
+               ex.printStackTrace();
+               Log.i(TAG, ex.getMessage());
+               ChameleonLogUtils.LOGGING_MIN_DATA_BYTES = loggingMinDataLength;
+          }
      }
 
 }

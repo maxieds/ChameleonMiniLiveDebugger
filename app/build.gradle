@@ -30,8 +30,8 @@ android {
         applicationId "com.maxieds.chameleonminilivedebugger"
         minSdkVersion 26
         targetSdkVersion 28
-        versionCode 70
-        versionName "1.0.8"
+        versionCode 71
+        versionName "1.0.9"
         multiDexEnabled true
 
         buildConfigField "String", "GIT_COMMIT_HASH", "\"" + getGitCommitHash() + "\""

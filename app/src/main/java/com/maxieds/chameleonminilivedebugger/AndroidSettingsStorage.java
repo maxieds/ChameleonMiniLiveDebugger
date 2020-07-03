@@ -18,6 +18,7 @@ public class AndroidSettingsStorage {
     private static final String CHAMELEON_PROFILES_TAG = "ChameleonProfiles";
     private static final String CHAMELEON_PROFILE_NAMES_TAG = "ChameleonProfileNames";
     private static final String CHAMELEON_PROFILE_SERIALS_TAG = "ChameleonProfileSerials";
+    public static final String DEFAULT_CMLDAPP_PROFILE = "CMLDAppProfile";
 
     public static final String THEMEID_PREFERENCE = "themeID";
     public static final String PROFILE_NAME_PREFERENCE = "profileName";
@@ -32,6 +33,7 @@ public class AndroidSettingsStorage {
     public static final String CWD_PREFERENCE = "currentWorkingDirectory";
     public static final String LAST_TAB_INDEX_PREFERENCE = "lastTabIndex";
     public static final String LAST_TAB_SUBMENU_INDEX_PREFERENCE = "lastTabSubmenuIndex";
+    public static final String LOGGING_MIN_DATA_BYTES = "loggingMinDataBytes";
 
     public static boolean loadDefaultSettings(String profileID) {
         updateValueByKey(profileID, THEMEID_PREFERENCE);
@@ -45,6 +47,7 @@ public class AndroidSettingsStorage {
         updateValueByKey(profileID, CWD_PREFERENCE);
         updateValueByKey(profileID, LAST_TAB_INDEX_PREFERENCE);
         updateValueByKey(profileID, LAST_TAB_SUBMENU_INDEX_PREFERENCE);
+        updateValueByKey(profileID, LOGGING_MIN_DATA_BYTES);
         return true;
     }
 
@@ -64,6 +67,7 @@ public class AndroidSettingsStorage {
             ExternalFileIO.CURRENT_WORKING_DIRECTORY = getStringValueByKey(profileID, CWD_PREFERENCE);
             LiveLoggerActivity.setSelectedTab(Integer.parseInt(getStringValueByKey(profileID, LAST_TAB_INDEX_PREFERENCE)));
             TabFragment.UITAB_DATA[LiveLoggerActivity.getSelectedTab()].lastMenuIndex = Integer.parseInt(getStringValueByKey(profileID, LAST_TAB_SUBMENU_INDEX_PREFERENCE));
+            ChameleonLogUtils.LOGGING_MIN_DATA_BYTES = Integer.parseInt(getStringValueByKey(profileID, LOGGING_MIN_DATA_BYTES));
         } catch(Exception ex) {
             ex.printStackTrace();
             return false;
@@ -114,6 +118,9 @@ public class AndroidSettingsStorage {
             int submenuIndex = TabFragment.UITAB_DATA[LiveLoggerActivity.getSelectedTab()].lastMenuIndex;
             spEditor.putInt(prefsKey, submenuIndex);
         }
+        else if(prefsKey.equals(LAST_TAB_SUBMENU_INDEX_PREFERENCE)) {
+            spEditor.putInt(prefsKey, ChameleonLogUtils.LOGGING_MIN_DATA_BYTES);
+        }
         else {
             return false;
         }
@@ -160,6 +167,9 @@ public class AndroidSettingsStorage {
         else if(prefsKey.equals(LAST_TAB_SUBMENU_INDEX_PREFERENCE)) {
             int submenuIndex = TabFragment.UITAB_DATA[LiveLoggerActivity.getSelectedTab()].lastMenuIndex;
             return String.format(Locale.ENGLISH, "%d", sharedPrefs.getInt(prefsKey, submenuIndex));
+        }
+        else if(prefsKey.equals(LOGGING_MIN_DATA_BYTES)) {
+            return String.format(Locale.ENGLISH, "%d", sharedPrefs.getInt(prefsKey, 0));
         }
         return null;
     }

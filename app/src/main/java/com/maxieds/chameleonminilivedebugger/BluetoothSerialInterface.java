@@ -82,6 +82,9 @@ public class BluetoothSerialInterface implements ChameleonSerialIOInterface {
     }
 
     public boolean notifyLogDataReceived(byte[] serialData) {
+        if(serialData.length < ChameleonLogUtils.LOGGING_MIN_DATA_BYTES + 4) {
+            return false;
+        }
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED);
         notifyIntent.putExtra("DATA", serialData);
         notifyContext.sendBroadcast(notifyIntent);
@@ -234,15 +237,9 @@ public class BluetoothSerialInterface implements ChameleonSerialIOInterface {
                 Log.d(TAG, "BTReaderCallback Received Data: (TXT) " + Utils.bytes2Ascii(liveLogData));
                 Log.d(TAG, "BTReaderCallback Received Data: (MSG) " + message);
                 int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData);
-                if(!ChameleonIO.APPEND_PRIOR_BUFFER_DATA && loggingRespSize > 0) {
-                    if(loggingRespSize == liveLogData.length) {
-                        notifyLogDataReceived(liveLogData);
-                        return;
-                    }
-                    else {
-                        notifyLogDataReceived(Arrays.copyOfRange(liveLogData, 0, loggingRespSize));
-                        liveLogData = Arrays.copyOfRange(liveLogData, loggingRespSize, liveLogData.length);
-                    }
+                if(loggingRespSize > 0) {
+                    notifyLogDataReceived(liveLogData);
+                    return;
                 }
                 if (ChameleonIO.PAUSED) {
                     return;
@@ -260,11 +257,6 @@ public class BluetoothSerialInterface implements ChameleonSerialIOInterface {
                     }
                 } else if (ChameleonIO.WAITING_FOR_RESPONSE && ChameleonIO.isCommandResponse(liveLogData)) {
                     String[] strLogData = (new String(liveLogData)).split("[\n\r\t]+");
-                    if(ChameleonIO.APPEND_PRIOR_BUFFER_DATA) {
-                        strLogData[0] = String.valueOf(ChameleonIO.PRIOR_BUFFER_DATA) + strLogData[0];
-                        ChameleonIO.PRIOR_BUFFER_DATA = new byte[0];
-                        ChameleonIO.APPEND_PRIOR_BUFFER_DATA = false;
-                    }
                     ChameleonIO.DEVICE_RESPONSE_CODE = strLogData[0];
                     if (strLogData.length >= 2)
                         ChameleonIO.DEVICE_RESPONSE = Arrays.copyOfRange(strLogData, 1, strLogData.length);
@@ -277,11 +269,6 @@ public class BluetoothSerialInterface implements ChameleonSerialIOInterface {
                         ChameleonIO.EXPECTING_BINARY_DATA = false;
                     }
                     ChameleonIO.WAITING_FOR_RESPONSE = false;
-                    return;
-                }
-                else if(ChameleonIO.APPEND_PRIOR_BUFFER_DATA) {
-                    ChameleonIO.PRIOR_BUFFER_DATA = new byte[liveLogData.length];
-                    System.arraycopy(liveLogData, 0, ChameleonIO.PRIOR_BUFFER_DATA, 0, liveLogData.length);
                     return;
                 }
                 notifySerialDataReceived(liveLogData);

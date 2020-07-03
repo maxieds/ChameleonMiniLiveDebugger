@@ -88,6 +88,24 @@ public class UITabUtils {
         else if(menuItemIdx == TAB_LOG_MITEM_LOGTOOLS) {
             UITabUtils.connectPeripheralSpinnerAdapter(tabMainLayoutView, R.id.LogModeSpinner,
                        R.array.LogModeOptions, ChameleonPeripherals.spinnerLogModeAdapter, "LOGMODE?");
+            String loggingMinDataFieldValue = String.format(Locale.ENGLISH, "%d", ChameleonLogUtils.LOGGING_MIN_DATA_BYTES);
+            ((EditText) tabMainLayoutView.findViewById(R.id.loggingLogDataMinBytesField)).setText(loggingMinDataFieldValue);
+            ((EditText) tabMainLayoutView.findViewById(R.id.loggingLogDataMinBytesField)).addTextChangedListener(new TextWatcher() {
+                @Override
+                public void afterTextChanged(Editable s) {
+                    Log.i(TAG, "Changing LOG MIN DATA LENGTH (II) ...");
+                    LiveLoggerActivity.getInstance().actionButtonSetMinimumLogDataLength(null);
+                    Log.i(TAG, "Next LOG MIN DATA LENGTH = " + ChameleonLogUtils.LOGGING_MIN_DATA_BYTES);
+                }
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    Log.i(TAG, "Changing LOG MIN DATA LENGTH ...");
+                    LiveLoggerActivity.getInstance().actionButtonSetMinimumLogDataLength(null);
+                    Log.i(TAG, "Next LOG MIN DATA LENGTH = " + ChameleonLogUtils.LOGGING_MIN_DATA_BYTES);
+                }
+            });
         }
         else if(menuItemIdx == TAB_LOG_MITEM_SEARCH) {
             int states[][] = {{android.R.attr.state_checked}, {}};

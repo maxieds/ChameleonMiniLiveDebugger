@@ -320,6 +320,7 @@ public class TabFragment extends Fragment {
         UITAB_DATA[tabNumber].tabInflatedView = view;
         UITAB_DATA[tabNumber].createTabView();
         UITAB_DATA[tabNumber].changeMenuItemDisplay(UITAB_DATA[tabNumber].lastMenuIndex);
+        UITabUtils.initializeTabMainContent(tabNumber, UITAB_DATA[tabNumber].lastMenuIndex, view);
         return view;
     }
 
