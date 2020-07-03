@@ -149,6 +149,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
           defaultContext = getApplicationContext();
 
           AndroidSettingsStorage.loadDefaultSettings(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE);
+          if(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT) {
+               MainActivityLogUtils.clearAllLogs();
+          }
           ThemesConfiguration.setLocalTheme(ThemesConfiguration.storedAppTheme, false); // set the base colors, not the backgrounds initially
           ThemesConfiguration.setThemeHandler.postDelayed(ThemesConfiguration.setThemeRunner, 400);
 
@@ -363,6 +366,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     ChameleonIO.DeviceStatusSettings.stopPostingStats();
                     configDeviceHandler.postDelayed(configDeviceRunnable, 400);
                     ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
+                    if(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT) {
+                         MainActivityLogUtils.clearAllLogs();
+                    }
                     setStatusIcon(R.id.statusIconUSB, R.drawable.usbconnected16);
                }
           }
@@ -401,6 +407,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
                };
                ChameleonIO.DeviceStatusSettings.stopPostingStats();
                configDeviceHandler.postDelayed(configDeviceRunnable, 400);
+               if(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT) {
+                    MainActivityLogUtils.clearAllLogs();
+               }
                setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
           }
           else if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
@@ -445,7 +454,23 @@ public class LiveLoggerActivity extends AppCompatActivity {
                MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", dataMsg));
           }
           else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED)) {
-               MainActivityLogUtils.appendNewLog(LogEntryUI.newInstance(intent.getByteArrayExtra("DATA"), ""));
+               byte[] logDataBytes = intent.getByteArrayExtra("DATA");
+               if(ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES) {
+                    for(int chIdx = 0; chIdx < MainActivityLogUtils.logDataEntries.size(); chIdx++) {
+                         if(!(MainActivityLogUtils.logDataEntries.get(chIdx) instanceof LogEntryUI)) {
+                              continue;
+                         }
+                         LogEntryUI logEntryUI = (LogEntryUI) MainActivityLogUtils.logDataEntries.get(chIdx);
+                         if(logEntryUI.logEntryDataEquals(logDataBytes)) {
+                              logEntryUI.appendDuplicate(logDataBytes[2], logDataBytes[3]);
+                              MainActivityLogUtils.logDataFeed.removeViewAt(chIdx);
+                              MainActivityLogUtils.logDataEntries.remove(chIdx);
+                              MainActivityLogUtils.appendNewLog(logEntryUI);
+                              return;
+                         }
+                    }
+               }
+               MainActivityLogUtils.appendNewLog(LogEntryUI.newInstance(logDataBytes, ""));
           }
           else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_NOTIFY_STATUS)) {
                String msgType = intent.getStringExtra("STATUS-TYPE");

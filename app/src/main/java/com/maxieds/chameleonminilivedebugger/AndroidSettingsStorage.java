@@ -34,6 +34,8 @@ public class AndroidSettingsStorage {
     public static final String LAST_TAB_INDEX_PREFERENCE = "lastTabIndex";
     public static final String LAST_TAB_SUBMENU_INDEX_PREFERENCE = "lastTabSubmenuIndex";
     public static final String LOGGING_MIN_DATA_BYTES = "loggingMinDataBytes";
+    public static final String LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE = "loggingConfigClearLogsOnNewDevice";
+    public static final String LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES = "loggingConfigCollapseCommonEntries";
 
     public static boolean loadDefaultSettings(String profileID) {
         updateValueByKey(profileID, THEMEID_PREFERENCE);
@@ -48,6 +50,8 @@ public class AndroidSettingsStorage {
         updateValueByKey(profileID, LAST_TAB_INDEX_PREFERENCE);
         updateValueByKey(profileID, LAST_TAB_SUBMENU_INDEX_PREFERENCE);
         updateValueByKey(profileID, LOGGING_MIN_DATA_BYTES);
+        updateValueByKey(profileID, LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE);
+        updateValueByKey(profileID, LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES);
         return true;
     }
 
@@ -68,6 +72,8 @@ public class AndroidSettingsStorage {
             LiveLoggerActivity.setSelectedTab(Integer.parseInt(getStringValueByKey(profileID, LAST_TAB_INDEX_PREFERENCE)));
             TabFragment.UITAB_DATA[LiveLoggerActivity.getSelectedTab()].lastMenuIndex = Integer.parseInt(getStringValueByKey(profileID, LAST_TAB_SUBMENU_INDEX_PREFERENCE));
             ChameleonLogUtils.LOGGING_MIN_DATA_BYTES = Integer.parseInt(getStringValueByKey(profileID, LOGGING_MIN_DATA_BYTES));
+            ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE));
+            ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES));
         } catch(Exception ex) {
             ex.printStackTrace();
             return false;
@@ -121,6 +127,12 @@ public class AndroidSettingsStorage {
         else if(prefsKey.equals(LAST_TAB_SUBMENU_INDEX_PREFERENCE)) {
             spEditor.putInt(prefsKey, ChameleonLogUtils.LOGGING_MIN_DATA_BYTES);
         }
+        else if(prefsKey.equals(LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE)) {
+            spEditor.putBoolean(prefsKey, ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT);
+        }
+        else if(prefsKey.equals(LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES)) {
+            spEditor.putBoolean(prefsKey, ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES);
+        }
         else {
             return false;
         }
@@ -170,6 +182,12 @@ public class AndroidSettingsStorage {
         }
         else if(prefsKey.equals(LOGGING_MIN_DATA_BYTES)) {
             return String.format(Locale.ENGLISH, "%d", sharedPrefs.getInt(prefsKey, 0));
+        }
+        else if(prefsKey.equals(LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE)) {
+            return sharedPrefs.getBoolean(prefsKey, ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT) ? "true" : "false";
+        }
+        else if(prefsKey.equals(LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES)) {
+            return sharedPrefs.getBoolean(prefsKey, ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES) ? "true" : "false";
         }
         return null;
     }

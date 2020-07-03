@@ -71,8 +71,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.40"
                     android:paddingRight="10dp"
+                    android:gravity="right"
+                    android:layout_gravity="center|center_vertical|right"
                     android:entries="@array/LogModeOptions"
-                    android:gravity="left|center_vertical"
                     android:popupBackground="?colorAccentHighlight"
                     android:spinnerMode="dropdown"
                     android:tag="LOGMODE=" />
@@ -86,14 +87,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.35"
-                    android:gravity="right"
-                    android:layout_gravity="center|center_vertical"
+                    android:gravity="left"
+                    android:layout_gravity="center|center_vertical|left"
                     android:background="?colorAccentLog"
                     android:drawableLeft="@drawable/restricted_length_icon24"
                     android:drawablePadding="5dp"
                     android:singleLine="true"
                     android:textSize="12sp"
-                    android:text="Min Length (Bytes): "
+                    android:text="Min Data Length (Bytes): "
                     android:textAllCaps="true"
                     android:textStyle="bold|italic"
                     />
@@ -103,9 +104,9 @@
                     android:layout_width="115dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.40"
-                    android:gravity="right"
-                    android:paddingRight="10dp"
-                    android:layout_gravity="center|center_vertical|right"
+                    android:gravity="left"
+                    android:paddingLeft="16dp"
+                    android:layout_gravity="center|center_vertical|left"
                     android:background="?colorAccentLog"
                     android:drawablePadding="10dp"
                     android:singleLine="true"
@@ -119,6 +120,61 @@
 
                 <View
                     android:layout_width="10dp"
+                    android:layout_height="wrap_content"
+                    />
+
+                <CheckBox
+                    android:theme="@style/CheckBoxTheme"
+                    android:id="@+id/cbLoggingConfigClearOnNewConnect"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical|end"
+                    android:layout_marginLeft="0dp"
+                    android:drawableLeft="@drawable/togglebox_icon24"
+                    android:drawablePadding="3dp"
+                    android:button="@null"
+                    android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+                    android:layout_marginEnd="15dp"
+                    android:text="Clear logs on new connection"
+                    android:enabled="true"
+                    android:checked="false"
+                    />
+
+                <View
+                    android:layout_width="5dp"
+                    android:layout_height="wrap_content"
+                    />
+
+                <View
+                    android:layout_width="5dp"
+                    android:layout_height="wrap_content"
+                    />
+
+                <CheckBox
+                    android:theme="@style/CheckBoxTheme"
+                    android:id="@+id/cbLoggingConfigCollapseCommonEntries"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical|end"
+                    android:layout_marginLeft="0dp"
+                    android:drawableLeft="@drawable/togglebox_icon24"
+                    android:drawablePadding="3dp"
+                    android:button="@null"
+                    android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+                    android:layout_marginEnd="15dp"
+                    android:text="Collapse common log entries"
+                    android:enabled="true"
+                    android:checked="false"
+
+                    />
+
+                <View
+                    android:layout_width="5dp"
+                    android:layout_height="wrap_content"
+                    />
+
+                <View
+                    android:layout_width="5dp"
                     android:layout_height="wrap_content"
                     />
 

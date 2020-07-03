@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 import static java.lang.Math.abs;
@@ -38,7 +39,7 @@ public class LogEntryUI extends LogEntryBase {
     private CheckBox entrySelect;
     private ImageView inoutDirIndicator, apduParseStatus;
     private TextView tvLabel, tvNumBytes, tvNumMillis, tvLogType, tvEntropy;
-    private TextView tvDataHexBytes, tvDataAscii, tvApdu;
+    private TextView tvDataHexBytes, tvDataAscii, tvApdu, tvDuplicateCount;
 
     /**
      * Metadata associated with the log entry.
@@ -50,6 +51,7 @@ public class LogEntryUI extends LogEntryBase {
     private String logLabel;
     private byte[] entryData;
     private int dataDirection;
+    private int numDuplicates;
 
     /**
      * Effective constructor for the class.
@@ -76,7 +78,6 @@ public class LogEntryUI extends LogEntryBase {
         byte[] payloadBytes = new byte[rawLogBytes.length - 4];
         if(payloadBytes.length < payloadNumBytes) {
             Log.w(TAG, "Invalid payload bytes sent.");
-            //System.arraycopy(rawLogBytes, 4, payloadBytes, 0, payloadBytes.length);
         }
         else
             System.arraycopy(rawLogBytes, 4, payloadBytes, 0, payloadBytes.length);
@@ -101,6 +102,7 @@ public class LogEntryUI extends LogEntryBase {
         logType = ltype;
         logLabel = label;
         entryData = edata;
+        numDuplicates = 0;
         LayoutInflater inflater = LiveLoggerActivity.defaultInflater;
         mainEntryContainer = (LinearLayout) inflater.inflate(R.layout.log_entry_ui, null);
         configureLayout(mainEntryContainer);
@@ -116,7 +118,6 @@ public class LogEntryUI extends LogEntryBase {
         return mainEntryContainer;
     }
 
-    // TODO: javadoc
     public View cloneLayoutContainer() {
         LinearLayout mainEntryContainerClone = (LinearLayout) LiveLoggerActivity.defaultInflater.inflate(R.layout.log_entry_ui, null);
         ImageView inoutDirIndicatorClone = (ImageView) mainEntryContainerClone.findViewById(R.id.inputDirIndicatorImg);
@@ -173,6 +174,8 @@ public class LogEntryUI extends LogEntryBase {
         tvDataAscii.setText(Utils.bytes2Ascii(entryData));
         tvApdu = (TextView) mainContainerRef.findViewById(R.id.text_apdu);
         tvApdu.setText(ApduUtils.classifyApdu(entryData));
+        tvDuplicateCount = (TextView) mainEntryContainer.findViewById(R.id.text_duplicate_count);
+        tvDuplicateCount.setVisibility(View.GONE);
         if(tvApdu.getText().toString().equals("NONE")) {
             tvApdu.setText("APDU: NONE RECOGNIZED");
             tvApdu.setVisibility(TextView.GONE);
@@ -237,6 +240,51 @@ public class LogEntryUI extends LogEntryBase {
         return fullBytes;
     }
 
+    public boolean logEntryDataEquals(byte[] nextLogEntryData) {
+        int nextLogType = (int) nextLogEntryData[0];
+        if(logType != nextLogType) {
+            return false;
+        }
+        byte[] nextPayloadBytes = new byte[nextLogEntryData.length - 4];
+        System.arraycopy(nextLogEntryData, 4, nextPayloadBytes, 0, nextLogEntryData.length - 4);
+        return Arrays.equals(entryData, nextPayloadBytes);
+    }
+
+    public boolean appendDuplicate(byte offsetTimeMSB, byte offsetTimeLSB) {
+        short offsetTimeMillis = (short) ((((short) offsetTimeMSB) << 8) | ((short) offsetTimeLSB));
+        return appendDuplicate(offsetTimeMillis);
+    }
+
+    public boolean appendDuplicate(short offsetTimeMillis) {
+
+        // Add one and determine how to display the +NUM marker:
+        numDuplicates += 1;
+        boolean drawCountInHex = Math.log10(numDuplicates) > 5.0 ? true : false;
+        String duplicateNumberText = "";
+        if(drawCountInHex) {
+            duplicateNumberText = String.format(Locale.ENGLISH, "0x%04x", numDuplicates);
+        }
+        else {
+            duplicateNumberText = String.format(Locale.ENGLISH, "%06d", numDuplicates);
+        }
+        duplicateNumberText += " -- IDENTICAL LOGS";
+        tvDuplicateCount.setVisibility(View.VISIBLE);
+        tvDuplicateCount.setText(duplicateNumberText);
+
+        // Update the time / ms marker:
+        int timestamp = (int) offsetTimeMillis;
+        long systemTimeMillis = System.currentTimeMillis();
+        diffTimeMillis = curSystickTimestamp == -1 ? timestamp : timestamp - curSystickTimestamp;
+        if(diffTimeMillis < 0) {
+            diffTimeMillis = (int) (lastSystemMillis - systemTimeMillis);
+        }
+        curSystickTimestamp = timestamp;
+        lastSystemMillis = systemTimeMillis;
+        tvNumMillis.setText((diffTimeMillis >=0 ? "+" : "~") + String.valueOf(abs(diffTimeMillis)) + "ms");
+
+        return true;
+    }
+
     /**
      * Stub method.
      * @param indentLevel
@@ -260,17 +308,14 @@ public class LogEntryUI extends LogEntryBase {
         return recordFmt;
     }
 
-    // TODO: javadoc
     public String getLogCodeName() {
         return ChameleonLogUtils.LogCode.lookupByLogCode(logType).name();
     }
 
-    // TODO: javadoc
     public String getAPDUString() {
         return tvApdu.getText().toString();
     }
 
-    // TODO: javadoc
     public String getPayloadDataString(boolean byteString) {
         if(byteString) {
             Log.i(TAG, "Returning bytes: " + tvDataHexBytes.getText().toString());

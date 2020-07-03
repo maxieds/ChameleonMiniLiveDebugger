@@ -24,6 +24,8 @@ public class ChameleonLogUtils {
     private static final String TAG = ChameleonLogUtils.class.getSimpleName();
 
     public static int LOGGING_MIN_DATA_BYTES = 0;
+    public static boolean CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT = false;
+    public static boolean CONFIG_COLLAPSE_COMMON_LOG_ENTRIES = false;
 
     public static final int DATADIR_INCOMING = 0;
     public static final int DATADIR_OUTGOING = 1;

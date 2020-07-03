@@ -21,7 +21,7 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
 
     private static final String TAG = SerialUSBInterface.class.getSimpleName();
 
-    public static final int USB_DATA_BITS = 16;
+    public static final int USB_DATA_BITS = 8;
 
     private Context notifyContext;
     private UsbSerialDevice serialPort;

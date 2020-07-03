@@ -93,17 +93,31 @@ public class UITabUtils {
             ((EditText) tabMainLayoutView.findViewById(R.id.loggingLogDataMinBytesField)).addTextChangedListener(new TextWatcher() {
                 @Override
                 public void afterTextChanged(Editable s) {
-                    Log.i(TAG, "Changing LOG MIN DATA LENGTH (II) ...");
                     LiveLoggerActivity.getInstance().actionButtonSetMinimumLogDataLength(null);
-                    Log.i(TAG, "Next LOG MIN DATA LENGTH = " + ChameleonLogUtils.LOGGING_MIN_DATA_BYTES);
                 }
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    Log.i(TAG, "Changing LOG MIN DATA LENGTH ...");
                     LiveLoggerActivity.getInstance().actionButtonSetMinimumLogDataLength(null);
-                    Log.i(TAG, "Next LOG MIN DATA LENGTH = " + ChameleonLogUtils.LOGGING_MIN_DATA_BYTES);
+                }
+            });
+            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingConfigClearOnNewConnect)).setChecked(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT);
+            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingConfigClearOnNewConnect)).setOnClickListener(new CheckBox.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CheckBox cb = (CheckBox) view;
+                    ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT = cb.isChecked();
+                    AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE);
+                }
+            });
+            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingConfigCollapseCommonEntries)).setChecked(ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES);
+            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingConfigCollapseCommonEntries)).setOnClickListener(new CheckBox.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CheckBox cb = (CheckBox) view;
+                    ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES = cb.isChecked();
+                    AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES);
                 }
             });
         }

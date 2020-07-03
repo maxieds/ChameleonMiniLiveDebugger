@@ -14,7 +14,9 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="1.0">
+        android:weightSum="1.0"
+        android:layout_marginBottom="0dp"
+        android:paddingBottom="0dp">
 
         <CheckBox
             android:theme="@style/CheckBoxTheme"
@@ -124,7 +126,33 @@
         android:layout_height="wrap_content"
         android:layout_weight="1.0"
         android:columnCount="1"
-        android:rowCount="2">
+        android:rowCount="2"
+        android:layout_marginTop="0dp"
+        android:paddingTop="0dp">
+
+        <TextView
+            android:id="@+id/text_duplicate_count"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center_vertical"
+            android:gravity="left"
+            android:hint=""
+            android:text=""
+            android:paddingLeft="35dp"
+            android:singleLine="true"
+            android:textSize="10sp"
+            android:textStyle="bold|normal|italic"
+            android:textAllCaps="true"
+            android:typeface="sans"
+            android:drawableLeft="@drawable/plus_duplicate_marker16"
+            android:drawablePadding="2dp"
+            />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            />
 
         <TextView
             android:id="@+id/text_logdata_hex"
