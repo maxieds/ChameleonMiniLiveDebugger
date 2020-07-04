@@ -73,8 +73,8 @@ android {
             buildConfigField "String", "BUILD_TIMESTAMP", "\"" + configBuildTimeStamp + "\""
             resConfigs "en", "en_US", "en_UK", "de"
             manifestPlaceholders = [
-                    appIcon        : "@drawable/chameleonicon_about64_roundicon",
-                    appRoundIcon   : "@drawable/chameleonicon_about64_roundicon",
+                    appIcon        : "@mipmap/chameleon_app_icon_round",
+                    appRoundIcon   : "@mipmap/chameleon_app_icon_round",
                     appTheme       : "@style/AppThemeGreen",
                     appDebug       : "false",
                     installLocation: "internalOnly"
