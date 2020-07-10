@@ -1,3 +1,20 @@
+/*
+This program (The Chameleon Mini Live Debugger) is free software written by
+Maxie Dion Schmidt: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+The complete license provided with source distributions of this library is
+available at the following link:
+https://github.com/maxieds/ChameleonMiniLiveDebugger
+*/
+
 package com.maxieds.chameleonminilivedebugger;
 
 import android.graphics.drawable.Drawable;
@@ -126,7 +143,7 @@ public class ChameleonConfigSlot {
         try {
             tagConfigType = ChameleonIO.getSettingFromDevice("CONFIG?");
             uidHexBytes = ChameleonIO.getSettingFromDevice("UID?");
-            uidHexDisplayStr = Utils.formatUIDString(uidHexBytes, ":");
+            uidHexDisplayStr = Utils.formatUIDString(uidHexBytes, " ");
             uidSize = Integer.parseInt(ChameleonIO.getSettingFromDevice("UIDSIZE?"));
             tagMemorySize = Integer.parseInt(ChameleonIO.getSettingFromDevice("MEMSIZE?"));
             isLocked = ChameleonIO.getSettingFromDevice("READONLY?") == "1" ? true : false;
@@ -197,7 +214,7 @@ public class ChameleonConfigSlot {
          //    }
          //}
          TextView uidBytes = (TextView) slotConfigLayout.findViewById(R.id.uidBytesText);
-         uidHexDisplayStr = Utils.formatUIDString(uidHexBytes, ":");
+         uidHexDisplayStr = Utils.formatUIDString(uidHexBytes, " ");
          uidBytes.setText(uidHexDisplayStr);
          TextView memSizeText = (TextView) slotConfigLayout.findViewById(R.id.memorySizeText);
          memSizeText.setText(String.format(Locale.ENGLISH, "%dB / %dK", tagMemorySize, tagMemorySize / 1024));

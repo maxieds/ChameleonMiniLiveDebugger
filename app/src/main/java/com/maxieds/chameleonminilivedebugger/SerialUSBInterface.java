@@ -1,12 +1,36 @@
+/*
+This program (The Chameleon Mini Live Debugger) is free software written by
+Maxie Dion Schmidt: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+The complete license provided with source distributions of this library is
+available at the following link:
+https://github.com/maxieds/ChameleonMiniLiveDebugger
+*/
+
 package com.maxieds.chameleonminilivedebugger;
 
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.util.Log;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
@@ -17,11 +41,15 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
-public class SerialUSBInterface implements ChameleonSerialIOInterface {
+public class SerialUSBInterface extends SerialIOReceiver {
 
     private static final String TAG = SerialUSBInterface.class.getSimpleName();
 
     public static final int USB_DATA_BITS = 8;
+
+    public String getInterfaceLoggingTag() {
+        return "SerialUSBReader";
+    }
 
     private Context notifyContext;
     private UsbSerialDevice serialPort;
@@ -96,7 +124,7 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
             serialPort.setBaudRate(baudRate);
             return baudRate;
         }
-        return 0;
+        return STATUS_OK;
     }
     public int setSerialBaudRateHigh() {
         return setSerialBaudRate(ChameleonSerialIOInterface.HIGH_SPEED_BAUD_RATE);
@@ -141,7 +169,7 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
 
     public int configureSerial() {
         if(serialConfigured()) {
-            return 1;
+            return STATUS_TRUE;
         }
         UsbManager usbManager = (UsbManager) notifyContext.getSystemService(Context.USB_SERVICE);
         UsbDevice device = null;
@@ -154,6 +182,9 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
                     continue;
                 int deviceVID = device.getVendorId();
                 int devicePID = device.getProductId();
+                if(!usbManager.hasPermission(device)) {
+                    return STATUS_FALSE;
+                }
                 if(deviceVID == ChameleonIO.CMUSB_VENDORID && devicePID == ChameleonIO.CMUSB_PRODUCTID) {
                     ChameleonIO.REVE_BOARD = false;
                     ChameleonIO.CHAMELEON_DEVICE_USBVID = deviceVID;
@@ -173,7 +204,7 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
         if(device == null || connection == null) {
             //notifyStatus("USB STATUS: ", "Connection to device unavailable.");
             serialPort = null;
-            return 0;
+            return STATUS_OK;
         }
         serialPort = UsbSerialDevice.createUsbSerialDevice(device, connection);
         if(serialPort != null && serialPort.open()) {
@@ -189,7 +220,7 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
         else {
             notifyStatus("USB ERROR: ", "Unable to configure serial device.");
             serialPort = null;
-            return 0;
+            return STATUS_OK;
         }
         activeDevice = device;
         Settings.chameleonDeviceSerialNumber = String.format(Locale.ENGLISH, "%s-%s", activeDevice.getProductName(), activeDevice.getVersion());
@@ -199,7 +230,7 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
         Settings.SERIALIO_IFACE_ACTIVE_INDEX = Settings.USBIO_IFACE_INDEX;
         LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUSB, R.drawable.usbconnected16);
         notifyStatus("USB STATUS: ", "Successfully configured the device in passive logging mode...\n" + getActiveDeviceInfo());
-        return 1;
+        return STATUS_TRUE;
     }
 
     public int shutdownSerial() {
@@ -221,70 +252,14 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
         serialConfigured = false;
         receiversRegistered = false;
         notifyDeviceConnectionTerminated();
-        return 1;
+        return STATUS_TRUE;
     }
 
     private UsbSerialInterface.UsbReadCallback createSerialReaderCallback() {
         return new UsbSerialInterface.UsbReadCallback() {
             @Override
             public void onReceivedData(byte[] liveLogData) {
-                Log.d(TAG, "USBReaderCallback Received Data: (HEX) " + Utils.bytes2Hex(liveLogData));
-                Log.d(TAG, "USBReaderCallback Received Data: (TXT) " + Utils.bytes2Ascii(liveLogData));
-                if(liveLogData.length == 0) {
-                    return;
-                }
-                int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData);
-                if(loggingRespSize > 0) {
-                    notifyLogDataReceived(liveLogData);
-                    return;
-                }
-                if(ChameleonIO.PAUSED) {
-                    return;
-                }
-                else if(ChameleonIO.DOWNLOAD) {
-                    ExportTools.performXModemSerialDownload(liveLogData);
-                    return;
-                }
-                else if(ChameleonIO.UPLOAD) {
-                    ExportTools.performXModemSerialUpload(liveLogData);
-                    return;
-                }
-                else if(ChameleonIO.WAITING_FOR_XMODEM) {
-                    String strLogData = new String(liveLogData);
-                    if(strLogData.length() >= 11 && strLogData.substring(0, 11).equals("110:WAITING")) {
-                        ChameleonIO.WAITING_FOR_XMODEM = false;
-                        return;
-                    }
-                }
-                else if(ChameleonIO.isCommandResponse(liveLogData)) {
-                    String[] strLogData = (new String(liveLogData)).split("[\n\r\t][\n\r\t]+");
-                    ChameleonIO.DEVICE_RESPONSE_CODE =  strLogData[0];
-                    int respCodeStartIndex = Utils.getFirstResponseCodeIndex(ChameleonIO.DEVICE_RESPONSE_CODE);
-                    ChameleonIO.DEVICE_RESPONSE_CODE = ChameleonIO.DEVICE_RESPONSE_CODE.substring(respCodeStartIndex);
-                    boolean respCodeHasPreText = respCodeStartIndex > 0;
-                    if(respCodeHasPreText) {
-                        strLogData[0] = strLogData[0].substring(0, respCodeStartIndex - 1);
-                    }
-                    if(strLogData.length >= 2) {
-                        if(respCodeHasPreText) {
-                            ChameleonIO.DEVICE_RESPONSE = Arrays.copyOfRange(strLogData, 0, strLogData.length);
-                        }
-                        else {
-                            ChameleonIO.DEVICE_RESPONSE = Arrays.copyOfRange(strLogData, 1, strLogData.length);
-                        }
-                    }
-                    else
-                        ChameleonIO.DEVICE_RESPONSE[0] = strLogData[0];
-                    if(ChameleonIO.EXPECTING_BINARY_DATA) {
-                        int binaryBufSize = liveLogData.length - ChameleonIO.DEVICE_RESPONSE_CODE.length() - 2;
-                        ChameleonIO.DEVICE_RESPONSE_BINARY = new byte[binaryBufSize];
-                        System.arraycopy(liveLogData, liveLogData.length - binaryBufSize, ChameleonIO.DEVICE_RESPONSE_BINARY, 0, binaryBufSize);
-                        ChameleonIO.EXPECTING_BINARY_DATA = false;
-                    }
-                    ChameleonIO.WAITING_FOR_RESPONSE = false;
-                    return;
-                }
-                notifySerialDataReceived(liveLogData);
+                Settings.serialIOPorts[Settings.USBIO_IFACE_INDEX].onReceivedData(liveLogData);
             }
         };
     }
@@ -334,15 +309,58 @@ public class SerialUSBInterface implements ChameleonSerialIOInterface {
 
     public int sendDataBuffer(byte[] dataWriteBuffer) {
         if(dataWriteBuffer == null || dataWriteBuffer.length == 0) {
-            return 0;
+            return STATUS_OK;
         }
         else if(!serialConfigured()) {
-            return 0;
+            return STATUS_OK;
         }
         Log.d(TAG, "USBReaderCallback Send Data: (HEX) " + Utils.bytes2Hex(dataWriteBuffer));
         Log.d(TAG, "USBReaderCallback Send Data: (TXT) " + Utils.bytes2Ascii(dataWriteBuffer));
         serialPort.write(dataWriteBuffer);
-        return 1;
+        return STATUS_TRUE;
+    }
+
+    /* Android 10 upgrades break the prior permissions scheme for USB devices ... */
+    public static final String ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION";
+    public static boolean usbPermissionsReceiverConfig = false;
+    public static boolean usbPermissionsGranted = false;
+    //private static PendingIntent usbPermsIntent = null;
+    private static IntentFilter usbPermsFilter = new IntentFilter(SerialUSBInterface.ACTION_USB_PERMISSION);
+    public static final BroadcastReceiver usbPermissionsReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String intentAction = intent.getAction();
+            if (intentAction.equals(ACTION_USB_PERMISSION)) {
+                synchronized (this) {
+                    SerialUSBInterface.usbPermissionsGranted = true;
+                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                        if (!Settings.serialIOPorts[Settings.BTIO_IFACE_INDEX].serialConfigured()) {
+                            if (Settings.serialIOPorts[Settings.USBIO_IFACE_INDEX].configureSerial() != 0) {
+                                ChameleonIO.DeviceStatusSettings.stopPostingStats();
+                                ChameleonIO.DeviceStatusSettings.startPostingStats(100);
+                            }
+                        }
+                    } else {
+                        UsbDevice usbDev = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                        Log.d(TAG, "Permission denied for USB device " + usbDev);
+                    }
+                }
+            }
+        }
+    };
+
+    public static void registerUSBPermission(Intent intent, Context context) {
+        if(!usbPermissionsReceiverConfig) {
+            context.registerReceiver(SerialUSBInterface.usbPermissionsReceiver, usbPermsFilter);
+            SerialUSBInterface.usbPermissionsReceiverConfig = true;
+        }
+        Parcelable usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+        Intent broadcastIntent = new Intent(SerialUSBInterface.ACTION_USB_PERMISSION);
+        broadcastIntent.putExtra(UsbManager.EXTRA_DEVICE, usbDevice);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(broadcastIntent);
+        //usbPermsIntent = PendingIntent.getBroadcast(notifyContext, 0, new Intent(SerialUSBInterface.ACTION_USB_PERMISSION), 0);
+        //usbManager.requestPermission(device, usbPermsIntent);
+        //Intent usbStartActivityIntent = new Intent(SerialUSBInterface.ACTION_USB_PERMISSION);
+        //LiveLoggerActivity.getInstance().startActivityForResult(usbStartActivityIntent, 200);
     }
 
 }

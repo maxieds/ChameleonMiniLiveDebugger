@@ -1,3 +1,20 @@
+/*
+This program (The Chameleon Mini Live Debugger) is free software written by
+Maxie Dion Schmidt: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+The complete license provided with source distributions of this library is
+available at the following link:
+https://github.com/maxieds/ChameleonMiniLiveDebugger
+*/
+
 package com.maxieds.chameleonminilivedebugger;
 
 import android.graphics.Typeface;
@@ -53,7 +70,6 @@ public class TabFragment extends Fragment {
     public static final int TAB_EXPORT_MITEM_EXPORTLOGS = 0;
     public static final int TAB_EXPORT_MITEM_DOWNLOAD = 1;
     public static final int TAB_EXPORT_MITEM_UPLOAD = 2;
-    public static final int TAB_EXPORT_MITEM_CLONEMFC = 3;
 
     public static final int TAB_CONFIG_MITEM_SETTINGS = 0;
     public static final int TAB_CONFIG_MITEM_CONNECT = 1;
@@ -221,7 +237,7 @@ public class TabFragment extends Fragment {
                         "Scripting",
                         "Commands",
                         "Peripherals",
-                        "APDU"
+                        "Raw APDU"
                 },
                 new int[]{
                         R.layout.tools_tab_slots,
@@ -238,8 +254,7 @@ public class TabFragment extends Fragment {
                 new String[] {
                         "Export Logs",
                         "Download",
-                        "Upload",
-                        "Clone MFC Tags"
+                        "Upload / Clone",
                 },
                 new int[]{
                         R.layout.export_tab_save_logs,

@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.maxieds.chameleonminilivedebugger">
+    package="com.maxieds.chameleonminilivedebugger"
+    android:installLocation="preferExternal" >
+
+    <uses-sdk android:minSdkVersion="26" />
+    <protected-broadcast android:name="android.hardware.usb.action.USB_STATE" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <uses-permission android:name="android.permission.USB_PERMISSION" tools:remove="android:maxSdkVersion" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-    <!--<uses-permission android:name="android.permission.NFC" />-->
-
     <uses-feature android:name="android.hardware.usb.host" android:required="true" />
     <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
-    <uses-feature android:name="android.hardware.nfc"  android:required="false" />
 
     <application
         android:theme="${appTheme}"
@@ -25,7 +28,7 @@
         android:label="@string/app_display_short_name"
         android:roundIcon="${appRoundIcon}"
         android:launchMode="singleTop"
-        android:noHistory="true"
+        android:noHistory="false"
         android:excludeFromRecents="true"
         android:testOnly="${appDebug}"
         android:hardwareAccelerated="true"
@@ -36,6 +39,8 @@
         tools:replace="android:icon"
         tools:node="replace"
         >
+
+        <uses-library android:name="com.android.future.usb.accessory" />
 
         <activity android:name=".LiveLoggerActivity"
             android:screenOrientation="fullSensor"
@@ -48,6 +53,8 @@
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
                 <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" android:resource="@xml/usb_device_filter"/>
             <meta-data android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" android:resource="@xml/usb_device_filter"/>

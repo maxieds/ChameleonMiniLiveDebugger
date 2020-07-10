@@ -1,3 +1,20 @@
+/*
+This program (The Chameleon Mini Live Debugger) is free software written by
+Maxie Dion Schmidt: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+The complete license provided with source distributions of this library is
+available at the following link:
+https://github.com/maxieds/ChameleonMiniLiveDebugger
+*/
+
 package com.maxieds.chameleonminilivedebugger;
 
 import android.bluetooth.BluetoothDevice;
@@ -14,11 +31,15 @@ import java.util.concurrent.Semaphore;
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import app.akexorcist.bluetotohspp.library.BluetoothState;
 
-public class BluetoothSerialInterface implements ChameleonSerialIOInterface {
+public class BluetoothSerialInterface extends SerialIOReceiver {
 
     private static final String TAG = BluetoothSerialInterface.class.getSimpleName();
 
     public final String CHAMELEON_REVG_NAME = "BLE-Chameleon";
+
+    public String getInterfaceLoggingTag() {
+        return "SerialBTReader";
+    }
 
     private Context notifyContext;
     private BluetoothSPP serialPort;
@@ -127,7 +148,7 @@ public class BluetoothSerialInterface implements ChameleonSerialIOInterface {
         if(serialPort != null) {
             return baudRate;
         }
-        return 0;
+        return STATUS_OK;
     }
     public int setSerialBaudRateHigh() {
         return setSerialBaudRate(ChameleonSerialIOInterface.HIGH_SPEED_BAUD_RATE);
@@ -176,7 +197,7 @@ public class BluetoothSerialInterface implements ChameleonSerialIOInterface {
 
     public int configureSerial() {
         if(serialConfigured() || serialPort.isAutoConnecting()) {
-            return 1;
+            return STATUS_TRUE;
         }
         serialPort.startService(BluetoothState.DEVICE_OTHER);
         serialPort.setBluetoothConnectionListener(new BluetoothSPP.BluetoothConnectionListener() {
@@ -202,7 +223,7 @@ public class BluetoothSerialInterface implements ChameleonSerialIOInterface {
             }
         });
         receiversRegistered = true;
-        return 1;
+        return STATUS_TRUE;
     }
 
     public int shutdownSerial() {
@@ -227,51 +248,13 @@ public class BluetoothSerialInterface implements ChameleonSerialIOInterface {
         serialConfigured = false;
         receiversRegistered = false;
         notifyDeviceConnectionTerminated();
-        return 1;
+        return STATUS_TRUE;
     }
 
     private BluetoothSPP.OnDataReceivedListener createSerialReaderCallback() {
         return new BluetoothSPP.OnDataReceivedListener() {
             public void onDataReceived(byte[] liveLogData, String message) {
-                Log.d(TAG, "BTReaderCallback Received Data: (HEX) " + Utils.bytes2Hex(liveLogData));
-                Log.d(TAG, "BTReaderCallback Received Data: (TXT) " + Utils.bytes2Ascii(liveLogData));
-                Log.d(TAG, "BTReaderCallback Received Data: (MSG) " + message);
-                int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData);
-                if(loggingRespSize > 0) {
-                    notifyLogDataReceived(liveLogData);
-                    return;
-                }
-                if (ChameleonIO.PAUSED) {
-                    return;
-                } else if (ChameleonIO.DOWNLOAD) {
-                    ExportTools.performXModemSerialDownload(liveLogData);
-                    return;
-                } else if (ChameleonIO.UPLOAD) {
-                    ExportTools.performXModemSerialUpload(liveLogData);
-                    return;
-                } else if (ChameleonIO.WAITING_FOR_XMODEM) {
-                    String strLogData = new String(liveLogData);
-                    if (strLogData.length() >= 11 && strLogData.substring(0, 11).equals("110:WAITING")) {
-                        ChameleonIO.WAITING_FOR_XMODEM = false;
-                        return;
-                    }
-                } else if (ChameleonIO.WAITING_FOR_RESPONSE && ChameleonIO.isCommandResponse(liveLogData)) {
-                    String[] strLogData = (new String(liveLogData)).split("[\n\r\t]+");
-                    ChameleonIO.DEVICE_RESPONSE_CODE = strLogData[0];
-                    if (strLogData.length >= 2)
-                        ChameleonIO.DEVICE_RESPONSE = Arrays.copyOfRange(strLogData, 1, strLogData.length);
-                    else
-                        ChameleonIO.DEVICE_RESPONSE[0] = strLogData[0];
-                    if (ChameleonIO.EXPECTING_BINARY_DATA) {
-                        int binaryBufSize = liveLogData.length - ChameleonIO.DEVICE_RESPONSE_CODE.length() - 2;
-                        ChameleonIO.DEVICE_RESPONSE_BINARY = new byte[binaryBufSize];
-                        System.arraycopy(liveLogData, liveLogData.length - binaryBufSize, ChameleonIO.DEVICE_RESPONSE_BINARY, 0, binaryBufSize);
-                        ChameleonIO.EXPECTING_BINARY_DATA = false;
-                    }
-                    ChameleonIO.WAITING_FOR_RESPONSE = false;
-                    return;
-                }
-                notifySerialDataReceived(liveLogData);
+                Settings.serialIOPorts[Settings.BTIO_IFACE_INDEX].onReceivedData(liveLogData);
             }
         };
     }
@@ -321,13 +304,13 @@ public class BluetoothSerialInterface implements ChameleonSerialIOInterface {
 
     public int sendDataBuffer(byte[] dataWriteBuffer) {
         if(dataWriteBuffer == null || dataWriteBuffer.length == 0) {
-            return 0;
+            return STATUS_FALSE;
         }
         else if(!serialConfigured()) {
-            return 0;
+            return STATUS_FALSE;
         }
         serialPort.send(dataWriteBuffer, false);
-        return 1;
+        return STATUS_TRUE;
     }
 
 }

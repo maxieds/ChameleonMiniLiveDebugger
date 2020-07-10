@@ -1,13 +1,30 @@
+<!--
+This program (The Chameleon Mini Live Debugger) is free software written by
+Maxie Dion Schmidt: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+The complete license provided with source distributions of this library is
+available at the following link:
+https://github.com/maxieds/ChameleonMiniLiveDebugger
+-->
+
 <resources>
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowActionBar">false</item>
         <item name="android:actionBarStyle">@style/ActionBarTheme</item>
         <item name="android:popupTheme">@style/SpinnerTheme</item>
-        <item name="deviceStatusBarBackgroundColor">#555753</item>
+        <item name="deviceStatusBarBackgroundColor">#4C5147</item>
         <item name="deviceStatusBarTextColor">#ffffff</item>
         <item name="deviceStatusBarDividerColor">#ffffff</item>
-        <item name="actionBarBackgroundColor">#282A2B</item>
+        <item name="actionBarBackgroundColor">#1D1F20</item>
         <item name="colorAboutTextColor">#000000</item>
         <item name="android:textColorPrimary">#000000</item>
         <item name="android:actionOverflowButtonStyle">@style/Actionbar.PopupTheme</item>
@@ -219,18 +236,6 @@
         <item name="colorAccentHighlight">#F4CA59</item>
         <item name="colorAboutLinkColor">#001934</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_rainbow</item>
-    </style>
-
-    <style name="AppThemeLab401" parent="AppTheme">
-        <item name="colorPrimary">#2c5586</item>
-        <item name="colorPrimaryDark">#182e49</item>
-        <item name="colorAccent">#9fbcdf</item>
-        <item name="colorPrimaryDarkLog">#4E6782</item>
-        <item name="colorAccentLog">#396dad</item>
-        <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#c5d7ec</item>
-        <item name="colorAboutLinkColor">#5286c6</item>
-        <item name="actionBarLeftLogoIcon">@drawable/lab401_logo32</item>
     </style>
 
     <style name="SpinnerTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">

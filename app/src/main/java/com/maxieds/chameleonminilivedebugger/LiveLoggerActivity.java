@@ -1,6 +1,24 @@
+/*
+This program (The Chameleon Mini Live Debugger) is free software written by
+Maxie Dion Schmidt: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+The complete license provided with source distributions of this library is
+available at the following link:
+https://github.com/maxieds/ChameleonMiniLiveDebugger
+*/
+
 package com.maxieds.chameleonminilivedebugger;
 
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -36,6 +54,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG;
@@ -117,6 +136,48 @@ public class LiveLoggerActivity extends AppCompatActivity {
      private static IntentFilter serialIOActionFilter = null;
      private static boolean serialIOReceiversRegistered = false;
 
+     private static ArrayList<Intent> deleyedIntentQueue = new ArrayList<Intent>();
+     private static boolean delayedIntentQueueMutex = false;
+     private static Handler delayedIntentHandler = new Handler();
+     private static Runnable delayedIntentRunnable = new Runnable() {
+          synchronized public void run() {
+               while (true) {
+                    if (!delayedIntentQueueMutex) {
+                         delayedIntentQueueMutex = true;
+                         for (int iqi = 0; iqi < deleyedIntentQueue.size(); iqi++) {
+                              LiveLoggerActivity.getInstance().onNewIntent(deleyedIntentQueue.get(iqi));
+                         }
+                         deleyedIntentQueue.clear();
+                         delayedIntentQueueMutex = false;
+                         break;
+                    }
+                    try {
+                         Thread.sleep(50);
+                    }
+                    catch(Exception excpt) {
+                         excpt.printStackTrace();
+                    }
+               }
+          }
+     };
+
+     public static void addNewDelayedIntentHandler(Intent nextIntent) {
+          while (true) {
+               if (!delayedIntentQueueMutex) {
+                    delayedIntentQueueMutex = true;
+                    deleyedIntentQueue.add(nextIntent);
+                    delayedIntentQueueMutex = false;
+                    delayedIntentHandler.postDelayed(delayedIntentRunnable, 0);
+                    break;
+               }
+               try {
+                    Thread.sleep(50);
+               } catch (Exception excpt) {
+                    excpt.printStackTrace();
+               }
+          }
+     }
+
      /**
       * Initializes the activity state and variables.
       * Called when the activity is created.
@@ -171,12 +232,13 @@ public class LiveLoggerActivity extends AppCompatActivity {
                        "android.permission.READ_EXTERNAL_STORAGE",
                        "android.permission.WRITE_EXTERNAL_STORAGE",
                        "android.permission.INTERNET",
-                       "com.android.example.USB_PERMISSION",
+                       "android.permission.USB_PERMISSION",
                        "android.permission.BLUETOOTH",
                        "android.permission.BLUETOOTH_ADMIN"
                };
-               if (android.os.Build.VERSION.SDK_INT >= 23)
+               if (android.os.Build.VERSION.SDK_INT >= 23) {
                     requestPermissions(permissions, 200);
+               }
                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR); // keep app from crashing when the screen rotates
           }
@@ -192,16 +254,24 @@ public class LiveLoggerActivity extends AppCompatActivity {
                          }
                     };
                     ChameleonIO.DeviceStatusSettings.stopPostingStats();
-                    configDeviceHandler.postDelayed(configDeviceRunnable, 400);
+                    configDeviceHandler.postDelayed(configDeviceRunnable, 600);
                }
                if(serialIOActionReceiver != null) {
-                    unregisterReceiver(serialIOActionReceiver);
+                    try {
+                         unregisterReceiver(serialIOActionReceiver);
+                    }
+                    catch(Exception excpt) {
+                         excpt.printStackTrace();
+                    }
                }
                serialIOActionReceiver = new BroadcastReceiver() {
                     public void onReceive(Context context, Intent intent) {
                          Log.i(TAG, intent.getAction());
                          if(intent.getAction() == null) {
                               return;
+                         }
+                         else if(intent.getAction().equals(SerialUSBInterface.ACTION_USB_PERMISSION)) {
+                              onNewIntent(intent);
                          }
                          else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED) ||
                                  intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
@@ -227,6 +297,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     }
                };
                serialIOActionFilter = new IntentFilter();
+               serialIOActionFilter.addAction(SerialUSBInterface.ACTION_USB_PERMISSION);
                serialIOActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
                serialIOActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
                serialIOActionFilter.addAction(BluetoothDevice.ACTION_FOUND);
@@ -350,7 +421,11 @@ public class LiveLoggerActivity extends AppCompatActivity {
           if(intent == null) {
                return;
           }
+          else if(intent.getAction().equals(SerialUSBInterface.ACTION_USB_PERMISSION)) {
+               SerialUSBInterface.usbPermissionsGranted = true;
+          }
           else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
+               SerialUSBInterface.registerUSBPermission(intent, this);
                if(Settings.serialIOPorts[Settings.USBIO_IFACE_INDEX].configureSerial() != 0) {
                     Settings.stopSerialIOConnectionDiscovery();
                     Settings.SERIALIO_IFACE_ACTIVE_INDEX = Settings.USBIO_IFACE_INDEX;

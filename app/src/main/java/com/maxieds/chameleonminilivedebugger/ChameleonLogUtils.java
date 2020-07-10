@@ -1,3 +1,20 @@
+/*
+This program (The Chameleon Mini Live Debugger) is free software written by
+Maxie Dion Schmidt: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+The complete license provided with source distributions of this library is
+available at the following link:
+https://github.com/maxieds/ChameleonMiniLiveDebugger
+*/
+
 package com.maxieds.chameleonminilivedebugger;
 
 import android.util.Log;
@@ -171,13 +188,22 @@ public class ChameleonLogUtils {
          }
          byte logCodeByte = loggingBytes[0];
          int logDataLength = Byte.toUnsignedInt(loggingBytes[1]);
-         //if(loggingBytes.length < 4 + logDataLength) {
-         //     return 0;
-         //}
          if(LogCode.LOG_CODE_MAP.get(logCodeByte) != null) {
              return 4 + logDataLength;
          }
          return 0;
+    }
+
+    public static int ResponseIsLiveLoggingBytes(byte[] loggingBytes, int startIndex, int logLength) {
+        if(logLength < 4) {
+            return 0;
+        }
+        byte logCodeByte = loggingBytes[startIndex];
+        int logDataLength = Byte.toUnsignedInt(loggingBytes[startIndex + 1]);
+        if(LogCode.LOG_CODE_MAP.get(logCodeByte) != null) {
+            return 4 + logDataLength;
+        }
+        return 0;
     }
 
     /**

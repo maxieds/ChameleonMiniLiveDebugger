@@ -1,3 +1,20 @@
+/*
+This program (The Chameleon Mini Live Debugger) is free software written by
+Maxie Dion Schmidt: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+The complete license provided with source distributions of this library is
+available at the following link:
+https://github.com/maxieds/ChameleonMiniLiveDebugger
+*/
+
 apply plugin: 'com.android.application'
 
 import java.text.DateFormat
@@ -30,8 +47,8 @@ android {
         applicationId "com.maxieds.chameleonminilivedebugger"
         minSdkVersion 26
         targetSdkVersion 28
-        versionCode 73
-        versionName "1.1.1"
+        versionCode 74
+        versionName "1.1.2"
         multiDexEnabled true
 
         buildConfigField "String", "GIT_COMMIT_HASH", "\"" + getGitCommitHash() + "\""
@@ -122,7 +139,7 @@ android {
         implementation 'com.github.felHR85:UsbSerial:4.5.2'
         implementation 'com.akexorcist:bluetoothspp:1.0.0'
         implementation 'com.shawnlin:number-picker:2.4.9'
-        //implementation 'com.github.maxieds:MifareClassicToolLibrary:1.1.8'
+        implementation 'org.apache.commons:commons-text:1.7'
     }
 
     repositories {

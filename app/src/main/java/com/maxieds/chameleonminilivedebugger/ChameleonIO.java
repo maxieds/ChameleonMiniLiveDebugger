@@ -1,3 +1,20 @@
+/*
+This program (The Chameleon Mini Live Debugger) is free software written by
+Maxie Dion Schmidt: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+The complete license provided with source distributions of this library is
+available at the following link:
+https://github.com/maxieds/ChameleonMiniLiveDebugger
+*/
+
 package com.maxieds.chameleonminilivedebugger;
 
 import android.os.Handler;
@@ -375,9 +392,14 @@ public class ChameleonIO {
         public static void updateAllStatusAndPost(boolean resetTimer) {
             if(Settings.getActiveSerialIOPort() == null)
                 return;
-            boolean haveUpdates = updateAllStatus(resetTimer);
+            try {
+                boolean haveUpdates = updateAllStatus(resetTimer);
+            }
+            catch(Exception nfe) {
+                nfe.printStackTrace();
+            }
             ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceConfigText)).setText(CONFIG);
-            String formattedUID = Utils.formatUIDString(UID, ":");
+            String formattedUID = Utils.formatUIDString(UID, " ");
             ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceConfigUID)).setText(formattedUID);
             String subStats1 = String.format(Locale.ENGLISH, "MEM-%dK/LMEM-%dK/LMD-%s/REV%s", round(MEMSIZE / 1024), round(LOGSIZE / 1024), LOGMODE, ChameleonIO.REVE_BOARD ? "E" : "G");
             ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceStats1)).setText(subStats1);
@@ -390,10 +412,6 @@ public class ChameleonIO {
                 thresholdSeekbar.setProgress(THRESHOLD);
                 ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.thresholdSeekbarValueText)).setText(String.format(Locale.ENGLISH, "% 5d mV", THRESHOLD));
             }
-            //NumberPicker settingsNumberPicker = (NumberPicker) LiveLoggerActivity.getInstance().findViewById(R.id.settingsNumberPicker);
-            //if (settingsNumberPicker != null) {
-            //    settingsNumberPicker.setValue(DIP_SETTING);
-            //}
             if (resetTimer) {
                 statsUpdateHandler.removeCallbacksAndMessages(statsUpdateRunnable);
                 statsUpdateHandler.postDelayed(statsUpdateRunnable, STATS_UPDATE_INTERVAL);
@@ -477,6 +495,10 @@ public class ChameleonIO {
      * @ref LiveLoggerActivity.usbReaderCallback
      */
     public static String getSettingFromDevice(String query, String hint) {
+        //if(!SerialUSBInterface.usbPermissionsGranted) {
+        //    Log.e(TAG, "No permissions for the USB device to receive data!");
+        //    return "NONE";
+        //}
         ChameleonIO.DEVICE_RESPONSE = new String[1];
         ChameleonIO.DEVICE_RESPONSE[0] = (hint == null) ? "TIMEOUT" : hint;
         ChameleonIO.LASTCMD = query;
