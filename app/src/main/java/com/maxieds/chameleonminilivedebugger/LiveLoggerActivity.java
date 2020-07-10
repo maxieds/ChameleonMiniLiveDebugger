@@ -250,7 +250,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                          public void run() {
                               ChameleonIO.detectChameleonType();
                               ChameleonIO.initializeDevice();
-                              ChameleonIO.DeviceStatusSettings.startPostingStats(0);
+                              ChameleonIO.DeviceStatusSettings.startPostingStats(400);
                          }
                     };
                     ChameleonIO.DeviceStatusSettings.stopPostingStats();
@@ -271,28 +271,28 @@ public class LiveLoggerActivity extends AppCompatActivity {
                               return;
                          }
                          else if(intent.getAction().equals(SerialUSBInterface.ACTION_USB_PERMISSION)) {
-                              onNewIntent(intent);
+                              addNewDelayedIntentHandler(intent);
                          }
                          else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED) ||
                                  intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
-                              onNewIntent(intent);
+                              addNewDelayedIntentHandler(intent);
                          }
                          else if(intent.getAction().equals(BluetoothDevice.ACTION_FOUND) ||
                                  intent.getAction().equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED)) {
-                              onNewIntent(intent);
+                              addNewDelayedIntentHandler(intent);
                          }
                          else if(intent.getAction().equals(BluetoothAdapter.ACTION_STATE_CHANGED) ||
                                  intent.getAction().equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) ||
                                  intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
                                  intent.getAction().equals(BluetoothDevice.ACTION_ACL_DISCONNECTED)) {
-                              onNewIntent(intent);
+                              addNewDelayedIntentHandler(intent);
                          }
                          else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED) ||
                                  intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST) ||
                                  intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED) ||
                                  intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED) ||
                                  intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_NOTIFY_STATUS)) {
-                              onNewIntent(intent);
+                              addNewDelayedIntentHandler(intent);
                          }
                     }
                };
