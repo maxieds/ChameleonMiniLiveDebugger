@@ -390,13 +390,17 @@ public class ChameleonIO {
          * @ref DeviceStatusSettings.updateAllStatus
          */
         public static void updateAllStatusAndPost(boolean resetTimer) {
-            if(Settings.getActiveSerialIOPort() == null)
+            if(Settings.getActiveSerialIOPort() == null) {
+                stopPostingStats();
                 return;
+            }
             try {
                 boolean haveUpdates = updateAllStatus(resetTimer);
             }
             catch(Exception nfe) {
                 nfe.printStackTrace();
+                stopPostingStats();
+                return;
             }
             ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceConfigText)).setText(CONFIG);
             String formattedUID = Utils.formatUIDString(UID, " ");
@@ -495,10 +499,6 @@ public class ChameleonIO {
      * @ref LiveLoggerActivity.usbReaderCallback
      */
     public static String getSettingFromDevice(String query, String hint) {
-        //if(!SerialUSBInterface.usbPermissionsGranted) {
-        //    Log.e(TAG, "No permissions for the USB device to receive data!");
-        //    return "NONE";
-        //}
         ChameleonIO.DEVICE_RESPONSE = new String[1];
         ChameleonIO.DEVICE_RESPONSE[0] = (hint == null) ? "TIMEOUT" : hint;
         ChameleonIO.LASTCMD = query;

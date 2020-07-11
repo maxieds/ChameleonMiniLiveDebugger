@@ -121,9 +121,10 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface {
     private ArrayList<Byte[]> splitReceivedDataIntoLogs(byte[] liveLogData) {
         ArrayList<Byte[]> splitLogData = new ArrayList<Byte[]>();
         int logLength = liveLogData.length, indexPos = 0;
-        while(indexPos < liveLogData.length) {
+        while(indexPos < liveLogData.length && logLength > 0) {
             int nextLogLength = ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData, indexPos, logLength);
             if(nextLogLength == 0) {
+                indexPos++;
                 continue;
             }
             if(nextLogLength + indexPos >= liveLogData.length) {
@@ -151,7 +152,9 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface {
         Log.d(getInterfaceLoggingTag(), "SerialReaderCallback Received Data: (HEX) " + Utils.bytes2Hex(liveLogData));
         Log.d(getInterfaceLoggingTag(), "SerialReaderCallback Received Data: (TXT) " + Utils.bytes2Ascii(liveLogData));
 
-        ArrayList<Byte[]> splitLogData = splitReceivedDataIntoLogs(liveLogData);
+        //ArrayList<Byte[]> splitLogData = splitReceivedDataIntoLogs(liveLogData);
+        ArrayList<Byte[]> splitLogData = new ArrayList<Byte[]>();
+        splitLogData.add(ArrayUtils.toObject(liveLogData));
         for(int sidx = 0; sidx < splitLogData.size(); sidx++) {
             liveLogData = new byte[splitLogData.get(sidx).length];
             System.arraycopy(ArrayUtils.toPrimitive(splitLogData.get(sidx)), 0, liveLogData, 0, ArrayUtils.toPrimitive(splitLogData.get(sidx)).length);

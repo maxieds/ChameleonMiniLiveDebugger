@@ -323,7 +323,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
     public static final String ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION";
     public static boolean usbPermissionsReceiverConfig = false;
     public static boolean usbPermissionsGranted = false;
-    private static IntentFilter usbPermsFilter = new IntentFilter(SerialUSBInterface.ACTION_USB_PERMISSION);
+    public static IntentFilter usbPermsFilter = new IntentFilter(SerialUSBInterface.ACTION_USB_PERMISSION);
     public static final BroadcastReceiver usbPermissionsReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String intentAction = intent.getAction();
@@ -351,14 +351,16 @@ public class SerialUSBInterface extends SerialIOReceiver {
             context.registerReceiver(SerialUSBInterface.usbPermissionsReceiver, usbPermsFilter);
             SerialUSBInterface.usbPermissionsReceiverConfig = true;
         }
-        Parcelable usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
         Intent broadcastIntent = new Intent(SerialUSBInterface.ACTION_USB_PERMISSION);
-        broadcastIntent.putExtra(UsbManager.EXTRA_DEVICE, usbDevice);
+        if(intent != null) {
+            Parcelable usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+            broadcastIntent.putExtra(UsbManager.EXTRA_DEVICE, usbDevice);
+        }
         LocalBroadcastManager.getInstance(context).sendBroadcast(broadcastIntent);
         if (!Settings.serialIOPorts[Settings.BTIO_IFACE_INDEX].serialConfigured()) {
             if (Settings.serialIOPorts[Settings.USBIO_IFACE_INDEX].configureSerial() != 0) {
                 ChameleonIO.DeviceStatusSettings.stopPostingStats();
-                ChameleonIO.DeviceStatusSettings.startPostingStats(100);
+                ChameleonIO.DeviceStatusSettings.startPostingStats(500);
                 SerialUSBInterface.usbPermissionsGranted = true;
             }
         }

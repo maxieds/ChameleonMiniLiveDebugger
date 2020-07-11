@@ -271,28 +271,28 @@ public class LiveLoggerActivity extends AppCompatActivity {
                               return;
                          }
                          else if(intent.getAction().equals(SerialUSBInterface.ACTION_USB_PERMISSION)) {
-                              addNewDelayedIntentHandler(intent);
+                              onNewIntent(intent);
                          }
                          else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED) ||
                                  intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
-                              addNewDelayedIntentHandler(intent);
+                              onNewIntent(intent);
                          }
                          else if(intent.getAction().equals(BluetoothDevice.ACTION_FOUND) ||
                                  intent.getAction().equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED)) {
-                              addNewDelayedIntentHandler(intent);
+                              onNewIntent(intent);
                          }
                          else if(intent.getAction().equals(BluetoothAdapter.ACTION_STATE_CHANGED) ||
                                  intent.getAction().equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) ||
                                  intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
                                  intent.getAction().equals(BluetoothDevice.ACTION_ACL_DISCONNECTED)) {
-                              addNewDelayedIntentHandler(intent);
+                              onNewIntent(intent);
                          }
                          else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED) ||
                                  intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST) ||
                                  intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED) ||
                                  intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED) ||
                                  intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_NOTIFY_STATUS)) {
-                              addNewDelayedIntentHandler(intent);
+                              onNewIntent(intent);
                          }
                     }
                };
@@ -312,6 +312,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED);
                serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_NOTIFY_STATUS);
                registerReceiver(serialIOActionReceiver, serialIOActionFilter);
+               SerialUSBInterface.registerUSBPermission(null, this);
                serialIOReceiversRegistered = true;
           }
 
@@ -458,6 +459,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
                }
                Settings.SERIALIO_IFACE_ACTIVE_INDEX = -1;
                setStatusIcon(R.id.statusIconUSB, R.drawable.usbdisconnected16);
+               unregisterReceiver(SerialUSBInterface.usbPermissionsReceiver);
+               SerialUSBInterface.usbPermissionsReceiverConfig = false;
                Settings.initializeSerialIOConnections();
           }
           else if(intent.getAction().equals(BluetoothDevice.ACTION_FOUND)) {
