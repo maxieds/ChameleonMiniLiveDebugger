@@ -4,7 +4,6 @@
     package="com.maxieds.chameleonminilivedebugger"
     android:installLocation="preferExternal" >
 
-    <uses-sdk android:minSdkVersion="26" />
     <protected-broadcast android:name="android.hardware.usb.action.USB_STATE" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
