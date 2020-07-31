@@ -95,7 +95,9 @@ public class UITabUtils {
             MainActivityLogUtils.logDataFeedConfigured = true;
         }
         else if(menuItemIdx == TAB_LOG_MITEM_LOGS) {
-            MainActivityLogUtils.logDataFeed = new LinearLayout(LiveLoggerActivity.getInstance());
+            if(MainActivityLogUtils.logDataFeed == null) {
+                MainActivityLogUtils.logDataFeed = new LinearLayout(LiveLoggerActivity.getInstance());
+            }
             ScrollView logScroller = (ScrollView) tabMainLayoutView.findViewById(R.id.log_scroll_view);
             if(MainActivityLogUtils.logScrollView.getChildCount() > 0) {
                 MainActivityLogUtils.logScrollView.removeViewAt(0);
