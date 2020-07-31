@@ -53,6 +53,7 @@ public class AndroidSettingsStorage {
     public static final String LOGGING_MIN_DATA_BYTES = "loggingMinDataBytes";
     public static final String LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE = "loggingConfigClearLogsOnNewDevice";
     public static final String LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES = "loggingConfigCollapseCommonEntries";
+    public static final String LOGGING_CONFIG_ENABLE_LIVE_STATUS_UPDATES = "loggingConfigEnableLiveStatusUpdates";
 
     public static boolean loadDefaultSettings(String profileID) {
         updateValueByKey(profileID, THEMEID_PREFERENCE);
@@ -69,6 +70,7 @@ public class AndroidSettingsStorage {
         updateValueByKey(profileID, LOGGING_MIN_DATA_BYTES);
         updateValueByKey(profileID, LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE);
         updateValueByKey(profileID, LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES);
+        updateValueByKey(profileID, LOGGING_CONFIG_ENABLE_LIVE_STATUS_UPDATES);
         return true;
     }
 
@@ -91,6 +93,7 @@ public class AndroidSettingsStorage {
             ChameleonLogUtils.LOGGING_MIN_DATA_BYTES = Integer.parseInt(getStringValueByKey(profileID, LOGGING_MIN_DATA_BYTES));
             ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE));
             ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES));
+            ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_ENABLE_LIVE_STATUS_UPDATES));
         } catch(Exception ex) {
             ex.printStackTrace();
             return false;
@@ -150,6 +153,9 @@ public class AndroidSettingsStorage {
         else if(prefsKey.equals(LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES)) {
             spEditor.putBoolean(prefsKey, ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES);
         }
+        else if(prefsKey.equals(LOGGING_CONFIG_ENABLE_LIVE_STATUS_UPDATES)) {
+            spEditor.putBoolean(prefsKey, ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES);
+        }
         else {
             return false;
         }
@@ -205,6 +211,9 @@ public class AndroidSettingsStorage {
         }
         else if(prefsKey.equals(LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES)) {
             return sharedPrefs.getBoolean(prefsKey, ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES) ? "true" : "false";
+        }
+        else if(prefsKey.equals(LOGGING_CONFIG_ENABLE_LIVE_STATUS_UPDATES)) {
+            return sharedPrefs.getBoolean(prefsKey, ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) ? "true" : "false";
         }
         return null;
     }

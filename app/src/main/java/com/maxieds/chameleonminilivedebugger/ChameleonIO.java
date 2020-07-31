@@ -322,7 +322,7 @@ public class ChameleonIO {
         public static Handler statsUpdateHandler = new Handler();
         public static Runnable statsUpdateRunnable = new Runnable() {
             public void run() {
-                if(Settings.getActiveSerialIOPort() == null) {
+                if(Settings.getActiveSerialIOPort() == null || !ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) {
                     statsUpdateHandler.removeCallbacksAndMessages(this);
                     postingStatsInProgress = false;
                 }
@@ -338,7 +338,7 @@ public class ChameleonIO {
         }
 
         public static void startPostingStats(int msDelay) {
-            if(postingStatsInProgress) {
+            if(postingStatsInProgress || !ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) {
                 return;
             }
             postingStatsInProgress = true;
@@ -416,7 +416,7 @@ public class ChameleonIO {
                 thresholdSeekbar.setProgress(THRESHOLD);
                 ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.thresholdSeekbarValueText)).setText(String.format(Locale.ENGLISH, "% 5d mV", THRESHOLD));
             }
-            if (resetTimer) {
+            if (resetTimer && postingStatsInProgress) {
                 statsUpdateHandler.removeCallbacksAndMessages(statsUpdateRunnable);
                 statsUpdateHandler.postDelayed(statsUpdateRunnable, STATS_UPDATE_INTERVAL);
             }

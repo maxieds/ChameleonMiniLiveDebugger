@@ -95,6 +95,7 @@ public class UITabUtils {
             MainActivityLogUtils.logDataFeedConfigured = true;
         }
         else if(menuItemIdx == TAB_LOG_MITEM_LOGS) {
+            MainActivityLogUtils.logDataFeed = new LinearLayout(LiveLoggerActivity.getInstance());
             ScrollView logScroller = (ScrollView) tabMainLayoutView.findViewById(R.id.log_scroll_view);
             if(MainActivityLogUtils.logScrollView.getChildCount() > 0) {
                 MainActivityLogUtils.logScrollView.removeViewAt(0);
@@ -135,6 +136,24 @@ public class UITabUtils {
                     CheckBox cb = (CheckBox) view;
                     ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES = cb.isChecked();
                     AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES);
+                }
+            });
+            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingEnableToolbarStatusUpdates)).setChecked(ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES);
+            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingEnableToolbarStatusUpdates)).setOnClickListener(new CheckBox.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CheckBox cb = (CheckBox) view;
+                    boolean previouslyChecked = ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES;
+                    ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES = cb.isChecked();
+                    AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_ENABLE_LIVE_STATUS_UPDATES);
+                    if(!previouslyChecked && ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) {
+                        if(Settings.getActiveSerialIOPort() != null) {
+                            ChameleonIO.DeviceStatusSettings.startPostingStats(250);
+                        }
+                    }
+                    else if(previouslyChecked && !ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) {
+                        ChameleonIO.DeviceStatusSettings.stopPostingStats();
+                    }
                 }
             });
         }

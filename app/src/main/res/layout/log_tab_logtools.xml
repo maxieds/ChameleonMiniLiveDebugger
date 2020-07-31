@@ -196,6 +196,34 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_height="wrap_content"
                     />
 
+                <CheckBox
+                    android:theme="@style/CheckBoxTheme"
+                    android:id="@+id/cbLoggingEnableToolbarStatusUpdates"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical|end"
+                    android:layout_marginLeft="0dp"
+                    android:drawableLeft="@drawable/togglebox_icon24"
+                    android:drawablePadding="3dp"
+                    android:button="@null"
+                    android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+                    android:layout_marginEnd="15dp"
+                    android:text="Enable live updates in toolbar"
+                    android:enabled="true"
+                    android:checked="true"
+
+                    />
+
+                <View
+                    android:layout_width="5dp"
+                    android:layout_height="wrap_content"
+                    />
+
+                <View
+                    android:layout_width="5dp"
+                    android:layout_height="wrap_content"
+                    />
+
             </GridLayout>
 
             <View
