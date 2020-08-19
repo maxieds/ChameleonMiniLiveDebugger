@@ -281,6 +281,9 @@ public class ChameleonIO {
      */
     public static boolean isCommandResponse(byte[] liveLogData) {
         String[] respTextArray = new String(liveLogData).split("[\n\r][\n\r]+");
+        if(respTextArray.length == 0) {
+            return false;
+        }
         String respText = respTextArray[0];
         respText.replaceAll("(\\d+):.+", "$1").replaceAll(".+(\\d+)", "$1");
         if(SerialRespCode.RESP_CODE_TEXT_MAP.get(respText) != null)

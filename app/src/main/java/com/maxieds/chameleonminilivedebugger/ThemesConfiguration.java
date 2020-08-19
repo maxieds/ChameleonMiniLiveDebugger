@@ -134,7 +134,8 @@ public class ThemesConfiguration {
     public static void actionButtonAppSettings(View view) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(LiveLoggerActivity.getInstance());
         final View dialogView = LiveLoggerActivity.getInstance().getLayoutInflater().inflate(R.layout.theme_config, null);
-        if(!BuildConfig.FLAVOR.equals("paid")) { // restore the "bonus" for upgrading to the paid flavor:
+        /** Thank you, foot in mouth: https://github.com/maxieds/ChameleonMiniLiveDebugger/issues/26 **/
+        /*if(!BuildConfig.FLAVOR.equals("paid")) { // restore the "bonus" for upgrading to the paid flavor:
             ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonAtlanta)).setEnabled(false);
             ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonBlack)).setEnabled(false);
             ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonChocolate)).setEnabled(false);
@@ -143,7 +144,7 @@ public class ThemesConfiguration {
             ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonPurple)).setEnabled(false);
             ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonUrbanaDesfire)).setEnabled(false);
             ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonWinter)).setEnabled(false);
-        }
+        }*/
         // set the correct current theme as the selected radio button:
         RadioGroup themeRadioGroup = (RadioGroup) dialogView.findViewById(R.id.themeRadioGroup);
         for(int rb = 0; rb < themeRadioGroup.getChildCount(); rb++) {
