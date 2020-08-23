@@ -17,12 +17,14 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import android.util.Log;
+
 public class Settings {
 
     private static final String TAG = Settings.class.getSimpleName();
 
     public static boolean allowWiredUSB = true;
-    public static boolean allowBluetooth = false;
+    public static boolean allowBluetooth = true;
     public static boolean allowAndroidNFC = false;
     public static int serialBaudRate = 115200;
 
@@ -35,12 +37,15 @@ public class Settings {
 
     public static final int USBIO_IFACE_INDEX = 0;
     public static final int BTIO_IFACE_INDEX = 1;
-    public static ChameleonSerialIOInterface[] serialIOPorts = new ChameleonSerialIOInterface[2];
-    static {
+    public static ChameleonSerialIOInterface[] serialIOPorts = null;
+    public static int SERIALIO_IFACE_ACTIVE_INDEX = -1;
+
+    public static synchronized void initSerialIOPortObjects() {
+        serialIOPorts = new ChameleonSerialIOInterface[2];
         serialIOPorts[USBIO_IFACE_INDEX] = new SerialUSBInterface(LiveLoggerActivity.getInstance());
         serialIOPorts[BTIO_IFACE_INDEX] = new BluetoothSerialInterface(LiveLoggerActivity.getInstance());
-    };
-    public static int SERIALIO_IFACE_ACTIVE_INDEX = -1;
+        SERIALIO_IFACE_ACTIVE_INDEX = -1;
+    }
 
     public static ChameleonSerialIOInterface getActiveSerialIOPort() {
         if(SERIALIO_IFACE_ACTIVE_INDEX < 0) {
@@ -53,9 +58,16 @@ public class Settings {
     }
 
     public static void initializeSerialIOConnections() {
+        if(serialIOPorts == null) {
+            initSerialIOPortObjects();
+        }
         for(int si = 0; si < serialIOPorts.length; si++) {
-            if((si == USBIO_IFACE_INDEX && allowWiredUSB) ||
-                    (allowBluetooth && ((BluetoothSerialInterface) serialIOPorts[si]).isBluetoothEnabled())) {
+            if(si == USBIO_IFACE_INDEX && allowWiredUSB) {
+                Log.i(TAG, "Started scanning for SerialUSB devices ... ");
+                serialIOPorts[si].startScanningDevices();
+            }
+            else if(si == BTIO_IFACE_INDEX && allowBluetooth && ((BluetoothSerialInterface) serialIOPorts[si]).isBluetoothEnabled()) {
+                Log.i(TAG, "Started scanning for SerialBT devices ... ");
                 serialIOPorts[si].startScanningDevices();
             }
         }

@@ -32,9 +32,9 @@ public class AndroidSettingsStorage {
 
     private static final String TAG = AndroidSettingsStorage.class.getSimpleName();
 
-    private static final String CHAMELEON_PROFILES_TAG = "ChameleonProfiles";
-    private static final String CHAMELEON_PROFILE_NAMES_TAG = "ChameleonProfileNames";
-    private static final String CHAMELEON_PROFILE_SERIALS_TAG = "ChameleonProfileSerials";
+    //private static final String CHAMELEON_PROFILES_TAG = "ChameleonProfiles";
+    //private static final String CHAMELEON_PROFILE_NAMES_TAG = "ChameleonProfileNames";
+    //private static final String CHAMELEON_PROFILE_SERIALS_TAG = "ChameleonProfileSerials";
     public static final String DEFAULT_CMLDAPP_PROFILE = "CMLDAppProfile";
 
     public static final String THEMEID_PREFERENCE = "themeID";
@@ -75,9 +75,9 @@ public class AndroidSettingsStorage {
     }
 
     public static boolean loadPreviousSettings(String profileID) {
-        if(!LiveLoggerActivity.getInstance().getSharedPreferences(profileID, Context.MODE_PRIVATE).contains(PROFILE_SERIALID_PREFERENCE)) {
-            return loadDefaultSettings(profileID);
-        }
+        //if(!LiveLoggerActivity.getInstance().getSharedPreferences(profileID, Context.MODE_PRIVATE).contains(PROFILE_SERIALID_PREFERENCE)) {
+        //    return loadDefaultSettings(profileID);
+        //}
         try {
             ThemesConfiguration.storedAppTheme = getStringValueByKey(profileID, THEMEID_PREFERENCE);
             Settings.chameleonDeviceSerialNumber = getStringValueByKey(profileID, PROFILE_SERIALID_PREFERENCE);
@@ -164,7 +164,7 @@ public class AndroidSettingsStorage {
     }
 
     public static boolean updateValueByKey(String prefsKey) {
-        return updateValueByKey(Settings.chameleonDeviceSerialNumber, prefsKey);
+        return updateValueByKey(DEFAULT_CMLDAPP_PROFILE, prefsKey);
     }
 
     public static String getStringValueByKey(String profileID, String prefsKey) {

@@ -209,7 +209,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
           defaultInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
           defaultContext = getApplicationContext();
 
-          AndroidSettingsStorage.loadDefaultSettings(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE);
+          AndroidSettingsStorage.loadPreviousSettings(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE);
           if(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT) {
                MainActivityLogUtils.clearAllLogs();
           }
@@ -244,6 +244,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
           }
 
           if(!serialIOReceiversRegistered) {
+               if(Settings.serialIOPorts == null) {
+                    Settings.initSerialIOPortObjects();
+               }
                if((Settings.serialIOPorts[Settings.USBIO_IFACE_INDEX].configureSerial() != 0) && (Settings.getActiveSerialIOPort() != null)) {
                     Handler configDeviceHandler = new Handler();
                     Runnable configDeviceRunnable = new Runnable() {
@@ -314,6 +317,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                registerReceiver(serialIOActionReceiver, serialIOActionFilter);
                SerialUSBInterface.registerUSBPermission(null, this);
                serialIOReceiversRegistered = true;
+               Settings.initializeSerialIOConnections();
           }
 
           String userGreeting = getString(R.string.initialUserGreetingMsg);
@@ -419,6 +423,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
      @Override
      public void onNewIntent(Intent intent) {
           super.onNewIntent(intent);
+          Log.i(TAG, "NEW INTENT: " + intent.getAction());
           if(intent == null) {
                return;
           }
@@ -506,8 +511,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
                          }
                     };
                     ChameleonIO.DeviceStatusSettings.stopPostingStats();
-                    configDeviceHandler.postDelayed(configDeviceRunnable, 400);
                     ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
+                    configDeviceHandler.postDelayed(configDeviceRunnable, 400);
                     setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
                }
           }

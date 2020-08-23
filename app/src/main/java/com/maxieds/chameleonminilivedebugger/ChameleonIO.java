@@ -107,6 +107,7 @@ public class ChameleonIO {
         else {
             String firmwareVersion = getSettingFromDevice("VERSION?");
             String commandsList = getSettingFromDevice("HELP");
+            Log.i(TAG, "CHAMELEON DEVICE TYPE -- " + firmwareVersion + "------" + commandsList);
             if(firmwareVersion.contains("DESFire") ||
                     (deviceConnType.equals("USB") && deviceActiveSerialIOPort.getActiveDeviceInfo().contains("DESFireMod"))) {
                 CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_DESFIRE_FWMOD;
@@ -118,6 +119,13 @@ public class ChameleonIO {
                     CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_PROXGRIND_REVG_TINY;
                 } else {
                     CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_KAOS_REVG;
+                }
+            }
+            else if (firmwareVersion.contains("RevG")) {
+                if (commandsList.contains("SAKMODE")) {
+                    CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_PROXGRIND_REVG;
+                } else if (commandsList.contains("MEMORYINFO")) {
+                    CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_PROXGRIND_REVG_TINY;
                 }
             }
         }
@@ -148,7 +156,7 @@ public class ChameleonIO {
             int selectedMenuIdx = TabFragment.UITAB_DATA[selectedTab].lastMenuIndex;
             View tabView = TabFragment.UITAB_DATA[selectedTab].tabInflatedView;
             UITabUtils.initializeTabMainContent(selectedTab, selectedMenuIdx, tabView);
-            int activeSlot = ChameleonIO.DeviceStatusSettings.DIP_SETTING;
+            int activeSlot = ChameleonIO.DeviceStatusSettings.DIP_SETTING - 1;
             ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlot].readParametersFromChameleonSlot();
         }
         Log.i(TAG, "TODO: setup bi-directional sniffing if necessary ...");

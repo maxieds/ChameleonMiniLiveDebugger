@@ -334,10 +334,12 @@ public class UITabUtils {
              // allow bluetooth checkbox setup:
              CheckBox cbAllowBT = tabMainLayoutView.findViewById(R.id.settingsAllowBluetooth);
              cbAllowBT.setChecked(Settings.allowBluetooth);
-             cbAllowBT.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
+             cbAllowBT.setOnClickListener(new View.OnClickListener() {
                  @Override
-                 public void onCheckedChanged(CompoundButton cb, boolean checked) {
-                     Settings.allowBluetooth = checked;
+                 public void onClick(View cbView) {
+                     CheckBox cb = (CheckBox) cbView;
+                     Settings.allowBluetooth = cb.isChecked();
+                     AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.ALLOW_BLUETOOTH_PREFERENCE);
                      if(Settings.getActiveSerialIOPort() == null) {
                          Settings.stopSerialIOConnectionDiscovery();
                          Settings.initializeSerialIOConnections();
@@ -399,6 +401,7 @@ public class UITabUtils {
             String btStatus = ((BluetoothSerialInterface) Settings.serialIOPorts[Settings.BTIO_IFACE_INDEX]).isBluetoothEnabled() ? "Enabled" : "Disabled";
             btStatusText.setText(btStatus);
             Button btSettingsBtn = tabMainLayoutView.findViewById(R.id.androidBTSettingsButton);
+            btSettingsBtn.setEnabled(Settings.allowBluetooth);
             btSettingsBtn.setOnClickListener(new Button.OnClickListener() {
                 @Override
                 public void onClick(View btn) {

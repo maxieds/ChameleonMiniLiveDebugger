@@ -17,6 +17,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
@@ -30,12 +31,14 @@ import java.util.concurrent.Semaphore;
 
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import app.akexorcist.bluetotohspp.library.BluetoothState;
+import app.akexorcist.bluetotohspp.library.DeviceList;
 
 public class BluetoothSerialInterface extends SerialIOReceiver {
 
     private static final String TAG = BluetoothSerialInterface.class.getSimpleName();
 
     public final String CHAMELEON_REVG_NAME = "BLE-Chameleon";
+    public final String CHAMELEON_REVG_TINY_NAME = "ChameleonTiny";
 
     public String getInterfaceLoggingTag() {
         return "SerialBTReader";
@@ -70,7 +73,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
     }
 
     public boolean configureSerialConnection(BluetoothDevice btDev) {
-        if(!btDev.getName().equals(CHAMELEON_REVG_NAME)) {
+        if(!btDev.getName().equals(CHAMELEON_REVG_NAME) && !btDev.getName().equals(CHAMELEON_REVG_TINY_NAME)) {
             return false;
         }
         if(!receiversRegistered) {
@@ -96,6 +99,8 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
     }
 
     public boolean notifySerialDataReceived(byte[] serialData) {
+        Log.d(TAG, "BTReaderCallback Serial Data: (HEX) " + Utils.bytes2Hex(serialData));
+        Log.d(TAG, "BTReaderCallback Serial Data: (TXT) " + Utils.bytes2Ascii(serialData));
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED);
         notifyIntent.putExtra("DATA", serialData);
         notifyContext.sendBroadcast(notifyIntent);
@@ -103,6 +108,8 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
     }
 
     public boolean notifyLogDataReceived(byte[] serialData) {
+        Log.d(TAG, "BTReaderCallback Log Data: (HEX) " + Utils.bytes2Hex(serialData));
+        Log.d(TAG, "BTReaderCallback Log Data: (TXT) " + Utils.bytes2Ascii(serialData));
         if(serialData.length < ChameleonLogUtils.LOGGING_MIN_DATA_BYTES + 4) {
             return false;
         }
@@ -113,18 +120,21 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
     }
 
     public boolean notifyDeviceFound() {
+        Log.i(TAG, "notifyDeviceFound");
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_DEVICE_FOUND);
         notifyContext.sendBroadcast(notifyIntent);
         return true;
     }
 
     public boolean notifyDeviceConnectionTerminated() {
+        Log.i(TAG, "notifyDeviceConnectionTerminated");
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST);
         notifyContext.sendBroadcast(notifyIntent);
         return true;
     }
 
     public boolean notifyStatus(String msgType, String statusMsg) {
+        Log.i(TAG, "notifyStatus: " + msgType + ": " + statusMsg);
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_NOTIFY_STATUS);
         notifyIntent.putExtra("STATUS-TYPE", msgType);
         notifyIntent.putExtra("STATUS-MSG", statusMsg);
@@ -133,6 +143,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
     }
 
     public boolean notifyBluetoothChameleonDeviceConnected() {
+        Log.i(TAG, "notifyBluetoothChameleonDeviceConnected");
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED);
         notifyContext.sendBroadcast(notifyIntent);
         return true;
@@ -159,22 +170,6 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
 
     public boolean startScanningDevices() {
         configureSerial();
-        serialPort.setAutoConnectionListener(new BluetoothSPP.AutoConnectionListener() {
-            public void onNewConnection(String name, String address) {
-                if(name.equals(CHAMELEON_REVG_NAME)) {
-                    serialConfigured = true;
-                    stopScanningDevices();
-                    Settings.chameleonDeviceSerialNumber = address;
-                    Settings.SERIALIO_IFACE_ACTIVE_INDEX = Settings.BTIO_IFACE_INDEX;
-                    LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
-                    ChameleonIO.PAUSED = false;
-                    notifyBluetoothChameleonDeviceConnected();
-                    notifyStatus("USB STATUS: ", "Successfully configured the device in passive logging mode...\n" + getActiveDeviceInfo());
-                }
-            }
-            public void onAutoConnectionStarted() {}
-        });
-        serialPort.autoConnect(CHAMELEON_REVG_NAME);
         return true;
     }
 
@@ -186,7 +181,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
 
     public String getActiveDeviceInfo() {
         if(activeDevice == null) {
-            return "";
+            return "<null-device>: No information available.";
         }
         String devInfo = String.format(Locale.ENGLISH, "BT Class: %s\nBond State: %s\nProduct Name: %s\nType: %s\nDevice Address: %s",
                 activeDevice.getBluetoothClass(), activeDevice.getBondState(),
@@ -199,10 +194,9 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
         if(serialConfigured() || serialPort.isAutoConnecting()) {
             return STATUS_TRUE;
         }
-        serialPort.startService(BluetoothState.DEVICE_OTHER);
         serialPort.setBluetoothConnectionListener(new BluetoothSPP.BluetoothConnectionListener() {
             public void onDeviceConnected(String name, String address) {
-                if(name.equals(CHAMELEON_REVG_NAME)) {
+                if(name.equals(CHAMELEON_REVG_NAME) || name.equals(CHAMELEON_REVG_TINY_NAME)) {
                     serialConfigured = true;
                     stopScanningDevices();
                     Settings.chameleonDeviceSerialNumber = address;
@@ -210,7 +204,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
                     LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
                     ChameleonIO.PAUSED = false;
                     notifyBluetoothChameleonDeviceConnected();
-                    notifyStatus("USB STATUS: ", "Successfully configured the device in passive logging mode...\n" + getActiveDeviceInfo());
+                    notifyStatus("BT STATUS: ", "Successfully configured the device \"" + name + "\" in passive logging mode...\n" + getActiveDeviceInfo());
                 }
             }
             public void onDeviceDisconnected() {
@@ -222,7 +216,27 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
                 notifyDeviceConnectionTerminated();
             }
         });
+        serialPort.setAutoConnectionListener(new BluetoothSPP.AutoConnectionListener() {
+            public void onNewConnection(String name, String address) {
+                if(name.equals(CHAMELEON_REVG_NAME) || name.equals(CHAMELEON_REVG_TINY_NAME)) {
+                    serialConfigured = true;
+                    stopScanningDevices();
+                    configureSerial();
+                    Settings.chameleonDeviceSerialNumber = address;
+                    Settings.SERIALIO_IFACE_ACTIVE_INDEX = Settings.BTIO_IFACE_INDEX;
+                    LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
+                    ChameleonIO.PAUSED = false;
+                    notifyBluetoothChameleonDeviceConnected();
+                    notifyStatus("BT STATUS: ", "Successfully configured the device \"" + name + "\" in passive logging mode...\n" + getActiveDeviceInfo());
+                }
+            }
+            public void onAutoConnectionStarted() {}
+        });
+        //serialPort.startService(BluetoothState.DEVICE_OTHER);
+        serialPort.startDiscovery();
         receiversRegistered = true;
+        //Intent intent = new Intent(notifyContext, DeviceList.class);
+        //((Activity) notifyContext).startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
         return STATUS_TRUE;
     }
 
