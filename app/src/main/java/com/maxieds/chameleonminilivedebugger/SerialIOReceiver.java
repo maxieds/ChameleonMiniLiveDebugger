@@ -70,7 +70,7 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface {
         return STATUS_ERROR;
     }
 
-    public int setSerialBuadRateLimited() {
+    public int setSerialBaudRateLimited() {
         return STATUS_ERROR;
     }
 

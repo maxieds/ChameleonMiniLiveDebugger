@@ -137,7 +137,7 @@ android {
         implementation 'androidx.appcompat:appcompat:1.0.2'
         implementation 'com.google.android.material:material:1.1.0-alpha07'
         implementation 'com.github.felHR85:UsbSerial:4.5.2'
-        implementation 'com.akexorcist:bluetoothspp:1.0.0'
+        implementation 'com.github.douglasjunior.AndroidBluetoothLibrary:BluetoothLowEnergyLibrary:0.3.5'
         implementation 'com.shawnlin:number-picker:2.4.9'
         implementation 'org.apache.commons:commons-text:1.7'
     }

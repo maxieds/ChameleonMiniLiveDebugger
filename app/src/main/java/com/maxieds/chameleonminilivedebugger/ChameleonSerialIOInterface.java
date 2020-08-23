@@ -78,7 +78,7 @@ public interface ChameleonSerialIOInterface {
 
     public int setSerialBaudRate(int baudRate);
     public int setSerialBaudRateHigh();
-    public int setSerialBuadRateLimited();
+    public int setSerialBaudRateLimited();
 
     public boolean startScanningDevices();
     public boolean stopScanningDevices();

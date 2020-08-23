@@ -104,6 +104,15 @@ public class ChameleonIO {
         else if(REVE_BOARD) {
             CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_REVE;
         }
+        else if(deviceActiveSerialIOPort.isBluetooth()) {
+            String deviceName = ((BluetoothSerialInterface) deviceActiveSerialIOPort).getDeviceName();
+            if(deviceName.equals(BluetoothSerialInterface.CHAMELEON_REVG_NAME)) {
+                CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_PROXGRIND_REVG;
+            }
+            else if(deviceName.equals(BluetoothSerialInterface.CHAMELEON_REVG_TINY_NAME)) {
+                CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_PROXGRIND_REVG_TINY;
+            }
+        }
         else {
             String firmwareVersion = getSettingFromDevice("VERSION?");
             String commandsList = getSettingFromDevice("HELP");

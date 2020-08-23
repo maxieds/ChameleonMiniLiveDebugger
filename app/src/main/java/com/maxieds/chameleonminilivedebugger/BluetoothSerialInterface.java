@@ -17,53 +17,56 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
-import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.content.Intent;
+import android.os.ParcelUuid;
 import android.util.Log;
 
-import com.felhr.usbserial.UsbSerialInterface;
+import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothClassicService;
+import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothConfiguration;
+import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothService;
+import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothStatus;
+import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothWriter;
+import com.github.douglasjunior.bluetoothlowenergylibrary.BluetoothLeService;
 
-import java.util.Arrays;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.concurrent.Semaphore;
-
-import app.akexorcist.bluetotohspp.library.BluetoothSPP;
-import app.akexorcist.bluetotohspp.library.BluetoothState;
-import app.akexorcist.bluetotohspp.library.DeviceList;
 
 public class BluetoothSerialInterface extends SerialIOReceiver {
 
     private static final String TAG = BluetoothSerialInterface.class.getSimpleName();
 
-    public final String CHAMELEON_REVG_NAME = "BLE-Chameleon";
-    public final String CHAMELEON_REVG_TINY_NAME = "ChameleonTiny";
+    public static final String CHAMELEON_REVG_NAME = "BLE-Chameleon";
+    public static final String CHAMELEON_REVG_SERVICE_UUID = "0000180a-0000-1000-8000-00805f9b34fb";
+    public static final String CHAMELEON_REVG_CHAR_UUID = "00002a29-0000-1000-8000-00805f9b34fb";
+    public static final String CHAMELEON_REVG_TINY_NAME = "ChameleonTiny";
+    public static final String CHAMELEON_REVG_TINY_SERVICE_UUID = "51510001-7969-6473-6f40-6b6f6c6c6957";
+    public static final String CHAMELEON_REVG_TINY_CHAR_UUID = "51510002-7969-6473-6f40-6b6f6c6c6957";
 
     public String getInterfaceLoggingTag() {
         return "SerialBTReader";
     }
 
     private Context notifyContext;
-    private BluetoothSPP serialPort;
+    private BluetoothService btService;
+    private BluetoothConfiguration btConfig;
+    private BluetoothWriter btWriter;
     private BluetoothDevice activeDevice;
     private int baudRate; // irrelevant?
     private boolean serialConfigured;
     private boolean receiversRegistered;
     private final Semaphore serialPortLock = new Semaphore(1, true);
 
-    public boolean isBluetoothAvailable() {
-        if(serialPort == null) {
-            return false;
-        }
-        return serialPort.isBluetoothAvailable();
-    }
-
     public boolean isBluetoothEnabled() {
-        if(serialPort == null) {
+        BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
+        if(btAdapter == null) {
             return false;
         }
-        return serialPort.isBluetoothEnabled();
+        return btAdapter.isEnabled();
     }
 
     public static void displayAndroidBluetoothSettings() {
@@ -73,25 +76,119 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
     }
 
     public boolean configureSerialConnection(BluetoothDevice btDev) {
-        if(!btDev.getName().equals(CHAMELEON_REVG_NAME) && !btDev.getName().equals(CHAMELEON_REVG_TINY_NAME)) {
+        if(btDev == null) {
+            return false;
+        }
+        else if(!btDev.getName().equals(CHAMELEON_REVG_NAME) && !btDev.getName().equals(CHAMELEON_REVG_TINY_NAME)) {
             return false;
         }
         if(!receiversRegistered) {
             configureSerial();
         }
+        if(btDev.getName().equals(CHAMELEON_REVG_TINY_NAME)) {
+            btConfig.uuidService = UUID.fromString(CHAMELEON_REVG_TINY_SERVICE_UUID);
+            btConfig.uuidCharacteristic = UUID.fromString(CHAMELEON_REVG_TINY_CHAR_UUID);
+        }
+        else {
+            btConfig.uuidService = UUID.fromString(CHAMELEON_REVG_SERVICE_UUID);
+            btConfig.uuidCharacteristic = UUID.fromString(CHAMELEON_REVG_CHAR_UUID);
+        }
         activeDevice = btDev;
-        serialPort.connect(btDev.getAddress());
+        Log.i(TAG, "BTDEV: " + activeDevice.toString());
+        ChameleonIO.REVE_BOARD = false;
+        ChameleonIO.CHAMELEON_MINI_BOARD_TYPE = btDev.getName().equals(CHAMELEON_REVG_NAME) ?
+                ChameleonIO.CHAMELEON_TYPE_PROXGRIND_REVG : ChameleonIO.CHAMELEON_TYPE_PROXGRIND_REVG_TINY;
+        btConfig.deviceName = btDev.getName();
+        btService.init(btConfig);
+        initBluetoothListeners();
+        btService.connect(btDev);
+        Settings.chameleonDeviceSerialNumber = btDev.getAddress();
         return true;
+    }
+
+    public String getDeviceName() {
+        return btConfig.deviceName;
+    }
+
+    public boolean isDevicePaired() {
+        if(activeDevice == null) {
+            return false;
+        }
+        return btService.getStatus() == BluetoothStatus.CONNECTED;
     }
 
     public BluetoothSerialInterface(Context appContext) {
         notifyContext = appContext;
-        serialPort = new BluetoothSPP(notifyContext);
-        serialPort.setDeviceTarget(false);
+        initBluetoothConfig();
+        initBluetoothListeners();
+        btWriter = new BluetoothWriter(btService);
         activeDevice = null;
         baudRate = Settings.serialBaudRate;
         serialConfigured = false;
         receiversRegistered = false;
+    }
+
+    public void initBluetoothConfig() {
+        btConfig = new BluetoothConfiguration();
+        btConfig.context = notifyContext;
+        btConfig.bluetoothServiceClass = BluetoothLeService.class;
+        btConfig.bufferSize = 256;
+        btConfig.characterDelimiter = '\0';
+        btConfig.deviceName = "ChameleonMiniLiveDebugger";
+        btConfig.callListenersInMainThread = true;
+        btConfig.uuidService = null; //UUID.randomUUID(); // Required
+        btConfig.uuidCharacteristic = null; //UUID.randomUUID(); // Required
+        btConfig.transport = BluetoothDevice.TRANSPORT_LE; // Required for dual-mode devices
+        btConfig.uuid = null; // Used to filter found devices. Set null to find all devices.
+        BluetoothService.init(btConfig);
+        btService = BluetoothService.getDefaultInstance();
+    }
+
+    public void initBluetoothListeners() {
+        if(btService == null) {
+            return;
+        }
+        btService.disconnect();
+        btService.setOnScanCallback(new BluetoothService.OnBluetoothScanCallback() {
+            @Override
+            public void onDeviceDiscovered(BluetoothDevice device, int rssi) {
+                if(!serialConfigured && configureSerialConnection(device)) {
+                    stopScanningDevices();
+                    if (!Settings.serialIOPorts[Settings.USBIO_IFACE_INDEX].serialConfigured()) {
+                        if (Settings.serialIOPorts[Settings.BTIO_IFACE_INDEX].configureSerial() != 0) {
+                            ChameleonIO.PAUSED = false;
+                            serialConfigured = true;
+                            notifyStatus("BT STATUS: ", "Successfully configured the device \"" + activeDevice.getName() + "\" in passive logging mode...\n" + getActiveDeviceInfo());
+                            notifyBluetoothChameleonDeviceConnected();
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onStartScan() {}
+            @Override
+            public void onStopScan() {}
+        });
+        btService.setOnEventCallback(new BluetoothLeService.OnBluetoothEventCallback() {
+            @Override
+            public void onDataRead(byte[] buffer, int length) {
+                Log.d(TAG, "BTREAD: " + Utils.bytes2Ascii(buffer));
+                Log.d(TAG, "BTREAD: " + Utils.bytes2Hex(buffer));
+                if(length > 0) {
+                    onReceivedData(buffer);
+                }
+            }
+            @Override
+            public void onStatusChange(BluetoothStatus status) {}
+            @Override
+            public void onDeviceName(String deviceName) {
+                Log.i(TAG, "New BT Device Name: " + deviceName);
+            }
+            @Override
+            public void onToast(String message) {}
+            @Override
+            public void onDataWrite(byte[] buffer) {}
+        });
     }
 
     public void setListenerContext(Context context) {
@@ -156,26 +253,23 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
     public int setSerialBaudRate(int brate) {
         baudRate = brate;
         Settings.serialBaudRate = baudRate;
-        if(serialPort != null) {
-            return baudRate;
-        }
-        return STATUS_OK;
+        return baudRate;
     }
     public int setSerialBaudRateHigh() {
         return setSerialBaudRate(ChameleonSerialIOInterface.HIGH_SPEED_BAUD_RATE);
     }
-    public int setSerialBuadRateLimited() {
+    public int setSerialBaudRateLimited() {
         return setSerialBaudRate(ChameleonSerialIOInterface.LIMITED_SPEED_BAUD_RATE);
     }
 
     public boolean startScanningDevices() {
         configureSerial();
+        btService.startScan();
         return true;
     }
 
     public boolean stopScanningDevices() {
-        serialPort.stopAutoConnect();
-        serialPort.cancelDiscovery();
+        btService.stopScan();
         return true;
     }
 
@@ -191,61 +285,18 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
     }
 
     public int configureSerial() {
-        if(serialConfigured() || serialPort.isAutoConnecting()) {
+        if(serialConfigured()) {
             return STATUS_TRUE;
         }
-        serialPort.setBluetoothConnectionListener(new BluetoothSPP.BluetoothConnectionListener() {
-            public void onDeviceConnected(String name, String address) {
-                if(name.equals(CHAMELEON_REVG_NAME) || name.equals(CHAMELEON_REVG_TINY_NAME)) {
-                    serialConfigured = true;
-                    stopScanningDevices();
-                    Settings.chameleonDeviceSerialNumber = address;
-                    Settings.SERIALIO_IFACE_ACTIVE_INDEX = Settings.BTIO_IFACE_INDEX;
-                    LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
-                    ChameleonIO.PAUSED = false;
-                    notifyBluetoothChameleonDeviceConnected();
-                    notifyStatus("BT STATUS: ", "Successfully configured the device \"" + name + "\" in passive logging mode...\n" + getActiveDeviceInfo());
-                }
-            }
-            public void onDeviceDisconnected() {
-                shutdownSerial();
-                notifyDeviceConnectionTerminated();
-            }
-            public void onDeviceConnectionFailed() {
-                shutdownSerial();
-                notifyDeviceConnectionTerminated();
-            }
-        });
-        serialPort.setAutoConnectionListener(new BluetoothSPP.AutoConnectionListener() {
-            public void onNewConnection(String name, String address) {
-                if(name.equals(CHAMELEON_REVG_NAME) || name.equals(CHAMELEON_REVG_TINY_NAME)) {
-                    serialConfigured = true;
-                    stopScanningDevices();
-                    configureSerial();
-                    Settings.chameleonDeviceSerialNumber = address;
-                    Settings.SERIALIO_IFACE_ACTIVE_INDEX = Settings.BTIO_IFACE_INDEX;
-                    LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
-                    ChameleonIO.PAUSED = false;
-                    notifyBluetoothChameleonDeviceConnected();
-                    notifyStatus("BT STATUS: ", "Successfully configured the device \"" + name + "\" in passive logging mode...\n" + getActiveDeviceInfo());
-                }
-            }
-            public void onAutoConnectionStarted() {}
-        });
-        //serialPort.startService(BluetoothState.DEVICE_OTHER);
-        serialPort.startDiscovery();
         receiversRegistered = true;
-        //Intent intent = new Intent(notifyContext, DeviceList.class);
-        //((Activity) notifyContext).startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
         return STATUS_TRUE;
     }
 
     public int shutdownSerial() {
-        if(serialPort != null) {
-            serialPort.stopAutoConnect();
-            serialPort.cancelDiscovery();
-            serialPort.disconnect();
-            serialPort.stopService();
+        if(btService != null) {
+            btService.stopScan();
+            btService.disconnect();
+            btService.stopService();
         }
         ChameleonIO.PAUSED = true;
         ExportTools.EOT = true;
@@ -263,14 +314,6 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
         receiversRegistered = false;
         notifyDeviceConnectionTerminated();
         return STATUS_TRUE;
-    }
-
-    private BluetoothSPP.OnDataReceivedListener createSerialReaderCallback() {
-        return new BluetoothSPP.OnDataReceivedListener() {
-            public void onDataReceived(byte[] liveLogData, String message) {
-                Settings.serialIOPorts[Settings.BTIO_IFACE_INDEX].onReceivedData(liveLogData);
-            }
-        };
     }
 
     public boolean serialConfigured() { return serialConfigured; }
@@ -323,7 +366,9 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
         else if(!serialConfigured()) {
             return STATUS_FALSE;
         }
-        serialPort.send(dataWriteBuffer, false);
+        btService.write(dataWriteBuffer);
+        //String dataBufStringRepr = dataWriteBuffer.toString();
+        //btWriter.write(dataBufStringRepr);
         return STATUS_TRUE;
     }
 

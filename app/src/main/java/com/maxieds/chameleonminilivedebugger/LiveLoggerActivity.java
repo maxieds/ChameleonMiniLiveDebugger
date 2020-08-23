@@ -52,6 +52,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothStatus;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -234,7 +235,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
                        "android.permission.INTERNET",
                        "android.permission.USB_PERMISSION",
                        "android.permission.BLUETOOTH",
-                       "android.permission.BLUETOOTH_ADMIN"
+                       "android.permission.BLUETOOTH_ADMIN",
+                       "android.permission.ACCESS_COARSE_LOCATION"
                };
                if (android.os.Build.VERSION.SDK_INT >= 23) {
                     requestPermissions(permissions, 200);
@@ -468,7 +470,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                SerialUSBInterface.usbPermissionsReceiverConfig = false;
                Settings.initializeSerialIOConnections();
           }
-          else if(intent.getAction().equals(BluetoothDevice.ACTION_FOUND)) {
+          /*else if(intent.getAction().equals(BluetoothDevice.ACTION_FOUND)) {
                ChameleonSerialIOInterface serialIOPort = Settings.getActiveSerialIOPort();
                if(serialIOPort != null && serialIOPort.serialConfigured())
                     return;
@@ -494,8 +496,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     MainActivityLogUtils.clearAllLogs();
                }
                setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
-          }
-          else if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
+          }*/
+          else if(// intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
                   intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED)) {
                ChameleonIO.DeviceStatusSettings.stopPostingStats();
                Settings.stopSerialIOConnectionDiscovery();
@@ -504,16 +506,23 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     Handler configDeviceHandler = new Handler();
                     Runnable configDeviceRunnable = new Runnable() {
                          public void run() {
-                              ChameleonIO.detectChameleonType();
-                              ChameleonIO.initializeDevice();
-                              UITabUtils.initializeToolsTab(TAB_TOOLS_MITEM_SLOTS, TabFragment.UITAB_DATA[TAB_TOOLS].tabInflatedView);
-                              ChameleonIO.DeviceStatusSettings.startPostingStats(0);
+                              if(Settings.getActiveSerialIOPort() != null &&
+                                      ((BluetoothSerialInterface) Settings.getActiveSerialIOPort()).isDevicePaired()) {
+                                   Log.i(TAG, "BTCMD: " + ChameleonIO.getSettingFromDevice("CONFIG?"));
+                                   ChameleonIO.detectChameleonType();
+                                   //ChameleonIO.initializeDevice();
+                                   //UITabUtils.initializeToolsTab(TAB_TOOLS_MITEM_SLOTS, TabFragment.UITAB_DATA[TAB_TOOLS].tabInflatedView);
+                                   //ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
+                                   //ChameleonIO.DeviceStatusSettings.startPostingStats(0);
+                                   setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
+                              }
+                              else {
+                                   configDeviceHandler.postDelayed(this, 500);
+                              }
                          }
                     };
                     ChameleonIO.DeviceStatusSettings.stopPostingStats();
-                    ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
-                    configDeviceHandler.postDelayed(configDeviceRunnable, 400);
-                    setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
+                    configDeviceHandler.postDelayed(configDeviceRunnable, 0);
                }
           }
           else if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_DISCONNECTED) ||
