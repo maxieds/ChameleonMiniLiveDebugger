@@ -508,12 +508,14 @@ public class LiveLoggerActivity extends AppCompatActivity {
                          public void run() {
                               if(Settings.getActiveSerialIOPort() != null &&
                                       ((BluetoothSerialInterface) Settings.getActiveSerialIOPort()).isDevicePaired()) {
-                                   Log.i(TAG, "BTCMD: " + ChameleonIO.getSettingFromDevice("CONFIG?"));
                                    ChameleonIO.detectChameleonType();
                                    //ChameleonIO.initializeDevice();
                                    //UITabUtils.initializeToolsTab(TAB_TOOLS_MITEM_SLOTS, TabFragment.UITAB_DATA[TAB_TOOLS].tabInflatedView);
                                    //ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
                                    //ChameleonIO.DeviceStatusSettings.startPostingStats(0);
+                                   Log.i(TAG, "BTCMD: " + ChameleonIO.getSettingFromDevice("CONFIG?"));
+                                   Log.i(TAG, "BTCMD: " + ChameleonIO.getSettingFromDevice("CONFIG?"));
+                                   Log.i(TAG, "BTCMD: " + ChameleonIO.getSettingFromDevice("CONFIG?"));
                                    setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
                               }
                               else {

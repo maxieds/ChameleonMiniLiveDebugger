@@ -19,19 +19,17 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGattService;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
-import android.os.ParcelUuid;
 import android.util.Log;
 
-import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothClassicService;
 import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothConfiguration;
 import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothService;
 import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothStatus;
-import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothWriter;
 import com.github.douglasjunior.bluetoothlowenergylibrary.BluetoothLeService;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.Semaphore;
@@ -41,10 +39,16 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
     private static final String TAG = BluetoothSerialInterface.class.getSimpleName();
 
     public static final String CHAMELEON_REVG_NAME = "BLE-Chameleon";
-    public static final String CHAMELEON_REVG_SERVICE_UUID = "0000180a-0000-1000-8000-00805f9b34fb";
-    public static final String CHAMELEON_REVG_CHAR_UUID = "00002a29-0000-1000-8000-00805f9b34fb";
-    public static final String CHAMELEON_REVG_TINY_NAME = "ChameleonTiny";
-    public static final String CHAMELEON_REVG_TINY_SERVICE_UUID = "51510001-7969-6473-6f40-6b6f6c6c6957";
+    public static final String CHAMELEON_REVG_SERVICE_UUID = "51510001-7969-6473-6f40-6b6f6c6c6957";
+    public static final String CHAMELEON_REVG_CHAR_UUID = "51510003-7969-6473-6f40-6b6f6c6c6957";
+    //public static final String CHAMELEON_REVG_SERVICE_UUID = "51510001-7969-6473-6f40-6b6f6c6c6957";
+    //public static final String CHAMELEON_REVG_CHAR_UUID = "51510003-7969-6473-6f40-6b6f6c6c6957";
+    //public static final String CHAMELEON_REVG_SERVICE_UUID = "00005252-0000-1000-8000-00805f9b34fb";
+    //public static final String CHAMELEON_REVG_CHAR_UUID = "52520003-7969-6473-6f40-6b6f6c6c6957";
+    //public static final String CHAMELEON_REVG_SERVICE_UUID = "00001800-0000-1000-8000-00805f9b34fb";
+    //public static final String CHAMELEON_REVG_CHAR_UUID = "00002a00-0000-1000-8000-00805f9b34fb";
+    public static final String CHAMELEON_REVG_TINY_NAME = "ChameleonTiny-DO-NOT-USE";
+    public static final String CHAMELEON_REVG_TINY_SERVICE_UUID = "51510003-7969-6473-6f40-6b6f6c6c6957";
     public static final String CHAMELEON_REVG_TINY_CHAR_UUID = "51510002-7969-6473-6f40-6b6f6c6c6957";
 
     public String getInterfaceLoggingTag() {
@@ -54,7 +58,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
     private Context notifyContext;
     private BluetoothService btService;
     private BluetoothConfiguration btConfig;
-    private BluetoothWriter btWriter;
+    private BluetoothSocket btSerialSock;
     private BluetoothDevice activeDevice;
     private int baudRate; // irrelevant?
     private boolean serialConfigured;
@@ -79,27 +83,37 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
         if(btDev == null) {
             return false;
         }
-        else if(!btDev.getName().equals(CHAMELEON_REVG_NAME) && !btDev.getName().equals(CHAMELEON_REVG_TINY_NAME)) {
+        //else if(btDev.getUuids() == null || btDev.getUuids().length == 0 || !btDev.getUuids()[0].getUuid().toString().equals(CHAMELEON_REVG_SERVICE_UUID)) {
+        //    return false;
+        //}
+        else if(btDev.getName() == null || (!btDev.getName().equals(CHAMELEON_REVG_NAME) && !btDev.getName().equals(CHAMELEON_REVG_TINY_NAME))) {
             return false;
         }
         if(!receiversRegistered) {
             configureSerial();
         }
-        if(btDev.getName().equals(CHAMELEON_REVG_TINY_NAME)) {
-            btConfig.uuidService = UUID.fromString(CHAMELEON_REVG_TINY_SERVICE_UUID);
-            btConfig.uuidCharacteristic = UUID.fromString(CHAMELEON_REVG_TINY_CHAR_UUID);
-        }
-        else {
-            btConfig.uuidService = UUID.fromString(CHAMELEON_REVG_SERVICE_UUID);
-            btConfig.uuidCharacteristic = UUID.fromString(CHAMELEON_REVG_CHAR_UUID);
-        }
         activeDevice = btDev;
         Log.i(TAG, "BTDEV: " + activeDevice.toString());
+        try {
+            if (btDev.getName().equals(CHAMELEON_REVG_TINY_NAME)) {
+                //btSerialSock = activeDevice.createRfcommSocketToServiceRecord(UUID.fromString(CHAMELEON_REVG_TINY_SERVICE_UUID));
+                //btSerialSock.connect();
+                btConfig.uuidService = UUID.fromString(CHAMELEON_REVG_TINY_SERVICE_UUID);
+                btConfig.uuidCharacteristic = UUID.fromString(CHAMELEON_REVG_TINY_CHAR_UUID);
+            } else {
+                btSerialSock = null;
+                btConfig.uuidService = UUID.fromString(CHAMELEON_REVG_SERVICE_UUID);
+                btConfig.uuidCharacteristic = UUID.fromString(CHAMELEON_REVG_CHAR_UUID);
+            }
+        } catch(Exception ex) {
+            btSerialSock = null;
+            ex.printStackTrace();
+        }
+        //activeDevice.setPairingConfirmation(true);
         ChameleonIO.REVE_BOARD = false;
-        ChameleonIO.CHAMELEON_MINI_BOARD_TYPE = btDev.getName().equals(CHAMELEON_REVG_NAME) ?
-                ChameleonIO.CHAMELEON_TYPE_PROXGRIND_REVG : ChameleonIO.CHAMELEON_TYPE_PROXGRIND_REVG_TINY;
         btConfig.deviceName = btDev.getName();
-        btService.init(btConfig);
+        BluetoothService.init(btConfig);
+        btService = BluetoothService.getDefaultInstance();
         initBluetoothListeners();
         btService.connect(btDev);
         Settings.chameleonDeviceSerialNumber = btDev.getAddress();
@@ -115,13 +129,13 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
             return false;
         }
         return btService.getStatus() == BluetoothStatus.CONNECTED;
+        //return (btSerialSock != null) && (btSerialSock.isConnected());
     }
 
     public BluetoothSerialInterface(Context appContext) {
         notifyContext = appContext;
         initBluetoothConfig();
         initBluetoothListeners();
-        btWriter = new BluetoothWriter(btService);
         activeDevice = null;
         baudRate = Settings.serialBaudRate;
         serialConfigured = false;
@@ -133,7 +147,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
         btConfig.context = notifyContext;
         btConfig.bluetoothServiceClass = BluetoothLeService.class;
         btConfig.bufferSize = 256;
-        btConfig.characterDelimiter = '\0';
+        btConfig.characterDelimiter = '\n';
         btConfig.deviceName = "ChameleonMiniLiveDebugger";
         btConfig.callListenersInMainThread = true;
         btConfig.uuidService = null; //UUID.randomUUID(); // Required
@@ -367,8 +381,16 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
             return STATUS_FALSE;
         }
         btService.write(dataWriteBuffer);
-        //String dataBufStringRepr = dataWriteBuffer.toString();
-        //btWriter.write(dataBufStringRepr);
+        /*if(isDevicePaired()) {
+            Log.d(getInterfaceLoggingTag(), "BT Write Data: (HEX) " + Utils.bytes2Hex(dataWriteBuffer));
+            Log.d(getInterfaceLoggingTag(), "BT Write Data: (TXT) " + Utils.bytes2Ascii(dataWriteBuffer));
+            try {
+                btSerialSock.getOutputStream().write(dataWriteBuffer);
+            } catch(IOException ioe) {
+                ioe.printStackTrace();
+                return STATUS_FALSE;
+            }
+        }*/
         return STATUS_TRUE;
     }
 

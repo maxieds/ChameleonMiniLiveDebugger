@@ -25,7 +25,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     <!-- ChameleonMini DFU programmer modes (if a user plugs in an un-flashed board) -->
     <usb-device vendor-id="1003" product-id="12254" name="Chameleon Mini (DFU Mode)"/>
 
-    <!-- Some hints from the Proxgrind Chameleon app at future support: -->
+    <!-- Some hints from the Proxgrind Chameleon app at future support: (TODO) -->
+    <!--
     <usb-device product-id="24577" vendor-id="1027"/>
     <usb-device product-id="24597" vendor-id="1027"/>
     <usb-device vendor-id="9025"/>
@@ -33,5 +34,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     <usb-device product-id="60000" vendor-id="4292"/>
     <usb-device product-id="8963" vendor-id="1659"/>
     <usb-device product-id="29987" vendor-id="6790"/>
+    -->
 
 </resources>
