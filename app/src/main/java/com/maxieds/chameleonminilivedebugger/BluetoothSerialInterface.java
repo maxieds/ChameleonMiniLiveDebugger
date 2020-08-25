@@ -58,7 +58,6 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
     private Context notifyContext;
     private BluetoothService btService;
     private BluetoothConfiguration btConfig;
-    private BluetoothSocket btSerialSock;
     private BluetoothDevice activeDevice;
     private int baudRate; // irrelevant?
     private boolean serialConfigured;
@@ -101,12 +100,10 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
                 btConfig.uuidService = UUID.fromString(CHAMELEON_REVG_TINY_SERVICE_UUID);
                 btConfig.uuidCharacteristic = UUID.fromString(CHAMELEON_REVG_TINY_CHAR_UUID);
             } else {
-                btSerialSock = null;
                 btConfig.uuidService = UUID.fromString(CHAMELEON_REVG_SERVICE_UUID);
                 btConfig.uuidCharacteristic = UUID.fromString(CHAMELEON_REVG_CHAR_UUID);
             }
         } catch(Exception ex) {
-            btSerialSock = null;
             ex.printStackTrace();
         }
         //activeDevice.setPairingConfirmation(true);
