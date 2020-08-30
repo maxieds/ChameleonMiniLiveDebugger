@@ -52,7 +52,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
-import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothStatus;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -319,7 +318,14 @@ public class LiveLoggerActivity extends AppCompatActivity {
                registerReceiver(serialIOActionReceiver, serialIOActionFilter);
                SerialUSBInterface.registerUSBPermission(null, this);
                serialIOReceiversRegistered = true;
-               Settings.initializeSerialIOConnections();
+
+               Handler initSettingsDeviceHandler = new Handler();
+               Runnable initSettingsDeviceRunnable = new Runnable() {
+                    public void run() {
+                         Settings.initializeSerialIOConnections();
+                    }
+               };
+               initSettingsDeviceHandler.postDelayed(initSettingsDeviceRunnable, 800);
           }
 
           String userGreeting = getString(R.string.initialUserGreetingMsg);
@@ -470,34 +476,18 @@ public class LiveLoggerActivity extends AppCompatActivity {
                SerialUSBInterface.usbPermissionsReceiverConfig = false;
                Settings.initializeSerialIOConnections();
           }
-          /*else if(intent.getAction().equals(BluetoothDevice.ACTION_FOUND)) {
-               ChameleonSerialIOInterface serialIOPort = Settings.getActiveSerialIOPort();
-               if(serialIOPort != null && serialIOPort.serialConfigured())
-                    return;
-               BluetoothDevice btDev = (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-               if(!((BluetoothSerialInterface) Settings.serialIOPorts[Settings.BTIO_IFACE_INDEX]).configureSerialConnection(btDev)) {
+          else if(intent.getAction().equals(BluetoothDevice.ACTION_FOUND)) {
+               BluetoothGattConnector btGattConnect = ((BluetoothSerialInterface) Settings.serialIOPorts[Settings.BTIO_IFACE_INDEX]).getBluetoothGattConnector();
+               if(btGattConnect == null) {
                     return;
                }
-               ChameleonIO.DeviceStatusSettings.stopPostingStats();
-               Settings.stopSerialIOConnectionDiscovery();
-               Settings.SERIALIO_IFACE_ACTIVE_INDEX = Settings.BTIO_IFACE_INDEX;
-               Handler configDeviceHandler = new Handler();
-               Runnable configDeviceRunnable = new Runnable() {
-                    public void run() {
-                         ChameleonIO.detectChameleonType();
-                         ChameleonIO.initializeDevice();
-                         UITabUtils.initializeToolsTab(TAB_TOOLS_MITEM_SLOTS, TabFragment.UITAB_DATA[TAB_TOOLS].tabInflatedView);
-                         ChameleonIO.DeviceStatusSettings.startPostingStats(0);
-                    }
-               };
-               ChameleonIO.DeviceStatusSettings.stopPostingStats();
-               configDeviceHandler.postDelayed(configDeviceRunnable, 400);
-               if(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT) {
-                    MainActivityLogUtils.clearAllLogs();
+               BluetoothDevice btLocalDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+               if(btLocalDevice == null) {
+                    return;
                }
-               setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
-          }*/
-          else if(// intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
+               btGattConnect.notifyBluetoothSerialInterfaceDeviceConnected(btLocalDevice);
+          }
+          else if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
                   intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED)) {
                ChameleonIO.DeviceStatusSettings.stopPostingStats();
                Settings.stopSerialIOConnectionDiscovery();
@@ -507,15 +497,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     Runnable configDeviceRunnable = new Runnable() {
                          public void run() {
                               if(Settings.getActiveSerialIOPort() != null &&
-                                      ((BluetoothSerialInterface) Settings.getActiveSerialIOPort()).isDevicePaired()) {
+                                      ((BluetoothSerialInterface) Settings.getActiveSerialIOPort()).isDeviceConnected()) {
                                    ChameleonIO.detectChameleonType();
                                    ChameleonIO.initializeDevice();
                                    UITabUtils.initializeToolsTab(TAB_TOOLS_MITEM_SLOTS, TabFragment.UITAB_DATA[TAB_TOOLS].tabInflatedView);
                                    ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
                                    ChameleonIO.DeviceStatusSettings.startPostingStats(0);
-                                   //Log.i(TAG, "BTCMD: " + ChameleonIO.getSettingFromDevice("CONFIG?"));
-                                   //Log.i(TAG, "BTCMD: " + ChameleonIO.getSettingFromDevice("CONFIG?"));
-                                   //Log.i(TAG, "BTCMD: " + ChameleonIO.getSettingFromDevice("CONFIG?"));
                                    setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
                               }
                               else {
@@ -524,7 +511,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                          }
                     };
                     ChameleonIO.DeviceStatusSettings.stopPostingStats();
-                    configDeviceHandler.postDelayed(configDeviceRunnable, 0);
+                    configDeviceHandler.postDelayed(configDeviceRunnable, 200);
                }
           }
           else if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_DISCONNECTED) ||

@@ -106,10 +106,10 @@ public class ChameleonIO {
         }
         else if(deviceActiveSerialIOPort.isBluetooth()) {
             String deviceName = ((BluetoothSerialInterface) deviceActiveSerialIOPort).getDeviceName();
-            if(deviceName.equals(BluetoothSerialInterface.CHAMELEON_REVG_NAME)) {
+            if(deviceName.equals(BluetoothGattConnector.CHAMELEON_REVG_NAME)) {
                 CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_PROXGRIND_REVG;
             }
-            else if(deviceName.equals(BluetoothSerialInterface.CHAMELEON_REVG_TINY_NAME)) {
+            else if(deviceName.equals(BluetoothGattConnector.CHAMELEON_REVG_TINY_NAME)) {
                 CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_PROXGRIND_REVG_TINY;
             }
         }
@@ -493,8 +493,10 @@ public class ChameleonIO {
      * @url http://rawgit.com/emsec/ChameleonMini/master/Doc/Doxygen/html/Page_CommandLine.html
      */
     public static SerialRespCode executeChameleonMiniCommand(String rawCmd, int timeout) {
-        if (PAUSED)
+        if(PAUSED) {
+            Log.i(TAG, "executeChameleonMiniCommand: PAUSED.");
             return FALSE;
+        }
         if (timeout < 0) {
             timeout *= -1;
             SystemClock.sleep(timeout);
@@ -503,8 +505,10 @@ public class ChameleonIO {
         byte[] sendBuf = deviceConfigCmd.getBytes(StandardCharsets.UTF_8);
         ChameleonSerialIOInterface serialPort = Settings.getActiveSerialIOPort();
         if(serialPort == null) {
+            Log.i(TAG, "serial port is null executing command");
             return null;
         }
+        Log.i(TAG, "sending data buffer");
         serialPort.sendDataBuffer(sendBuf);
         return OK;
     }
@@ -524,9 +528,11 @@ public class ChameleonIO {
         ChameleonIO.LASTCMD = query;
         ChameleonSerialIOInterface serialIOPort = Settings.getActiveSerialIOPort();
         if(serialIOPort == null) {
+            Log.i(TAG, "serial port is null");
             return ChameleonIO.DEVICE_RESPONSE[0];
         }
         else if(!serialIOPort.tryAcquireSerialPort(LOCK_TIMEOUT)) {
+            Log.i(TAG, "Unable to acqure serial port");
             return ChameleonIO.DEVICE_RESPONSE[0];
         }
         ChameleonIO.WAITING_FOR_RESPONSE = true;
