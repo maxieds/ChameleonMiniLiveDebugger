@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources
+    xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" xmlns:aapt="http://schemas.android.com/aapt">
+
+    <tech-list android:name="nfctech_lowlevel_protocols">
+        <tech>android.nfc.tech.IsoDep</tech>
+        <tech>android.nfc.tech.NfcA</tech>
+        <tech>android.nfc.tech.NfcB</tech>
+        <tech>android.nfc.tech.NfcF</tech>
+        <tech>android.nfc.tech.NfcV</tech>
+    </tech-list>
+
+    <tech-list android:name="nfctech_ndef_protocols">
+        <tech>android.nfc.tech.Ndef</tech>
+        <tech>android.nfc.tech.NdefFormatable</tech>
+        <tech>android.nfc.tech.NfcBarcode</tech>
+    </tech-list>
+
+    <tech-list android:name="nfctech_mifare_standard_tags">
+        <tech>android.nfc.tech.MifareUltralight</tech>
+        <tech>android.nfc.tech.MifareClassic</tech>
+    </tech-list>
+
+    <tech-list android:name="nfctech_all_tag_types">
+        <tech>android.nfc.tech.IsoDep</tech>
+        <tech>android.nfc.tech.NfcA</tech>
+        <tech>android.nfc.tech.NfcB</tech>
+        <tech>android.nfc.tech.NfcF</tech>
+        <tech>android.nfc.tech.NfcV</tech>
+        <tech>android.nfc.tech.Ndef</tech>
+        <tech>android.nfc.tech.NdefFormatable</tech>
+        <tech>android.nfc.tech.NfcBarcode</tech>
+        <tech>android.nfc.tech.MifareUltralight</tech>
+        <tech>android.nfc.tech.MifareClassic</tech>
+    </tech-list>
+
+</resources>

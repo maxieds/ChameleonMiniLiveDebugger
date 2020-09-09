@@ -347,6 +347,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:layout_gravity="right"
             android:background="?colorAccent"
             android:hint="Search by Text or Byte Strings ... Or [ENTER] to View All"
+            android:onClick="actionButtonAPDUSearchCmd"
             android:paddingLeft="5dp"
             android:singleLine="true"
             android:textAllCaps="true"

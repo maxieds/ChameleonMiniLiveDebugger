@@ -44,8 +44,8 @@ public class TabFragment extends Fragment {
 
     private static final String TAG = TabFragment.class.getSimpleName();
 
-    private static int TAB_MENU_ITEM_COLUMNS = 3;
-    private static final int TAB_COUNT = 4;
+    private static int TAB_MENU_ITEM_DEFAULT_COLUMNS = 3;
+    private static final int TAB_COUNT = 5;
 
     /**
      * Definitions of the in-order tab indices.
@@ -54,31 +54,45 @@ public class TabFragment extends Fragment {
     public static final int TAB_LOG = 0;
     public static final int TAB_TOOLS = 1;
     public static final int TAB_EXPORT = 2;
-    public static final int TAB_CONFIG = 3;
+    public static final int TAB_SCRIPTING = 3;
+    public static final int TAB_CONFIG = 4;
 
+    public static final int TAB_LOG_MITEM_COLUMNS = TAB_MENU_ITEM_DEFAULT_COLUMNS;
     public static final int TAB_LOG_MITEM_LOGS = 0;
     public static final int TAB_LOG_MITEM_LOGTOOLS = 1;
     public static final int TAB_LOG_MITEM_SEARCH = 2;
 
+    public static final int TAB_TOOLS_MITEM_COLUMNS = TAB_MENU_ITEM_DEFAULT_COLUMNS;
     public static final int TAB_TOOLS_MITEM_SLOTS = 0;
     public static final int TAB_TOOLS_MITEM_TAGCONFIG = 1;
-    public static final int TAB_TOOLS_MITEM_SCRIPTING = 2;
-    public static final int TAB_TOOLS_MITEM_CMDS = 3;
-    public static final int TAB_TOOLS_MITEM_PERIPHERALS = 4;
-    public static final int TAB_TOOLS_MITEM_APDU = 5;
+    public static final int TAB_TOOLS_MITEM_CMDS = 2;
+    public static final int TAB_TOOLS_MITEM_PERIPHERALS = 3;
+    public static final int TAB_TOOLS_MITEM_APDU = 4;
 
+    public static final int TAB_EXPORT_MITEM_COLUMNS = TAB_MENU_ITEM_DEFAULT_COLUMNS;
     public static final int TAB_EXPORT_MITEM_EXPORTLOGS = 0;
     public static final int TAB_EXPORT_MITEM_DOWNLOAD = 1;
     public static final int TAB_EXPORT_MITEM_UPLOAD = 2;
 
+    public static final int TAB_SCRIPTING_MITEM_COLUMNS = TAB_MENU_ITEM_DEFAULT_COLUMNS;
+    public static final int TAB_SCRIPTING_MITEM_LOAD_IMPORT_CHKSYNTAX = 0;
+    public static final int TAB_SCRIPTING_MITEM_VIEW_SCRIPT_OUTPUT = 1;
+    public static final int TAB_SCRIPTING_MITEM_SCRIPT_EDITOR_VIEWER = 2;
+    public static final int TAB_SCRIPTING_MITEM_RUNTIME_REGISTER_VIEWS = 3;
+    public static final int TAB_SCRIPTING_MITEM_HELP = 4;
+
+    public static final int TAB_CONFIG_MITEM_COLUMNS = 4;
     public static final int TAB_CONFIG_MITEM_SETTINGS = 0;
     public static final int TAB_CONFIG_MITEM_CONNECT = 1;
+    public static final int TAB_CONFIG_MITEM_SCRIPTING = 2;
+    public static final int TAB_CONFIG_MITEM_THEMES = 3;
 
     public static class UITab {
 
         public int tabIndex;
         public int tabIcon;
         public String tabText;
+        public int tabNumColumns;
         public int lastMenuIndex;
         public View tabInflatedView;
         public boolean tabViewInit;
@@ -88,10 +102,12 @@ public class TabFragment extends Fragment {
         public int[] menuItemLayout;
 
         public UITab(int tidx, int ticon, String text,
+                     int tabNumCols,
                      String[] mitemText, int[] mitemLayout) {
             tabIndex = tidx;
             tabIcon = ticon;
             tabText = text;
+            tabNumColumns = tabNumCols;
             initializeLayout();
             menuItemText = new String[mitemText.length];
             menuItemLayout = new int[mitemLayout.length];
@@ -144,6 +160,7 @@ public class TabFragment extends Fragment {
                 return null;
             }
             GridLayout menuItemsNav = (GridLayout) tabInflatedView.findViewById(R.id.tabMenuItemsNav);
+            menuItemsNav.setColumnCount(tabNumColumns);
             GradientDrawable gradientBg = new GradientDrawable(
                     GradientDrawable.Orientation.BL_TR,
                     new int[] {
@@ -164,7 +181,7 @@ public class TabFragment extends Fragment {
                 menuItemClick.offsetTopAndBottom(0);
                 menuItemClick.setPadding(20, 8, 20, 8);
                 menuItemClick.setMaxHeight(100);
-                menuItemClick.setMinWidth(menuItemsNav.getMeasuredWidth() / 3);
+                menuItemClick.setMinWidth(menuItemsNav.getMeasuredWidth() / tabNumColumns);
                 String indexRefTag = String.format(Locale.ENGLISH, "%d:%d", tabIndex, totalItems);
                 menuItemClick.setTag(indexRefTag);
                 menuItemClick.setOnClickListener(new View.OnClickListener() {
@@ -216,7 +233,8 @@ public class TabFragment extends Fragment {
         UITAB_DATA[TAB_LOG] = new UITab(
                 TAB_LOG,
                 R.drawable.nfc24v1,
-                "Logging",
+                "Logs",
+                TAB_LOG_MITEM_COLUMNS,
                 new String[] {
                         "Live Logs",
                         "Log Tools",
@@ -231,10 +249,10 @@ public class TabFragment extends Fragment {
                 TAB_TOOLS,
                 R.drawable.tools24,
                 "Tools",
+                TAB_TOOLS_MITEM_COLUMNS,
                 new String[] {
                         "Config Slots",
-                        "Tag Config",
-                        "Scripting",
+                        "Tag Configs",
                         "Commands",
                         "Peripherals",
                         "Raw APDU"
@@ -242,7 +260,6 @@ public class TabFragment extends Fragment {
                 new int[]{
                         R.layout.tools_tab_slots,
                         R.layout.tools_tab_tag_config,
-                        R.layout.tools_tab_scripting,
                         R.layout.tools_tab_commands,
                         R.layout.tools_tab_peripherals,
                         R.layout.tools_tab_apdu
@@ -251,10 +268,11 @@ public class TabFragment extends Fragment {
                 TAB_EXPORT,
                 R.drawable.insertbinary24,
                 "Export",
+                TAB_EXPORT_MITEM_COLUMNS,
                 new String[] {
                         "Export Logs",
                         "Download",
-                        "Upload / Clone",
+                        "Upload and Clone",
                 },
                 new int[]{
                         R.layout.export_tab_save_logs,
@@ -262,17 +280,43 @@ public class TabFragment extends Fragment {
                         R.layout.export_tab_upload,
                         R.layout.export_tab_clone_mfc
                 });
+        UITAB_DATA[TAB_SCRIPTING] = new UITab(
+                TAB_SCRIPTING,
+                R.drawable.scriptingtab24,
+                "Scripts",
+                TAB_SCRIPTING_MITEM_COLUMNS,
+                new String[] {
+                        "Load and Import",
+                        "Run and View Output",
+                        "Editor",
+                        "Variables",
+                        "Help and Syntax"
+                },
+                new int[] {
+                        R.layout.tab_under_construction,
+                        R.layout.tab_under_construction,
+                        R.layout.tab_under_construction,
+                        R.layout.tab_under_construction,
+                        R.layout.tab_under_construction
+
+
+                });
         UITAB_DATA[TAB_CONFIG] = new UITab(
                 TAB_CONFIG,
                 R.drawable.configtab24,
                 "Config",
+                TAB_CONFIG_MITEM_COLUMNS,
                 new String[] {
-                        "General Settings",
-                        "Connect to Devices"
+                        "General",
+                        "Devices",
+                        "Scripts",
+                        "Themes"
                 },
                 new int[] {
                         R.layout.config_tab_general_settings,
-                        R.layout.config_tab_connect
+                        R.layout.config_tab_connect,
+                        R.layout.tab_under_construction,
+                        R.layout.tab_under_construction
                 });
     }
 

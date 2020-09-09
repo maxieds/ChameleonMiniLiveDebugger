@@ -60,6 +60,7 @@ import java.util.Locale;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_SCRIPTING;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_SLOTS;
 
@@ -405,6 +406,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
           tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_LOG)));
           tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_TOOLS)));
           tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_EXPORT)));
+          tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_SCRIPTING)));
           tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_CONFIG)));
           tabLayout.setupWithViewPager(viewPager);
 
@@ -416,6 +418,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
           tabLayout.getTabAt(TAB_LOG).setIcon(tfPagerAdapter.getTabIcon(TAB_LOG));
           tabLayout.getTabAt(TAB_TOOLS).setIcon(tfPagerAdapter.getTabIcon(TAB_TOOLS));
           tabLayout.getTabAt(TAB_EXPORT).setIcon(tfPagerAdapter.getTabIcon(TAB_EXPORT));
+          tabLayout.getTabAt(TAB_SCRIPTING).setIcon(tfPagerAdapter.getTabIcon(TAB_SCRIPTING));
           tabLayout.getTabAt(TAB_CONFIG).setIcon(tfPagerAdapter.getTabIcon(TAB_CONFIG));
 
      }

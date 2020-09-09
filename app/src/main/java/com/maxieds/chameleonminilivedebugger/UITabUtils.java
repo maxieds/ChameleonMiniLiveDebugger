@@ -53,6 +53,7 @@ import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_MITEM_LOGS;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_MITEM_LOGTOOLS;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_MITEM_SEARCH;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_SCRIPTING;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_APDU;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_CMDS;
@@ -75,6 +76,8 @@ public class UITabUtils {
                 return UITabUtils.initializeToolsTab(menuItemIdx, tabMainLayoutView);
             case TAB_EXPORT:
                 return UITabUtils.initializeExportTab(menuItemIdx, tabMainLayoutView);
+            case TAB_SCRIPTING:
+                return false;
             case TAB_CONFIG:
                 return UITabUtils.initializeConfigTab(menuItemIdx, tabMainLayoutView);
             default:
@@ -214,12 +217,12 @@ public class UITabUtils {
                     }
                 }
             }
-            else if (Settings.getActiveSerialIOPort() != null) {
-                ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].getTagConfigurationsListFromDevice();
-                ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].readParametersFromChameleonSlot();
-                ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].updateLayoutParameters();
-                ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].enableLayout();
-            }
+            //else if (Settings.getActiveSerialIOPort() != null) {
+            //    ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].getTagConfigurationsListFromDevice();
+            //    ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].readParametersFromChameleonSlot();
+            //    ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].updateLayoutParameters();
+            //    ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].enableLayout();
+            //}
         }
         else if(menuItemIdx == TAB_TOOLS_MITEM_TAGCONFIG) {
             /*Spinner tagConfigModeSpinner = tabMainLayoutView.findViewById(R.id.tagConfigModeSpinner);

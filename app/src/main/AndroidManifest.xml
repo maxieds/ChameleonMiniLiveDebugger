@@ -4,23 +4,41 @@
     package="com.maxieds.chameleonminilivedebugger"
     android:installLocation="preferExternal" >
 
+<!--
+    This program (The Chameleon Mini Live Debugger) is free software written by
+    Maxie Dion Schmidt: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    The complete license provided with source distributions of this library is
+    available at the following link:
+    https://github.com/maxieds/ChameleonMiniLiveDebugger
+-->
+
     <protected-broadcast android:name="android.hardware.usb.action.USB_STATE" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.INTERNET"/>
-
-    <uses-permission android:name="android.permission.USB_PERMISSION" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.USB_PERMISSION" android:required="true" />
+    <uses-permission android:name="android.permission.BLUETOOTH" android:required="false" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:required="false" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:required="false" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:required="false" />
 
     <uses-feature android:name="android.hardware.usb.host" android:required="true" />
-    <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
+    <uses-feature android:name="android.hardware.usb.accessory" android:required="false" />
+    <uses-feature android:name="android.bluetooth" android:required="false" />
+    <uses-feature android:name="android.bluetooth.le" android:required="false"/>
+    <uses-feature android:name="android.hardware.nfc" android:required="false" />
+
+    <!-- TODO: See https://developer.android.com/guide/topics/manifest/permission-group-element -->
 
     <application
         android:theme="${appTheme}"
@@ -44,9 +62,11 @@
         <uses-library android:name="com.android.future.usb.accessory" />
 
         <activity android:name=".LiveLoggerActivity"
-            android:screenOrientation="fullSensor"
+            android:screenOrientation="nosensor"
             android:alwaysRetainTaskState="true"
             android:clearTaskOnLaunch="true"
+            android:hardwareAccelerated="true"
+            android:uiOptions="none"
             android:stateNotNeeded="true">
 
             <intent-filter android:priority="1000">
@@ -56,13 +76,22 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" android:resource="@xml/usb_device_filter"/>
-            <meta-data android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" android:resource="@xml/usb_device_filter"/>
+            <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" android:resource="@xml/chameleon_usb_device_filter"/>
+            <meta-data android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" android:resource="@xml/chameleon_usb_device_filter"/>
 
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" android:resource="@xml/custom_usb_device_filter"/>
+
+            <!--
             <intent-filter>
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
                 <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
             </intent-filter>
+            -->
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

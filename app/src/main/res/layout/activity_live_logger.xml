@@ -71,7 +71,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:paddingRight="10dp"
                 android:text="DEVICE CONF"
                 android:textColor="?deviceStatusBarTextColor"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 android:textStyle="normal|bold" />
 
             <TextView
@@ -94,8 +94,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:paddingRight="10dp"
                 android:text="DEVICE UID"
                 android:textColor="?deviceStatusBarTextColor"
-                android:textSize="12sp"
-                android:textStyle="normal|bold" />
+                android:textSize="11sp"
+                android:textStyle="normal|bold|italic" />
 
             <TextView
                 android:id="@+id/deviceStats2"
@@ -214,18 +214,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:gravity="left|center_vertical"
             android:onClick="actionButtonAboutTheApp"
             android:textColor="?deviceStatusBarTextColor" />
-
-        <!--<Button
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="25dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="5dp"
-            android:background="?deviceStatusBarBackgroundColor"
-            android:drawableLeft="@drawable/closeicon24"
-            android:drawablePadding="6dp"
-            android:gravity="left|center_vertical"
-            android:onClick="actionButtonExit" />-->
 
     </LinearLayout>
 

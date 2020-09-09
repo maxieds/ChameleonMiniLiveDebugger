@@ -20,7 +20,13 @@ package com.maxieds.chameleonminilivedebugger;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.ArraySet;
+import android.util.JsonWriter;
 
+import org.apache.commons.lang3.SerializationUtils;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,6 +44,8 @@ public class AndroidSettingsStorage {
     public static final String DEFAULT_CMLDAPP_PROFILE = "CMLDAppProfile";
 
     public static final String THEMEID_PREFERENCE = "themeID";
+    public static final String CUSTOM_THEME_DATA_PREFERENCE = "customUserThemeDataArrays";
+    public static final String USE_CUSTOM_USER_THEME_DATA_PREFERENCE = "useCustomUserThemeDataArrays";
     public static final String PROFILE_NAME_PREFERENCE = "profileName";
     public static final String PROFILE_SERIALID_PREFERENCE = "profileSerialID";
     public static final String CHAMELEON_SLOT_NAMES = "chameleonDeviceSlotNames";
@@ -57,6 +65,8 @@ public class AndroidSettingsStorage {
 
     public static boolean loadDefaultSettings(String profileID) {
         updateValueByKey(profileID, THEMEID_PREFERENCE);
+        updateValueByKey(profileID, CUSTOM_THEME_DATA_PREFERENCE);
+        updateValueByKey(profileID, USE_CUSTOM_USER_THEME_DATA_PREFERENCE);
         updateValueByKey(profileID, PROFILE_SERIALID_PREFERENCE);
         updateValueByKey(profileID, PROFILE_NAME_PREFERENCE);
         updateValueByKey(profileID, SERIAL_BAUDRATE_PREFERENCE);
@@ -75,11 +85,10 @@ public class AndroidSettingsStorage {
     }
 
     public static boolean loadPreviousSettings(String profileID) {
-        //if(!LiveLoggerActivity.getInstance().getSharedPreferences(profileID, Context.MODE_PRIVATE).contains(PROFILE_SERIALID_PREFERENCE)) {
-        //    return loadDefaultSettings(profileID);
-        //}
         try {
             ThemesConfiguration.storedAppTheme = getStringValueByKey(profileID, THEMEID_PREFERENCE);
+            CustomUserThemeSupport.CUSTOM_USER_THEME_DATA = (CustomUserThemeSupport) loadObjectFromJSONStorage(getStringValueByKey(profileID, CUSTOM_THEME_DATA_PREFERENCE));
+            CustomUserThemeSupport.USE_CUSTOM_USER_THEME_DATA = Boolean.valueOf(getStringValueByKey(profileID, USE_CUSTOM_USER_THEME_DATA_PREFERENCE));
             Settings.chameleonDeviceSerialNumber = getStringValueByKey(profileID, PROFILE_SERIALID_PREFERENCE);
             Settings.chameleonDeviceNickname = getStringValueByKey(profileID, PROFILE_NAME_PREFERENCE);
             Settings.serialBaudRate = Integer.parseInt(getStringValueByKey(profileID, SERIAL_BAUDRATE_PREFERENCE));
@@ -106,6 +115,12 @@ public class AndroidSettingsStorage {
         SharedPreferences.Editor spEditor = sharedPrefs.edit();
         if(prefsKey.equals(THEMEID_PREFERENCE)) {
             spEditor.putString(prefsKey, ThemesConfiguration.storedAppTheme);
+        }
+        else if(prefsKey.substring(0, CUSTOM_THEME_DATA_PREFERENCE.length()).equals(CUSTOM_THEME_DATA_PREFERENCE)) {
+            spEditor.putString(prefsKey, SerializationUtils.serialize(CustomUserThemeSupport.CUSTOM_USER_THEME_DATA).toString());
+        }
+        else if(prefsKey.equals(USE_CUSTOM_USER_THEME_DATA_PREFERENCE)) {
+            spEditor.putBoolean(prefsKey, CustomUserThemeSupport.USE_CUSTOM_USER_THEME_DATA);
         }
         else if(prefsKey.equals(PROFILE_NAME_PREFERENCE)) {
             spEditor.putString(prefsKey, Settings.chameleonDeviceNickname);
@@ -172,6 +187,12 @@ public class AndroidSettingsStorage {
         if(prefsKey.equals(THEMEID_PREFERENCE)) {
             return sharedPrefs.getString(prefsKey, ThemesConfiguration.storedAppTheme);
         }
+        else if(prefsKey.substring(0, CUSTOM_THEME_DATA_PREFERENCE.length()).equals(CUSTOM_THEME_DATA_PREFERENCE)) {
+            return sharedPrefs.getString(prefsKey, SerializationUtils.serialize(CustomUserThemeSupport.CUSTOM_USER_THEME_DATA).toString());
+        }
+        else if(prefsKey.equals(USE_CUSTOM_USER_THEME_DATA_PREFERENCE)) {
+            return sharedPrefs.getBoolean(prefsKey, CustomUserThemeSupport.USE_CUSTOM_USER_THEME_DATA) ? "true" : "false";
+        }
         else if(prefsKey.equals(PROFILE_NAME_PREFERENCE)) {
             return sharedPrefs.getString(prefsKey, Settings.chameleonDeviceNickname);
         }
@@ -216,6 +237,10 @@ public class AndroidSettingsStorage {
             return sharedPrefs.getBoolean(prefsKey, ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) ? "true" : "false";
         }
         return null;
+    }
+
+    public static<ObjTypeT extends Serializable> ObjTypeT loadObjectFromJSONStorage(String objStrRepr) {
+        return (ObjTypeT) SerializationUtils.deserialize(objStrRepr.getBytes());
     }
 
     public static String[] getStringArrayValueByKey(String profileID, String prefsKey) {

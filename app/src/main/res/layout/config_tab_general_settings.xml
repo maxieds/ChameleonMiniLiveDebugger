@@ -121,7 +121,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:drawableLeft="@drawable/serial_port_icon24"
                     android:drawablePadding="3dp"
                     android:singleLine="true"
-                    android:text="Serial Baud Rate: "
+                    android:text="USB Serial Baud Rate: "
                     android:textStyle="normal"
                     android:textColor="#000000" />
 
