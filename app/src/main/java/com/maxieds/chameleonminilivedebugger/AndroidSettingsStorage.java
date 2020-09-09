@@ -27,6 +27,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -87,7 +88,7 @@ public class AndroidSettingsStorage {
     public static boolean loadPreviousSettings(String profileID) {
         try {
             ThemesConfiguration.storedAppTheme = getStringValueByKey(profileID, THEMEID_PREFERENCE);
-            CustomUserThemeSupport.CUSTOM_USER_THEME_DATA = (CustomUserThemeSupport) loadObjectFromJSONStorage(getStringValueByKey(profileID, CUSTOM_THEME_DATA_PREFERENCE));
+            CustomUserThemeSupport.CUSTOM_USER_THEME_DATA = (CustomUserThemeSupport) loadObjectFromStringStorage(getStringValueByKey(profileID, CUSTOM_THEME_DATA_PREFERENCE));
             CustomUserThemeSupport.USE_CUSTOM_USER_THEME_DATA = Boolean.valueOf(getStringValueByKey(profileID, USE_CUSTOM_USER_THEME_DATA_PREFERENCE));
             Settings.chameleonDeviceSerialNumber = getStringValueByKey(profileID, PROFILE_SERIALID_PREFERENCE);
             Settings.chameleonDeviceNickname = getStringValueByKey(profileID, PROFILE_NAME_PREFERENCE);
@@ -116,8 +117,9 @@ public class AndroidSettingsStorage {
         if(prefsKey.equals(THEMEID_PREFERENCE)) {
             spEditor.putString(prefsKey, ThemesConfiguration.storedAppTheme);
         }
-        else if(prefsKey.substring(0, CUSTOM_THEME_DATA_PREFERENCE.length()).equals(CUSTOM_THEME_DATA_PREFERENCE)) {
-            spEditor.putString(prefsKey, SerializationUtils.serialize(CustomUserThemeSupport.CUSTOM_USER_THEME_DATA).toString());
+        else if(prefsKey.substring(0, Math.min(prefsKey.length(), CUSTOM_THEME_DATA_PREFERENCE.length())).equals(CUSTOM_THEME_DATA_PREFERENCE)) {
+            byte[] serializedObjBytes = SerializationUtils.serialize(CustomUserThemeSupport.CUSTOM_USER_THEME_DATA);
+            spEditor.putString(prefsKey, new String(serializedObjBytes, StandardCharsets.UTF_8));
         }
         else if(prefsKey.equals(USE_CUSTOM_USER_THEME_DATA_PREFERENCE)) {
             spEditor.putBoolean(prefsKey, CustomUserThemeSupport.USE_CUSTOM_USER_THEME_DATA);
@@ -187,8 +189,8 @@ public class AndroidSettingsStorage {
         if(prefsKey.equals(THEMEID_PREFERENCE)) {
             return sharedPrefs.getString(prefsKey, ThemesConfiguration.storedAppTheme);
         }
-        else if(prefsKey.substring(0, CUSTOM_THEME_DATA_PREFERENCE.length()).equals(CUSTOM_THEME_DATA_PREFERENCE)) {
-            return sharedPrefs.getString(prefsKey, SerializationUtils.serialize(CustomUserThemeSupport.CUSTOM_USER_THEME_DATA).toString());
+        else if(prefsKey.substring(0, Math.min(prefsKey.length(), CUSTOM_THEME_DATA_PREFERENCE.length())).equals(CUSTOM_THEME_DATA_PREFERENCE)) {
+            return sharedPrefs.getString(prefsKey, String.valueOf(SerializationUtils.serialize(CustomUserThemeSupport.CUSTOM_USER_THEME_DATA)));
         }
         else if(prefsKey.equals(USE_CUSTOM_USER_THEME_DATA_PREFERENCE)) {
             return sharedPrefs.getBoolean(prefsKey, CustomUserThemeSupport.USE_CUSTOM_USER_THEME_DATA) ? "true" : "false";
@@ -239,7 +241,7 @@ public class AndroidSettingsStorage {
         return null;
     }
 
-    public static<ObjTypeT extends Serializable> ObjTypeT loadObjectFromJSONStorage(String objStrRepr) {
+    public static<ObjTypeT extends Serializable> ObjTypeT loadObjectFromStringStorage(String objStrRepr) {
         return (ObjTypeT) SerializationUtils.deserialize(objStrRepr.getBytes());
     }
 
