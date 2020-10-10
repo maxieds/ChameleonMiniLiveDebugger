@@ -240,9 +240,9 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
     <style name="AppThemeAtlanta" parent="AppTheme">
         <item name="colorPrimary">#C59353</item>
-        <item name="colorPrimaryDark">#EEB211</item>
+        <item name="colorPrimaryDark">#634A2A</item>
         <item name="colorAccent">#C59353</item>
-        <item name="colorPrimaryDarkLog">#4E6782</item>
+        <item name="colorPrimaryDarkLog">#765832</item>
         <item name="colorAccentLog">#F4CA59</item>
         <item name="deviceMemoryLogHighlight">#EF2929</item>
         <item name="colorAccentHighlight">#F4CA59</item>
@@ -335,7 +335,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item name="android:maxHeight">40dp</item>
         <item name="android:layout_weight">0.29</item>
         <item name="android:textSize">11sp</item>
-        <item name="android:textStyle">normal|bold</item>
+        <item name="android:textStyle">normal|bold</item>`
     </style>
 
     <style name="GridButtonsNoWidth">

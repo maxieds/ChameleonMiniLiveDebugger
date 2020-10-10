@@ -88,6 +88,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
                     //ChameleonIO.initializeDevice();
                     //UITabUtils.initializeToolsTab(TAB_TOOLS_MITEM_SLOTS, TabFragment.UITAB_DATA[TAB_TOOLS].tabInflatedView);
                     //ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
+                    ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
                     ChameleonIO.DeviceStatusSettings.startPostingStats(0);
                     LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
                 }

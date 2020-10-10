@@ -180,6 +180,9 @@ public class UITabUtils {
     public static boolean initializeToolsTab(int menuItemIdx, View tabMainLayoutView) {
         if(menuItemIdx == TAB_TOOLS_MITEM_SLOTS) {
             NumberPicker settingsNumberPicker = (NumberPicker) tabMainLayoutView.findViewById(R.id.settingsNumberPicker);
+            if(settingsNumberPicker == null) {
+                return false;
+            }
             settingsNumberPicker.setDividerThickness(1);
             settingsNumberPicker.setOrientation(LinearLayout.HORIZONTAL);
             settingsNumberPicker.setValue(ChameleonIO.deviceStatus.DIP_SETTING);

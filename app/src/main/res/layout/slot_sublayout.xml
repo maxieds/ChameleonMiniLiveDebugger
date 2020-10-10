@@ -177,6 +177,34 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:drawableLeft="@drawable/padlock24locked"
                     android:drawablePadding="2dp"
                     android:singleLine="true"
+                    android:text="FIELD: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?colorPrimaryDark" />
+
+                <Switch
+                    android:id="@+id/fieldOnOffSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|left"
+                    android:checked="true"
+                    android:gravity="center"
+                    android:paddingLeft="0dp"
+                    android:scrollHorizontally="true"
+                    android:showText="false"
+                    android:switchMinWidth="50dp"
+                    android:textOff="OFF"
+                    android:textOn="ON"
+                    android:textColor="?colorPrimaryDarkLog"
+                    android:textStyle="bold|italic"
+                    android:thumbTint="?colorPrimaryDark" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:drawableLeft="@drawable/padlock24locked"
+                    android:drawablePadding="2dp"
+                    android:singleLine="true"
                     android:text="UID MODIFY: "
                     android:textStyle="bold|italic"
                     android:textColor="?colorPrimaryDark" />

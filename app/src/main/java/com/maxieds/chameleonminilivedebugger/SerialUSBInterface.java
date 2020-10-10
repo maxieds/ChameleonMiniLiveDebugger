@@ -334,6 +334,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
                         if (!Settings.serialIOPorts[Settings.BTIO_IFACE_INDEX].serialConfigured()) {
                             if (Settings.serialIOPorts[Settings.USBIO_IFACE_INDEX].configureSerial() != 0) {
                                 ChameleonIO.DeviceStatusSettings.stopPostingStats();
+                                ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
                                 ChameleonIO.DeviceStatusSettings.startPostingStats(100);
                             }
                         }

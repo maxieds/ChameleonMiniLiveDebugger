@@ -62,8 +62,8 @@ public class Utils {
     }
 
     public static String formatUIDString(String hexBytesStr, String delim) {
-        if(hexBytesStr.length() == 0) {
-            return "<uid-unknown>";
+        if(hexBytesStr == null || hexBytesStr.length() == 0) {
+            return "DEVICE UID";
         }
         else if(hexBytesStr.equals("NO UID.")) {
             return hexBytesStr;
@@ -210,7 +210,7 @@ public class Utils {
     public static String getTimestamp() {
         Time currentTime = new Time();
         currentTime.setToNow();
-        return currentTime.format("%Y-%m-%d @ %T");
+        return currentTime.format("%Y-%m-%d-%T");
     }
 
     /**

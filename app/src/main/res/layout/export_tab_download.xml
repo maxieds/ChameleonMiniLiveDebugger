@@ -29,7 +29,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:drawableLeft="@drawable/modemplug16"
         android:drawablePadding="5dp"
         android:singleLine="true"
-        android:text="Download Binary Data via ~XMODEM~:"
+        android:text="Download Binary Data via XMODEM:"
         android:textSize="14sp"
         android:textAllCaps="true"
         android:textStyle="bold|italic" />

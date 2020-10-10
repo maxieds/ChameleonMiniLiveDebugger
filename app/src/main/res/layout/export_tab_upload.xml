@@ -61,7 +61,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:drawableLeft="@drawable/idcard24"
             android:tag="UPLOAD"
             android:onClick="actionButtonUploadCard"
-            android:text="UPLOAD CARD MFD/BIN" />
+            android:text="UPLOAD CARD MFD/DUMP" />
 
     </GridLayout>
 
@@ -128,14 +128,16 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <Button
             style="@style/GridButtons"
             android:drawableLeft="@drawable/chip24v11"
-            android:tag="MFU"
+            android:tag="EM4233"
             android:onClick="actionButtonCloneStockDumpImages"
             android:text="EM4233 Tag" />
 
         <Button
             style="@style/GridButtons"
             android:drawableLeft="@drawable/chip24v13"
-            android:text="DESFire (TODO)"/>
+            android:tag="DESFIRE"
+            android:onClick="actionButtonCloneStockDumpImages"
+            android:text="MIFARE DESFire"/>
 
     </GridLayout>
 

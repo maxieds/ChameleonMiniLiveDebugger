@@ -66,73 +66,148 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/binarymobile24"
                     android:onClick="actionButtonCreateNewEvent"
+                    android:tag="ISO14443A_READER"
                     android:text="READER" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/binarysearch24"
                     android:onClick="actionButtonCreateNewEvent"
-                    android:text="SNIFFER" />
+                    android:tag="ISO14443A_SNIFF"
+                    android:text="SNIFF-14443A" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/binarysearch24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:tag="ISO15693_SNIFF"
+                    android:text="SNIFF-15693" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/chipbrain2"
                     android:onClick="actionButtonCreateNewEvent"
-                    android:text="DETECT" />
+                    android:tag="MF_DETECTION"
+                    android:text="MF-DETECT" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/chipbrain2"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:tag="MF_DETECTION_4K"
+                    android:text="MF-DETECT-4K" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/chip24v2"
                     android:onClick="actionButtonCreateNewEvent"
-                    android:text="CLASSIC-1K" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/card24v9"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="CLASSIC-4K" />
+                    android:tag="MF_CLASSIC_1K"
+                    android:text="MFC-1K" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/card24v8"
                     android:onClick="actionButtonCreateNewEvent"
-                    android:text="CLASSIC-1K7B" />
+                    android:tag="MF_CLASSIC_1K_7B"
+                    android:text="MFC-1K7B" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/card24v9"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:tag="MF_CLASSIC_4K"
+                    android:text="MFC-4K" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/chip24v4"
                     android:onClick="actionButtonCreateNewEvent"
-                    android:text="CLASSIC-4K7B" />
+                    android:tag="MF_CLASSIC_4K_7B"
+                    android:text="MFC-4K7B" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/chip24v15"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:tag="MF_CLASSIC_MINI_4B"
+                    android:text="MFC-MINI-4B" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/chip24v3"
                     android:onClick="actionButtonCreateNewEvent"
-                    android:text="ULTRALIGHT" />
+                    android:tag="MF_ULTRALIGHT"
+                    android:text="MFU" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/chip24v10"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:tag="MF_ULTRALIGHT_C"
+                    android:text="MFU-C" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/card24v6"
                     android:onClick="actionButtonCreateNewEvent"
+                    android:tag="MF_ULTRALIGHT_EV1_80B"
                     android:text="MFU-EV1-80B" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/chip24v1"
                     android:onClick="actionButtonCreateNewEvent"
+                    android:tag="MF_ULTRALIGHT_EV1_164B"
                     android:text="MFU-EV1-164B" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/chip24v14"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:tag="MF_DESFIRE"
+                    android:text="MF-DESFIRE" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/chip24v10"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:tag="EM4233"
+                    android:text="EM4233" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/chip24v12"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:tag="NTAG215"
+                    android:text="NTAG215" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/chip24v5"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:tag="SL2S2002"
+                    android:text="SL2S2002" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/chip24v11"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:tag="TITAGITSTANDARD"
+                    android:text="TITAGIT-STD" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/chip24v13"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:tag="VICINITY"
+                    android:text="VICINITY" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/blankchip24"
                     android:onClick="actionButtonCreateNewEvent"
-                    android:text="CFGNONE" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/configq24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="LIST CONFIG" />
+                    android:tag="NONE"
+                    android:text="CFG-NONE" />
 
             </GridLayout>
 

@@ -88,7 +88,7 @@ public class AndroidSettingsStorage {
     public static boolean loadPreviousSettings(String profileID) {
         try {
             ThemesConfiguration.storedAppTheme = getStringValueByKey(profileID, THEMEID_PREFERENCE);
-            CustomUserThemeSupport.CUSTOM_USER_THEME_DATA = (CustomUserThemeSupport) loadObjectFromStringStorage(getStringValueByKey(profileID, CUSTOM_THEME_DATA_PREFERENCE));
+            //CustomUserThemeSupport.CUSTOM_USER_THEME_DATA = (CustomUserThemeSupport) loadObjectFromStringStorage(getStringValueByKey(profileID, CUSTOM_THEME_DATA_PREFERENCE));
             CustomUserThemeSupport.USE_CUSTOM_USER_THEME_DATA = Boolean.valueOf(getStringValueByKey(profileID, USE_CUSTOM_USER_THEME_DATA_PREFERENCE));
             Settings.chameleonDeviceSerialNumber = getStringValueByKey(profileID, PROFILE_SERIALID_PREFERENCE);
             Settings.chameleonDeviceNickname = getStringValueByKey(profileID, PROFILE_NAME_PREFERENCE);

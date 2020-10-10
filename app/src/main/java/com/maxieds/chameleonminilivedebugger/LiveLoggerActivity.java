@@ -17,6 +17,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import android.Manifest;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
@@ -27,6 +28,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.hardware.usb.UsbManager;
@@ -50,6 +52,7 @@ import android.widget.Toolbar;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
@@ -92,7 +95,13 @@ public class LiveLoggerActivity extends AppCompatActivity {
      private static int selectedTab = TAB_TOOLS;
 
      public static int getSelectedTab() { return selectedTab; }
-     public static void setSelectedTab(int tabIdx) { selectedTab = tabIdx; }
+     public static void setSelectedTab(int tabIdx) {
+          if (selectedTab < 0) {
+               selectedTab = 0;
+          } else {
+               selectedTab = tabIdx;
+          }
+     }
 
      /**
       * Sets one of the small status icons indicated at the top of the activity window.
@@ -261,65 +270,58 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     ChameleonIO.DeviceStatusSettings.stopPostingStats();
                     configDeviceHandler.postDelayed(configDeviceRunnable, 600);
                }
-               if(serialIOActionReceiver != null) {
+               if(serialIOActionReceiver == null) {
                     try {
                          unregisterReceiver(serialIOActionReceiver);
-                    }
-                    catch(Exception excpt) {
+                    } catch (Exception excpt) {
                          excpt.printStackTrace();
                     }
+                    serialIOActionReceiver = new BroadcastReceiver() {
+                         public void onReceive(Context context, Intent intent) {
+                              Log.i(TAG, intent.getAction());
+                              if (intent.getAction() == null) {
+                                   return;
+                              } else if (intent.getAction().equals(SerialUSBInterface.ACTION_USB_PERMISSION)) {
+                                   onNewIntent(intent);
+                              } else if (intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED) ||
+                                      intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
+                                   onNewIntent(intent);
+                              } else if (intent.getAction().equals(BluetoothDevice.ACTION_FOUND) ||
+                                      intent.getAction().equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED)) {
+                                   onNewIntent(intent);
+                              } else if (intent.getAction().equals(BluetoothAdapter.ACTION_STATE_CHANGED) ||
+                                      intent.getAction().equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) ||
+                                      intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
+                                      intent.getAction().equals(BluetoothDevice.ACTION_ACL_DISCONNECTED)) {
+                                   onNewIntent(intent);
+                              } else if (intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED) ||
+                                      intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST) ||
+                                      intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED) ||
+                                      intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED) ||
+                                      intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_NOTIFY_STATUS)) {
+                                   onNewIntent(intent);
+                              }
+                         }
+                    };
+                    serialIOActionFilter = new IntentFilter();
+                    serialIOActionFilter.addAction(SerialUSBInterface.ACTION_USB_PERMISSION);
+                    serialIOActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+                    serialIOActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+                    serialIOActionFilter.addAction(BluetoothDevice.ACTION_FOUND);
+                    serialIOActionFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+                    serialIOActionFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+                    serialIOActionFilter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
+                    serialIOActionFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+                    serialIOActionFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+                    serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED);
+                    serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST);
+                    serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED);
+                    serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED);
+                    serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_NOTIFY_STATUS);
+                    registerReceiver(serialIOActionReceiver, serialIOActionFilter);
+                    SerialUSBInterface.registerUSBPermission(null, this);
+                    serialIOReceiversRegistered = true;
                }
-               serialIOActionReceiver = new BroadcastReceiver() {
-                    public void onReceive(Context context, Intent intent) {
-                         Log.i(TAG, intent.getAction());
-                         if(intent.getAction() == null) {
-                              return;
-                         }
-                         else if(intent.getAction().equals(SerialUSBInterface.ACTION_USB_PERMISSION)) {
-                              onNewIntent(intent);
-                         }
-                         else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED) ||
-                                 intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
-                              onNewIntent(intent);
-                         }
-                         else if(intent.getAction().equals(BluetoothDevice.ACTION_FOUND) ||
-                                 intent.getAction().equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED)) {
-                              onNewIntent(intent);
-                         }
-                         else if(intent.getAction().equals(BluetoothAdapter.ACTION_STATE_CHANGED) ||
-                                 intent.getAction().equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) ||
-                                 intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
-                                 intent.getAction().equals(BluetoothDevice.ACTION_ACL_DISCONNECTED)) {
-                              onNewIntent(intent);
-                         }
-                         else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED) ||
-                                 intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST) ||
-                                 intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED) ||
-                                 intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED) ||
-                                 intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_NOTIFY_STATUS)) {
-                              onNewIntent(intent);
-                         }
-                    }
-               };
-               serialIOActionFilter = new IntentFilter();
-               serialIOActionFilter.addAction(SerialUSBInterface.ACTION_USB_PERMISSION);
-               serialIOActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
-               serialIOActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
-               serialIOActionFilter.addAction(BluetoothDevice.ACTION_FOUND);
-               serialIOActionFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
-               serialIOActionFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-               serialIOActionFilter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
-               serialIOActionFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
-               serialIOActionFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
-               serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED);
-               serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST);
-               serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED);
-               serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED);
-               serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_NOTIFY_STATUS);
-               registerReceiver(serialIOActionReceiver, serialIOActionFilter);
-               SerialUSBInterface.registerUSBPermission(null, this);
-               serialIOReceiversRegistered = true;
-
                Handler initSettingsDeviceHandler = new Handler();
                Runnable initSettingsDeviceRunnable = new Runnable() {
                     public void run() {
@@ -384,6 +386,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
                @Override
                public void onPageSelected(int position) {
+                    if(position < 0) {
+                         LiveLoggerActivity.selectedTab = 0;
+                         return;
+                    }
                     LiveLoggerActivity.selectedTab = position;
                     switch (position) {
                          case TAB_LOG:
@@ -452,6 +458,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                               ChameleonIO.detectChameleonType();
                               ChameleonIO.initializeDevice();
                               UITabUtils.initializeToolsTab(TAB_TOOLS_MITEM_SLOTS, TabFragment.UITAB_DATA[TAB_TOOLS].tabInflatedView);
+                              ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
                               ChameleonIO.DeviceStatusSettings.startPostingStats(0);
                          }
                     };
@@ -505,6 +512,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
                                    ChameleonIO.initializeDevice();
                                    UITabUtils.initializeToolsTab(TAB_TOOLS_MITEM_SLOTS, TabFragment.UITAB_DATA[TAB_TOOLS].tabInflatedView);
                                    ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
+                                   ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
                                    ChameleonIO.DeviceStatusSettings.startPostingStats(0);
                                    setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
                               }
@@ -627,7 +635,22 @@ public class LiveLoggerActivity extends AppCompatActivity {
                return;
           }
           String createCmd = ((Button) view).getText().toString();
-          ChameleonCommands.createNewCommandEvent(createCmd);
+          String btnTagValue = ((Button) view).getTag() != null ? ((Button) view).getTag().toString() : null;
+          if(btnTagValue != null && !btnTagValue.equals("")) {
+               String msgParam = "";
+               createCmd = "CONFIG=" + btnTagValue;
+               if(!ChameleonIO.REVE_BOARD) {
+                    msgParam = ChameleonIO.getSettingFromDevice(createCmd);
+               }
+               else {
+                    msgParam = ChameleonIO.getSettingFromDevice(createCmd);
+               }
+               MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord(createCmd, msgParam));
+               ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+          }
+          else {
+               ChameleonCommands.createNewCommandEvent(createCmd);
+          }
      }
 
      public void actionButtonModifyUID(View view) {

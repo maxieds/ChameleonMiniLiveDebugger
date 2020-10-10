@@ -588,16 +588,12 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item>ISO14443A_SNIFF</item>
         <item>ISO14443A_READER</item>
         <item>ISO15693_SNIFF</item>
-        <item>MF_CLASSIC_MINI_4B</item>
         <item>MF_CLASSIC_1K</item>
         <item>MF_CLASSIC_1K_7B</item>
         <item>MF_CLASSIC_4K</item>
         <item>MF_CLASSIC_4K_7B</item>
+        <item>MF_CLASSIC_MINI_4B</item>
         <item>MF_DESFIRE</item>
-        <item>MF_DESFIRE_EV1_2K</item>
-        <item>MF_DESFIRE_EV1_4K</item>
-        <item>MF_DESFIRE_EV1_8K</item>
-        <item>MF_DESFIRE_TEST</item>
         <item>MF_DETECTION</item>
         <item>MF_DETECTION_4K</item>
         <item>MF_ULTRALIGHT</item>

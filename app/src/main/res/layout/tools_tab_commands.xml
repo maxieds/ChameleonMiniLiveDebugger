@@ -132,7 +132,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:drawableLeft="@drawable/hashmark16"
                 android:drawablePadding="5dp"
                 android:singleLine="true"
-                android:text="Run global and reader commands (RevE and RevG): "
+                android:text="Run global and reader commands: "
                 android:textAllCaps="true"
                 android:textStyle="bold|italic" />
 
@@ -161,14 +161,14 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:drawableLeft="@drawable/clearmy24"
                     android:onClick="actionButtonRunCommand"
                     android:tag="clearmy"
-                    android:text="clearmy" />
+                    android:text="clearmy (E)" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/clearicon24"
                     android:onClick="actionButtonRunCommand"
                     android:tag="clearall"
-                    android:text="clearall" />
+                    android:text="clearall (E)" />
 
                 <Button
                     style="@style/GridButtons"
@@ -192,7 +192,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/versionmy24"
                     android:onClick="actionButtonCreateNewEvent"
-                    android:text="memoryinfo" />
+                    android:text="memoryinfo (E)" />
 
                 <Button
                     style="@style/GridButtons"
@@ -230,7 +230,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:drawableLeft="@drawable/fingerprintq24"
                     android:onClick="actionButtonRunCommand"
                     android:tag="DUMP_MFU"
-                    android:text="DUMP_MFU" />
+                    android:text="DUMP-MFU" />
 
                 <Button
                     style="@style/GridButtons"

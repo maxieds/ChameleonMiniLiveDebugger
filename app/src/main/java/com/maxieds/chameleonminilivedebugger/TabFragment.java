@@ -251,11 +251,11 @@ public class TabFragment extends Fragment {
                 "Tools",
                 TAB_TOOLS_MITEM_COLUMNS,
                 new String[] {
-                        "Config Slots",
-                        "Tag Configs",
+                        "Slot View",
+                        "Set Tag Type",
                         "Commands",
                         "Peripherals",
-                        "Raw APDU"
+                        "APDU"
                 },
                 new int[]{
                         R.layout.tools_tab_slots,

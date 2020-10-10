@@ -63,7 +63,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:singleLine="true"
                     android:text="SLOT SETTING: "
                     android:textStyle="bold|italic"
-                    android:textColor="#000000" />
+                    android:textColor="?colorPrimaryDark" />
 
                 <com.shawnlin.numberpicker.NumberPicker
                     xmlns:app="http://schemas.android.com/apk/res-auto"

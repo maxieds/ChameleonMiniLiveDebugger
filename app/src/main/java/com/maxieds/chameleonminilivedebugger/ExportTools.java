@@ -116,7 +116,7 @@ public class ExportTools {
                     DownloadManager downloadManager = (DownloadManager) LiveLoggerActivity.defaultContext.getSystemService(DOWNLOAD_SERVICE);
                     downloadManager.addCompletedDownload(outfile.getName(), outfile.getName(), true, "application/octet-stream",
                             outfile.getAbsolutePath(), outfile.length(), true);
-                    String statusMsg = "Write internal log data to file " + outfile.getName() + "(+" + outfile.length() + " / " + fileSize + " bytes).\n";
+                    String statusMsg = "Write internal log data to file " + outfile.getName() + "(+" + outfile.length() + " / " + fileSize + " bytes).\n\n";
                     statusMsg += "If you are not seeing the expected output, try running the LOGSTORE command from the tools menu first.";
                     MainActivityLogUtils.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "EXPORT", statusMsg));
                     if (throwToLive) {
@@ -138,7 +138,7 @@ public class ExportTools {
                     ioe.printStackTrace();
                 } finally {
                     ChameleonIO.UPLOAD = false;
-                    ChameleonIO.getSettingFromDevice("READONLY=" + (ChameleonIO.deviceStatus.READONLY ? "1" : "0"));
+                    //ChameleonIO.getSettingFromDevice("READONLY=" + (ChameleonIO.deviceStatus.READONLY ? "1" : "0"));
                     serialIOPort.releaseSerialPortLock();
                 }
                 if(!ExportTools.transmissionErrorOccurred) {
@@ -249,7 +249,7 @@ public class ExportTools {
             return false;
         }
         LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
-        String outfilePath = outfilePrefix + "-" + Utils.getTimestamp().replace(":", "") + ".bin";
+        String outfilePath = outfilePrefix + "-" + Utils.getTimestamp().replace(":", "") + ".dump";
         File downloadsFolder = new File("//sdcard//Download//");
         boolean docsFolderExists = true;
         if (!downloadsFolder.exists()) {
@@ -274,13 +274,13 @@ public class ExportTools {
             return false;
         }
 
-        serialIOPort.acquireSerialPortNoInterrupt();
         throwToLive = throwToLiveParam;
         // turn of logging so the transfer doesn't get accidentally logged:
         currentLogMode = ChameleonIO.getSettingFromDevice("LOGMODE?");
         ChameleonIO.executeChameleonMiniCommand("LOGMODE=OFF", ChameleonIO.TIMEOUT);
         ChameleonIO.WAITING_FOR_XMODEM = true;
         ChameleonIO.getSettingFromDevice(issueCmd);
+        serialIOPort.acquireSerialPortNoInterrupt();
         fileSize = 0;
         CurrentFrameNumber = FIRST_FRAME_NUMBER;
         currentNAKCount = 0;
@@ -595,7 +595,7 @@ public class ExportTools {
             dataBytes = fullDataBytes;
         }
         ChameleonIO.executeChameleonMiniCommand("CONFIG=MF_ULTRALIGHT", ChameleonIO.TIMEOUT);
-        ChameleonIO.deviceStatus.startPostingStats(250);
+        ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
         for(int page = 0; page < dataBytes.length; page += 4) {
             byte[] apduSendBytesHdr = {
                     (byte) 0xff, // CLA

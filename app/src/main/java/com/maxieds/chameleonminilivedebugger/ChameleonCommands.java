@@ -54,13 +54,20 @@ public class ChameleonCommands {
             chipType = "MF_CLASSIC_1K";
             cardFilePath = R.raw.mifare_classic_1k;
         }
-        else if(stockChipType.equals("MIFARE Ultralight")) {
+        else if(stockChipType.equals("MFU")) {
             chipType = "MF_ULTRALIGHT";
             cardFilePath = R.raw.mifare_ultralight;
         }
-        else {
+        else if(stockChipType.equals("DESFIRE")) {
+            chipType = "MF_DESFIRE";
+            cardFilePath = R.raw.mfdesfire_sample_dump;
+        }
+        else if(stockChipType.equals("EM4233")) {
             chipType = "EM4233";
             cardFilePath = R.raw.em4233_example;
+        }
+        else {
+            return;
         }
         ChameleonIO.executeChameleonMiniCommand("CONFIG=" + chipType, ChameleonIO.TIMEOUT);
         ExportTools.uploadCardFromRawByXModem(cardFilePath);
@@ -121,7 +128,6 @@ public class ChameleonCommands {
             try {
                 Thread.sleep(100);
             } catch(InterruptedException ie) {}
-            ChameleonIO.deviceStatus.startPostingStats(250);
             msgParam = "Set Chameleon mode to READER.";
         }
         else if(createCmd.equals("SNIFFER")) {
@@ -129,51 +135,43 @@ public class ChameleonCommands {
             try {
                 Thread.sleep(100);
             } catch(InterruptedException ie) {}
-            ChameleonIO.deviceStatus.startPostingStats(250);
             msgParam = "Set Chameleon mode to SNIFFER.";
         }
         else if(createCmd.equals("DETECT")) {
             msgParam = ChameleonIO.getSettingFromDevice("config=MF_DETECTION");
-            ChameleonIO.deviceStatus.startPostingStats(250);
         }
         else if(createCmd.equals("ULTRALIGHT")) {
             if(!ChameleonIO.REVE_BOARD)
                 msgParam = ChameleonIO.getSettingFromDevice("CONFIG=MF_ULTRALIGHT");
             else
                 msgParam = ChameleonIO.getSettingFromDevice("config=MF_ULTRALIGHT");
-            ChameleonIO.deviceStatus.startPostingStats(250);
         }
         else if(createCmd.equals("CLASSIC-1K")) {
             if(!ChameleonIO.REVE_BOARD)
                 msgParam = ChameleonIO.getSettingFromDevice("CONFIG=MF_CLASSIC_1K");
             else
                 msgParam = ChameleonIO.getSettingFromDevice( "config=MF_CLASSIC_1K");
-            ChameleonIO.deviceStatus.startPostingStats(250);
         }
         else if(createCmd.equals("CLASSIC-4K")) {
             if(!ChameleonIO.REVE_BOARD)
                 msgParam = ChameleonIO.getSettingFromDevice("CONFIG=MF_CLASSIC_4K");
             else
                 msgParam = ChameleonIO.getSettingFromDevice("config=MF_CLASSIC_4K");
-            ChameleonIO.deviceStatus.startPostingStats(250);
         }
         else if(createCmd.equals("CLASSIC-1K7B")) {
             if(!ChameleonIO.REVE_BOARD)
                 msgParam = ChameleonIO.getSettingFromDevice("CONFIG=MF_CLASSIC_1K_7B");
             else
                 msgParam = ChameleonIO.getSettingFromDevice("config=MF_CLASSIC_1K_7B");
-            ChameleonIO.deviceStatus.startPostingStats(250);
         }
         else if(createCmd.equals("CLASSIC-4K7B")) {
             if(!ChameleonIO.REVE_BOARD)
                 msgParam = ChameleonIO.getSettingFromDevice("CONFIG=MF_CLASSIC_4K_7B");
             else
                 msgParam = ChameleonIO.getSettingFromDevice("config=MF_CLASSIC_4K_7B");
-            ChameleonIO.deviceStatus.startPostingStats(250);
         }
         else if(createCmd.equals("MF-DESFIRE-EV1-4K")) {
             ChameleonIO.executeChameleonMiniCommand("CONFIG=MF_DESFIRE_EV1_4K", ChameleonIO.TIMEOUT);
-            ChameleonIO.deviceStatus.startPostingStats(250);
             msgParam = "NOTE: You must use the firmware from https://github.com/maxieds/ChameleonMini to have the DESFire chip support enabled.";
         }
         else if(createCmd.equals("MFU-EV1-80B")) {
@@ -181,21 +179,18 @@ public class ChameleonCommands {
                 msgParam = ChameleonIO.getSettingFromDevice("CONFIG=MF_ULTRALIGHT_EV1_80B");
             else
                 msgParam = ChameleonIO.getSettingFromDevice("config=MF_ULTRALIGHT_EV1_80B");
-            ChameleonIO.deviceStatus.startPostingStats(250);
         }
         else if(createCmd.equals("MFU-EV1-164B")) {
             if(!ChameleonIO.REVE_BOARD)
                 msgParam = ChameleonIO.getSettingFromDevice("CONFIG=MF_ULTRALIGHT_EV1_80B");
             else
                 msgParam = ChameleonIO.getSettingFromDevice("config=MF_ULTRALIGHT_EV1_80B");
-            ChameleonIO.deviceStatus.startPostingStats(250);
         }
         else if(createCmd.equals("CFGNONE")) {
             if(!ChameleonIO.REVE_BOARD)
                 msgParam = ChameleonIO.getSettingFromDevice("CONFIG=NONE");
             else
                 msgParam = ChameleonIO.getSettingFromDevice("config=NONE");
-            ChameleonIO.deviceStatus.startPostingStats(250);
         }
         else if(createCmd.equals("LIST CONFIG")) {
             if(!ChameleonIO.REVE_BOARD)
@@ -213,9 +208,6 @@ public class ChameleonCommands {
             if(serialIOPort != null) {
                 serialIOPort.shutdownSerial();
                 serialIOPort.configureSerial();
-                if (serialIOPort.serialConfigured()) {
-                    ChameleonIO.deviceStatus.startPostingStats(250);
-                }
             }
             msgParam = "Reconfigured the Chameleon USB settings.";
         }
@@ -226,7 +218,6 @@ public class ChameleonCommands {
             String sendCmd = uidCmd + Utils.bytes2Hex(randomBytes).replace(" ", "").toUpperCase();
             ChameleonIO.getSettingFromDevice(sendCmd);
             msgParam = "Next UID set to " + Utils.bytes2Hex(randomBytes).replace(" ", ":").toUpperCase();
-            ChameleonIO.deviceStatus.startPostingStats(250);
         }
         else if(createCmd.equals("Log Replay")) {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "RE: LOG REPLAY: This is a wishlist feature. It might be necessary to add it to the firmware and implement it in hardware. Not currently implemented."));
@@ -257,6 +248,7 @@ public class ChameleonCommands {
         else {
             msgParam = ChameleonIO.getSettingFromDevice(createCmd);
         }
+        ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
         MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord(createCmd, msgParam));
     }
 }
