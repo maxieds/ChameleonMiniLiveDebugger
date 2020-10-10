@@ -438,11 +438,11 @@ public class ChameleonIO {
                                 ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceConfigText)).setText(CONFIG);
                                 String formattedUID = Utils.formatUIDString(UID, " ");
                                 ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceConfigUID)).setText(formattedUID);
-                                String subStats1 = String.format(Locale.ENGLISH, "MEM-%dK/LMEM-%dK/LMD-%s/REV%s", round(MEMSIZE / 1024), round(LOGSIZE / 1024), LOGMODE, ChameleonIO.REVE_BOARD ? "E" : "G");
+                                String subStats1 = String.format(Locale.ENGLISH, "MEM-%dK|LMEM-%dK|LMD-%s|REV%s", round(MEMSIZE / 1024), round(LOGSIZE / 1024), LOGMODE, ChameleonIO.REVE_BOARD ? "E" : "G");
                                 ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceStats1)).setText(subStats1);
-                                String subStats2 = String.format(Locale.ENGLISH, "DIP#%d/%s/FLD-%d/%sCHRG", DIP_SETTING, READONLY ? "RO" : "RW", FIELD ? 1 : 0, CHARGING ? "+" : "NO-");
+                                String subStats2 = String.format(Locale.ENGLISH, "DIP#%d|%s|FLD-%s|%sCHRG", DIP_SETTING, READONLY ? "RO" : "RW", FIELD ? "ON" : "OFF", CHARGING ? "+" : "-");
                                 ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceStats2)).setText(subStats2);
-                                String subStats3 = String.format(Locale.ENGLISH, "THRS-%d mv/TMT-%s", THRESHOLD, TIMEOUT);
+                                String subStats3 = String.format(Locale.ENGLISH, "THRS-%d mv|TMT-%s", THRESHOLD, TIMEOUT);
                                 ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceStats3)).setText(subStats3);
                                 SeekBar thresholdSeekbar = (SeekBar) LiveLoggerActivity.getInstance().findViewById(R.id.thresholdSeekbar);
                                 if (thresholdSeekbar != null) {

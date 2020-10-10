@@ -112,7 +112,7 @@ public class ThemesConfiguration {
             case "Teal":
                 themeID = R.style.AppThemeTeal;
                 break;
-            case "Urbana Desfire":
+            case "Urbana DESFire":
                 themeID = R.style.AppThemeUrbanaDesfire;
                 break;
             case "White":
@@ -134,22 +134,11 @@ public class ThemesConfiguration {
     public static void actionButtonAppSettings(View view) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(LiveLoggerActivity.getInstance());
         final View dialogView = LiveLoggerActivity.getInstance().getLayoutInflater().inflate(R.layout.theme_config, null);
-        /** Thank you, foot in mouth: https://github.com/maxieds/ChameleonMiniLiveDebugger/issues/26 **/
-        /*if(!BuildConfig.FLAVOR.equals("paid")) { // restore the "bonus" for upgrading to the paid flavor:
-            ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonAtlanta)).setEnabled(false);
-            ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonBlack)).setEnabled(false);
-            ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonChocolate)).setEnabled(false);
-            ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonGoldenrod)).setEnabled(false);
-            ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonLightblue)).setEnabled(false);
-            ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonPurple)).setEnabled(false);
-            ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonUrbanaDesfire)).setEnabled(false);
-            ((RadioButton) dialogView.findViewById(R.id.themeRadioButtonWinter)).setEnabled(false);
-        }*/
         // set the correct current theme as the selected radio button:
         RadioGroup themeRadioGroup = (RadioGroup) dialogView.findViewById(R.id.themeRadioGroup);
         for(int rb = 0; rb < themeRadioGroup.getChildCount(); rb++) {
             RadioButton curThemeBtn = (RadioButton) themeRadioGroup.getChildAt(rb);
-            if(curThemeBtn.isEnabled() && curThemeBtn.getText().toString().equals("Theme: " + storedAppTheme)) {
+            if(curThemeBtn.isEnabled() && curThemeBtn.getText().toString().equals(storedAppTheme)) {
                 curThemeBtn.setChecked(true);
                 break;
             }
@@ -159,14 +148,14 @@ public class ThemesConfiguration {
         themesScroller.addView(dialogView);
         dialog.setView(themesScroller);
         dialog.setIcon(R.drawable.settingsgears24);
-        dialog.setTitle( "Application Theme Configuration: \n(Clears all logs.)");
+        dialog.setTitle( "Application Theme Configuration:");
         dialog.setPositiveButton( "Set Theme", new DialogInterface.OnClickListener(){
             @Override
             public void onClick(DialogInterface dialog, int whichBtn) {
 
                 int getSelectedOption = ((RadioGroup) dialogView.findViewById(R.id.themeRadioGroup)).getCheckedRadioButtonId();
                 String themeID = ((RadioButton) dialogView.findViewById(getSelectedOption)).getText().toString();
-                String themeDesc = themeID.substring("Theme: ".length());
+                String themeDesc = themeID;
                 setLocalTheme(themeDesc, true);
                 storedAppTheme = themeDesc;
 

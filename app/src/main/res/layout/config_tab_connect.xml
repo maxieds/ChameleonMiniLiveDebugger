@@ -51,7 +51,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:drawableLeft="@drawable/android_phone_logo24"
                 android:drawablePadding="5dp"
                 android:singleLine="true"
-                android:text="Phone connection type configuration: "
+                android:text="Phone connection types: "
                 android:textAllCaps="true"
                 android:textStyle="bold|italic" />
 
@@ -100,7 +100,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
                 <Button
                     style="@style/GridButtonsNoWidth"
-                    android:layout_width="wrap_content"
+                    android:layout_columnWeight="1"
                     android:id="@+id/androidBTSettingsButton"
                     android:drawableLeft="@drawable/info_icon24"
                     android:drawablePadding="3dp"
@@ -138,7 +138,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
                 <Button
                     style="@style/GridButtonsNoWidth"
-                    android:layout_width="wrap_content"
+                    android:layout_columnWeight="1"
                     android:id="@+id/androidNFCSettingsButton"
                     android:drawableLeft="@drawable/info_icon24"
                     android:drawablePadding="3dp"
@@ -159,7 +159,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:drawableLeft="@drawable/chameleon_device_logo24"
                 android:drawablePadding="5dp"
                 android:singleLine="true"
-                android:text="Chameleon Device Connection: "
+                android:text="Active Device Connection: "
                 android:textAllCaps="true"
                 android:textStyle="bold|italic" />
 

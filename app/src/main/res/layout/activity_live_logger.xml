@@ -81,10 +81,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:layout_weight="0.53"
                 android:background="?deviceStatusBarBackgroundColor"
                 android:gravity="right"
-                android:text="MEM / LOG / LOGMODE / REVEG"
+                android:text="MEM | LOG | LOGMODE | REVEG"
                 android:textColor="?deviceStatusBarTextColor"
                 android:textSize="10sp"
-                android:textStyle="normal|italic" />
+                android:textStyle="normal" />
 
             <TextView
                 android:id="@+id/deviceConfigUID"
@@ -103,10 +103,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:layout_height="wrap_content"
                 android:background="?deviceStatusBarBackgroundColor"
                 android:gravity="right"
-                android:text="DIP# / RO / FLD1 / NOCHRG"
+                android:text="DIP# | RO/RW | FLD | NOCHRG"
                 android:textColor="?deviceStatusBarTextColor"
                 android:textSize="10sp"
-                android:textStyle="normal|italic" />
+                android:textStyle="normal" />
 
             <GridLayout
                 android:layout_width="wrap_content"
@@ -169,10 +169,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:layout_height="wrap_content"
                 android:background="?deviceStatusBarBackgroundColor"
                 android:gravity="right"
-                android:text="THRES / TMOUT"
+                android:text="THRES | TMOUT"
                 android:textColor="?deviceStatusBarTextColor"
                 android:textSize="10sp"
-                android:textStyle="normal|italic" />
+                android:textStyle="normal" />
 
         </GridLayout>
 
@@ -183,7 +183,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="5dp"
             android:background="?deviceStatusBarBackgroundColor"
-            android:drawableLeft="@drawable/settingsgear24"
+            android:drawableLeft="@drawable/toolbar_theme_settings_icon16"
             android:drawablePadding="10dp"
             android:gravity="left|center_vertical"
             android:onClick="actionButtonAppSettings"
@@ -196,7 +196,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="5dp"
             android:background="?deviceStatusBarBackgroundColor"
-            android:drawableLeft="@drawable/help24"
+            android:drawableLeft="@drawable/toolbar_help_icon16"
             android:drawablePadding="10dp"
             android:gravity="left|center_vertical"
             android:onClick="actionButtonDisplayHelp"
@@ -209,7 +209,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="5dp"
             android:background="?deviceStatusBarBackgroundColor"
-            android:drawableLeft="@drawable/info24"
+            android:drawableLeft="@drawable/toolbar_info_icon16"
             android:drawablePadding="10dp"
             android:gravity="left|center_vertical"
             android:onClick="actionButtonAboutTheApp"

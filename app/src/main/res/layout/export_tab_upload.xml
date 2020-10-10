@@ -51,17 +51,17 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
         <Button
             style="@style/GridButtons"
+            android:drawableLeft="@drawable/idcard24"
+            android:tag="UPLOAD"
+            android:onClick="actionButtonUploadCard"
+            android:text="UPLOAD TAG MFD-DUMP" />
+
+        <Button
+            style="@style/GridButtons"
             android:drawableLeft="@drawable/dumpmfuchip24"
             android:tag="DUMP_MFU"
             android:onClick="actionButtonCloneMFU"
             android:text="Clone MFU Tag" />
-
-        <Button
-            style="@style/GridButtons"
-            android:drawableLeft="@drawable/idcard24"
-            android:tag="UPLOAD"
-            android:onClick="actionButtonUploadCard"
-            android:text="UPLOAD CARD MFD/DUMP" />
 
     </GridLayout>
 
@@ -102,14 +102,14 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:drawableLeft="@drawable/brainchip"
             android:tag="MFC1K_RCFK"
             android:onClick="actionButtonCloneStockDumpImages"
-            android:text="MFC1K Random / FxdKey" />
+            android:text="MFC1K Randomized" />
 
         <Button
             style="@style/GridButtons"
             android:drawableLeft="@drawable/qr"
             android:tag="MFC4K_RCFK"
             android:onClick="actionButtonCloneStockDumpImages"
-            android:text="MFC4K Random / FxdKey" />
+            android:text="MFC4K Randomized" />
 
         <Button
             style="@style/GridButtons"
@@ -127,17 +127,17 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
         <Button
             style="@style/GridButtons"
-            android:drawableLeft="@drawable/chip24v11"
-            android:tag="EM4233"
-            android:onClick="actionButtonCloneStockDumpImages"
-            android:text="EM4233 Tag" />
-
-        <Button
-            style="@style/GridButtons"
             android:drawableLeft="@drawable/chip24v13"
             android:tag="DESFIRE"
             android:onClick="actionButtonCloneStockDumpImages"
             android:text="MIFARE DESFire"/>
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/chip24v11"
+            android:tag="EM4233"
+            android:onClick="actionButtonCloneStockDumpImages"
+            android:text="EM4233 Data" />
 
     </GridLayout>
 

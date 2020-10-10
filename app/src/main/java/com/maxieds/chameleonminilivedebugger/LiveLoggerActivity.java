@@ -229,7 +229,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
           setContentView(R.layout.activity_live_logger);
 
           Toolbar actionBar = (Toolbar) findViewById(R.id.toolbarActionBar);
-          actionBar.setSubtitle("Portable logging interface v" + String.valueOf(BuildConfig.VERSION_NAME));
+          actionBar.setSubtitle("Portable logger | v" + String.valueOf(BuildConfig.VERSION_NAME));
           clearStatusIcon(R.id.statusIconUlDl);
           getWindow().setTitleColor(ThemesConfiguration.getThemeColorVariant(R.attr.actionBarBackgroundColor));
           getWindow().setStatusBarColor(ThemesConfiguration.getThemeColorVariant(R.attr.colorPrimaryDark));
@@ -345,11 +345,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
      @Override
      public void recreate() {
-
-          if(serialIOActionReceiver != null) {
-               unregisterReceiver(serialIOActionReceiver);
-               serialIOReceiversRegistered = false;
-          }
           Intent intent = getIntent();
           intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
           intent.addCategory(INTENT_RESTART_ACTIVITY);
@@ -886,6 +881,20 @@ public class LiveLoggerActivity extends AppCompatActivity {
                Log.i(TAG, ex.getMessage());
                ChameleonLogUtils.LOGGING_MIN_DATA_BYTES = loggingMinDataLength;
           }
+     }
+
+     public void actionButtonDESFireTerminalCommand(View view) {
+          Button runCmdBtn = (Button) view;
+          if(runCmdBtn == null) {
+               return;
+          }
+          String cmdTag = runCmdBtn.getTag().toString();
+          EditText piccSetBytesText = (EditText) findViewById(R.id.mfDESFireTagSetPICCDataBytes);
+          String piccSetBytes = "";
+          if(piccSetBytesText != null) {
+               cmdTag = String.format(Locale.ENGLISH, cmdTag, piccSetBytesText.getText().toString());
+          }
+          ChameleonIO.executeChameleonMiniCommand(cmdTag, ChameleonIO.TIMEOUT);
      }
 
 }

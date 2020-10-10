@@ -57,8 +57,8 @@ public class MainActivityNavActions {
         wv.setInitialScale(10);
 
         adBuilder.setCancelable(true);
-        adBuilder.setTitle("About the Application:");
-        adBuilder.setIcon(R.drawable.chameleonicon_about64);
+        adBuilder.setTitle("");
+        adBuilder.setIcon(R.drawable.chameleonicon_about64_roundicon);
         adBuilder.setPositiveButton(
                 "Done",
                 new DialogInterface.OnClickListener() {

@@ -54,21 +54,21 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:drawableLeft="@drawable/logdownload"
             android:tag="LOGDOWNLOAD"
             android:onClick="actionButtonExportLogDownload"
-            android:text="Log DLD to File" />
+            android:text="Log to File" />
 
         <Button
             style="@style/GridButtons"
             android:drawableLeft="@drawable/uploaddownload24"
             android:tag="LOGDOWNLOAD2LIVE"
             android:onClick="actionButtonExportLogDownload"
-            android:text="Log DLD to Live" />
+            android:text="Log to Live" />
 
         <Button
             style="@style/GridButtons"
-            android:drawableLeft="@drawable/binarybraces24"
+            android:drawableLeft="@drawable/dumpfile24"
             android:tag="DOWNLOAD"
             android:onClick="actionButtonExportLogDownload"
-            android:text="DLD Card" />
+            android:text="Save Tag Data" />
 
     </GridLayout>
 

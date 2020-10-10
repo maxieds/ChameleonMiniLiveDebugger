@@ -44,7 +44,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:drawableLeft="@drawable/uididentifier16"
                 android:drawablePadding="5dp"
                 android:singleLine="true"
-                android:text="Set UID configurations:"
+                android:text="Set Tag Configuration UID:"
                 android:textAllCaps="true"
                 android:textStyle="bold|italic" />
 
@@ -132,7 +132,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:drawableLeft="@drawable/hashmark16"
                 android:drawablePadding="5dp"
                 android:singleLine="true"
-                android:text="Run global and reader commands: "
+                android:text="Run commands: "
                 android:textAllCaps="true"
                 android:textStyle="bold|italic" />
 
@@ -282,7 +282,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:drawableLeft="@drawable/hashmark16"
                 android:drawablePadding="5dp"
                 android:singleLine="true"
-                android:text="Misc configuration: "
+                android:text="Misc Settings: "
                 android:textAllCaps="true"
                 android:textStyle="bold|italic" />
 
@@ -400,6 +400,155 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:textColor="#000000" />
 
             </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/uididentifier16"
+                android:drawablePadding="5dp"
+                android:singleLine="true"
+                android:text="DESFire Tag Configuration Commands:"
+                android:textAllCaps="true"
+                android:textStyle="bold|italic" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="3"
+                android:layout_marginVertical="4dp"
+                android:padding="4dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:src="@drawable/mfdesfire_tag_label"
+                    android:paddingRight="3dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:singleLine="true"
+                    android:text="Set PICC Hex Bytes: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?android:colorPrimaryDark" />
+
+                <EditText
+                    android:id="@+id/mfDESFireTagSetPICCDataBytes"
+                    android:layout_width="150dp"
+                    android:layout_columnWeight="1"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="4dp"
+                    android:hint="0675f7b102"
+                    android:singleLine="true"
+                    android:textColor="?colorPrimaryDarkLog" />
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="3"
+                android:padding="2dp"
+                android:rowCount="10">
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:onClick="actionButtonDESFireTerminalCommand"
+                    android:tag="DF_SETHDR=ATS %s"
+                    android:text="Set ATS" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:onClick="actionButtonDESFireTerminalCommand"
+                    android:tag="DF_SETHDR=HardwareVersion %s"
+                    android:text="Set HWVer" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:onClick="actionButtonDESFireTerminalCommand"
+                    android:tag="DF_SETHDR=SoftwareVersion %s"
+                    android:text="Set SWVer" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:onClick="actionButtonDESFireTerminalCommand"
+                    android:tag="DF_SETHDR=BatchNumber %s"
+                    android:text="Set BatchNo" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:onClick="actionButtonDESFireTerminalCommand"
+                    android:tag="DF_SETHDR=ProductionDate %s"
+                    android:text="Set ProdDate" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:onClick="actionButtonDESFireTerminalCommand"
+                    android:tag="DF_PPRINT_PICC FullImage"
+                    android:text="PPrint Full" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:onClick="actionButtonDESFireTerminalCommand"
+                    android:tag="DF_PPRINT_PICC HeaderData"
+                    android:text="PPrint PICCHDR" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:onClick="actionButtonDESFireTerminalCommand"
+                    android:tag="DF_FWINFO"
+                    android:text="FWINFO" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:onClick="actionButtonDESFireTerminalCommand"
+                    android:tag="DF_LOGMODE=1"
+                    android:text="LOGMODE=ON" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:onClick="actionButtonDESFireTerminalCommand"
+                    android:tag="DF_LOGMODE=0"
+                    android:text="LOGMODE=OFF" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:onClick="actionButtonDESFireTerminalCommand"
+                    android:tag="DF_TESTMODE=1"
+                    android:text="TESTMODE=ON" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:onClick="actionButtonDESFireTerminalCommand"
+                    android:tag="DF_TESTMODE=0"
+                    android:text="TESTMODE=OFF" />
+
+            </GridLayout>
 
             <View
                 android:layout_width="match_parent"

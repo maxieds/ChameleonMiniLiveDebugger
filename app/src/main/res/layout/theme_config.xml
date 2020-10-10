@@ -35,7 +35,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:checked="false"
             android:drawableLeft="@drawable/thememarker24"
             android:drawablePadding="5dp"
-            android:text="Theme: Amber" />
+            android:text="Amber" />
 
         <RadioButton
             android:id="@+id/themeRadioButtonAtlanta"
@@ -45,7 +45,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:checked="false"
             android:drawableLeft="@drawable/thememarker24"
             android:drawablePadding="5dp"
-            android:text="Theme: Atlanta" />
+            android:text="Atlanta" />
 
         <RadioButton
             android:id="@+id/themeRadioButtonBlack"
@@ -55,7 +55,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:checked="false"
             android:drawableLeft="@drawable/thememarker24"
             android:drawablePadding="5dp"
-            android:text="Theme: Black" />
+            android:text="Black" />
 
         <RadioButton
             android:id="@+id/themeRadioButtonBlue"
@@ -65,7 +65,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:checked="false"
             android:drawableLeft="@drawable/thememarker24"
             android:drawablePadding="5dp"
-            android:text="Theme: Blue" />
+            android:text="Blue" />
 
         <RadioButton
             android:id="@+id/themeRadioButtonChicky"
@@ -75,7 +75,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:checked="false"
             android:drawableLeft="@drawable/thememarker24"
             android:drawablePadding="5dp"
-            android:text="Theme: Chicky" />
+            android:text="Chicky" />
 
         <RadioButton
             android:id="@+id/themeRadioButtonChocolate"
@@ -85,7 +85,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:checked="false"
             android:drawableLeft="@drawable/thememarker24"
             android:drawablePadding="5dp"
-            android:text="Theme: Chocolate" />
+            android:text="Chocolate" />
 
         <RadioButton
             android:id="@+id/themeRadioButtonGoldenrod"
@@ -95,7 +95,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:checked="false"
             android:drawableLeft="@drawable/thememarker24"
             android:drawablePadding="5dp"
-            android:text="Theme: Goldenrod" />
+            android:text="Goldenrod" />
 
         <RadioButton
             android:id="@+id/themeRadioButtonStdGreen"
@@ -105,7 +105,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:checked="false"
             android:drawableLeft="@drawable/thememarker24"
             android:drawablePadding="5dp"
-            android:text="Theme: Standard Green" />
+            android:text="Standard Green" />
 
         <RadioButton
             android:id="@+id/themeRadioButtonLightblue"
@@ -115,7 +115,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:checked="false"
             android:drawableLeft="@drawable/thememarker24"
             android:drawablePadding="5dp"
-            android:text="Theme: Lightblue" />
+            android:text="Lightblue" />
 
         <RadioButton
             android:id="@+id/themeRadioButtonLinuxGOB"
@@ -125,7 +125,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:checked="true"
             android:drawableLeft="@drawable/thememarker24"
             android:drawablePadding="5dp"
-            android:text="Theme: Linux Green On Black" />
+            android:text="Linux Green On Black" />
 
         <RadioButton
             android:id="@+id/themeRadioButtonPurple"
@@ -135,7 +135,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:checked="false"
             android:drawableLeft="@drawable/thememarker24"
             android:drawablePadding="5dp"
-            android:text="Theme: Purple" />
+            android:text="Purple" />
 
         <RadioButton
             android:id="@+id/themeRadioButtonRed"
@@ -145,7 +145,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:checked="false"
             android:drawableLeft="@drawable/thememarker24"
             android:drawablePadding="5dp"
-            android:text="Theme: Red" />
+            android:text="Red" />
 
         <RadioButton
             android:id="@+id/themeRadioButtonRedmond"
@@ -155,7 +155,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:checked="false"
             android:drawableLeft="@drawable/thememarker24"
             android:drawablePadding="5dp"
-            android:text="Theme: Redmond" />
+            android:text="Redmond" />
 
         <RadioButton
             android:id="@+id/themeRadioButtonTeal"
@@ -165,7 +165,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:checked="false"
             android:drawableLeft="@drawable/thememarker24"
             android:drawablePadding="5dp"
-            android:text="Theme: Teal" />
+            android:text="Teal" />
 
         <RadioButton
             android:id="@+id/themeRadioButtonUrbanaDesfire"
@@ -175,7 +175,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:checked="false"
             android:drawableLeft="@drawable/thememarker24"
             android:drawablePadding="5dp"
-            android:text="Theme: Urbana Desfire" />
+            android:text="Urbana DESFire" />
 
         <RadioButton
             android:id="@+id/themeRadioButtonWhite"
@@ -185,7 +185,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:checked="false"
             android:drawableLeft="@drawable/thememarker24"
             android:drawablePadding="5dp"
-            android:text="Theme: White" />
+            android:text="White" />
 
         <RadioButton
             android:id="@+id/themeRadioButtonWinter"
@@ -195,7 +195,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:checked="false"
             android:drawableLeft="@drawable/thememarker24"
             android:drawablePadding="5dp"
-            android:text="Theme: Winter" />
+            android:text="Winter" />
 
     </RadioGroup>
 

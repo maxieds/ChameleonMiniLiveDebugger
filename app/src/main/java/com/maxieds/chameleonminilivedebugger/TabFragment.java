@@ -255,7 +255,7 @@ public class TabFragment extends Fragment {
                         "Set Tag Type",
                         "Commands",
                         "Peripherals",
-                        "APDU"
+                        "Send Raw APDU"
                 },
                 new int[]{
                         R.layout.tools_tab_slots,
@@ -293,7 +293,7 @@ public class TabFragment extends Fragment {
                         "Help and Syntax"
                 },
                 new int[] {
-                        R.layout.tab_under_construction,
+                        R.layout.scripting_tab_load_import,
                         R.layout.tab_under_construction,
                         R.layout.tab_under_construction,
                         R.layout.tab_under_construction,
@@ -308,9 +308,9 @@ public class TabFragment extends Fragment {
                 TAB_CONFIG_MITEM_COLUMNS,
                 new String[] {
                         "General",
-                        "Devices",
-                        "Scripts",
-                        "Themes"
+                        "Device List",
+                        "Scripting",
+                        "Custom Themes"
                 },
                 new int[] {
                         R.layout.config_tab_general_settings,

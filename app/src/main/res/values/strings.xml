@@ -93,10 +93,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     <string name="apphtmlfooter">&lt;/body>&lt;/html></string>
     <string name="initialUserGreetingMsg">Thank you for using and testing this Android application.
                A detailed man page and instructions for using the Chameleon Mini Live Debugger (CMLD) are
-               found on the project WIKI pages at https://github.com/maxieds/ChameleonMiniLiveDebugger/wiki.
-               \n\nIf you consistently enjoy using this app, please consider upgrading to the _PAID_ flavor on the
-               Google Play Store, rating the application well on the Play Store, or making a hardware donation to the
-               developer to keep the application releases current and chugging strong!
+               found on the project WIKI pages at the next link:\n
+               https://github.com/maxieds/ChameleonMiniLiveDebugger/wiki.
                \n\nStay safe out there!
     </string>
     <string name="chameleonCmdAppendixTroubleshooting">
@@ -107,6 +105,16 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         likely the device firmware you are using does not support this command. Some commands also require that they be
         run in a READER mode, whereas some commands must be run while the current active slot on the Chameleon is set to
         a configuration in SNIFFER mode.
+    </string>
+    <string name="chameleonScriptingForthcomingFeatures">
+        The complete scripting functionality will be added in a future release of the CMLD application.
+        For now there is only this placeholder available. A planned and proposed feature set for this
+        batch or shell script like capability is described at the next project link:\n
+        https://github.com/maxieds/ChameleonMiniLiveDebugger/projects/3\n\n
+        Planned features include the following:\n
+        • A logger tab like feature to view the script runtime output\n
+        • A gdb debugger like window to view the post execution variable\n
+          values set in the script
     </string>
     <string name="chameleonConfigAppendixTroubleshooting">
         A complete list of supported configurations is available from within the Tools | Config Slots tab for each
