@@ -45,10 +45,10 @@ android {
     compileSdkVersion 29
     defaultConfig {
         applicationId "com.maxieds.chameleonminilivedebugger"
-        minSdkVersion 26
+        minSdkVersion 29
         targetSdkVersion 29
-        versionCode 82
-        versionName "1.2.1"
+        versionCode 83 + 8080
+        versionName "1.2.2"
         multiDexEnabled true
 
         buildConfigField "String", "GIT_COMMIT_HASH", "\"" + getGitCommitHash() + "\""
@@ -124,6 +124,7 @@ android {
             exclude 'META-INF/ASL2.0'
             exclude 'META-INF/androidx*'
             exclude 'META-INF/android*'
+            exclude 'META-INF/com.google.android.material_material.version'
         }
 
     }
