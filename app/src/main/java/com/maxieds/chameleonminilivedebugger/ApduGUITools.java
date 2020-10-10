@@ -51,7 +51,7 @@ public class ApduGUITools {
         adbuilder.setMessage(instrMsg);
 
         EditText apduCmdEntry = new EditText(LiveLoggerActivity.getInstance());
-        apduCmdEntry.setHint(ApduUtils.apduTransceiveCmd.assembleAPDUString());
+        apduCmdEntry.setHint("xx|xx|xx|xx|data-bytes");
         final EditText apduCmdEntryFinal = apduCmdEntry;
         adbuilder.setView(apduCmdEntryFinal);
 
@@ -60,9 +60,21 @@ public class ApduGUITools {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String dataBytes = apduCmdEntryFinal.getText().toString().toLowerCase();
-                dataBytes.replaceAll("[ \n\t\r]*", ""); // remove whitespace
-                if (!Utils.stringIsHexadecimal(dataBytes)) {
+                dataBytes.replaceAll("[ \n\t\r|]*", ""); // remove whitespace
+                if (!Utils.stringIsHexadecimal(dataBytes) || dataBytes.length() < 8) {
                     return;
+                }
+                if(!Utils.stringIsHexadecimal(dataBytes.substring(0, 2))) {
+                    dataBytes = ApduUtils.apduTransceiveCmd.CLA + dataBytes.substring(2);
+                }
+                if(!Utils.stringIsHexadecimal(dataBytes.substring(2, 4))) {
+                    dataBytes = dataBytes.substring(0, 2) + ApduUtils.apduTransceiveCmd.INS + dataBytes.substring(4);
+                }
+                if(!Utils.stringIsHexadecimal(dataBytes.substring(2, 4))) {
+                    dataBytes = dataBytes.substring(0, 4) + ApduUtils.apduTransceiveCmd.P1 + dataBytes.substring(6);
+                }
+                if(!Utils.stringIsHexadecimal(dataBytes.substring(2, 4))) {
+                    dataBytes = dataBytes.substring(0, 6) + ApduUtils.apduTransceiveCmd.P2;
                 }
                 ApduUtils.apduTransceiveCmd.setPayloadData(dataBytes);
                 ApduUtils.apduTransceiveCmd.computeLELCBytes();
@@ -74,7 +86,7 @@ public class ApduGUITools {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String dataBytes = apduCmdEntryFinal.getText().toString().toLowerCase();
-                dataBytes.replaceAll("[ \n\t\r]*", ""); // remove whitespace
+                dataBytes.replaceAll("[ \n\t\r|]*", ""); // remove whitespace
                 if(!Utils.stringIsHexadecimal(dataBytes) || dataBytes.length() < 8) {
                     return;
                 }
@@ -93,8 +105,8 @@ public class ApduGUITools {
         return adbuilder.create();
     }
 
-    public static void sendAPDUToChameleon() {
-        String sendBytesStr = ApduUtils.apduTransceiveCmd.getPayloadData();
+    public static void sendAPDUToChameleon(String sendMode) {
+        String sendBytesStr = ApduUtils.apduTransceiveCmd.getPayloadData(sendMode);
         String respData = ChameleonIO.getSettingFromDevice("SEND " + sendBytesStr);
         MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("APDU", "SEND Response:\n" + respData));
         respData = ChameleonIO.getSettingFromDevice("SEND_RAW " + sendBytesStr);

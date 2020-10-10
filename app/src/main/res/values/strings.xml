@@ -43,11 +43,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger/issues">here&lt;/a> in the official issues queue.
 
         &lt;h1>Credits&lt;/h1>
-        The pretty freeware icons used by the app were obtained from &lt;a href="flaticon.com">flaticon.com&lt;/a> and their
-        lovely sized transparent PNG enabled conversions of these images to standard sizes. The GIMP image editor on
-        Linux has also been used to create custom icons and colored logos for this application.
-        &lt;br/>&lt;br/>
-        The author additionally thanks
+        The author thanks
         users, labs and Chameleon Mini device resalers who have donated time and hardware to helping me keep this
         CMLD application running at high quality. Donations of Chameleon Mini hardware have been made available to the
         developer of this application at free or reduced cost by the following contributors and third parties:
@@ -56,21 +52,16 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             &lt;li>The &lt;b>&lt;i>&lt;u>Lab401 team&lt;/u>&lt;/b>&lt;/i> who have customized the Chameleom RevG devices into the Proxgrind revisions (with Bluetooth) and the Tiny variations (&lt;a href="https://www.facebook.com/pages/category/Electronics/Lab401-306470190007231/">their social media profile&lt;/a>)&lt;/b>&lt;/i>&lt;/li>
             &lt;li>The &lt;b>&lt;i>&lt;u>Steve O\'Shea&lt;/u>&lt;/b>&lt;/i> for providing recent bluetooth enabled devices for testing and ensuring forthcoming wireless connection support in the app (&lt;a href="https://apsystems.com.sg">Advanced Processing Systems Pte Ltd.&lt;/a>)&lt;/b>&lt;/i>&lt;/li>
         &lt;/ul>
+        &lt;br/>
+        The pretty freeware icons used by the app were obtained from &lt;a href="flaticon.com">flaticon.com&lt;/a> and their
+        lovely sized transparent PNG enabled conversions of these images to standard sizes. The GIMP image editor on
+        Linux has also been used to create custom icons and colored logos for this application.
 
         &lt;h1>Donations and other ways to get involved&lt;/h1>
         If you find this application particularly useful, the author requests donations in the form of more
         Chameleon Mini and other related hardware (e.g., a Proxmark device would be nice to have on hand for me).
         After you have gotten to know how to use it, and all of its unique features and customizations, please consider
         &lt;a href="https://play.google.com/store/apps/details?id=com.maxieds.chameleonminilivedebugger">rating the CMLD app&lt;/a> on Google Play Store!
-        &lt;br/>&lt;br/>
-        As this software is licensed as GPL open source software that will always remain freely available to users in the
-        Chameleon Mini and NFC pentesting community, and since I have not been paid for my 100s of hours in
-        developing this unique tool, please consider contributing to the developer in other ways if you have the resources.
-        Users can purchase a
-        &lt;a href="https://play.google.com/store/apps/details?id=com.maxieds.chameleonminilivedebugger.paid">PAID
-        flavor of the application&lt;/a>
-        for a small $4.99 one-time fee which contains extra themes. The proceeds go directly
-        to the developer to continue to keep the application functional and current.
         &lt;br/>&lt;br/>
         The developer of the CMLD application (Maxie D. Schmidt) can also be contacted for independent paid freelance
         work and general software engineering or mathematical research consultation. Such freelance work includes,
@@ -93,8 +84,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     <string name="apphtmlfooter">&lt;/body>&lt;/html></string>
     <string name="initialUserGreetingMsg">Thank you for using and testing this Android application.
                A detailed man page and instructions for using the Chameleon Mini Live Debugger (CMLD) are
-               found on the project WIKI pages at the next link:\n
-               https://github.com/maxieds/ChameleonMiniLiveDebugger/wiki.
+               found on the project WIKI pages at the next link:\nhttps://github.com/maxieds/ChameleonMiniLiveDebugger/wiki.
                \n\nStay safe out there!
     </string>
     <string name="chameleonCmdAppendixTroubleshooting">
@@ -121,9 +111,11 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         of the slots available on the device.
     </string>
     <string name="apduEntryInstructions">
-        Enter the APDU command components manually into the following box.\n
-        The bytes are in hexadecimal in the following order: CLA | INS | P1 | P2 | [LE] | DATA | [LC].
-        Note that the LE/LC fields should not be included and will be calculated based on your input later.
+        Enter the APDU command components manually into the following box.
+        The bytes are in hexadecimal in the following order: \nCLA | INS | P1 | P2 |  DATA.
+        Note that the LE/LC fields found in wrapped APDUs should not be included and will be
+        calculated based on your input later. Bytes specified with \'xx\' will be ignored and the
+        previously set values in the assembled APDU bytes are preserved.
     </string>
     <string name="helpCmdResp">
         &lt;h1>Command Responses: &lt;/h1>

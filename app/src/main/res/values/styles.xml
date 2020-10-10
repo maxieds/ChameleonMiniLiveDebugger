@@ -43,7 +43,19 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item name="deviceMemoryLogHighlight">#EF2929</item>
         <item name="colorAccentHighlight">#98fb98</item>
         <item name="colorAboutLinkColor">#6eb703</item>
-        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_rainbow</item>
+    </style>
+
+    <style name="AppThemeGreenPaid" parent="@style/AppTheme">
+        <item name="colorPrimary">#75a72c</item>
+        <item name="colorPrimaryDark">#3d5717</item>
+        <item name="colorAccent">#91cb3b</item>
+        <item name="colorPrimaryDarkLog">#6eb703</item>
+        <item name="colorAccentLog">#cfe8a9</item>
+        <item name="deviceMemoryLogHighlight">#EF2929</item>
+        <item name="colorAccentHighlight">#98fb98</item>
+        <item name="colorAboutLinkColor">#6eb703</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_rainbow2</item>
     </style>
 
     <style name="AppThemeUserCustom" parent="@style/AppTheme">
@@ -139,7 +151,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item name="deviceMemoryLogHighlight">#EF2929</item>
         <item name="colorAccentHighlight">#CDC7B9</item>
         <item name="colorAboutLinkColor">#777777</item>
-        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_redmond</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonicon32_redmond</item>
     </style>
 
     <style name="AppThemeLightblue" parent="AppTheme">
@@ -223,7 +235,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item name="deviceMemoryLogHighlight">#EF2929</item>
         <item name="colorAccentHighlight">#AEEEEE</item>
         <item name="colorAboutLinkColor">#0040FF</item>
-        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_rainbow3</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonicon32_winter</item>
     </style>
 
     <style name="AppThemeUrbanaDesfire" parent="AppTheme">
@@ -235,7 +247,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item name="deviceMemoryLogHighlight">#EF2929</item>
         <item name="colorAccentHighlight">#FAECED</item>
         <item name="colorAboutLinkColor">#D14323</item>
-        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_rainbow2</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonicon32_desfire</item>
     </style>
 
     <style name="AppThemeAtlanta" parent="AppTheme">
@@ -247,7 +259,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item name="deviceMemoryLogHighlight">#EF2929</item>
         <item name="colorAccentHighlight">#F4CA59</item>
         <item name="colorAboutLinkColor">#001934</item>
-        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_rainbow</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonicon32_atlanta</item>
     </style>
 
     <style name="SpinnerTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">

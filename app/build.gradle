@@ -47,8 +47,8 @@ android {
         applicationId "com.maxieds.chameleonminilivedebugger"
         minSdkVersion 29
         targetSdkVersion 29
-        versionCode 84 + 8080
-        versionName "1.2.3"
+        versionCode 85 + 8080
+        versionName "1.2.4"
         multiDexEnabled true
 
         buildConfigField "String", "GIT_COMMIT_HASH", "\"" + getGitCommitHash() + "\""
@@ -89,11 +89,11 @@ android {
             buildConfigField "String", "BUILD_TIMESTAMP", "\"" + configBuildTimeStamp + "\""
             resConfigs "en", "en_US", "en_UK", "de"
             manifestPlaceholders = [
-                    appIcon        : "@mipmap/chameleon_app_icon_round",
-                    appRoundIcon   : "@mipmap/chameleon_app_icon_round",
-                    appTheme       : "@style/AppThemeGreen",
-                    appDebug       : "false",
-                    installLocation: "internalOnly"
+                    appIcon            : "@mipmap/chameleon_app_icon_round",
+                    appRoundIcon       : "@mipmap/chameleon_app_icon_round",
+                    appTheme           : "@style/AppThemeGreen",
+                    appDebug           : "false",
+                    installLocation    : "internalOnly"
             ]
         }
         paid {
@@ -105,11 +105,11 @@ android {
             resConfigs "en", "en_US", "en_UK", "de"
             dimension "mode"
             manifestPlaceholders = [
-                    appIcon        : "@drawable/chameleonicon64_paid",
-                    appRoundIcon   : "@drawable/chameleonicon64_paid",
-                    appTheme       : "@style/AppThemeGreen",
-                    appDebug       : "false",
-                    installLocation: "auto"
+                    appIcon            : "@drawable/chameleonicon64_paid",
+                    appRoundIcon       : "@drawable/chameleonicon64_paid",
+                    appTheme           : "@style/AppThemeGreenPaid",
+                    appDebug           : "false",
+                    installLocation    : "auto"
             ]
         }
 

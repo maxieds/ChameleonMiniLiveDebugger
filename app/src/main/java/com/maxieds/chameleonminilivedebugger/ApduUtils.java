@@ -231,12 +231,16 @@ public class ApduUtils {
                 payloadData = "0" + payloadData;
         }
 
-        public String getPayloadData() {
+        public static final String APDU_PAYLOAD_EXPORT_TYPE_DEFAULT_WRAPPED = "DEFAULT_WRAPPED";
+        public static final String APDU_PAYLOAD_EXPORT_TYPE_NATIVE_NOWRAP = "NATIVE_NOWRAP";
+        public static final String APDU_PAYLOAD_EXPORT_TYPE_NOWRAP_WITH_CRC = "NOWRAP_WITH_CRC";
+
+        public String getPayloadData(String apduExportType) {
+            assembleAPDUString(apduExportType);
             return payloadData;
         }
 
-        public byte[] assembleAPDU() {
-            String apduCommand = CLA + INS + P1 + P2;
+        public byte[] assembleAPDU(String apduExportType) {
             if(payloadData.length() == 0) {
                 LE = "00";
                 LC = "";
@@ -245,22 +249,39 @@ public class ApduUtils {
                 LE = String.format("%02x", payloadData.length() / 2);
                 LC = "000000";
             }
-            apduCommand += LE + payloadData + LC;
-            return Utils.hexString2Bytes(apduCommand.replaceAll("x", "0")); // zero fill the x-marker bits
+            String apduRawBytes = "";
+            boolean appendCRCBytes = true;
+            switch(apduExportType) {
+                case APDU_PAYLOAD_EXPORT_TYPE_NATIVE_NOWRAP:
+                    apduRawBytes = CLA + INS + payloadData;
+                    appendCRCBytes = false;
+                    break;
+                case APDU_PAYLOAD_EXPORT_TYPE_NOWRAP_WITH_CRC:
+                    apduRawBytes = CLA + INS + payloadData;
+                    break;
+                case APDU_PAYLOAD_EXPORT_TYPE_DEFAULT_WRAPPED:
+                default:
+                    apduRawBytes = CLA + INS + P1 + P2 + LE + payloadData + LC;
+                    break;
+            }
+            if(appendCRCBytes) {
+                byte[] rawBytes = Utils.hexString2Bytes(apduRawBytes);
+                String crcByteStr = Utils.bytes2Hex(Utils.calculateByteBufferCRC16(rawBytes));
+                apduRawBytes += crcByteStr;
+            }
+            return Utils.hexString2Bytes(apduRawBytes.replaceAll("x", "0")); // zero fill the x-marker bits
+        }
+
+        public byte[] assembleAPDU() {
+            return assembleAPDU("");
+        }
+
+        public String assembleAPDUString(String apduExportType) {
+            return Utils.bytes2Hex(assembleAPDU(apduExportType));
         }
 
         public String assembleAPDUString() {
-            String apduCommand = CLA + INS + P1 + P2;
-            if(payloadData.length() == 0) {
-                LE = "00";
-                LC = "";
-            }
-            else {
-                LE = String.format("%02x", payloadData.length() / 2);
-                LC = "000000";
-            }
-            apduCommand += LE + payloadData + LC;
-            return apduCommand.replaceAll("x", "0"); // zero fill the x-marker bits
+            return assembleAPDUString("");
         }
 
         public void clear() {

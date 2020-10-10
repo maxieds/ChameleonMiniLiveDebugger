@@ -74,6 +74,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:textSize="11sp"
                 android:textStyle="normal|bold" />
 
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp" />
+
             <TextView
                 android:id="@+id/deviceStats1"
                 android:layout_width="wrap_content"
@@ -81,7 +85,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:layout_weight="0.53"
                 android:background="?deviceStatusBarBackgroundColor"
                 android:gravity="right"
-                android:text="MEM | LOG | LOGMODE | REVEG"
+                android:text="MEM | LOG-MODE | REVEG"
                 android:textColor="?deviceStatusBarTextColor"
                 android:textSize="10sp"
                 android:textStyle="normal" />
@@ -103,7 +107,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:layout_height="wrap_content"
                 android:background="?deviceStatusBarBackgroundColor"
                 android:gravity="right"
-                android:text="DIP# | RO/RW | FLD | NOCHRG"
+                android:text="DIP# | RO-RW | FLD-0 | CHRG-OFF"
                 android:textColor="?deviceStatusBarTextColor"
                 android:textSize="10sp"
                 android:textStyle="normal" />

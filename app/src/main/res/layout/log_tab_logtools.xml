@@ -322,7 +322,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:drawableLeft="@drawable/highlight16"
                 android:drawablePadding="5dp"
                 android:singleLine="true"
-                android:text="Highlight selected:"
+                android:text="Highlight selected logs by color:"
                 android:textAllCaps="true"
                 android:textStyle="bold|italic" />
 
@@ -439,7 +439,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:drawableLeft="@drawable/infobubble16"
                 android:drawablePadding="5dp"
                 android:singleLine="true"
-                android:text="Annotate logs:"
+                android:text="Annotate logs by type:"
                 android:textAllCaps="true"
                 android:textStyle="bold|italic" />
 

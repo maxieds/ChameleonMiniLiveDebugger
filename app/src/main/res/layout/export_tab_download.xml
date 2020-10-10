@@ -51,7 +51,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
         <Button
             style="@style/GridButtons"
-            android:drawableLeft="@drawable/logdownload"
+            android:drawableLeft="@drawable/log24"
             android:tag="LOGDOWNLOAD"
             android:onClick="actionButtonExportLogDownload"
             android:text="Log to File" />

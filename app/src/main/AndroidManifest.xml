@@ -55,8 +55,6 @@
         android:defaultToDeviceProtectedStorage="true"
         android:usesCleartextTraffic="false"
         android:installLocation="${installLocation}"
-        tools:replace="android:icon"
-        tools:node="replace"
         android:requestLegacyExternalStorage="true"
         >
 

@@ -92,7 +92,12 @@ public class ThemesConfiguration {
                 themeID = R.style.AppThemeGoldenrod;
                 break;
             case "Standard Green":
-                themeID = R.style.AppThemeGreen;
+                if(BuildConfig.FLAVOR.equals("paid")) {
+                    themeID = R.style.AppThemeGreenPaid;
+                }
+                else {
+                    themeID = R.style.AppThemeGreen;
+                }
                 break;
             case "Lightblue":
                 themeID = R.style.AppThemeLightblue;
@@ -148,7 +153,7 @@ public class ThemesConfiguration {
         themesScroller.addView(dialogView);
         dialog.setView(themesScroller);
         dialog.setIcon(R.drawable.settingsgears24);
-        dialog.setTitle( "Application Theme Configuration:");
+        dialog.setTitle( "Application Themes:");
         dialog.setPositiveButton( "Set Theme", new DialogInterface.OnClickListener(){
             @Override
             public void onClick(DialogInterface dialog, int whichBtn) {

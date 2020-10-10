@@ -74,7 +74,7 @@ public class TabFragment extends Fragment {
     public static final int TAB_EXPORT_MITEM_DOWNLOAD = 1;
     public static final int TAB_EXPORT_MITEM_UPLOAD = 2;
 
-    public static final int TAB_SCRIPTING_MITEM_COLUMNS = TAB_MENU_ITEM_DEFAULT_COLUMNS;
+    public static final int TAB_SCRIPTING_MITEM_COLUMNS = 2;
     public static final int TAB_SCRIPTING_MITEM_LOAD_IMPORT_CHKSYNTAX = 0;
     public static final int TAB_SCRIPTING_MITEM_VIEW_SCRIPT_OUTPUT = 1;
     public static final int TAB_SCRIPTING_MITEM_SCRIPT_EDITOR_VIEWER = 2;
@@ -287,14 +287,12 @@ public class TabFragment extends Fragment {
                 TAB_SCRIPTING_MITEM_COLUMNS,
                 new String[] {
                         "Load and Import",
-                        "Run and View Output",
-                        "Editor",
-                        "Variables",
+                        "Run Script",
+                        "Variable View",
                         "Help and Syntax"
                 },
                 new int[] {
                         R.layout.scripting_tab_load_import,
-                        R.layout.tab_under_construction,
                         R.layout.tab_under_construction,
                         R.layout.tab_under_construction,
                         R.layout.tab_under_construction
@@ -310,7 +308,7 @@ public class TabFragment extends Fragment {
                         "General",
                         "Device List",
                         "Scripting",
-                        "Custom Themes"
+                        "Themes"
                 },
                 new int[] {
                         R.layout.config_tab_general_settings,

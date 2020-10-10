@@ -29,7 +29,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:drawableLeft="@drawable/console16"
         android:drawablePadding="5dp"
         android:singleLine="true"
-        android:text="Select CLA / CLS Byte: "
+        android:text="Select CLA Byte: "
         android:textAllCaps="true"
         android:textSize="14sp"
         android:textStyle="bold|italic" />
@@ -39,7 +39,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:layout_height="wrap_content"
         android:layout_margin="1dp"
         android:background="?colorAccentLog"
-        android:columnCount="13"
+        android:columnCount="3"
         android:orientation="horizontal"
         android:padding="2dp"
         android:rowCount="1">
@@ -49,28 +49,42 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:drawableLeft="@drawable/iso24"
             android:onClick="actionButtonApduCLA"
             android:tag="00"
-            android:text="STDISO" />
+            android:text="STDISO -- 0x00" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/desfire_df_folder24"
+            android:onClick="actionButtonApduCLA"
+            android:tag="90"
+            android:text="DESFire -- 0x90" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/mifare_cla_mf_folder24"
+            android:onClick="actionButtonApduCLA"
+            android:tag="ff"
+            android:text="MF UID -- 0xff" />
 
         <Button
             style="@style/GridButtons"
             android:drawableLeft="@drawable/unlock24"
             android:onClick="actionButtonApduCLA"
             android:tag="80"
-            android:text="PLAINTEXT" />
+            android:text="PLAINTEXT -- 0x80" />
 
         <Button
             style="@style/GridButtons"
             android:drawableLeft="@drawable/keyword24"
             android:onClick="actionButtonApduCLA"
             android:tag="84"
-            android:text="ENCRYPTED" />
+            android:text="ENCRYPTED-- 0x84" />
 
         <Button
             style="@style/GridButtons"
             android:drawableLeft="@drawable/unlock24v2"
             android:onClick="actionButtonApduCLA"
             android:tag="c0"
-            android:text="UNENCRYPTED" />
+            android:text="UNENCRYPTED -- 0xc0" />
 
     </GridLayout>
 
@@ -140,7 +154,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:drawableLeft="@drawable/console16"
         android:drawablePadding="3dp"
         android:singleLine="true"
-        android:text="Assembled APDU Command: "
+        android:text="Send Assembled APDU Command: "
         android:textAllCaps="true"
         android:textSize="14sp"
         android:textStyle="bold|italic" />
@@ -294,6 +308,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:layout_margin="1dp"
         android:background="?colorAccentLog"
         android:orientation="horizontal"
+        android:columnCount="2"
         android:padding="2dp">
 
         <Button
@@ -306,7 +321,22 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             style="@style/GridButtons"
             android:drawableLeft="@drawable/sendarrow24v2"
             android:onClick="actionButtonSendAPDU"
-            android:text="TRANSMIT APDU" />
+            android:tag = "DEFAULT_WRAPPED"
+            android:text="SEND APDU" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/sendarrow24v2"
+            android:onClick="actionButtonSendAPDU"
+            android:tag = "NATIVE_NOWRAP"
+            android:text="SEND Native Wrap" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/sendarrow24v2"
+            android:onClick="actionButtonSendAPDU"
+            android:tag = "DNOWRAP_WITH_CRC"
+            android:text="SEND NoWrap + CRC" />
 
     </GridLayout>
 
@@ -322,7 +352,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:drawableLeft="@drawable/console16"
         android:drawablePadding="5dp"
         android:singleLine="true"
-        android:text="Search / Lookup Instructions: "
+        android:text="Search Command Codes: "
         android:textAllCaps="true"
         android:textSize="14sp"
         android:textStyle="bold|italic" />

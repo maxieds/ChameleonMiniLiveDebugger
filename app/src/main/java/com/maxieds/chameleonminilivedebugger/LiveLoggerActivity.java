@@ -229,7 +229,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
           setContentView(R.layout.activity_live_logger);
 
           Toolbar actionBar = (Toolbar) findViewById(R.id.toolbarActionBar);
-          actionBar.setSubtitle("Portable logger | v" + String.valueOf(BuildConfig.VERSION_NAME));
+          actionBar.setSubtitle("Portable device logger | v" + String.valueOf(BuildConfig.VERSION_NAME));
           clearStatusIcon(R.id.statusIconUlDl);
           getWindow().setTitleColor(ThemesConfiguration.getThemeColorVariant(R.attr.actionBarBackgroundColor));
           getWindow().setStatusBarColor(ThemesConfiguration.getThemeColorVariant(R.attr.colorPrimaryDark));
@@ -838,7 +838,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
      }
 
      public void actionButtonSendAPDU(View view) {
-          ApduGUITools.sendAPDUToChameleon();
+          String sendMode = ((Button) view).getTag().toString();
+          ApduGUITools.sendAPDUToChameleon(sendMode);
      }
 
      public void actionButtonAPDUSearchCmd(View view) {
