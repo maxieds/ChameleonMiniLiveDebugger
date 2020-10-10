@@ -61,7 +61,7 @@ public class ApduGUITools {
             public void onClick(DialogInterface dialog, int which) {
                 String dataBytes = apduCmdEntryFinal.getText().toString().toLowerCase();
                 dataBytes.replaceAll("[ \n\t\r|]*", ""); // remove whitespace
-                if (!Utils.stringIsHexadecimal(dataBytes) || dataBytes.length() < 8) {
+                if (dataBytes.length() < 8) {
                     return;
                 }
                 if(!Utils.stringIsHexadecimal(dataBytes.substring(0, 2))) {
@@ -87,13 +87,25 @@ public class ApduGUITools {
             public void onClick(DialogInterface dialog, int which) {
                 String dataBytes = apduCmdEntryFinal.getText().toString().toLowerCase();
                 dataBytes.replaceAll("[ \n\t\r|]*", ""); // remove whitespace
-                if(!Utils.stringIsHexadecimal(dataBytes) || dataBytes.length() < 8) {
+                if(dataBytes.length() < 8) {
                     return;
                 }
                 ApduUtils.apduTransceiveCmd.CLA = dataBytes.substring(0, 2);
                 ApduUtils.apduTransceiveCmd.INS = dataBytes.substring(2, 4);
                 ApduUtils.apduTransceiveCmd.P1 = dataBytes.substring(4, 6);
                 ApduUtils.apduTransceiveCmd.P2 = dataBytes.substring(6, 8);
+                if(!Utils.stringIsHexadecimal(dataBytes.substring(0, 2))) {
+                    dataBytes = ApduUtils.apduTransceiveCmd.CLA + dataBytes.substring(2);
+                }
+                if(!Utils.stringIsHexadecimal(dataBytes.substring(2, 4))) {
+                    dataBytes = dataBytes.substring(0, 2) + ApduUtils.apduTransceiveCmd.INS + dataBytes.substring(4);
+                }
+                if(!Utils.stringIsHexadecimal(dataBytes.substring(2, 4))) {
+                    dataBytes = dataBytes.substring(0, 4) + ApduUtils.apduTransceiveCmd.P1 + dataBytes.substring(6);
+                }
+                if(!Utils.stringIsHexadecimal(dataBytes.substring(2, 4))) {
+                    dataBytes = dataBytes.substring(0, 6) + ApduUtils.apduTransceiveCmd.P2;
+                }
                 if(dataBytes.length() >= 9) {
                     ApduUtils.apduTransceiveCmd.setPayloadData(dataBytes.substring(8, dataBytes.length()));
                 }

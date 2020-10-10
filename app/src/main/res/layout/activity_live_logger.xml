@@ -49,8 +49,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:orientation="horizontal"
         android:paddingLeft="5dp"
         android:paddingRight="4dp">
-
-
+        
         <GridLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -73,10 +72,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:textColor="?deviceStatusBarTextColor"
                 android:textSize="11sp"
                 android:textStyle="normal|bold" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp" />
 
             <TextView
                 android:id="@+id/deviceStats1"
@@ -231,7 +226,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:layout_width="fill_parent"
         android:layout_height="500dp"
         android:layout_weight="1"
-        android:background="?colorPrimary"
+        android:background="?colorPrimaryDark"
         android:orientation="vertical">
 
         <TabHost
@@ -241,6 +236,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:layout_margin="0px"
             android:padding="0dp"
             android:visibility="visible"
+            android:background="?colorPrimaryDark"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.523"
             app:layout_constraintStart_toStartOf="parent"
@@ -252,6 +248,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:layout_height="wrap_content"
                 android:background="?colorAccent"
                 android:visibility="visible"
+                app:tabBackground="?colorPrimaryDark"
                 app:tabGravity="fill"
                 app:tabIndicatorColor="?colorPrimaryDark"
                 app:tabIndicatorHeight="5dp"

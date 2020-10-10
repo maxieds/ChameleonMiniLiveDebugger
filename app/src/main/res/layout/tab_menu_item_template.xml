@@ -24,6 +24,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     android:padding="0dp"
     android:orientation="vertical">
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp" />
+
     <GridLayout
         android:id="@+id/tabMenuItemsNav"
         android:layout_width="fill_parent"
@@ -39,11 +43,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:rowCount="1">
     </GridLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="?colorPrimaryDark" />
-
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/tabMainContent"
         android:layout_width="match_parent"
@@ -53,7 +52,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="3dp"
         android:background="?colorPrimaryDark" />
 
 </LinearLayout>

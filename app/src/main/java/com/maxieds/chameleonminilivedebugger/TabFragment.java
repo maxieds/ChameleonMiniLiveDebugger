@@ -167,9 +167,8 @@ public class TabFragment extends Fragment {
                             Utils.getColorFromTheme(R.attr.colorAccent),
                             Utils.getColorFromTheme(R.attr.colorAccentHighlight)
             });
-            menuItemsNav.setBackgroundColor(Utils.getColorFromTheme(R.attr.colorPrimaryDark));
-            menuItemsNav.setBackgroundDrawable(gradientBg);
             gradientBg.setCornerRadius(56f);
+            menuItemsNav.setBackground(gradientBg);
             int totalItems = 0;
             while(totalItems < menuItemText.length) {
                 int themeResID = ThemesConfiguration.appThemeResID;
@@ -277,8 +276,7 @@ public class TabFragment extends Fragment {
                 new int[]{
                         R.layout.export_tab_save_logs,
                         R.layout.export_tab_download,
-                        R.layout.export_tab_upload,
-                        R.layout.export_tab_clone_mfc
+                        R.layout.export_tab_upload
                 });
         UITAB_DATA[TAB_SCRIPTING] = new UITab(
                 TAB_SCRIPTING,

@@ -22,6 +22,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -49,42 +53,42 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:drawableLeft="@drawable/iso24"
             android:onClick="actionButtonApduCLA"
             android:tag="00"
-            android:text="STDISO -- 0x00" />
+            android:text="ISO-00" />
 
         <Button
             style="@style/GridButtons"
             android:drawableLeft="@drawable/desfire_df_folder24"
             android:onClick="actionButtonApduCLA"
             android:tag="90"
-            android:text="DESFire -- 0x90" />
+            android:text="DESFire-90" />
 
         <Button
             style="@style/GridButtons"
             android:drawableLeft="@drawable/mifare_cla_mf_folder24"
             android:onClick="actionButtonApduCLA"
             android:tag="ff"
-            android:text="MF UID -- 0xff" />
+            android:text="MFUID-ff" />
 
         <Button
             style="@style/GridButtons"
             android:drawableLeft="@drawable/unlock24"
             android:onClick="actionButtonApduCLA"
             android:tag="80"
-            android:text="PLAINTEXT -- 0x80" />
+            android:text="PLAINTEXT-80" />
 
         <Button
             style="@style/GridButtons"
             android:drawableLeft="@drawable/keyword24"
             android:onClick="actionButtonApduCLA"
             android:tag="84"
-            android:text="ENCRYPTED-- 0x84" />
+            android:text="ENCRYPTED-84" />
 
         <Button
             style="@style/GridButtons"
             android:drawableLeft="@drawable/unlock24v2"
             android:onClick="actionButtonApduCLA"
             android:tag="c0"
-            android:text="UNENCRYPTED -- 0xc0" />
+            android:text="UNENC-c0" />
 
     </GridLayout>
 
@@ -164,136 +168,155 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:layout_height="2dp"
         android:background="?colorPrimaryDark" />
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_marginBottom="0dp"
+        android:orientation="vertical"
+        android:padding="0dp" >
 
-        <TextView
-            android:layout_width="wrap_content"
+        <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="?colorAccent"
-            android:paddingLeft="2dp"
-            android:paddingRight="1dp"
-            android:singleLine="true"
-            android:text="CLA / CLS: "
-            android:textAllCaps="true"
-            android:textSize="11sp"
-            android:textStyle="bold|italic" />
-
-        <TextView
-            android:id="@+id/apduCLA"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:columnCount="8"
             android:layout_gravity="left"
-            android:background="?colorAccent"
-            android:paddingRight="1dp"
-            android:singleLine="true"
-            android:text="XX"
-            android:textAllCaps="true"
-            android:textSize="11sp"
-            android:textStyle="normal" />
+            android:gravity="left" >
 
-        <TextView
-            android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?colorAccent"
+                android:paddingLeft="2dp"
+                android:paddingRight="1dp"
+                android:singleLine="true"
+                android:text="CLA: "
+                android:textAllCaps="true"
+                android:textSize="11sp"
+                android:textStyle="bold|italic" />
+
+            <TextView
+                android:id="@+id/apduCLA"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:background="?colorAccent"
+                android:paddingRight="1dp"
+                android:singleLine="true"
+                android:text="XX"
+                android:textAllCaps="true"
+                android:textSize="11sp"
+                android:textStyle="normal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?colorAccent"
+                android:paddingLeft="5dp"
+                android:paddingRight="2dp"
+                android:text="INS: "
+                android:textAllCaps="true"
+                android:textSize="11sp"
+                android:textStyle="bold|italic" />
+
+            <TextView
+                android:id="@+id/apduINS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_weight="0"
+                android:background="?colorAccent"
+                android:paddingLeft="1dp"
+                android:singleLine="true"
+                android:text="XX"
+                android:textAllCaps="true"
+                android:textSize="11sp"
+                android:textStyle="normal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?colorAccent"
+                android:paddingLeft="5dp"
+                android:paddingRight="2dp"
+                android:text="P1: "
+                android:textAllCaps="true"
+                android:textSize="11sp"
+                android:textStyle="bold|italic" />
+
+            <TextView
+                android:id="@+id/apduP1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_weight="0"
+                android:background="?colorAccent"
+                android:paddingLeft="1dp"
+                android:singleLine="true"
+                android:text="XX"
+                android:textAllCaps="true"
+                android:textSize="11sp"
+                android:textStyle="normal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?colorAccent"
+                android:paddingLeft="5dp"
+                android:paddingRight="2dp"
+                android:text="P2: "
+                android:textAllCaps="true"
+                android:textSize="11sp"
+                android:textStyle="bold|italic" />
+
+            <TextView
+                android:id="@+id/apduP2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_weight="0"
+                android:background="?colorAccent"
+                android:paddingLeft="1dp"
+                android:singleLine="true"
+                android:text="XX"
+                android:textAllCaps="true"
+                android:textSize="11sp"
+                android:textStyle="normal" />
+        </GridLayout>
+
+        <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="?colorAccent"
-            android:paddingLeft="5dp"
-            android:paddingRight="2dp"
-            android:text="INS: "
-            android:textAllCaps="true"
-            android:textSize="11sp"
-            android:textStyle="bold|italic" />
+            android:columnCount="8" >
 
-        <TextView
-            android:id="@+id/apduINS"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_weight="0"
-            android:background="?colorAccent"
-            android:paddingLeft="1dp"
-            android:singleLine="true"
-            android:text="XX"
-            android:textAllCaps="true"
-            android:textSize="11sp"
-            android:textStyle="normal" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?colorAccent"
+                android:paddingLeft="5dp"
+                android:paddingRight="2dp"
+                android:singleLine="true"
+                android:text="PAYLOAD DATA: "
+                android:textAllCaps="true"
+                android:textSize="11sp"
+                android:textStyle="bold|italic" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?colorAccent"
-            android:paddingLeft="5dp"
-            android:paddingRight="2dp"
-            android:text="P1: "
-            android:textAllCaps="true"
-            android:textSize="11sp"
-            android:textStyle="bold|italic" />
+            <TextView
+                android:id="@+id/apduPayloadData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_weight="1"
+                android:background="?colorAccent"
+                android:hint="NONE"
+                android:paddingLeft="1dp"
+                android:singleLine="true"
+                android:textAllCaps="true"
+                android:textSize="11sp"
+                android:textStyle="normal" />
 
-        <TextView
-            android:id="@+id/apduP1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_weight="0"
-            android:background="?colorAccent"
-            android:paddingLeft="1dp"
-            android:singleLine="true"
-            android:text="XX"
-            android:textAllCaps="true"
-            android:textSize="11sp"
-            android:textStyle="normal" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?colorAccent"
-            android:paddingLeft="5dp"
-            android:paddingRight="2dp"
-            android:text="P2: "
-            android:textAllCaps="true"
-            android:textSize="11sp"
-            android:textStyle="bold|italic" />
-
-        <TextView
-            android:id="@+id/apduP2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_weight="0"
-            android:background="?colorAccent"
-            android:paddingLeft="1dp"
-            android:singleLine="true"
-            android:text="XX"
-            android:textAllCaps="true"
-            android:textSize="11sp"
-            android:textStyle="normal" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?colorAccent"
-            android:paddingLeft="5dp"
-            android:paddingRight="2dp"
-            android:singleLine="true"
-            android:text="PAYLOAD DATA: "
-            android:textAllCaps="true"
-            android:textSize="11sp"
-            android:textStyle="bold|italic" />
-
-        <TextView
-            android:id="@+id/apduPayloadData"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:layout_weight="1"
-            android:background="?colorAccent"
-            android:hint="NONE"
-            android:paddingLeft="1dp"
-            android:singleLine="true"
-            android:textAllCaps="true"
-            android:textSize="11sp"
-            android:textStyle="normal" />
+        </GridLayout>
 
     </LinearLayout>
 
@@ -329,14 +352,14 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:drawableLeft="@drawable/sendarrow24v2"
             android:onClick="actionButtonSendAPDU"
             android:tag = "NATIVE_NOWRAP"
-            android:text="SEND Native Wrap" />
+            android:text="SEND Native NoWrap" />
 
         <Button
             style="@style/GridButtons"
             android:drawableLeft="@drawable/sendarrow24v2"
             android:onClick="actionButtonSendAPDU"
             android:tag = "DNOWRAP_WITH_CRC"
-            android:text="SEND NoWrap + CRC" />
+            android:text="SEND Native + CRC" />
 
     </GridLayout>
 

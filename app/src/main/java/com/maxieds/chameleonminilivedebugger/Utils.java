@@ -90,7 +90,7 @@ public class Utils {
     // TODO: javadoc
     public static byte[] hexString2Bytes(String byteStr) {
         if (byteStr.length() % 2 != 0) { // left-pad the string:
-            byteStr = "0" + byteStr;
+            byteStr =  byteStr + "0";
         }
         byte[] byteRep = new byte[byteStr.length() / 2];
         for (int b = 0; b < byteStr.length(); b += 2)
