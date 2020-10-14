@@ -564,6 +564,20 @@ public class UITabUtils {
         spinner.setAdapter(spinnerAdapter);
         if(ChameleonSettings.getActiveSerialIOPort() != null) {
             String deviceSetting = ChameleonIO.getSettingFromDevice("LOGMODE?");
+            if(ChameleonLogUtils.LOGMODE_NOTIFY_STATE && deviceSetting.equals(ChameleonLogUtils.LOGMODE_LIVE)) {
+                deviceSetting = ChameleonLogUtils.LOGMODE_LIVE_WITH_NOTIFY_SELECT_STATE;
+            }
+            else if(ChameleonLogUtils.LOGMODE_NOTIFY_STATE && deviceSetting.equals(ChameleonLogUtils.LOGMODE_OFF)) {
+                deviceSetting = ChameleonLogUtils.LOGMODE_OFF_WITH_NOTIFY_SELECT_STATE;
+            }
+            spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(deviceSetting));
+        }
+        if(ChameleonLogUtils.LOGMODE_NOTIFY_STATE && ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS) {
+            String deviceSetting = ChameleonLogUtils.LOGMODE_LIVE_WITH_NOTIFY_SELECT_STATE;
+            spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(deviceSetting));
+        }
+        else if(ChameleonLogUtils.LOGMODE_NOTIFY_STATE && !ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS) {
+            String deviceSetting = ChameleonLogUtils.LOGMODE_OFF_WITH_NOTIFY_SELECT_STATE;
             spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(deviceSetting));
         }
         final Spinner localSpinnerRef = spinner;

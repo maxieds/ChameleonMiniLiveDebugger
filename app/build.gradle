@@ -22,8 +22,8 @@ import java.text.SimpleDateFormat
 import com.android.build.OutputFile
 
 def getDateTimestamp() {
-    DateFormat df = new SimpleDateFormat("YYYY-MM-DD-HH:mm:ss");
-    return new String("BuildTime=" + df.format(new Date()).toString());
+    DateFormat df = new SimpleDateFormat("YYYY-MM-dd-HHmmss");
+    return new String(df.format(new Date()).toString());
 }
 
 def getShellCommandOutput(String shellCmd) {
@@ -49,14 +49,14 @@ android {
         minSdkVersion 26
         targetSdkVersion 29
         compileSdkVersion 29
-        versionCode 86 + 8080
-        versionName "1.2.5"
+        versionCode 87 + 8080
+        versionName "1.2.6"
         multiDexEnabled true
 
         buildConfigField "String", "GIT_COMMIT_HASH", "\"" + getGitCommitHash() + "\""
         buildConfigField "String", "GIT_COMMIT_DATE", "\"" + getGitCommitDate() + "\""
 
-        setProperty("archivesBaseName", "ChameleonMiniLiveDebugger-v$versionName-$configBuildTimeStamp".replace(".", "-"))
+        setProperty("archivesBaseName", "ChameleonMiniLiveDebugger-v$versionName-$configBuildTimeStamp")
 
     }
     compileOptions {
