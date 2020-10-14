@@ -572,14 +572,6 @@ public class UITabUtils {
             }
             spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(deviceSetting));
         }
-        if(ChameleonLogUtils.LOGMODE_NOTIFY_STATE && ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS) {
-            String deviceSetting = ChameleonLogUtils.LOGMODE_LIVE_WITH_NOTIFY_SELECT_STATE;
-            spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(deviceSetting));
-        }
-        else if(ChameleonLogUtils.LOGMODE_NOTIFY_STATE && !ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS) {
-            String deviceSetting = ChameleonLogUtils.LOGMODE_OFF_WITH_NOTIFY_SELECT_STATE;
-            spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(deviceSetting));
-        }
         final Spinner localSpinnerRef = spinner;
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             Spinner localSpinner = localSpinnerRef;
@@ -600,10 +592,9 @@ public class UITabUtils {
                 else {
                     nextLogMode = selectedLogMode;
                     ChameleonLogUtils.LOGMODE_NOTIFY_STATE = false;
-                    ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS = (nextLogMode == ChameleonLogUtils.LOGMODE_LIVE) || (nextLogMode == ChameleonLogUtils.LOGMODE_LIVE_FLUSH_NOW);
+                    ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS = true;
                 }
                 AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_LOGMODE_NOTIFY_STATE);
-                AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_LOGMODE_ENABLE_PRINTING_LIVE_LOGS);
                 String setCmd = "LOGMODE=" + nextLogMode;
                 ChameleonIO.executeChameleonMiniCommand(setCmd, ChameleonIO.TIMEOUT);
             }

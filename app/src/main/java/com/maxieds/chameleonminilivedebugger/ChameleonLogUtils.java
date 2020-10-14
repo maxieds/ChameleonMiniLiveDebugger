@@ -229,7 +229,7 @@ public class ChameleonLogUtils {
     public static final String LOGMODE_LIVE_WITH_NOTIFY_SELECT_STATE = "LIVE-NOTIFY";
 
     public static boolean LOGMODE_NOTIFY_STATE = false;
-    public static boolean LOGMODE_ENABLE_PRINTING_LIVE_LOGS = false;
+    public static boolean LOGMODE_ENABLE_PRINTING_LIVE_LOGS = true;
     public static boolean LOGMODE_NOTIFY_ENABLE_CODECRX_STATUS_INDICATOR = true;
     public static boolean LOGMODE_NOTIFY_ENABLE_RDRFLDDETECT_STATUS_INDICATOR = true;
 

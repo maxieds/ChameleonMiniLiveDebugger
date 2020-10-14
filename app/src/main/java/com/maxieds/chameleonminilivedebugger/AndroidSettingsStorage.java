@@ -54,7 +54,6 @@ public class AndroidSettingsStorage {
     public static final String LOGGING_CONFIG_LOGMODE_NOTIFY_CODECRX_EVENTS = "loggingConfigLogModeNotifyCodecRXEvents";
     public static final String LOGGING_CONFIG_LOGMODE_NOTIFY_RDRFLDDETECT_EVENTS = "loggingConfigLogModeNotifyRdrFldDetectEvents";
     public static final String LOGGING_CONFIG_LOGMODE_NOTIFY_STATE = "loggingConfigLogModeNotifyState";
-    public static final String LOGGING_CONFIG_LOGMODE_ENABLE_PRINTING_LIVE_LOGS = "loggingConfigLogModeEnablePrintingLiveLogs";
 
     public static boolean loadDefaultSettings(String profileID) {
         updateValueByKey(profileID, THEMEID_PREFERENCE);
@@ -75,7 +74,6 @@ public class AndroidSettingsStorage {
         updateValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_CODECRX_EVENTS);
         updateValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_RDRFLDDETECT_EVENTS);
         updateValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_STATE);
-        updateValueByKey(profileID, LOGGING_CONFIG_LOGMODE_ENABLE_PRINTING_LIVE_LOGS);
         return true;
     }
 
@@ -99,7 +97,6 @@ public class AndroidSettingsStorage {
             ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_CODECRX_STATUS_INDICATOR = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_CODECRX_EVENTS));
             ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_RDRFLDDETECT_STATUS_INDICATOR = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_RDRFLDDETECT_EVENTS));
             ChameleonLogUtils.LOGMODE_NOTIFY_STATE = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_STATE));
-            ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_LOGMODE_ENABLE_PRINTING_LIVE_LOGS));
         } catch(Exception ex) {
             ex.printStackTrace();
             return false;
@@ -171,9 +168,6 @@ public class AndroidSettingsStorage {
         else if(prefsKey.equals(LOGGING_CONFIG_LOGMODE_NOTIFY_STATE)) {
             spEditor.putBoolean(prefsKey, ChameleonLogUtils.LOGMODE_NOTIFY_STATE);
         }
-        else if(prefsKey.equals(LOGGING_CONFIG_LOGMODE_ENABLE_PRINTING_LIVE_LOGS)) {
-            spEditor.putBoolean(prefsKey, ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS);
-        }
         else {
             return false;
         }
@@ -241,9 +235,6 @@ public class AndroidSettingsStorage {
         }
         else if(prefsKey.equals(LOGGING_CONFIG_LOGMODE_NOTIFY_STATE)) {
             return sharedPrefs.getBoolean(prefsKey, ChameleonLogUtils.LOGMODE_NOTIFY_STATE) ? "true" : "false";
-        }
-        else if(prefsKey.equals(LOGGING_CONFIG_LOGMODE_ENABLE_PRINTING_LIVE_LOGS)) {
-            return sharedPrefs.getBoolean(prefsKey, ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS) ? "true" : "false";
         }
         return null;
     }

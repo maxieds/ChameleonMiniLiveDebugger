@@ -164,7 +164,7 @@ public class ChameleonIO {
             int selectedMenuIdx = TabFragment.UITAB_DATA[selectedTab].lastMenuIndex;
             View tabView = TabFragment.UITAB_DATA[selectedTab].tabInflatedView;
             UITabUtils.initializeTabMainContent(selectedTab, selectedMenuIdx, tabView);
-            int activeSlot = ChameleonIO.DeviceStatusSettings.DIP_SETTING - 1;
+            int activeSlot = Math.max(0, ChameleonIO.DeviceStatusSettings.DIP_SETTING - 1);
             ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlot].readParametersFromChameleonSlot();
         }
         Log.i(TAG, "TODO: setup bi-directional sniffing if necessary ...");
@@ -508,16 +508,6 @@ public class ChameleonIO {
             ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             return cfgResp;
         }
-    }
-
-    /**
-     * Enables LIVE logging on the device.
-     *
-     * @param timeout
-     * @return SerialRespCode status code (OK)
-     */
-    public static SerialRespCode enableLiveDebugging(int timeout) {
-        return executeChameleonMiniCommand("LOGMODE=LIVE", timeout);
     }
 
     /**

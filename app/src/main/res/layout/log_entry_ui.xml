@@ -33,7 +33,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:orientation="horizontal"
         android:weightSum="1.0"
         android:layout_marginBottom="0dp"
-        android:background="?colorPrimary"
         android:paddingBottom="0dp">
 
         <CheckBox

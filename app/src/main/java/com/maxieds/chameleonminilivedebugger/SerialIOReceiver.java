@@ -24,12 +24,15 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 
 import static com.maxieds.chameleonminilivedebugger.ChameleonLogUtils.LogCode.LOG_INFO_CODEC_READER_FIELD_DETECTED;
 import static com.maxieds.chameleonminilivedebugger.ChameleonLogUtils.LogCode.LOG_INFO_CODEC_RX_DATA;
 import static com.maxieds.chameleonminilivedebugger.ChameleonLogUtils.LogCode.LOG_INFO_CODEC_RX_DATA_W_PARITY;
 
 public class SerialIOReceiver implements ChameleonSerialIOInterface {
+
+    private static final String TAG = SerialIOReceiver.class.getSimpleName();
 
     public void setListenerContext(Context context) {}
 
@@ -167,6 +170,7 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface {
             }
             int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData);
             if (loggingRespSize > 0) {
+                Log.i(TAG, "Received new LogEntry @ " + String.format(Locale.ENGLISH, "0x%02x", liveLogData[0]));
                 if(ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS) {
                     notifyLogDataReceived(liveLogData);
                 }

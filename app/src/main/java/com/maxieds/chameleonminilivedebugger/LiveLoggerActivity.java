@@ -162,11 +162,6 @@ public class LiveLoggerActivity extends AppCompatActivity {
           }
           if(!serialIOReceiversRegistered) {
                if(serialIOActionReceiver == null) {
-                    try {
-                         unregisterReceiver(serialIOActionReceiver);
-                    } catch (Exception excpt) {
-                         excpt.printStackTrace();
-                    }
                     serialIOActionReceiver = new BroadcastReceiver() {
                          public void onReceive(Context context, Intent intent) {
                               Log.i(TAG, intent.getAction());
@@ -432,7 +427,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     setStatusIcon(R.id.statusIconUSB, R.drawable.usbconnected16);
                }
           }
-          else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
+          else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED) ||
+                  intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST)) {
                ChameleonIO.DeviceStatusSettings.stopPostingStats();
                if(ChameleonIO.WAITING_FOR_RESPONSE) {
                     ChameleonIO.WAITING_FOR_RESPONSE = false;
