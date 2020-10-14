@@ -51,6 +51,10 @@ public class AndroidSettingsStorage {
     public static final String LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE = "loggingConfigClearLogsOnNewDevice";
     public static final String LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES = "loggingConfigCollapseCommonEntries";
     public static final String LOGGING_CONFIG_ENABLE_LIVE_STATUS_UPDATES = "loggingConfigEnableLiveStatusUpdates";
+    public static final String LOGGING_CONFIG_LOGMODE_NOTIFY_CODECRX_EVENTS = "loggingConfigLogModeNotifyCodecRXEvents";
+    public static final String LOGGING_CONFIG_LOGMODE_NOTIFY_RDRFLDDETECT_EVENTS = "loggingConfigLogModeNotifyRdrFldDetectEvents";
+    public static final String LOGGING_CONFIG_LOGMODE_NOTIFY_STATE = "loggingConfigLogModeNotifyState";
+    public static final String LOGGING_CONFIG_LOGMODE_ENABLE_PRINTING_LIVE_LOGS = "loggingConfigLogModeEnablePrintingLiveLogs";
 
     public static boolean loadDefaultSettings(String profileID) {
         updateValueByKey(profileID, THEMEID_PREFERENCE);
@@ -68,6 +72,10 @@ public class AndroidSettingsStorage {
         updateValueByKey(profileID, LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE);
         updateValueByKey(profileID, LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES);
         updateValueByKey(profileID, LOGGING_CONFIG_ENABLE_LIVE_STATUS_UPDATES);
+        updateValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_CODECRX_EVENTS);
+        updateValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_RDRFLDDETECT_EVENTS);
+        updateValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_STATE);
+        updateValueByKey(profileID, LOGGING_CONFIG_LOGMODE_ENABLE_PRINTING_LIVE_LOGS);
         return true;
     }
 
@@ -88,6 +96,10 @@ public class AndroidSettingsStorage {
             ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE));
             ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES));
             ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_ENABLE_LIVE_STATUS_UPDATES));
+            ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_CODECRX_STATUS_INDICATOR = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_CODECRX_EVENTS));
+            ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_RDRFLDDETECT_STATUS_INDICATOR = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_RDRFLDDETECT_EVENTS));
+            ChameleonLogUtils.LOGMODE_NOTIFY_STATE = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_STATE));
+            ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_LOGMODE_ENABLE_PRINTING_LIVE_LOGS));
         } catch(Exception ex) {
             ex.printStackTrace();
             return false;
@@ -150,6 +162,18 @@ public class AndroidSettingsStorage {
         else if(prefsKey.equals(LOGGING_CONFIG_ENABLE_LIVE_STATUS_UPDATES)) {
             spEditor.putBoolean(prefsKey, ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES);
         }
+        else if(prefsKey.equals(LOGGING_CONFIG_LOGMODE_NOTIFY_CODECRX_EVENTS)) {
+            spEditor.putBoolean(prefsKey, ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_CODECRX_STATUS_INDICATOR);
+        }
+        else if(prefsKey.equals(LOGGING_CONFIG_LOGMODE_NOTIFY_RDRFLDDETECT_EVENTS)) {
+            spEditor.putBoolean(prefsKey, ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_RDRFLDDETECT_STATUS_INDICATOR);
+        }
+        else if(prefsKey.equals(LOGGING_CONFIG_LOGMODE_NOTIFY_STATE)) {
+            spEditor.putBoolean(prefsKey, ChameleonLogUtils.LOGMODE_NOTIFY_STATE);
+        }
+        else if(prefsKey.equals(LOGGING_CONFIG_LOGMODE_ENABLE_PRINTING_LIVE_LOGS)) {
+            spEditor.putBoolean(prefsKey, ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS);
+        }
         else {
             return false;
         }
@@ -208,6 +232,18 @@ public class AndroidSettingsStorage {
         }
         else if(prefsKey.equals(LOGGING_CONFIG_ENABLE_LIVE_STATUS_UPDATES)) {
             return sharedPrefs.getBoolean(prefsKey, ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) ? "true" : "false";
+        }
+        else if(prefsKey.equals(LOGGING_CONFIG_LOGMODE_NOTIFY_CODECRX_EVENTS)) {
+            return sharedPrefs.getBoolean(prefsKey, ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_CODECRX_STATUS_INDICATOR) ? "true" : "false";
+        }
+        else if(prefsKey.equals(LOGGING_CONFIG_LOGMODE_NOTIFY_RDRFLDDETECT_EVENTS)) {
+            return sharedPrefs.getBoolean(prefsKey, ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_RDRFLDDETECT_STATUS_INDICATOR) ? "true" : "false";
+        }
+        else if(prefsKey.equals(LOGGING_CONFIG_LOGMODE_NOTIFY_STATE)) {
+            return sharedPrefs.getBoolean(prefsKey, ChameleonLogUtils.LOGMODE_NOTIFY_STATE) ? "true" : "false";
+        }
+        else if(prefsKey.equals(LOGGING_CONFIG_LOGMODE_ENABLE_PRINTING_LIVE_LOGS)) {
+            return sharedPrefs.getBoolean(prefsKey, ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS) ? "true" : "false";
         }
         return null;
     }

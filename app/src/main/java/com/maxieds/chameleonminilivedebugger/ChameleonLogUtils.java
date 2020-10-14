@@ -111,7 +111,7 @@ public class ChameleonLogUtils {
         /**
          * Stores a mapping of the log codes to their enum values.
          */
-        private static final Map<Byte, LogCode> LOG_CODE_MAP = new HashMap<>();
+        public static final Map<Byte, LogCode> LOG_CODE_MAP = new HashMap<>();
         static {
             for (LogCode logCode : values()) {
                 byte lcode = logCode.toByte();
@@ -220,5 +220,16 @@ public class ChameleonLogUtils {
         }
         return lc.getDataDirection();
     }
+
+    public static final String LOGMODE_OFF = "OFF";
+    public static final String LOGMODE_MEM = "MEMORY";
+    public static final String LOGMODE_LIVE = "LIVE";
+    public static final String LOGMODE_OFF_WITH_NOTIFY_SELECT_STATE = "OFF-NOTIFY-STATE";
+    public static final String LOGMODE_LIVE_WITH_NOTIFY_SELECT_STATE = "LIVE-NOTIFY-STATE";
+
+    public static boolean LOGMODE_NOTIFY_STATE = false;
+    public static boolean LOGMODE_ENABLE_PRINTING_LIVE_LOGS = false;
+    public static boolean LOGMODE_NOTIFY_ENABLE_CODECRX_STATUS_INDICATOR = true;
+    public static boolean LOGMODE_NOTIFY_ENABLE_RDRFLDDETECT_STATUS_INDICATOR = true;
 
 }

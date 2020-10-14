@@ -123,7 +123,7 @@ android {
             exclude 'META-INF/ASL2.0'
             exclude 'META-INF/androidx*'
             exclude 'META-INF/android*'
-            exclude 'META-INF/com.google.android.material_material.version'
+            exclude 'META-INF/com.google.android.*'
         }
 
     }

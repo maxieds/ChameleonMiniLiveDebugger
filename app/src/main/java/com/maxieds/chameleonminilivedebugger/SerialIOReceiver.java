@@ -25,6 +25,10 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static com.maxieds.chameleonminilivedebugger.ChameleonLogUtils.LogCode.LOG_INFO_CODEC_READER_FIELD_DETECTED;
+import static com.maxieds.chameleonminilivedebugger.ChameleonLogUtils.LogCode.LOG_INFO_CODEC_RX_DATA;
+import static com.maxieds.chameleonminilivedebugger.ChameleonLogUtils.LogCode.LOG_INFO_CODEC_RX_DATA_W_PARITY;
+
 public class SerialIOReceiver implements ChameleonSerialIOInterface {
 
     public void setListenerContext(Context context) {}
@@ -163,7 +167,19 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface {
             }
             int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData);
             if (loggingRespSize > 0) {
-                notifyLogDataReceived(liveLogData);
+                if(ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS) {
+                    notifyLogDataReceived(liveLogData);
+                }
+                byte logCode = liveLogData[0];
+                if(ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_CODECRX_STATUS_INDICATOR &&
+                        (ChameleonLogUtils.LogCode.LOG_CODE_MAP.get(logCode) == LOG_INFO_CODEC_RX_DATA ||
+                                ChameleonLogUtils.LogCode.LOG_CODE_MAP.get(logCode) == LOG_INFO_CODEC_RX_DATA_W_PARITY)) {
+                    LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusCodecRXDataEvent, R.drawable.toolbar_icon16_codec_rx);
+                }
+                else if(ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_RDRFLDDETECT_STATUS_INDICATOR &&
+                        ChameleonLogUtils.LogCode.LOG_CODE_MAP.get(logCode) == LOG_INFO_CODEC_READER_FIELD_DETECTED) {
+                    LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusReaderFieldDetectedEvent, R.drawable.toolbar_icon16_reader_field_detected);
+                }
                 continue;
             }
             if (ChameleonIO.PAUSED) {

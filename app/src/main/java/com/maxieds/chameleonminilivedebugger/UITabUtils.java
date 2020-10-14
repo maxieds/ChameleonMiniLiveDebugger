@@ -445,8 +445,8 @@ public class UITabUtils {
             });
         }
         else if(menuItemIdx == TAB_CONFIG_MITEM_LOGGING) {
-            UITabUtils.connectPeripheralSpinnerAdapter(tabMainLayoutView, R.id.LogModeSpinner,
-                    R.array.LogModeOptions, ChameleonPeripherals.spinnerLogModeAdapter, "LOGMODE?");
+            UITabUtils.connectPeripheralSpinnerAdapterLogMode(tabMainLayoutView, R.id.LogModeSpinner,
+                    R.array.LogModeOptions, ChameleonPeripherals.spinnerLogModeAdapter);
             String loggingMinDataFieldValue = String.format(Locale.ENGLISH, "%d", ChameleonLogUtils.LOGGING_MIN_DATA_BYTES);
             ((EditText) tabMainLayoutView.findViewById(R.id.loggingLogDataMinBytesField)).setText(loggingMinDataFieldValue);
             ((EditText) tabMainLayoutView.findViewById(R.id.loggingLogDataMinBytesField)).addTextChangedListener(new TextWatcher() {
@@ -499,6 +499,24 @@ public class UITabUtils {
                     }
                 }
             });
+            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingNotifyModeEnableCodecRXEvent)).setChecked(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT);
+            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingNotifyModeEnableCodecRXEvent)).setOnClickListener(new CheckBox.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CheckBox cb = (CheckBox) view;
+                    ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_CODECRX_STATUS_INDICATOR = cb.isChecked();
+                    AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_LOGMODE_NOTIFY_CODECRX_EVENTS);
+                }
+            });
+            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingNotifyModeEnableCodecReaderFieldDetected)).setChecked(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT);
+            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingNotifyModeEnableCodecReaderFieldDetected)).setOnClickListener(new CheckBox.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CheckBox cb = (CheckBox) view;
+                    ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_RDRFLDDETECT_STATUS_INDICATOR = cb.isChecked();
+                    AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_LOGMODE_NOTIFY_RDRFLDDETECT_EVENTS);
+                }
+            });
         }
         else if(menuItemIdx == TAB_CONFIG_MITEM_SCRIPTING) {}
         return true;
@@ -530,6 +548,49 @@ public class UITabUtils {
             String[] localSpinnerList = spinnerList;
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String setCmd = localSpinner.getTag().toString() + localSpinnerList[i];
+                ChameleonIO.executeChameleonMiniCommand(setCmd, ChameleonIO.TIMEOUT);
+            }
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                return;
+            }
+        });
+    }
+
+    private static void connectPeripheralSpinnerAdapterLogMode(View view, int spinnerID, int spinnerStringList,
+                                                        SpinnerAdapter spinnerAdapter) {
+        final String[] spinnerList = view.getContext().getResources().getStringArray(spinnerStringList);
+        spinnerAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, spinnerList);
+        Spinner spinner = (Spinner) view.findViewById(spinnerID);
+        spinner.setAdapter(spinnerAdapter);
+        if(ChameleonSettings.getActiveSerialIOPort() != null) {
+            String deviceSetting = ChameleonIO.getSettingFromDevice("LOGMODE?");
+            spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(deviceSetting));
+        }
+        final Spinner localSpinnerRef = spinner;
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            Spinner localSpinner = localSpinnerRef;
+            String[] localSpinnerList = spinnerList;
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String selectedLogMode = localSpinnerList[i];
+                String nextLogMode = "";
+                if(selectedLogMode.equals(ChameleonLogUtils.LOGMODE_OFF_WITH_NOTIFY_SELECT_STATE)) {
+                    nextLogMode = ChameleonLogUtils.LOGMODE_LIVE;
+                    ChameleonLogUtils.LOGMODE_NOTIFY_STATE = true;
+                    ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS = false;
+                }
+                else if(selectedLogMode.equals(ChameleonLogUtils.LOGMODE_LIVE_WITH_NOTIFY_SELECT_STATE)) {
+                    nextLogMode = ChameleonLogUtils.LOGMODE_LIVE;
+                    ChameleonLogUtils.LOGMODE_NOTIFY_STATE = true;
+                    ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS = true;
+                }
+                else {
+                    nextLogMode = selectedLogMode;
+                    ChameleonLogUtils.LOGMODE_NOTIFY_STATE = false;
+                    ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS = nextLogMode == ChameleonLogUtils.LOGMODE_LIVE;
+                }
+                AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_LOGMODE_NOTIFY_STATE);
+                AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_LOGMODE_ENABLE_PRINTING_LIVE_LOGS);
+                String setCmd = "LOGMODE=" + nextLogMode;
                 ChameleonIO.executeChameleonMiniCommand(setCmd, ChameleonIO.TIMEOUT);
             }
             public void onNothingSelected(AdapterView<?> adapterView) {

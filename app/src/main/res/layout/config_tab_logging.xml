@@ -272,7 +272,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:drawableLeft="@drawable/peripheral16"
                 android:drawablePadding="5dp"
                 android:singleLine="true"
-                android:text="Notify Mode Event List: "
+                android:text="Logging Notify State Event Indicator List: "
                 android:textAllCaps="true"
                 android:textStyle="bold|italic" />
 
