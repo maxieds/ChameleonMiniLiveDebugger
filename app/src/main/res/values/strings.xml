@@ -553,10 +553,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
     <string-array name="LogModeOptions">
         <item>LIVE</item>
-        <item>LIVE-NOTIFY-STATE</item>
+        <item>LIVE-NOTIFY</item>
         <item>MEMORY</item>
         <item>OFF</item>
-        <item>OFF-NOTIFY-STATE</item>
+        <item>OFF-NOTIFY</item>
     </string-array>
 
     <string-array name="FullCommandList">
