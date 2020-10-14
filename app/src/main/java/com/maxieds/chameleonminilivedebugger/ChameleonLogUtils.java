@@ -65,6 +65,7 @@ public class ChameleonLogUtils {
         LOG_INFO_CODEC_SNI_READER_DATA_W_PARITY((byte) 0x45, DATADIR_INCOMING, "Sniffing codec receive data from reader"),
         LOG_INFO_CODEC_SNI_CARD_DATA((byte) 0x46, DATADIR_INCOMING, "Sniffing codec receive data from card."),
         LOG_INFO_CODEC_SNI_CARD_DATA_W_PARITY((byte) 0x47, DATADIR_INCOMING, "Sniffing codec receive data from card."),
+        LOG_INFO_CODEC_READER_FIELD_DETECTED((byte) 0x48, DATADIR_INCOMING, "Indicates whether a reader FIELD_DETECTED has been detected"),
         /* App */
         LOG_INFO_APP_CMD_READ((byte) 0x80, DATADIR_BIDIRECTIONAL, "Application processed read command."),
         LOG_INFO_APP_CMD_WRITE((byte) 0x81, DATADIR_BIDIRECTIONAL, "Application processed write command."),

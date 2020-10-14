@@ -56,16 +56,17 @@ public class MainActivityNavActions {
         wv.setInitialScale(10);
 
         adBuilder.setCancelable(true);
-        adBuilder.setTitle("");
-        adBuilder.setIcon(LiveLoggerActivity.getInstance().getResources().getDrawable(R.drawable.chameleonicon_about64_roundicon));
+        adBuilder.setTitle("  ");
+        adBuilder.setIcon(R.drawable.chameleonicon_about64_roundicon);
         adBuilder.setPositiveButton(
-                "Done -- Back to Previous",
+                "Back to Previous",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
                     }
                 });
         adBuilder.setView(wv);
+        adBuilder.setInverseBackgroundForced(true);
         AlertDialog alertDialog = adBuilder.create();
         return alertDialog;
     }

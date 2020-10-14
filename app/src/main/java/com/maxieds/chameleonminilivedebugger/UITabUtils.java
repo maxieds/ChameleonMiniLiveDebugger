@@ -172,6 +172,18 @@ public class UITabUtils {
                 ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].readParametersFromChameleonSlot();
                 ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].updateLayoutParameters();
                 ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].enableLayout();
+                Switch swLockTag = (Switch) slotConfigContainer.findViewById(R.id.fieldOnOffSwitch);
+                swLockTag.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        ChameleonIO.executeChameleonMiniCommand("READONLY=" + (isChecked ? "1" : "0"), ChameleonIO.TIMEOUT);
+                    }
+                });
+                Switch swField = (Switch) slotConfigContainer.findViewById(R.id.fieldOnOffSwitch);
+                swField.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        ChameleonIO.executeChameleonMiniCommand("FIELD=" + (isChecked ? "1" : "0"), ChameleonIO.TIMEOUT);
+                    }
+                });
             }
         }
         else if(menuItemIdx == TAB_TOOLS_MITEM_TAGCONFIG) {}
@@ -472,16 +484,18 @@ public class UITabUtils {
                 @Override
                 public void onClick(View view) {
                     CheckBox cb = (CheckBox) view;
-                    boolean previouslyChecked = ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES;
                     ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES = cb.isChecked();
                     AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_ENABLE_LIVE_STATUS_UPDATES);
-                    if(!previouslyChecked && ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) {
+                    if(ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) {
                         if(ChameleonSettings.getActiveSerialIOPort() != null) {
-                            ChameleonIO.DeviceStatusSettings.startPostingStats(250);
+                            ChameleonIO.DeviceStatusSettings.stopPostingStats();
+                            ChameleonIO.DeviceStatusSettings.startPostingStats(0);
                         }
                     }
-                    else if(previouslyChecked && !ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) {
-                        ChameleonIO.DeviceStatusSettings.stopPostingStats();
+                    else if(!ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) {
+                        if(ChameleonSettings.getActiveSerialIOPort() != null) {
+                            ChameleonIO.DeviceStatusSettings.stopPostingStats();
+                        }
                     }
                 }
             });

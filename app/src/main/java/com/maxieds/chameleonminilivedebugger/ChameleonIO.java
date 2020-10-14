@@ -434,11 +434,11 @@ public class ChameleonIO {
                                 ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceConfigText)).setText(CONFIG);
                                 String formattedUID = Utils.formatUIDString(UID, ":");
                                 ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceConfigUID)).setText(formattedUID);
-                                String subStats1 = String.format(Locale.ENGLISH, "REV%s | MEM-%dK| LOG-%s-%dK", ChameleonIO.REVE_BOARD ? "E" : "G", round(MEMSIZE / 1024), LOGMODE, round(LOGSIZE / 1024));
+                                String subStats1 = String.format(Locale.ENGLISH, "REV%s|MEM-%dK|LOG-%s-%dK", ChameleonIO.REVE_BOARD ? "E" : "G", round(MEMSIZE / 1024), LOGMODE, round(LOGSIZE / 1024));
                                 ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceStats1)).setText(subStats1);
-                                String subStats2 = String.format(Locale.ENGLISH, "DIP-%d | %s | FLD-%s| CHRG-%s", DIP_SETTING, READONLY ? "RO" : "RW", FIELD ? "ON" : "OFF", CHARGING ? "ON" : "OFF");
+                                String subStats2 = String.format(Locale.ENGLISH, "SLOT-%d|%s|FLD-%s|CHRG-%s", DIP_SETTING, READONLY ? "RO" : "RW", FIELD ? "1" : "0", CHARGING ? "1" : "0");
                                 ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceStats2)).setText(subStats2);
-                                String subStats3 = String.format(Locale.ENGLISH, "THRS-%d mv | TO-%s", THRESHOLD, TIMEOUT);
+                                String subStats3 = String.format(Locale.ENGLISH, "THRS-%dmv|TMT-%s", THRESHOLD, TIMEOUT.replace(" ", ""));
                                 ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceStats3)).setText(subStats3);
                                 SeekBar thresholdSeekbar = (SeekBar) LiveLoggerActivity.getInstance().findViewById(R.id.thresholdSeekbar);
                                 if (thresholdSeekbar != null) {

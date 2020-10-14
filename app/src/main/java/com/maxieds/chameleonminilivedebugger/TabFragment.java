@@ -57,10 +57,11 @@ public class TabFragment extends Fragment {
     public static final int TAB_SCRIPTING = 3;
     public static final int TAB_CONFIG = 4;
 
-    public static final int TAB_LOG_MITEM_COLUMNS = TAB_MENU_ITEM_DEFAULT_COLUMNS;
+    public static final int TAB_LOG_MITEM_COLUMNS = 4;
     public static final int TAB_LOG_MITEM_LOGS = 0;
     public static final int TAB_LOG_MITEM_LOGTOOLS = 1;
-    public static final int TAB_LOG_MITEM_SEARCH = 2;
+    public static final int TAB_LOG_MITEM_EXPORTLOGS = 2;
+    public static final int TAB_LOG_MITEM_SEARCH = 3;
 
     public static final int TAB_TOOLS_MITEM_COLUMNS = TAB_MENU_ITEM_DEFAULT_COLUMNS;
     public static final int TAB_TOOLS_MITEM_SLOTS = 0;
@@ -70,9 +71,8 @@ public class TabFragment extends Fragment {
     public static final int TAB_TOOLS_MITEM_APDU = 2;
 
     public static final int TAB_EXPORT_MITEM_COLUMNS = TAB_MENU_ITEM_DEFAULT_COLUMNS;
-    public static final int TAB_EXPORT_MITEM_EXPORTLOGS = 0;
-    public static final int TAB_EXPORT_MITEM_UPLOAD_DOWNLOAD = 1;
-    public static final int TAB_EXPORT_MITEM_CLONE = 2;
+    public static final int TAB_EXPORT_MITEM_UPLOAD_DOWNLOAD = 0;
+    public static final int TAB_EXPORT_MITEM_CLONE = 1;
 
     public static final int TAB_SCRIPTING_MITEM_COLUMNS = 3;
     public static final int TAB_SCRIPTING_MITEM_LOAD_IMPORT = 0;
@@ -235,11 +235,13 @@ public class TabFragment extends Fragment {
                 new String[] {
                         "Live Logs",
                         "Log Tools",
+                        "Export",
                         "Search"
                 },
                 new int[]{
                         R.layout.log_tab_logs,
                         R.layout.log_tab_logtools,
+                        R.layout.log_tab_export_logs,
                         R.layout.log_tab_search
                 });
         UITAB_DATA[TAB_TOOLS] = new UITab(
@@ -268,12 +270,10 @@ public class TabFragment extends Fragment {
                 "Device I/O",
                 TAB_EXPORT_MITEM_COLUMNS,
                 new String[] {
-                        "Export Logs",
-                        "Upload/Download",
+                        "Upload/Download Tag Dump",
                         "Clone Tags",
                 },
                 new int[]{
-                        R.layout.export_tab_save_logs,
                         R.layout.export_tab_upload_download,
                         R.layout.export_tab_clone
                 });

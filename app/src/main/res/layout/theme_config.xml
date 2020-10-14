@@ -142,16 +142,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:text="Black" />
 
                 <RadioButton
-                    android:id="@+id/themeRadioButtonChameleonRainbow"
-                    android:buttonTint="?colorPrimaryDark"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="false"
-                    android:drawableLeft="@drawable/thememarker24"
-                    android:drawablePadding="5dp"
-                    android:text="Chameleon Rainbow" />
-
-                <RadioButton
                     android:id="@+id/themeRadioButtonChicky"
                     android:buttonTint="?colorPrimaryDark"
                     android:layout_width="wrap_content"

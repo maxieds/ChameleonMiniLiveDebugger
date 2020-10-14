@@ -33,7 +33,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:drawableLeft="@drawable/modemplug16"
         android:drawablePadding="5dp"
         android:singleLine="true"
-        android:text="Upload | Download Tag Binary Dump via XMODEM:"
+        android:text="Upload | Download Tag Dump via XMODEM:"
         android:textSize="14sp"
         android:textAllCaps="true"
         android:textStyle="bold|italic" />
@@ -55,17 +55,17 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
         <Button
             style="@style/GridButtons"
-            android:drawableLeft="@drawable/dumpfile24"
-            android:tag="DOWNLOAD"
-            android:onClick="actionButtonExportLogDownload"
-            android:text="Save Tag Data" />
-
-        <Button
-            style="@style/GridButtons"
             android:drawableLeft="@drawable/idcard24"
             android:tag="UPLOAD"
             android:onClick="actionButtonUploadCard"
             android:text="UPLOAD TAG MFD-DUMP" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/dumpfile24"
+            android:tag="DOWNLOAD"
+            android:onClick="actionButtonExportLogDownload"
+            android:text="Save Tag Data" />
 
     </GridLayout>
 

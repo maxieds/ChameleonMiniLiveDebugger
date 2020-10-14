@@ -82,7 +82,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:gravity="right"
                 android:text="REVEG | MEM | LOG-MODE"
                 android:textColor="?deviceStatusBarTextColor"
-                android:textSize="10sp"
+                android:textSize="9sp"
                 android:textStyle="normal" />
 
             <TextView
@@ -102,9 +102,9 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:layout_height="wrap_content"
                 android:background="?deviceStatusBarBackgroundColor"
                 android:gravity="right"
-                android:text="DIP# | RO/RW | FLD-0 | CHRG-OFF"
+                android:text="DIP#1 | RO/RW | FLD-0 | CHRG-0"
                 android:textColor="?deviceStatusBarTextColor"
-                android:textSize="10sp"
+                android:textSize="9sp"
                 android:textStyle="normal" />
 
             <GridLayout
@@ -184,7 +184,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:gravity="right"
                 android:text="THRES | TMOUT"
                 android:textColor="?deviceStatusBarTextColor"
-                android:textSize="10sp"
+                android:textSize="9sp"
                 android:textStyle="normal" />
 
         </GridLayout>
@@ -199,7 +199,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:padding="0dp"
             android:rowCount="2"
             android:orientation="vertical"
-            android:layout_gravity="center" >
+            android:layout_gravity="center_horizontal|top" >
 
             <Button
                 style="?android:attr/borderlessButtonStyle"
@@ -237,7 +237,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:padding="0dp"
             android:rowCount="2"
             android:orientation="vertical"
-            android:layout_gravity="center" >
+            android:layout_gravity="center_horizontal|top" >
 
             <Button
                 style="?android:attr/borderlessButtonStyle"
@@ -275,7 +275,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:padding="0dp"
             android:rowCount="2"
             android:orientation="vertical"
-            android:layout_gravity="center" >
+            android:layout_gravity="center_horizontal|top" >
 
             <Button
                 style="?android:attr/borderlessButtonStyle"

@@ -27,7 +27,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         GPL provided a link to the original project webpage and the author information remain intact in the revisions:
         &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger">maxieds/ChameleonMiniLiveDebugger&lt;/a>.&lt;br/>&lt;br/>
 
-        &lt;h1>Information about the currently running build&lt;/h1>
+        &lt;h1>Information about the current build&lt;/h1>
         &lt;ul>
             &lt;li>The Android version of the application is &lt;i>build version &lt;b>%%ANDROID_VERSION_CODE%%&lt;/b>&lt;/i>&lt;/li>
             &lt;li>Android revision &lt;b>&lt;i>%%ANDROID_VERSION_NAME%%&lt;/b>&lt;/i>&lt;/li>
@@ -35,7 +35,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             &lt;li>Git revision &lt;b>&lt;i>%%GIT_COMMIT_HASH%%&lt;/b>&lt;/i> commited at &lt;b>&lt;i>%%GIT_COMMIT_DATE%%&lt;/b>&lt;/i>&lt;/li>
         &lt;/ul>
 
-        &lt;h1>Support&lt;/h1>
+        &lt;h1>Documentation and Support&lt;/h1>
         Official documentation for the CMLD application is found on the project
         &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger/wiki">WIKI webpage&lt;/a>. Though the developer has made
         a sincere effort to keep most of the user interface and the command buttons self explanatory after some mild tinkering
@@ -68,9 +68,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     </string>
     <string name="apphtmlheader">&lt;html>&lt;head>&lt;style>a { text-decoration: underline; color: %%ABOUTLINKCOLOR%%; font-weight: bold; font-style: italic; }&lt;/style>&lt;/head>&lt;body></string>
     <string name="apphtmlfooter">&lt;/body>&lt;/html></string>
-    <string name="initialUserGreetingMsg">Thank you for using and testing this Android application.\n
-               A detailed man page and instructions for using the Chameleon Mini Live Debugger (CMLD)\n
-               are found on the project WIKI pages at the next link:\n
+    <string name="initialUserGreetingMsg">Thank you for using and testing this Android application.
+               \nA detailed man page and instructions for using the
+               \nChameleon Mini Live Debugger (CMLD) are found on
+               \nthe project WIKI pages at the next link:\n
                https://github.com/maxieds/ChameleonMiniLiveDebugger/wiki.
                \n\nStay safe out there!
     </string>

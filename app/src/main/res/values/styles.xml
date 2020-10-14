@@ -185,8 +185,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item name="colorPrimaryDarkLog">#A3351B</item>
         <item name="colorAccentLog">#EE8069</item>
         <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#FAECED</item>
-        <item name="colorAboutLinkColor">#D14323</item>
+        <item name="colorAccentHighlight">#F3BAAE</item>
+        <item name="colorAboutLinkColor">#1E4787</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonicon32_desfire</item>
     </style>
 

@@ -224,7 +224,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
           setContentView(R.layout.activity_live_logger);
 
           Toolbar actionBar = (Toolbar) findViewById(R.id.toolbarActionBar);
-          actionBar.setSubtitle("Portable NFC logger | v" + String.valueOf(BuildConfig.VERSION_NAME));
+          actionBar.setSubtitle("Portable NFC device logger | v" + String.valueOf(BuildConfig.VERSION_NAME));
           clearStatusIcon(R.id.statusIconUlDl);
           getWindow().setTitleColor(ThemesConfiguration.getThemeColorVariant(R.attr.actionBarBackgroundColor));
           getWindow().setStatusBarColor(ThemesConfiguration.getThemeColorVariant(R.attr.colorPrimaryDark));

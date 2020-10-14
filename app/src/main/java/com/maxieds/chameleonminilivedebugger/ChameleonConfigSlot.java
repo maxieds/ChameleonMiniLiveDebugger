@@ -150,9 +150,9 @@ public class ChameleonConfigSlot {
             tagMemorySize = Integer.parseInt(ChameleonIO.getSettingFromDevice("MEMSIZE?"));
             isLocked = ChameleonIO.getSettingFromDevice("READONLY?") == "1" ? true : false;
             // this will only work if the UIDMODE, SAKMODE commands are supported in the firmware:
-            uidMode = ChameleonIO.getSettingFromDevice("UIDMODE?") == "1" ? true : false;
+            //uidMode = ChameleonIO.getSettingFromDevice("UIDMODE?") == "1" ? true : false;
             fieldSetting = ChameleonIO.getSettingFromDevice("FIELD?") == "1" ? true : false;
-            sakAtqaMode = ChameleonIO.getSettingFromDevice("SAKMODE?") == "1" ? true : false;
+            //sakAtqaMode = ChameleonIO.getSettingFromDevice("SAKMODE?") == "1" ? true : false;
             //getTagConfigurationsListFromDevice();
         } catch(NumberFormatException nfe) {
             nfe.printStackTrace();
@@ -223,12 +223,8 @@ public class ChameleonConfigSlot {
          memSizeText.setText(String.format(Locale.ENGLISH, "%dB | %dK", tagMemorySize, tagMemorySize / 1024));
          Switch lockSwitch = (Switch) slotConfigLayout.findViewById(R.id.readonlyOnOffSwitch);
          lockSwitch.setChecked(isLocked);
-         Switch uidModeSwitch = (Switch) slotConfigLayout.findViewById(R.id.uidModeOnOffSwitch);
-         uidModeSwitch.setChecked(uidMode);
          Switch fieldModeSwitch = (Switch) slotConfigLayout.findViewById(R.id.fieldOnOffSwitch);
          fieldModeSwitch.setChecked(fieldSetting);
-         Switch sakModeSwitch = (Switch) slotConfigLayout.findViewById(R.id.sakAtqaModifyModeOnOffSwitch);
-         sakModeSwitch.setChecked(sakAtqaMode);
          slotConfigLayout.setEnabled(isEnabled);
          return true;
     }
@@ -279,45 +275,21 @@ public class ChameleonConfigSlot {
                 if(ChameleonSettings.getActiveSerialIOPort() == null) {
                     return;
                 }
-                else if(isChecked && !isLocked || !isChecked && isLocked) {
+                else {
                     String lockCmd = String.format(Locale.ENGLISH, "READONLY=%s", isChecked ? "1" : "0");
                     ChameleonIO.getSettingFromDevice(lockCmd);
                 }
             }
         });
-        Switch uidModeSwitch = (Switch) slotConfigLayout.findViewById(R.id.uidModeOnOffSwitch);
-        uidModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(ChameleonSettings.getActiveSerialIOPort() == null) {
-                    return;
-                }
-                else if(isChecked && !uidMode || !isChecked && uidMode) {
-                    String uidModeCmd = String.format(Locale.ENGLISH, "UIDMODE=%s", isChecked ? "1" : "0");
-                    ChameleonIO.getSettingFromDevice(uidModeCmd);
-                }
-            }
-        });
         Switch fieldModeSwitch = (Switch) slotConfigLayout.findViewById(R.id.fieldOnOffSwitch);
-        uidModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        fieldModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(ChameleonSettings.getActiveSerialIOPort() == null) {
                     return;
                 }
-                else if(isChecked && !fieldSetting || !isChecked && fieldSetting) {
+                else {
                     String uidModeCmd = String.format(Locale.ENGLISH, "FIELD=%s", isChecked ? "1" : "0");
                     ChameleonIO.getSettingFromDevice(uidModeCmd);
-                }
-            }
-        });
-        Switch sakModeSwitch = (Switch) slotConfigLayout.findViewById(R.id.sakAtqaModifyModeOnOffSwitch);
-        sakModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(ChameleonSettings.getActiveSerialIOPort() == null) {
-                    return;
-                }
-                else if(isChecked && !sakAtqaMode || !isChecked && sakAtqaMode) {
-                    String sakModeCmd = String.format(Locale.ENGLISH, "SAKMODE=%s", isChecked ? "1" : "0");
-                    ChameleonIO.getSettingFromDevice(sakModeCmd);
                 }
             }
         });
