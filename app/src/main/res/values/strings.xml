@@ -553,6 +553,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
     <string-array name="LogModeOptions">
         <item>LIVE</item>
+        <item>LIVE_FLUSH_NOW</item>
         <item>LIVE-NOTIFY</item>
         <item>MEMORY</item>
         <item>OFF</item>

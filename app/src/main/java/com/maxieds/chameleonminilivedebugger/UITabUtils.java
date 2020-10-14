@@ -600,7 +600,7 @@ public class UITabUtils {
                 else {
                     nextLogMode = selectedLogMode;
                     ChameleonLogUtils.LOGMODE_NOTIFY_STATE = false;
-                    ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS = nextLogMode == ChameleonLogUtils.LOGMODE_LIVE;
+                    ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS = (nextLogMode == ChameleonLogUtils.LOGMODE_LIVE) || (nextLogMode == ChameleonLogUtils.LOGMODE_LIVE_FLUSH_NOW);
                 }
                 AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_LOGMODE_NOTIFY_STATE);
                 AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_LOGMODE_ENABLE_PRINTING_LIVE_LOGS);

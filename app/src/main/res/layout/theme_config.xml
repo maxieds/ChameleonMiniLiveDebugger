@@ -189,7 +189,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:checked="false"
                     android:drawableLeft="@drawable/chameleonlogo32_red"
                     android:drawablePadding="5dp"
-                    android:text="Red" />
+                    android:text="RaspberryPI" />
 
                 <RadioButton
                     android:id="@+id/themeRadioButtonRedmond"

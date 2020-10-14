@@ -89,8 +89,8 @@ public class ThemesConfiguration {
             case "Purple":
                 themeID = R.style.AppThemePurple;
                 break;
-            case "Red":
-                themeID = R.style.AppThemeRed;
+            case "RaspberryPI":
+                themeID = R.style.AppThemeRaspberryPI;
                 break;
             case "Redmond":
                 themeID = R.style.AppThemeRedmond;

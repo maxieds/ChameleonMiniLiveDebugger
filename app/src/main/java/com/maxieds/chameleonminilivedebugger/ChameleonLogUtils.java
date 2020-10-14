@@ -57,15 +57,15 @@ public class ChameleonLogUtils {
         LOG_INFO_UID_SET((byte) 0x13, DATADIR_BIDIRECTIONAL, "UID change."),
         LOG_INFO_RESET_APP((byte) 0x20, DATADIR_BIDIRECTIONAL, "Application reset."),
         /* Codec */
-        LOG_INFO_CODEC_RX_DATA((byte) 0x40, DATADIR_OUTGOING, "Currently active codec received data."),
+        LOG_INFO_CODEC_RX_DATA((byte) 0x40, DATADIR_INCOMING, "Currently active codec received data."),
         LOG_INFO_CODEC_TX_DATA((byte) 0x41, DATADIR_OUTGOING, "Currently active codec sent data."),
-        LOG_INFO_CODEC_RX_DATA_W_PARITY((byte) 0x42, DATADIR_OUTGOING, "Currently active codec received data."),
+        LOG_INFO_CODEC_RX_DATA_W_PARITY((byte) 0x42, DATADIR_INCOMING, "Currently active codec received data."),
         LOG_INFO_CODEC_TX_DATA_W_PARITY((byte) 0x43, DATADIR_OUTGOING, "Currently active codec sent data."),
         LOG_INFO_CODEC_SNI_READER_DATA((byte) 0x44, DATADIR_INCOMING, "Sniffing codec receive data from reader."),
         LOG_INFO_CODEC_SNI_READER_DATA_W_PARITY((byte) 0x45, DATADIR_INCOMING, "Sniffing codec receive data from reader"),
         LOG_INFO_CODEC_SNI_CARD_DATA((byte) 0x46, DATADIR_INCOMING, "Sniffing codec receive data from card."),
         LOG_INFO_CODEC_SNI_CARD_DATA_W_PARITY((byte) 0x47, DATADIR_INCOMING, "Sniffing codec receive data from card."),
-        LOG_INFO_CODEC_READER_FIELD_DETECTED((byte) 0x48, DATADIR_INCOMING, "Indicates whether a reader FIELD_DETECTED has been detected"),
+        LOG_INFO_CODEC_READER_FIELD_DETECTED((byte) 0x48, DATADIR_BIDIRECTIONAL, "Indicates whether a reader FIELD_DETECTED has been detected"),
         /* App */
         LOG_INFO_APP_CMD_READ((byte) 0x80, DATADIR_BIDIRECTIONAL, "Application processed read command."),
         LOG_INFO_APP_CMD_WRITE((byte) 0x81, DATADIR_BIDIRECTIONAL, "Application processed write command."),
@@ -224,6 +224,7 @@ public class ChameleonLogUtils {
     public static final String LOGMODE_OFF = "OFF";
     public static final String LOGMODE_MEM = "MEMORY";
     public static final String LOGMODE_LIVE = "LIVE";
+    public static final String LOGMODE_LIVE_FLUSH_NOW = "LIVE_FLUSH_NOW";
     public static final String LOGMODE_OFF_WITH_NOTIFY_SELECT_STATE = "OFF-NOTIFY";
     public static final String LOGMODE_LIVE_WITH_NOTIFY_SELECT_STATE = "LIVE-NOTIFY";
 

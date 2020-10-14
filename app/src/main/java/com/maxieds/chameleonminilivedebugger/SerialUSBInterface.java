@@ -200,7 +200,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
         }
         if(device == null || connection == null) {
             serialPort = null;
-            return STATUS_OK;
+            return STATUS_ERROR;
         }
         serialPort = UsbSerialDevice.createUsbSerialDevice(device, connection);
         if(serialPort != null && serialPort.open()) {
@@ -216,7 +216,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
         else {
             notifyStatus("USB ERROR: ", "Unable to configure serial device.");
             serialPort = null;
-            return STATUS_OK;
+            return STATUS_ERROR;
         }
         activeDevice = device;
         ChameleonSettings.chameleonDeviceSerialNumber = String.format(Locale.ENGLISH, "%s-%s", activeDevice.getProductName(), activeDevice.getVersion());
@@ -247,6 +247,9 @@ public class SerialUSBInterface extends SerialIOReceiver {
         activeDevice = null;
         serialConfigured = false;
         receiversRegistered = false;
+        if(ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX == ChameleonSettings.USBIO_IFACE_INDEX) {
+            ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = -1;
+        }
         notifyDeviceConnectionTerminated();
         return STATUS_TRUE;
     }

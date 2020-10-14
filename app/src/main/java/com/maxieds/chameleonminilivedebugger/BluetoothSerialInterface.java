@@ -81,10 +81,6 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
                 Log.i(TAG, ChameleonSettings.getActiveSerialIOPort().toString());
                 if(ChameleonSettings.getActiveSerialIOPort() != null && btGattConnectorBLEDevice.isDeviceConnected()) {
                     configDeviceHandler.removeCallbacks(this);
-                    //ChameleonIO.detectChameleonType();
-                    //ChameleonIO.initializeDevice();
-                    //UITabUtils.initializeToolsTab(TAB_TOOLS_MITEM_SLOTS, TabFragment.UITAB_DATA[TAB_TOOLS].tabInflatedView);
-                    //ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
                     ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
                     ChameleonIO.DeviceStatusSettings.startPostingStats(0);
                     LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
@@ -246,6 +242,9 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
         activeDevice = null;
         serialConfigured = false;
         receiversRegistered = false;
+        if(ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX == ChameleonSettings.BTIO_IFACE_INDEX) {
+            ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = -1;
+        }
         notifyDeviceConnectionTerminated();
         return STATUS_TRUE;
     }
