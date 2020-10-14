@@ -302,7 +302,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:button="@null"
                     android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
                     android:layout_marginEnd="15dp"
-                    android:text="Notify incoming data events (CODEC_RX)"
+                    android:text="Notify incoming CodecRX data events"
                     android:enabled="true"
                     android:checked="true"
 
@@ -330,7 +330,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:button="@null"
                     android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
                     android:layout_marginEnd="15dp"
-                    android:text="Notify reader field detected events (FIELD_DETECTED)"
+                    android:text="Notify reader field detected events"
                     android:enabled="true"
                     android:checked="true"
 

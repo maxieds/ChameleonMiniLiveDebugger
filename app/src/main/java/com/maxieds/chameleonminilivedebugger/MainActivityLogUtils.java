@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_MITEM_LOGS;
 
 public class MainActivityLogUtils {
 
@@ -55,6 +56,24 @@ public class MainActivityLogUtils {
     public static ScrollView logScrollView;
     public static int RECORDID = 0;
 
+    public static void moveLiveLogTabScrollerToBottom() {
+        if(logScrollView != null) {
+            logScrollView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    ScrollView logScroller = (ScrollView) LiveLoggerActivity.getInstance().findViewById(R.id.log_scroll_view);
+                    if(logScroller == null) {
+                        return;
+                    }
+                    LinearLayout lastLogElt = (LinearLayout) logDataFeed.getChildAt(logDataFeed.getChildCount() - 1);
+                    lastLogElt.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                    int bottomEltHeight = lastLogElt.getMeasuredHeight();
+                    logScroller.scrollTo(0, logScroller.getBottom() + bottomEltHeight);
+                }
+            }, 75);
+        }
+    }
+
     /**
      * Appends a new log to the logging interface tab.
      * @param logEntry
@@ -62,40 +81,30 @@ public class MainActivityLogUtils {
      * @see LogEntryMetadataRecord
      */
     public static void appendNewLog(LogEntryBase logEntry) {
-        if(LiveLoggerActivity.getInstance().getSelectedTab() != TAB_LOG && LiveLoggerActivity.getInstance() != null) {
-            if(logEntry instanceof LogEntryUI)
+        if(LiveLoggerActivity.getInstance() == null) {
+            return;
+        }
+        else if(LiveLoggerActivity.getInstance().getSelectedTab() != TAB_LOG && LiveLoggerActivity.getInstance() != null) {
+            if(logEntry instanceof LogEntryUI) {
                 LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconNewXFer, R.drawable.statusxfer16);
-            else
+            }
+            else {
                 LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconNewMsg, R.drawable.statusnewmsg16);
+            }
         }
         if(logDataFeed != null && logDataEntries != null) {
             logDataFeed.addView(logEntry.getLayoutContainer());
             logDataEntries.add(logEntry);
         }
-        if(LiveLoggerActivity.getInstance() == null) {
-            return;
-        }
         if(logEntry instanceof LogEntryMetadataRecord) { // switch to the log tab to display the results:
             TabLayout tabLayout = (TabLayout) LiveLoggerActivity.getInstance().findViewById(R.id.tab_layout);
             if(tabLayout != null) {
                 tabLayout.getTabAt(TAB_LOG).select();
-            }
-            if(logScrollView != null) {
-                logScrollView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        ScrollView logScroller = (ScrollView) LiveLoggerActivity.getInstance().findViewById(R.id.log_scroll_view);
-                        if(logScroller == null) {
-                            return;
-                        }
-                        LinearLayout lastLogElt = (LinearLayout) logDataFeed.getChildAt(logDataFeed.getChildCount() - 1);
-                        lastLogElt.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                        int bottomEltHeight = lastLogElt.getMeasuredHeight();
-                        logScroller.scrollTo(0, logScroller.getBottom() + bottomEltHeight);
-                    }
-                }, 100);
+                TabFragment.UITAB_DATA[TAB_LOG].selectMenuItem(TAB_LOG_MITEM_LOGS);
+                moveLiveLogTabScrollerToBottom();
             }
         }
+        moveLiveLogTabScrollerToBottom();
     }
 
     public static void clearAllLogs() {

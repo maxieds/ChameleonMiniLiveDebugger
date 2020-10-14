@@ -133,6 +133,9 @@ public class TabFragment extends Fragment {
             String indexRefTag = String.format(Locale.ENGLISH, "%d:%d", tabIndex, midx);
             Button menuItem = (Button) menuItemsNav.findViewWithTag(indexRefTag);
             menuItem.setTypeface(Typeface.DEFAULT, Typeface.BOLD_ITALIC);
+            if((this == UITAB_DATA[TAB_LOG]) && (midx == TAB_LOG_MITEM_LOGS)) {
+                MainActivityLogUtils.moveLiveLogTabScrollerToBottom();
+            }
             return true;
         }
 
