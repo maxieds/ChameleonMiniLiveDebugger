@@ -24,14 +24,10 @@ import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.felhr.usbserial.UsbSerialDevice;
-import com.shawnlin.numberpicker.NumberPicker;
-
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.FALSE;
 import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.OK;
@@ -94,7 +90,7 @@ public class ChameleonIO {
     }
 
     public static int detectChameleonType() {
-        ChameleonSerialIOInterface deviceActiveSerialIOPort = Settings.getActiveSerialIOPort();
+        ChameleonSerialIOInterface deviceActiveSerialIOPort = ChameleonSettings.getActiveSerialIOPort();
         if(deviceActiveSerialIOPort == null) {
             return CHAMELEON_TYPE_UNKNOWN;
         }
@@ -148,7 +144,7 @@ public class ChameleonIO {
     }
 
     public static boolean initializeDevice() {
-        AndroidSettingsStorage.loadPreviousSettings(Settings.chameleonDeviceSerialNumber);
+        AndroidSettingsStorage.loadPreviousSettings(ChameleonSettings.chameleonDeviceSerialNumber);
         if(LiveLoggerActivity.getSelectedTab() == TAB_TOOLS &&
            TabFragment.UITAB_DATA[LiveLoggerActivity.getSelectedTab()].lastMenuIndex == TAB_TOOLS_MITEM_SLOTS) {
             try {
@@ -345,7 +341,7 @@ public class ChameleonIO {
         public static Handler statsUpdateHandler = new Handler();
         public static Runnable statsUpdateRunnable = new Runnable() {
             public void run() {
-                if(Settings.getActiveSerialIOPort() == null || !ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) {
+                if(ChameleonSettings.getActiveSerialIOPort() == null || !ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) {
                     statsUpdateHandler.removeCallbacksAndMessages(this);
                     postingStatsInProgress = false;
                 }
@@ -417,7 +413,7 @@ public class ChameleonIO {
          * @ref DeviceStatusSettings.updateAllStatus
          */
         public static void updateAllStatusAndPost(boolean resetTimer) {
-            if(Settings.getActiveSerialIOPort() == null) {
+            if(ChameleonSettings.getActiveSerialIOPort() == null) {
                 stopPostingStats();
                 return;
             }
@@ -436,18 +432,23 @@ public class ChameleonIO {
                         public void run() {
                             try {
                                 ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceConfigText)).setText(CONFIG);
-                                String formattedUID = Utils.formatUIDString(UID, " ");
+                                String formattedUID = Utils.formatUIDString(UID, ":");
                                 ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceConfigUID)).setText(formattedUID);
-                                String subStats1 = String.format(Locale.ENGLISH, "MEM-%dK|LOG-%s-%dK|REV%s", round(MEMSIZE / 1024), LOGMODE, round(LOGSIZE / 1024), ChameleonIO.REVE_BOARD ? "E" : "G");
+                                String subStats1 = String.format(Locale.ENGLISH, "REV%s | MEM-%dK| LOG-%s-%dK", ChameleonIO.REVE_BOARD ? "E" : "G", round(MEMSIZE / 1024), LOGMODE, round(LOGSIZE / 1024));
                                 ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceStats1)).setText(subStats1);
-                                String subStats2 = String.format(Locale.ENGLISH, "DIP-%d|%s|FLD-%s|CHRG-%s", DIP_SETTING, READONLY ? "RO" : "RW", FIELD ? "ON" : "OFF", CHARGING ? "ON" : "OFF");
+                                String subStats2 = String.format(Locale.ENGLISH, "DIP-%d | %s | FLD-%s| CHRG-%s", DIP_SETTING, READONLY ? "RO" : "RW", FIELD ? "ON" : "OFF", CHARGING ? "ON" : "OFF");
                                 ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceStats2)).setText(subStats2);
-                                String subStats3 = String.format(Locale.ENGLISH, "THRS-%d mv|TO-%s", THRESHOLD, TIMEOUT);
+                                String subStats3 = String.format(Locale.ENGLISH, "THRS-%d mv | TO-%s", THRESHOLD, TIMEOUT);
                                 ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceStats3)).setText(subStats3);
                                 SeekBar thresholdSeekbar = (SeekBar) LiveLoggerActivity.getInstance().findViewById(R.id.thresholdSeekbar);
                                 if (thresholdSeekbar != null) {
                                     thresholdSeekbar.setProgress(THRESHOLD);
                                     ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.thresholdSeekbarValueText)).setText(String.format(Locale.ENGLISH, "% 5d mV", THRESHOLD));
+                                }
+                                SeekBar timeoutSeekbar = (SeekBar) LiveLoggerActivity.getInstance().findViewById(R.id.cmdTimeoutSeekbar);
+                                if (thresholdSeekbar != null) {
+                                    thresholdSeekbar.setProgress(THRESHOLD);
+                                    ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.cmdTimeoutSeekbarValueText)).setText(String.format(Locale.ENGLISH, "% 4d (x128) ms", TIMEOUT));
                                 }
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -536,7 +537,7 @@ public class ChameleonIO {
         }
         String deviceConfigCmd = rawCmd + (REVE_BOARD ? "\r\n" : "\n\r");
         byte[] sendBuf = deviceConfigCmd.getBytes(StandardCharsets.UTF_8);
-        ChameleonSerialIOInterface serialPort = Settings.getActiveSerialIOPort();
+        ChameleonSerialIOInterface serialPort = ChameleonSettings.getActiveSerialIOPort();
         if(serialPort == null) {
             Log.i(TAG, "serial port is null executing command");
             return null;
@@ -559,7 +560,7 @@ public class ChameleonIO {
         ChameleonIO.DEVICE_RESPONSE = new String[1];
         ChameleonIO.DEVICE_RESPONSE[0] = (hint == null) ? "TIMEOUT" : hint;
         ChameleonIO.LASTCMD = query;
-        ChameleonSerialIOInterface serialIOPort = Settings.getActiveSerialIOPort();
+        ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
         if(serialIOPort == null) {
             Log.i(TAG, "Serial port is null");
             return ChameleonIO.DEVICE_RESPONSE[0];

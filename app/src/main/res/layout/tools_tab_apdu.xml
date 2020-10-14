@@ -22,414 +22,455 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="3dp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?colorPrimaryDarkLog"
-        android:drawableLeft="@drawable/console16"
-        android:drawablePadding="5dp"
-        android:singleLine="true"
-        android:text="Select CLA Byte: "
-        android:textAllCaps="true"
-        android:textSize="14sp"
-        android:textStyle="bold|italic" />
-
-    <GridLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="1dp"
-        android:background="?colorAccentLog"
-        android:columnCount="3"
-        android:orientation="horizontal"
-        android:padding="2dp"
-        android:rowCount="1">
-
-        <Button
-            style="@style/GridButtons"
-            android:drawableLeft="@drawable/iso24"
-            android:onClick="actionButtonApduCLA"
-            android:tag="00"
-            android:text="ISO-00" />
-
-        <Button
-            style="@style/GridButtons"
-            android:drawableLeft="@drawable/desfire_df_folder24"
-            android:onClick="actionButtonApduCLA"
-            android:tag="90"
-            android:text="DESFire-90" />
-
-        <Button
-            style="@style/GridButtons"
-            android:drawableLeft="@drawable/mifare_cla_mf_folder24"
-            android:onClick="actionButtonApduCLA"
-            android:tag="ff"
-            android:text="MFUID-ff" />
-
-        <Button
-            style="@style/GridButtons"
-            android:drawableLeft="@drawable/unlock24"
-            android:onClick="actionButtonApduCLA"
-            android:tag="80"
-            android:text="PLAINTEXT-80" />
-
-        <Button
-            style="@style/GridButtons"
-            android:drawableLeft="@drawable/keyword24"
-            android:onClick="actionButtonApduCLA"
-            android:tag="84"
-            android:text="ENCRYPTED-84" />
-
-        <Button
-            style="@style/GridButtons"
-            android:drawableLeft="@drawable/unlock24v2"
-            android:onClick="actionButtonApduCLA"
-            android:tag="c0"
-            android:text="UNENC-c0" />
-
-    </GridLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="?colorPrimaryDark" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?colorPrimaryDarkLog"
-        android:drawableLeft="@drawable/console16"
-        android:drawablePadding="5dp"
-        android:singleLine="true"
-        android:text="APDU Parameters: "
-        android:textAllCaps="true"
-        android:textSize="14sp"
-        android:textStyle="bold|italic" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="?colorPrimaryDark" />
-
-    <GridLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="1dp"
-        android:background="?colorAccentLog"
-        android:columnCount="13"
-        android:orientation="horizontal"
-        android:padding="2dp"
-        android:rowCount="1">
-
-        <Button
-            style="@style/GridButtons"
-            android:drawableLeft="@drawable/enterdata24"
-            android:onClick="actionButtonApduManualDataEntry"
-            android:text="ENTER DATA" />
-
-        <Button
-            style="@style/GridButtons"
-            android:drawableLeft="@drawable/idcard3"
-            android:onClick="actionButtonGetBits"
-            android:tag="UID"
-            android:text="CLONE UID BITS" />
-
-        <Button
-            style="@style/GridButtons"
-            android:drawableLeft="@drawable/randombytes24"
-            android:onClick="actionButtonGetBits"
-            android:tag="RANDOM"
-            android:text="RANDOM BYTES" />
-
-    </GridLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="?colorPrimaryDark" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?colorPrimaryDarkLog"
-        android:drawableLeft="@drawable/console16"
-        android:drawablePadding="3dp"
-        android:singleLine="true"
-        android:text="Send Assembled APDU Command: "
-        android:textAllCaps="true"
-        android:textSize="14sp"
-        android:textStyle="bold|italic" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="?colorPrimaryDark" />
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="0dp"
-        android:orientation="vertical"
-        android:padding="0dp" >
-
-        <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="?colorAccent"
-            android:columnCount="8"
-            android:layout_gravity="left"
-            android:gravity="left" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?colorAccent"
-                android:paddingLeft="2dp"
-                android:paddingRight="1dp"
-                android:singleLine="true"
-                android:text="CLA: "
-                android:textAllCaps="true"
-                android:textSize="11sp"
-                android:textStyle="bold|italic" />
-
-            <TextView
-                android:id="@+id/apduCLA"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:background="?colorAccent"
-                android:paddingRight="1dp"
-                android:singleLine="true"
-                android:text="XX"
-                android:textAllCaps="true"
-                android:textSize="11sp"
-                android:textStyle="normal" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?colorAccent"
-                android:paddingLeft="5dp"
-                android:paddingRight="2dp"
-                android:text="INS: "
-                android:textAllCaps="true"
-                android:textSize="11sp"
-                android:textStyle="bold|italic" />
-
-            <TextView
-                android:id="@+id/apduINS"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:layout_weight="0"
-                android:background="?colorAccent"
-                android:paddingLeft="1dp"
-                android:singleLine="true"
-                android:text="XX"
-                android:textAllCaps="true"
-                android:textSize="11sp"
-                android:textStyle="normal" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?colorAccent"
-                android:paddingLeft="5dp"
-                android:paddingRight="2dp"
-                android:text="P1: "
-                android:textAllCaps="true"
-                android:textSize="11sp"
-                android:textStyle="bold|italic" />
-
-            <TextView
-                android:id="@+id/apduP1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:layout_weight="0"
-                android:background="?colorAccent"
-                android:paddingLeft="1dp"
-                android:singleLine="true"
-                android:text="XX"
-                android:textAllCaps="true"
-                android:textSize="11sp"
-                android:textStyle="normal" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?colorAccent"
-                android:paddingLeft="5dp"
-                android:paddingRight="2dp"
-                android:text="P2: "
-                android:textAllCaps="true"
-                android:textSize="11sp"
-                android:textStyle="bold|italic" />
-
-            <TextView
-                android:id="@+id/apduP2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:layout_weight="0"
-                android:background="?colorAccent"
-                android:paddingLeft="1dp"
-                android:singleLine="true"
-                android:text="XX"
-                android:textAllCaps="true"
-                android:textSize="11sp"
-                android:textStyle="normal" />
-        </GridLayout>
-
-        <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="?colorAccent"
-            android:columnCount="8" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?colorAccent"
-                android:paddingLeft="5dp"
-                android:paddingRight="2dp"
-                android:singleLine="true"
-                android:text="PAYLOAD DATA: "
-                android:textAllCaps="true"
-                android:textSize="11sp"
-                android:textStyle="bold|italic" />
-
-            <TextView
-                android:id="@+id/apduPayloadData"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:layout_weight="1"
-                android:background="?colorAccent"
-                android:hint="NONE"
-                android:paddingLeft="1dp"
-                android:singleLine="true"
-                android:textAllCaps="true"
-                android:textSize="11sp"
-                android:textStyle="normal" />
-
-        </GridLayout>
-
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="?colorPrimaryDark" />
-
-    <GridLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="1dp"
-        android:background="?colorAccentLog"
-        android:orientation="horizontal"
-        android:columnCount="2"
-        android:padding="2dp">
-
-        <Button
-            style="@style/GridButtons"
-            android:drawableLeft="@drawable/cleardown24"
-            android:onClick="actionButtonApduClear"
-            android:text="CLEAR" />
-
-        <Button
-            style="@style/GridButtons"
-            android:drawableLeft="@drawable/sendarrow24v2"
-            android:onClick="actionButtonSendAPDU"
-            android:tag = "DEFAULT_WRAPPED"
-            android:text="SEND APDU" />
-
-        <Button
-            style="@style/GridButtons"
-            android:drawableLeft="@drawable/sendarrow24v2"
-            android:onClick="actionButtonSendAPDU"
-            android:tag = "NATIVE_NOWRAP"
-            android:text="SEND Native NoWrap" />
-
-        <Button
-            style="@style/GridButtons"
-            android:drawableLeft="@drawable/sendarrow24v2"
-            android:onClick="actionButtonSendAPDU"
-            android:tag = "DNOWRAP_WITH_CRC"
-            android:text="SEND Native + CRC" />
-
-    </GridLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="?colorPrimaryDark" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?colorPrimaryDarkLog"
-        android:drawableLeft="@drawable/console16"
-        android:drawablePadding="5dp"
-        android:singleLine="true"
-        android:text="Search Command Codes: "
-        android:textAllCaps="true"
-        android:textSize="14sp"
-        android:textStyle="bold|italic" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="?colorPrimaryDark" />
-
-    <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:background="?colorAccent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:columnCount="2"
-        android:rowCount="1"
-        android:orientation="horizontal">
-
-        <EditText
-            android:id="@+id/apduSearchText"
-            android:layout_width="400dp"
-            android:layout_height="48dp"
-            android:layout_gravity="right"
-            android:background="?colorAccent"
-            android:hint="Search by Text or Byte Strings ... Or [ENTER] to View All"
-            android:onClick="actionButtonAPDUSearchCmd"
-            android:paddingLeft="5dp"
-            android:singleLine="true"
-            android:textAllCaps="true"
-            android:textSize="14sp"
-            android:textStyle="normal" />
-
-        <Button
-            android:background="?colorAccent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/searchapdu24"
-            android:drawablePadding="5dp"
-            android:onClick="actionButtonAPDUSearchCmd"
-            android:text="" />
-
-    </GridLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="?colorPrimaryDark" />
-
     <ScrollView
-        android:id="@+id/apduSearchResultsScrollView"
-        android:backgroundTint="?colorAccent"
+        android:id="@+id/tools_menu_scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="bottom"
+        android:layout_height="match_parent"
+        android:fadeScrollbars="false"
         android:orientation="vertical"
-        android:verticalScrollbarPosition="right" />
+        android:scrollbarSize="25dp"
+        android:verticalScrollbarPosition="right">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_margin="2dp"
+            android:orientation="vertical"
+            android:padding="2dp">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/console16"
+                android:drawablePadding="5dp"
+                android:singleLine="true"
+                android:text="Set CLA Byte from defaults: "
+                android:textAllCaps="true"
+                android:textSize="14sp"
+                android:textStyle="bold|italic" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="3"
+                android:orientation="horizontal"
+                android:padding="2dp"
+                android:rowCount="1">
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/iso24"
+                    android:onClick="actionButtonApduCLA"
+                    android:tag="00"
+                    android:text="ISO-00" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
+                    android:onClick="actionButtonApduCLA"
+                    android:tag="90"
+                    android:text="DESFire-90" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/mifare_cla_mf_folder24"
+                    android:onClick="actionButtonApduCLA"
+                    android:tag="ff"
+                    android:text="MFUID-ff" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/unlock24"
+                    android:onClick="actionButtonApduCLA"
+                    android:tag="80"
+                    android:text="PLAINTEXT-80" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/keyword24"
+                    android:onClick="actionButtonApduCLA"
+                    android:tag="84"
+                    android:text="ENCRYPTED-84" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/unlock24v2"
+                    android:onClick="actionButtonApduCLA"
+                    android:tag="c0"
+                    android:text="UNENC-c0" />
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/console16"
+                android:drawablePadding="5dp"
+                android:singleLine="true"
+                android:text="Configure Wrapped APDU Parameters: "
+                android:textAllCaps="true"
+                android:textSize="14sp"
+                android:textStyle="bold|italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="2"
+                android:orientation="horizontal"
+                android:padding="2dp"
+                android:rowCount="2">
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/enterdata24"
+                    android:onClick="actionButtonApduManualDataEntry"
+                    android:text="ENTER DATA" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/cleardown24"
+                    android:onClick="actionButtonApduClear"
+                    android:text="CLEAR" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/idcard3"
+                    android:onClick="actionButtonGetBits"
+                    android:tag="UID"
+                    android:text="CLONE UID DATA" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/randombytes24"
+                    android:onClick="actionButtonGetBits"
+                    android:tag="RANDOM"
+                    android:text="RANDOM BYTES" />
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/console16"
+                android:drawablePadding="3dp"
+                android:singleLine="true"
+                android:text="Send Assembled APDU Command: "
+                android:textAllCaps="true"
+                android:textSize="14sp"
+                android:textStyle="bold|italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="0dp"
+                android:orientation="vertical"
+                android:padding="0dp" >
+
+                <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?colorAccent"
+                    android:columnCount="8"
+                    android:layout_gravity="left"
+                    android:gravity="left" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?colorAccent"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="1dp"
+                        android:singleLine="true"
+                        android:text="CLA: "
+                        android:textAllCaps="true"
+                        android:textSize="11sp"
+                        android:textStyle="bold|italic" />
+
+                    <TextView
+                        android:id="@+id/apduCLA"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:background="?colorAccent"
+                        android:paddingRight="1dp"
+                        android:singleLine="true"
+                        android:text="XX"
+                        android:textAllCaps="true"
+                        android:textSize="11sp"
+                        android:textStyle="normal" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?colorAccent"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="2dp"
+                        android:text="INS: "
+                        android:textAllCaps="true"
+                        android:textSize="11sp"
+                        android:textStyle="bold|italic" />
+
+                    <TextView
+                        android:id="@+id/apduINS"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_weight="0"
+                        android:background="?colorAccent"
+                        android:paddingLeft="1dp"
+                        android:singleLine="true"
+                        android:text="XX"
+                        android:textAllCaps="true"
+                        android:textSize="11sp"
+                        android:textStyle="normal" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?colorAccent"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="2dp"
+                        android:text="P1: "
+                        android:textAllCaps="true"
+                        android:textSize="11sp"
+                        android:textStyle="bold|italic" />
+
+                    <TextView
+                        android:id="@+id/apduP1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_weight="0"
+                        android:background="?colorAccent"
+                        android:paddingLeft="1dp"
+                        android:singleLine="true"
+                        android:text="XX"
+                        android:textAllCaps="true"
+                        android:textSize="11sp"
+                        android:textStyle="normal" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?colorAccent"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="2dp"
+                        android:text="P2: "
+                        android:textAllCaps="true"
+                        android:textSize="11sp"
+                        android:textStyle="bold|italic" />
+
+                    <TextView
+                        android:id="@+id/apduP2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_weight="0"
+                        android:background="?colorAccent"
+                        android:paddingLeft="1dp"
+                        android:singleLine="true"
+                        android:text="XX"
+                        android:textAllCaps="true"
+                        android:textSize="11sp"
+                        android:textStyle="normal" />
+                </GridLayout>
+
+                <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?colorAccent"
+                    android:gravity="left"
+                    android:columnCount="2" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?colorAccent"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="2dp"
+                        android:singleLine="true"
+                        android:text="PAYLOAD DATA: "
+                        android:textAllCaps="true"
+                        android:textSize="11sp"
+                        android:textStyle="bold|italic" />
+
+                    <TextView
+                        android:id="@+id/apduPayloadData"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:layout_weight="1"
+                        android:background="?colorAccent"
+                        android:hint="NONE"
+                        android:paddingLeft="1dp"
+                        android:singleLine="true"
+                        android:textAllCaps="true"
+                        android:textSize="11sp"
+                        android:textStyle="normal" />
+
+                </GridLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:orientation="horizontal"
+                android:columnCount="2"
+                android:padding="2dp">
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/sendarrow24v2"
+                    android:onClick="actionButtonSendAPDU"
+                    android:tag = "DEFAULT_WRAPPED"
+                    android:text="SEND WRAPPED APDU" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/sendarrow24v2"
+                    android:onClick="actionButtonSendAPDU"
+                    android:tag = "NATIVE_NOWRAP"
+                    android:text="SEND Native NO CRC" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/sendarrow24v2"
+                    android:onClick="actionButtonSendAPDU"
+                    android:tag = "NOWRAP_WITH_CRC"
+                    android:text="SEND Native + CRC" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/sendarrow24v2"
+                    android:onClick="actionButtonSendRawAPDU"
+                    android:tag = "DEFAULT_WRAPPED"
+                    android:text="SEND WRAP APDU (RAW)" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/sendarrow24v2"
+                    android:onClick="actionButtonSendRawAPDU"
+                    android:tag = "NATIVE_NOWRAP"
+                    android:text="SEND Native -CRC (RAW)" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/sendarrow24v2"
+                    android:onClick="actionButtonSendRawAPDU"
+                    android:tag = "NOWRAP_WITH_CRC"
+                    android:text="SEND Native + CRC (RAW)" />
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/console16"
+                android:drawablePadding="5dp"
+                android:singleLine="true"
+                android:text="Search Command Code Dictionary: "
+                android:textAllCaps="true"
+                android:textSize="14sp"
+                android:textStyle="bold|italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:background="?colorAccent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:rowCount="1"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/apduSearchText"
+                    android:layout_width="250dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="right"
+                    android:background="?colorAccent"
+                    android:hint="Search by text or byte strings | [ENTER] for all"
+                    android:onClick="actionButtonAPDUSearchCmd"
+                    android:paddingLeft="5dp"
+                    android:singleLine="true"
+                    android:textAllCaps="true"
+                    android:textSize="14sp"
+                    android:textStyle="normal" />
+
+                <Button
+                    android:background="?colorAccent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/searchapdu24"
+                    android:drawablePadding="5dp"
+                    android:onClick="actionButtonAPDUSearchCmd"
+                    android:text="" />
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <ScrollView
+                android:id="@+id/apduSearchResultsScrollView"
+                android:backgroundTint="?colorAccent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:orientation="vertical"
+                android:verticalScrollbarPosition="right" />
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

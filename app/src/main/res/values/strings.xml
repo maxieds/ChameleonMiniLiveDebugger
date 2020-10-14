@@ -56,35 +56,22 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         The pretty freeware icons used by the app were obtained from &lt;a href="flaticon.com">flaticon.com&lt;/a> and their
         lovely sized transparent PNG enabled conversions of these images to standard sizes. The GIMP image editor on
         Linux has also been used to create custom icons and colored logos for this application.
-
-        &lt;h1>Donations and other ways to get involved&lt;/h1>
-        If you find this application particularly useful, the author requests donations in the form of more
-        Chameleon Mini and other related hardware (e.g., a Proxmark device would be nice to have on hand for me).
-        After you have gotten to know how to use it, and all of its unique features and customizations, please consider
-        &lt;a href="https://play.google.com/store/apps/details?id=com.maxieds.chameleonminilivedebugger">rating the CMLD app&lt;/a> on Google Play Store!
-        &lt;br/>&lt;br/>
-        The developer of the CMLD application (Maxie D. Schmidt) can also be contacted for independent paid freelance
-        work and general software engineering or mathematical research consultation. Such freelance work includes,
-        but certainly is not limited to, customizing this CMLD application for commercial uses and re-theming, creating
-        modified Chameleon Mini firmware to include new features, NFC tag functionality, and/or userland commands, and
-        for other NFC and/or Android related library creation work.
     </string>
     <string name="privacyhtml">
         &lt;h1>User Privacy Policy&lt;/h1>
         A privacy policy for the application is now required and has been posted at the following link for the
         benefit of users:
         &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger/wiki/UserPrivacyPolicy">UserPrivacyPolicy&lt;/a>.
-        The wisdom from this app is to think more of the ethically minded policies which we work hard to provide here,
-        and correspondingly much less of registering your device with Google if you can avoid it.
-        If you have discovered this app by a search on the Google Play Store, notice that unmodified signed
-        binaries are provided by the developer on the project website. The binaries installed by Google are a
-        repackaged and modified version of what is uploaded on the releases page there.
+        If you have discovered this app by a search on the Google Play Store, notice that unmodified developer signed
+        binaries are provided by the developer on the
+        &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger/releases/latest">project latest releases&lt;/a> page on GitHub.
     </string>
     <string name="apphtmlheader">&lt;html>&lt;head>&lt;style>a { text-decoration: underline; color: %%ABOUTLINKCOLOR%%; font-weight: bold; font-style: italic; }&lt;/style>&lt;/head>&lt;body></string>
     <string name="apphtmlfooter">&lt;/body>&lt;/html></string>
-    <string name="initialUserGreetingMsg">Thank you for using and testing this Android application.
-               A detailed man page and instructions for using the Chameleon Mini Live Debugger (CMLD) are
-               found on the project WIKI pages at the next link:\nhttps://github.com/maxieds/ChameleonMiniLiveDebugger/wiki.
+    <string name="initialUserGreetingMsg">Thank you for using and testing this Android application.\n
+               A detailed man page and instructions for using the Chameleon Mini Live Debugger (CMLD)\n
+               are found on the project WIKI pages at the next link:\n
+               https://github.com/maxieds/ChameleonMiniLiveDebugger/wiki.
                \n\nStay safe out there!
     </string>
     <string name="chameleonCmdAppendixTroubleshooting">
@@ -111,11 +98,14 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         of the slots available on the device.
     </string>
     <string name="apduEntryInstructions">
-        Enter the APDU command components manually into the following box.
-        The bytes are in hexadecimal in the following order: \nCLA | INS | P1 | P2 |  DATA.
-        Note that the LE/LC fields found in wrapped APDUs should not be included and will be
-        calculated based on your input later. Bytes specified with \'xx\' will be ignored and the
-        previously set values in the assembled APDU bytes are preserved.
+        Enter the APDU component bytes manually into the following box.\n\n
+        The bytes are in hexadecimal in the following order: \n
+        [CLA | INS | P1 | P2 | DATA-BYTES]\n\n
+        Notes on the input data:\n
+        • Note that the LE/LC fields found in wrapped APDUs should not be\n
+          included and will be calculated based on your input later.\n
+        • Bytes specified with \'xx\' will be ignored and the previously\n
+          selected values in the assembled APDU bytes are preserved.
     </string>
     <string name="helpCmdResp">
         &lt;h1>Command Responses: &lt;/h1>
@@ -487,7 +477,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item>RECALL_MEM</item>
         <item>TOGGLE_FIELD</item>
         <item>STORE_LOG</item>
-        <item>PRINT_STATE</item>
     </string-array>
 
     <string-array name="LButtonOptions">
@@ -503,7 +492,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item>RECALL_MEM</item>
         <item>TOGGLE_FIELD</item>
         <item>STORE_LOG</item>
-        <item>PRINT_STATE</item>
     </string-array>
 
     <string-array name="LButtonLongOptions">
@@ -564,8 +552,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
     <string-array name="LogModeOptions">
         <item>LIVE</item>
+        <item>LIVE-NOTIFY-STATE</item>
         <item>MEMORY</item>
         <item>OFF</item>
+        <item>OFF-NOTIFY-STATE</item>
     </string-array>
 
     <string-array name="FullCommandList">
@@ -605,6 +595,5 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item>TITAGITSTANDARD</item>
         <item>VICINITY</item>
     </string-array>
-
 
 </resources>

@@ -32,7 +32,7 @@ import android.view.View;
  */
 public abstract class LogEntryBase {
 
-    public static final float LOGENTRY_GUI_ALPHA = 0.95f;
+    public static final float LOGENTRY_GUI_ALPHA = 0.91f;
 
     public abstract String writeXMLFragment(int indentLevel);
     public abstract String toString();

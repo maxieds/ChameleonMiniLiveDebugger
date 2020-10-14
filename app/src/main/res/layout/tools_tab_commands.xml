@@ -385,7 +385,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
                     android:max="4500"
-                    android:progress="400"
+                    android:progress="1"
                     android:thumbTint="?colorPrimaryDark" />
 
                 <TextView
@@ -395,6 +395,53 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_gravity="center_vertical"
                     android:singleLine="true"
                     android:text="      mV"
+                    android:paddingRight="5dp"
+                    android:textStyle="normal|bold"
+                    android:textColor="#000000" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="1dp"
+                android:background="?colorAccentLog"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="5dp"
+                    android:paddingLeft="5dp"
+                    android:src="@drawable/timeout_timer_icon24" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text="TIMEOUT: "
+                    android:textStyle="bold|italic"
+                    android:textColor="#000000" />
+
+                <SeekBar
+                    android:id="@+id/cmdTimeoutSeekbar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:min="1"
+                    android:max="5000"
+                    android:progress="1"
+                    android:thumbTint="?colorPrimaryDark" />
+
+                <TextView
+                    android:id="@+id/cmdTimeoutSeekbarValueText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:singleLine="true"
+                    android:text="      ms"
                     android:paddingRight="5dp"
                     android:textStyle="normal|bold"
                     android:textColor="#000000" />

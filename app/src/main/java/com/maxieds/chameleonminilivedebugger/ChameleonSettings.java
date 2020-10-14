@@ -19,9 +19,9 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.util.Log;
 
-public class Settings {
+public class ChameleonSettings {
 
-    private static final String TAG = Settings.class.getSimpleName();
+    private static final String TAG = ChameleonSettings.class.getSimpleName();
 
     public static boolean allowWiredUSB = true;
     public static boolean allowBluetooth = false;

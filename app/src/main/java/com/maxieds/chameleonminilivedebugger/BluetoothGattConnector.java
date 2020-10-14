@@ -35,9 +35,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
-import java.util.Queue;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class BluetoothGattConnector extends BluetoothGattCallback {
 
@@ -90,7 +88,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         btAdapter = configureBluetoothAdapter();
         btGatt = null;
         btGattCallback = configureBluetoothGattCallback();
-        btSerialIface = (BluetoothSerialInterface) Settings.serialIOPorts[Settings.BTIO_IFACE_INDEX];
+        btSerialIface = (BluetoothSerialInterface) ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX];
         isConnected = false;
     }
 

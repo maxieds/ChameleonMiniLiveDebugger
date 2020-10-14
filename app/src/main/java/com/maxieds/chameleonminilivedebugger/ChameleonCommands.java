@@ -21,8 +21,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Looper;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 
 import java.util.Arrays;
 
@@ -204,7 +202,7 @@ public class ChameleonCommands {
         else if(createCmd.equals("RESET") || createCmd.equals("resetmy")) { // need to re-establish the usb connection:
             ChameleonIO.executeChameleonMiniCommand(createCmd, ChameleonIO.TIMEOUT);
             ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
-            ChameleonSerialIOInterface serialIOPort = Settings.getActiveSerialIOPort();
+            ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
             if(serialIOPort != null) {
                 serialIOPort.shutdownSerial();
                 serialIOPort.configureSerial();

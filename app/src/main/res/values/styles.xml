@@ -58,55 +58,19 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_rainbow2</item>
     </style>
 
-    <style name="AppThemeUserCustom" parent="@style/AppTheme">
-        <item name="colorPrimary">#75a72c</item>
-        <item name="colorPrimaryDark">#3d5717</item>
-        <item name="colorAccent">#91cb3b</item>
-        <item name="colorPrimaryDarkLog">#6eb703</item>
-        <item name="colorAccentLog">#cfe8a9</item>
-        <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#98fb98</item>
-        <item name="colorAboutLinkColor">#6eb703</item>
-        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32</item>
-    </style>
-
-    <style name="AppThemeBlue" parent="@style/AppTheme">
-        <item name="colorPrimary">#0E4D92</item>
-        <item name="colorPrimaryDark">#071529</item>
-        <item name="colorAccent">#6E95BE</item>
-        <item name="colorPrimaryDarkLog">#3E71A8</item>
-        <item name="colorAccentLog">#9EB9D4</item>
-        <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#00B0FF</item>
-        <item name="colorAboutLinkColor">#A4B1BC</item>
-        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_blue</item>
-    </style>
-
     <style name="AppThemeChicky" parent="AppTheme">
         <item name="colorPrimary">#E51284</item>
-        <item name="colorPrimaryDark">#630839</item>
+        <item name="colorPrimaryDark">#A30C5D</item>
         <item name="colorAccent">#FF74BF</item>
         <item name="colorPrimaryDarkLog">#FF44A9</item>
         <item name="colorAccentLog">#FFBCE0</item>
         <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#FF00FF</item>
+        <item name="colorAccentHighlight">#F146F1</item>
         <item name="colorAboutLinkColor">#720843</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_chicky</item>
     </style>
 
-    <style name="AppThemeGoldenrod" parent="AppTheme">
-        <item name="colorPrimary">#CB9B1D</item>
-        <item name="colorPrimaryDark">#7D6211</item>
-        <item name="colorAccent">#FFC125</item>
-        <item name="colorPrimaryDarkLog">#FFC73B</item>
-        <item name="colorAccentLog">#FFD97D</item>
-        <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#FFFF66</item>
-        <item name="colorAboutLinkColor">#CBCB52</item>
-        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_goldenrod</item>
-    </style>
-
-    <style name="AppThemeWhite" parent="AppTheme">
+    <style name="AppThemeFrosty" parent="AppTheme">
         <item name="colorPrimary">#EEE9E9</item>
         <item name="colorPrimaryDark">#767676</item>
         <item name="colorAccent">#F4EFEF</item>
@@ -115,7 +79,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item name="deviceMemoryLogHighlight">#EF2929</item>
         <item name="colorAccentHighlight">#fff8dc</item>
         <item name="colorAboutLinkColor">#BEBBBB</item>
-        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_white</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_frosty</item>
     </style>
 
     <style name="AppThemeRed" parent="AppTheme">
@@ -154,19 +118,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item name="actionBarLeftLogoIcon">@drawable/chameleonicon32_redmond</item>
     </style>
 
-    <style name="AppThemeLightblue" parent="AppTheme">
-        <item name="colorPrimary">#2196F3</item>
-        <item name="colorPrimaryDark">#0D47A1</item>
-        <item name="colorAccent">#BBDEFB</item>
-        <item name="colorPrimaryDarkLog">#1E88E5</item>
-        <item name="colorAccentLog">#82B1FF</item>
-        <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#00B0FF</item>
-        <item name="colorAboutLinkColor">#0D47A1</item>
-        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_lightblue</item>
-    </style>
-
-    <style name="AppThemeAmber" parent="AppTheme">
+    <style name="AppThemeSunshine" parent="AppTheme">
         <item name="colorPrimary">#FFC107</item>
         <item name="colorPrimaryDark">#FF6F00</item>
         <item name="colorAccent">#FFECB3</item>
@@ -175,19 +127,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item name="deviceMemoryLogHighlight">#EF2929</item>
         <item name="colorAccentHighlight">#FFD740</item>
         <item name="colorAboutLinkColor">#FF6F00</item>
-        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_amber</item>
-    </style>
-
-    <style name="AppThemeChocolate" parent="AppTheme">
-        <item name="colorPrimary">#795548</item>
-        <item name="colorPrimaryDark">#3E2723</item>
-        <item name="colorAccent">#D7CCC8</item>
-        <item name="colorPrimaryDarkLog">#6D4C41</item>
-        <item name="colorAccentLog">#D7CCC8</item>
-        <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#795548</item>
-        <item name="colorAboutLinkColor">#795548</item>
-        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_chocolate</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_sunshine</item>
     </style>
 
     <style name="AppThemeBlack" parent="AppTheme">

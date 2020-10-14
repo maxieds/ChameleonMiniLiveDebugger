@@ -28,9 +28,6 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.concurrent.Semaphore;
 
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_SLOTS;
-
 public class BluetoothSerialInterface extends SerialIOReceiver {
 
     /**
@@ -76,13 +73,13 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
         Log.i(TAG, "BTDEV: " + activeDevice.toString());
         ChameleonIO.REVE_BOARD = false;
         ChameleonIO.PAUSED = false;
-        Settings.chameleonDeviceSerialNumber = btDev.getAddress();
+        ChameleonSettings.chameleonDeviceSerialNumber = btDev.getAddress();
 
         Handler configDeviceHandler = new Handler();
         Runnable configDeviceRunnable = new Runnable() {
             public void run() {
-                Log.i(TAG, Settings.getActiveSerialIOPort().toString());
-                if(Settings.getActiveSerialIOPort() != null && btGattConnectorBLEDevice.isDeviceConnected()) {
+                Log.i(TAG, ChameleonSettings.getActiveSerialIOPort().toString());
+                if(ChameleonSettings.getActiveSerialIOPort() != null && btGattConnectorBLEDevice.isDeviceConnected()) {
                     configDeviceHandler.removeCallbacks(this);
                     //ChameleonIO.detectChameleonType();
                     //ChameleonIO.initializeDevice();
@@ -98,8 +95,8 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
                 }
             }
         };
-        Settings.SERIALIO_IFACE_ACTIVE_INDEX = Settings.BTIO_IFACE_INDEX;
-        Settings.stopSerialIOConnectionDiscovery();
+        ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = ChameleonSettings.BTIO_IFACE_INDEX;
+        ChameleonSettings.stopSerialIOConnectionDiscovery();
         ChameleonIO.DeviceStatusSettings.stopPostingStats();
         serialConfigured = true;
         configDeviceHandler.postDelayed(configDeviceRunnable, 500);
@@ -116,7 +113,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
         activeDevice = null;
         btGattConnectorBLEDevice = new BluetoothGattConnector(notifyContext);
         btGattConnectorBLEDevice.setBluetoothSerialInterface(this);
-        baudRate = Settings.serialBaudRate;
+        baudRate = ChameleonSettings.serialBaudRate;
         serialConfigured = false;
         receiversRegistered = false;
     }
@@ -182,7 +179,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
 
     public int setSerialBaudRate(int brate) {
         baudRate = brate;
-        Settings.serialBaudRate = baudRate;
+        ChameleonSettings.serialBaudRate = baudRate;
         return baudRate;
     }
     public int setSerialBaudRateHigh() {

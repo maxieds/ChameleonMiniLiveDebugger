@@ -48,17 +48,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
         android:background="?colorAccentLog"
-        android:columnCount="2"
+        android:columnCount="1"
         android:orientation="horizontal"
         android:padding="2dp"
         android:rowCount="1">
-
-        <Button
-            style="@style/GridButtons"
-            android:drawableLeft="@drawable/idcard24"
-            android:tag="UPLOAD"
-            android:onClick="actionButtonUploadCard"
-            android:text="UPLOAD TAG MFD-DUMP" />
 
         <Button
             style="@style/GridButtons"
@@ -81,7 +74,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:drawableLeft="@drawable/uploadbutton16"
         android:drawablePadding="5dp"
         android:singleLine="true"
-        android:text="Clone Stock Chip Image Dumps: "
+        android:text="Clone Stock Chameleon Tag Data Dumps: "
         android:textSize="14sp"
         android:textAllCaps="true"
         android:textStyle="bold|italic" />

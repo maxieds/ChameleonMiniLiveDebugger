@@ -19,18 +19,8 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.ArraySet;
-import android.util.JsonWriter;
 
-import org.apache.commons.lang3.SerializationUtils;
-import org.json.JSONObject;
-import org.json.JSONTokener;
-
-import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -45,8 +35,6 @@ public class AndroidSettingsStorage {
     public static final String DEFAULT_CMLDAPP_PROFILE = "CMLDAppProfile";
 
     public static final String THEMEID_PREFERENCE = "themeID";
-    public static final String CUSTOM_THEME_DATA_PREFERENCE = "customUserThemeDataArrays";
-    public static final String USE_CUSTOM_USER_THEME_DATA_PREFERENCE = "useCustomUserThemeDataArrays";
     public static final String PROFILE_NAME_PREFERENCE = "profileName";
     public static final String PROFILE_SERIALID_PREFERENCE = "profileSerialID";
     public static final String CHAMELEON_SLOT_NAMES = "chameleonDeviceSlotNames";
@@ -66,8 +54,6 @@ public class AndroidSettingsStorage {
 
     public static boolean loadDefaultSettings(String profileID) {
         updateValueByKey(profileID, THEMEID_PREFERENCE);
-        updateValueByKey(profileID, CUSTOM_THEME_DATA_PREFERENCE);
-        updateValueByKey(profileID, USE_CUSTOM_USER_THEME_DATA_PREFERENCE);
         updateValueByKey(profileID, PROFILE_SERIALID_PREFERENCE);
         updateValueByKey(profileID, PROFILE_NAME_PREFERENCE);
         updateValueByKey(profileID, SERIAL_BAUDRATE_PREFERENCE);
@@ -88,15 +74,13 @@ public class AndroidSettingsStorage {
     public static boolean loadPreviousSettings(String profileID) {
         try {
             ThemesConfiguration.storedAppTheme = getStringValueByKey(profileID, THEMEID_PREFERENCE);
-            //CustomUserThemeSupport.CUSTOM_USER_THEME_DATA = (CustomUserThemeSupport) loadObjectFromStringStorage(getStringValueByKey(profileID, CUSTOM_THEME_DATA_PREFERENCE));
-            CustomUserThemeSupport.USE_CUSTOM_USER_THEME_DATA = Boolean.valueOf(getStringValueByKey(profileID, USE_CUSTOM_USER_THEME_DATA_PREFERENCE));
-            Settings.chameleonDeviceSerialNumber = getStringValueByKey(profileID, PROFILE_SERIALID_PREFERENCE);
-            Settings.chameleonDeviceNickname = getStringValueByKey(profileID, PROFILE_NAME_PREFERENCE);
-            Settings.serialBaudRate = Integer.parseInt(getStringValueByKey(profileID, SERIAL_BAUDRATE_PREFERENCE));
-            Settings.allowWiredUSB = Boolean.valueOf(getStringValueByKey(profileID, ALLOW_USB_PREFERENCE));
-            Settings.allowBluetooth = Boolean.valueOf(getStringValueByKey(profileID, ALLOW_BLUETOOTH_PREFERENCE));
-            Settings.allowAndroidNFC = Boolean.valueOf(getStringValueByKey(profileID, ALLOW_ANDROID_NFC_PREFERENCE));
-            Settings.sniffingMode = Integer.parseInt(getStringValueByKey(profileID, SNIFFING_MODE_PREFERENCE));
+            ChameleonSettings.chameleonDeviceSerialNumber = getStringValueByKey(profileID, PROFILE_SERIALID_PREFERENCE);
+            ChameleonSettings.chameleonDeviceNickname = getStringValueByKey(profileID, PROFILE_NAME_PREFERENCE);
+            ChameleonSettings.serialBaudRate = Integer.parseInt(getStringValueByKey(profileID, SERIAL_BAUDRATE_PREFERENCE));
+            ChameleonSettings.allowWiredUSB = Boolean.valueOf(getStringValueByKey(profileID, ALLOW_USB_PREFERENCE));
+            ChameleonSettings.allowBluetooth = Boolean.valueOf(getStringValueByKey(profileID, ALLOW_BLUETOOTH_PREFERENCE));
+            ChameleonSettings.allowAndroidNFC = Boolean.valueOf(getStringValueByKey(profileID, ALLOW_ANDROID_NFC_PREFERENCE));
+            ChameleonSettings.sniffingMode = Integer.parseInt(getStringValueByKey(profileID, SNIFFING_MODE_PREFERENCE));
             ExternalFileIO.CURRENT_WORKING_DIRECTORY = getStringValueByKey(profileID, CWD_PREFERENCE);
             LiveLoggerActivity.setSelectedTab(Integer.parseInt(getStringValueByKey(profileID, LAST_TAB_INDEX_PREFERENCE)));
             TabFragment.UITAB_DATA[LiveLoggerActivity.getSelectedTab()].lastMenuIndex = Integer.parseInt(getStringValueByKey(profileID, LAST_TAB_SUBMENU_INDEX_PREFERENCE));
@@ -117,36 +101,29 @@ public class AndroidSettingsStorage {
         if(prefsKey.equals(THEMEID_PREFERENCE)) {
             spEditor.putString(prefsKey, ThemesConfiguration.storedAppTheme);
         }
-        else if(prefsKey.substring(0, Math.min(prefsKey.length(), CUSTOM_THEME_DATA_PREFERENCE.length())).equals(CUSTOM_THEME_DATA_PREFERENCE)) {
-            byte[] serializedObjBytes = SerializationUtils.serialize(CustomUserThemeSupport.CUSTOM_USER_THEME_DATA);
-            spEditor.putString(prefsKey, new String(serializedObjBytes, StandardCharsets.UTF_8));
-        }
-        else if(prefsKey.equals(USE_CUSTOM_USER_THEME_DATA_PREFERENCE)) {
-            spEditor.putBoolean(prefsKey, CustomUserThemeSupport.USE_CUSTOM_USER_THEME_DATA);
-        }
         else if(prefsKey.equals(PROFILE_NAME_PREFERENCE)) {
-            spEditor.putString(prefsKey, Settings.chameleonDeviceNickname);
+            spEditor.putString(prefsKey, ChameleonSettings.chameleonDeviceNickname);
         }
         else if(prefsKey.equals(PROFILE_SERIALID_PREFERENCE)) {
-            spEditor.putString(prefsKey, Settings.chameleonDeviceSerialNumber);
+            spEditor.putString(prefsKey, ChameleonSettings.chameleonDeviceSerialNumber);
         }
         else if(prefsKey.equals(CHAMELEON_SLOT_NAMES)) {
             spEditor.putStringSet(CHAMELEON_SLOT_NAMES, new HashSet<String>(Arrays.asList(ChameleonConfigSlot.CHAMELEON_SLOT_NAMES)));
         }
         else if(prefsKey.equals(SERIAL_BAUDRATE_PREFERENCE)) {
-            spEditor.putInt(prefsKey, Settings.serialBaudRate);
+            spEditor.putInt(prefsKey, ChameleonSettings.serialBaudRate);
         }
         else if(prefsKey.equals(ALLOW_USB_PREFERENCE)) {
-            spEditor.putBoolean(prefsKey, Settings.allowWiredUSB);
+            spEditor.putBoolean(prefsKey, ChameleonSettings.allowWiredUSB);
         }
         else if(prefsKey.equals(ALLOW_BLUETOOTH_PREFERENCE)) {
-            spEditor.putBoolean(prefsKey, Settings.allowBluetooth);
+            spEditor.putBoolean(prefsKey, ChameleonSettings.allowBluetooth);
         }
         else if(prefsKey.equals(ALLOW_ANDROID_NFC_PREFERENCE)) {
-            spEditor.putBoolean(prefsKey, Settings.allowAndroidNFC);
+            spEditor.putBoolean(prefsKey, ChameleonSettings.allowAndroidNFC);
         }
         else if(prefsKey.equals(SNIFFING_MODE_PREFERENCE)) {
-            spEditor.putInt(prefsKey, Settings.sniffingMode);
+            spEditor.putInt(prefsKey, ChameleonSettings.sniffingMode);
         }
         else if(prefsKey.equals(KEY_CONFIG_PREFERENCE)) {
             spEditor.putStringSet(prefsKey, null);
@@ -189,32 +166,26 @@ public class AndroidSettingsStorage {
         if(prefsKey.equals(THEMEID_PREFERENCE)) {
             return sharedPrefs.getString(prefsKey, ThemesConfiguration.storedAppTheme);
         }
-        else if(prefsKey.substring(0, Math.min(prefsKey.length(), CUSTOM_THEME_DATA_PREFERENCE.length())).equals(CUSTOM_THEME_DATA_PREFERENCE)) {
-            return sharedPrefs.getString(prefsKey, String.valueOf(SerializationUtils.serialize(CustomUserThemeSupport.CUSTOM_USER_THEME_DATA)));
-        }
-        else if(prefsKey.equals(USE_CUSTOM_USER_THEME_DATA_PREFERENCE)) {
-            return sharedPrefs.getBoolean(prefsKey, CustomUserThemeSupport.USE_CUSTOM_USER_THEME_DATA) ? "true" : "false";
-        }
         else if(prefsKey.equals(PROFILE_NAME_PREFERENCE)) {
-            return sharedPrefs.getString(prefsKey, Settings.chameleonDeviceNickname);
+            return sharedPrefs.getString(prefsKey, ChameleonSettings.chameleonDeviceNickname);
         }
         else if(prefsKey.equals(PROFILE_SERIALID_PREFERENCE)) {
-            return sharedPrefs.getString(prefsKey, Settings.chameleonDeviceSerialNumber);
+            return sharedPrefs.getString(prefsKey, ChameleonSettings.chameleonDeviceSerialNumber);
         }
         else if(prefsKey.equals(SERIAL_BAUDRATE_PREFERENCE)) {
-            return String.format(Locale.ENGLISH, "%d", sharedPrefs.getInt(prefsKey, Settings.serialBaudRate));
+            return String.format(Locale.ENGLISH, "%d", sharedPrefs.getInt(prefsKey, ChameleonSettings.serialBaudRate));
         }
         else if(prefsKey.equals(ALLOW_USB_PREFERENCE)) {
-            return sharedPrefs.getBoolean(prefsKey, Settings.allowWiredUSB) ? "true" : "false";
+            return sharedPrefs.getBoolean(prefsKey, ChameleonSettings.allowWiredUSB) ? "true" : "false";
         }
         else if(prefsKey.equals(ALLOW_BLUETOOTH_PREFERENCE)) {
-            return sharedPrefs.getBoolean(prefsKey, Settings.allowBluetooth) ? "true" : "false";
+            return sharedPrefs.getBoolean(prefsKey, ChameleonSettings.allowBluetooth) ? "true" : "false";
         }
         else if(prefsKey.equals(ALLOW_ANDROID_NFC_PREFERENCE)) {
-            return sharedPrefs.getBoolean(prefsKey, Settings.allowAndroidNFC) ? "true" : "false";
+            return sharedPrefs.getBoolean(prefsKey, ChameleonSettings.allowAndroidNFC) ? "true" : "false";
         }
         else if(prefsKey.equals(SNIFFING_MODE_PREFERENCE)) {
-            return String.format(Locale.ENGLISH, "%d", sharedPrefs.getInt(prefsKey, Settings.sniffingMode));
+            return String.format(Locale.ENGLISH, "%d", sharedPrefs.getInt(prefsKey, ChameleonSettings.sniffingMode));
         }
         else if(prefsKey.equals(CWD_PREFERENCE)) {
             sharedPrefs.getString(prefsKey, ExternalFileIO.CURRENT_WORKING_DIRECTORY);
@@ -239,10 +210,6 @@ public class AndroidSettingsStorage {
             return sharedPrefs.getBoolean(prefsKey, ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) ? "true" : "false";
         }
         return null;
-    }
-
-    public static<ObjTypeT extends Serializable> ObjTypeT loadObjectFromStringStorage(String objStrRepr) {
-        return (ObjTypeT) SerializationUtils.deserialize(objStrRepr.getBytes());
     }
 
     public static String[] getStringArrayValueByKey(String profileID, String prefsKey) {

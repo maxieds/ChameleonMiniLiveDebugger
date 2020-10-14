@@ -33,7 +33,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:drawableLeft="@drawable/filesystem16"
         android:drawablePadding="5dp"
         android:singleLine="true"
-        android:text="Export Live Logging Data to File:"
+        android:text="Export Live Logging Data:"
         android:textSize="14sp"
         android:textAllCaps="true"
         android:textStyle="bold|italic" />
@@ -95,7 +95,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:checked="true"
             android:drawableLeft="@drawable/sdcard16"
             android:drawablePadding="5dp"
-            android:text="Save" />
+            android:text="Save to File" />
 
         <RadioButton
             android:id="@+id/radio_save_email"
@@ -104,7 +104,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/mailicon16"
             android:drawablePadding="5dp"
-            android:text="Email" />
+            android:text="Email Logging Contents" />
 
         <RadioButton
             android:id="@+id/radio_save_share"
@@ -113,9 +113,61 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/shareicon16"
             android:drawablePadding="5dp"
-            android:text="Share" />
+            android:text="Share Logging Data" />
     </RadioGroup>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?colorPrimaryDarkLog"
+        android:drawableLeft="@drawable/modemplug16"
+        android:drawablePadding="5dp"
+        android:singleLine="true"
+        android:text="Download Stored LogMem Data via XMODEM:"
+        android:textSize="14sp"
+        android:textAllCaps="true"
+        android:textStyle="bold|italic" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
+
+    <GridLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="1dp"
+        android:background="?colorAccentLog"
+        android:columnCount="2"
+        android:orientation="horizontal"
+        android:padding="2dp"
+        android:rowCount="1">
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/log24"
+            android:tag="LOGDOWNLOAD"
+            android:onClick="actionButtonExportLogDownload"
+            android:text="Log to File" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/uploaddownload24"
+            android:tag="LOGDOWNLOAD2LIVE"
+            android:onClick="actionButtonExportLogDownload"
+            android:text="Log to Live" />
+
+    </GridLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?colorPrimaryDark" />
 
     <View
         android:layout_width="match_parent"

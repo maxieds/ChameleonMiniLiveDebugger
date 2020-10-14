@@ -45,7 +45,7 @@ public class ChameleonConfigSlot {
     public static ChameleonConfigSlot[] CHAMELEON_DEVICE_CONFIG_SLOTS = new ChameleonConfigSlot[8];
     public static String[] CHAMELEON_SLOT_NAMES = new String[8];
     static {
-        String[] storedSlotNameSettings = AndroidSettingsStorage.getStringArrayValueByKey(Settings.chameleonDeviceSerialNumber, AndroidSettingsStorage.CHAMELEON_SLOT_NAMES);
+        String[] storedSlotNameSettings = AndroidSettingsStorage.getStringArrayValueByKey(ChameleonSettings.chameleonDeviceSerialNumber, AndroidSettingsStorage.CHAMELEON_SLOT_NAMES);
         if(storedSlotNameSettings != null) {
             System.arraycopy(storedSlotNameSettings, 0, CHAMELEON_SLOT_NAMES, 0, storedSlotNameSettings.length);
         }
@@ -139,7 +139,7 @@ public class ChameleonConfigSlot {
     }
 
     public boolean readParametersFromChameleonSlot() {
-        if(Settings.getActiveSerialIOPort() == null) {
+        if(ChameleonSettings.getActiveSerialIOPort() == null) {
             return false;
         }
         try {
@@ -162,7 +162,7 @@ public class ChameleonConfigSlot {
     }
 
     public boolean readParametersFromChameleonSlot(int nextSlot, int activeSlot) {
-        if(Settings.getActiveSerialIOPort() == null) {
+        if(ChameleonSettings.getActiveSerialIOPort() == null) {
             return false;
         }
         else if(nextSlot < 1 || activeSlot < 1 ||
@@ -182,7 +182,7 @@ public class ChameleonConfigSlot {
     }
 
     public boolean getTagConfigurationsListFromDevice() {
-         if(Settings.getActiveSerialIOPort() == null) {
+         if(ChameleonSettings.getActiveSerialIOPort() == null) {
              return false;
          }
          String configModesList = ChameleonIO.getSettingFromDevice("CONFIG=?");
@@ -247,7 +247,7 @@ public class ChameleonConfigSlot {
                 Log.i(TAG, "Changing Slot #" + slotIndex + " name to " + s);
                 CHAMELEON_SLOT_NAMES[slotIndex - 1] = s.toString();
                 slotNickname = s.toString();
-                AndroidSettingsStorage.updateValueByKey(Settings.chameleonDeviceSerialNumber, AndroidSettingsStorage.CHAMELEON_SLOT_NAMES);
+                AndroidSettingsStorage.updateValueByKey(ChameleonSettings.chameleonDeviceSerialNumber, AndroidSettingsStorage.CHAMELEON_SLOT_NAMES);
             }
         });
         Spinner configModeSpinner = (Spinner) slotConfigLayout.findViewById(R.id.tagConfigModeSpinner);
@@ -255,7 +255,7 @@ public class ChameleonConfigSlot {
             String[] localSpinnerList = tagConfigModes;
             int lastSelectedPosition = 0;
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if(Settings.getActiveSerialIOPort() == null) {
+                if(ChameleonSettings.getActiveSerialIOPort() == null) {
                     return;
                 }
                 else if(i == lastSelectedPosition) {
@@ -276,7 +276,7 @@ public class ChameleonConfigSlot {
         Switch lockSwitch = (Switch) slotConfigLayout.findViewById(R.id.readonlyOnOffSwitch);
         lockSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(Settings.getActiveSerialIOPort() == null) {
+                if(ChameleonSettings.getActiveSerialIOPort() == null) {
                     return;
                 }
                 else if(isChecked && !isLocked || !isChecked && isLocked) {
@@ -288,7 +288,7 @@ public class ChameleonConfigSlot {
         Switch uidModeSwitch = (Switch) slotConfigLayout.findViewById(R.id.uidModeOnOffSwitch);
         uidModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(Settings.getActiveSerialIOPort() == null) {
+                if(ChameleonSettings.getActiveSerialIOPort() == null) {
                     return;
                 }
                 else if(isChecked && !uidMode || !isChecked && uidMode) {
@@ -300,7 +300,7 @@ public class ChameleonConfigSlot {
         Switch fieldModeSwitch = (Switch) slotConfigLayout.findViewById(R.id.fieldOnOffSwitch);
         uidModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(Settings.getActiveSerialIOPort() == null) {
+                if(ChameleonSettings.getActiveSerialIOPort() == null) {
                     return;
                 }
                 else if(isChecked && !fieldSetting || !isChecked && fieldSetting) {
@@ -312,7 +312,7 @@ public class ChameleonConfigSlot {
         Switch sakModeSwitch = (Switch) slotConfigLayout.findViewById(R.id.sakAtqaModifyModeOnOffSwitch);
         sakModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(Settings.getActiveSerialIOPort() == null) {
+                if(ChameleonSettings.getActiveSerialIOPort() == null) {
                     return;
                 }
                 else if(isChecked && !sakAtqaMode || !isChecked && sakAtqaMode) {

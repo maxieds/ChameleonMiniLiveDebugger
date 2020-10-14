@@ -44,7 +44,7 @@ public class ChameleonPeripherals {
      * @see res/layout/tools_tab_commands.xml.xml
      */
     public static void actionButtonRestorePeripheralDefaults(View view) {
-        if (Settings.getActiveSerialIOPort() != null) {
+        if (ChameleonSettings.getActiveSerialIOPort() != null) {
             // next, query the defaults from the device to get accurate settings (if the device is connected):
             int[] spinnerIDs = {
                     R.id.RButtonSpinner,

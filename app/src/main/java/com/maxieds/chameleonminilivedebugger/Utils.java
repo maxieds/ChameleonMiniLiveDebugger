@@ -87,7 +87,6 @@ public class Utils {
         return (byte) (lsb | msb << 4);
     }
 
-    // TODO: javadoc
     public static byte[] hexString2Bytes(String byteStr) {
         if (byteStr.length() % 2 != 0) { // left-pad the string:
             byteStr =  byteStr + "0";

@@ -17,18 +17,14 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
-import android.Manifest;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.hardware.usb.UsbManager;
@@ -52,7 +48,6 @@ import android.widget.Toolbar;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
@@ -223,7 +218,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
           if(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT) {
                MainActivityLogUtils.clearAllLogs();
           }
-          ThemesConfiguration.setLocalTheme(ThemesConfiguration.storedAppTheme, false); // set the base colors, not the backgrounds initially
+          ThemesConfiguration.setLocalTheme(ThemesConfiguration.storedAppTheme, true); // set the base colors, not the backgrounds initially
           ThemesConfiguration.setThemeHandler.postDelayed(ThemesConfiguration.setThemeRunner, 400);
 
           setContentView(R.layout.activity_live_logger);
@@ -255,10 +250,10 @@ public class LiveLoggerActivity extends AppCompatActivity {
           }
 
           if(!serialIOReceiversRegistered) {
-               if(Settings.serialIOPorts == null) {
-                    Settings.initSerialIOPortObjects();
+               if(ChameleonSettings.serialIOPorts == null) {
+                    ChameleonSettings.initSerialIOPortObjects();
                }
-               if((Settings.serialIOPorts[Settings.USBIO_IFACE_INDEX].configureSerial() != 0) && (Settings.getActiveSerialIOPort() != null)) {
+               if((ChameleonSettings.serialIOPorts[ChameleonSettings.USBIO_IFACE_INDEX].configureSerial() != 0) && (ChameleonSettings.getActiveSerialIOPort() != null)) {
                     Handler configDeviceHandler = new Handler();
                     Runnable configDeviceRunnable = new Runnable() {
                          public void run() {
@@ -325,19 +320,21 @@ public class LiveLoggerActivity extends AppCompatActivity {
                Handler initSettingsDeviceHandler = new Handler();
                Runnable initSettingsDeviceRunnable = new Runnable() {
                     public void run() {
-                         Settings.initializeSerialIOConnections();
+                         ChameleonSettings.initializeSerialIOConnections();
                     }
                };
                initSettingsDeviceHandler.postDelayed(initSettingsDeviceRunnable, 800);
           }
 
           String userGreeting = getString(R.string.initialUserGreetingMsg);
-          MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", userGreeting));
+          MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("WELCOME", userGreeting));
 
           clearStatusIcon(R.id.statusIconNewMsg);
           clearStatusIcon(R.id.statusIconNewXFer);
           clearStatusIcon(R.id.signalStrength);
           clearStatusIcon(R.id.statusIconBT);
+          clearStatusIcon(R.id.statusCodecRXDataEvent);
+          clearStatusIcon(R.id.statusReaderFieldDetectedEvent);
 
      }
 
@@ -444,9 +441,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
           }
           else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
                SerialUSBInterface.registerUSBPermission(intent, this);
-               if(Settings.serialIOPorts[Settings.USBIO_IFACE_INDEX].configureSerial() != 0) {
-                    Settings.stopSerialIOConnectionDiscovery();
-                    Settings.SERIALIO_IFACE_ACTIVE_INDEX = Settings.USBIO_IFACE_INDEX;
+               if(ChameleonSettings.serialIOPorts[ChameleonSettings.USBIO_IFACE_INDEX].configureSerial() != 0) {
+                    ChameleonSettings.stopSerialIOConnectionDiscovery();
+                    ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = ChameleonSettings.USBIO_IFACE_INDEX;
                     Handler configDeviceHandler = new Handler();
                     Runnable configDeviceRunnable = new Runnable() {
                          public void run() {
@@ -471,18 +468,18 @@ public class LiveLoggerActivity extends AppCompatActivity {
                if(ChameleonIO.WAITING_FOR_RESPONSE) {
                     ChameleonIO.WAITING_FOR_RESPONSE = false;
                }
-               ChameleonSerialIOInterface serialIOPort = Settings.getActiveSerialIOPort();
+               ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
                if(serialIOPort != null) {
                     serialIOPort.shutdownSerial();
                }
-               Settings.SERIALIO_IFACE_ACTIVE_INDEX = -1;
+               ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = -1;
                setStatusIcon(R.id.statusIconUSB, R.drawable.usbdisconnected16);
                unregisterReceiver(SerialUSBInterface.usbPermissionsReceiver);
                SerialUSBInterface.usbPermissionsReceiverConfig = false;
-               Settings.initializeSerialIOConnections();
+               ChameleonSettings.initializeSerialIOConnections();
           }
           else if(intent.getAction().equals(BluetoothDevice.ACTION_FOUND)) {
-               BluetoothGattConnector btGattConnect = ((BluetoothSerialInterface) Settings.serialIOPorts[Settings.BTIO_IFACE_INDEX]).getBluetoothGattConnector();
+               BluetoothGattConnector btGattConnect = ((BluetoothSerialInterface) ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX]).getBluetoothGattConnector();
                if(btGattConnect == null) {
                     return;
                }
@@ -495,14 +492,14 @@ public class LiveLoggerActivity extends AppCompatActivity {
           else if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
                   intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED)) {
                ChameleonIO.DeviceStatusSettings.stopPostingStats();
-               Settings.stopSerialIOConnectionDiscovery();
-               if(Settings.serialIOPorts[Settings.BTIO_IFACE_INDEX].configureSerial() != 0) {
-                    Settings.SERIALIO_IFACE_ACTIVE_INDEX = Settings.BTIO_IFACE_INDEX;
+               ChameleonSettings.stopSerialIOConnectionDiscovery();
+               if(ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX].configureSerial() != 0) {
+                    ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = ChameleonSettings.BTIO_IFACE_INDEX;
                     Handler configDeviceHandler = new Handler();
                     Runnable configDeviceRunnable = new Runnable() {
                          public void run() {
-                              if(Settings.getActiveSerialIOPort() != null &&
-                                      ((BluetoothSerialInterface) Settings.getActiveSerialIOPort()).isDeviceConnected()) {
+                              if(ChameleonSettings.getActiveSerialIOPort() != null &&
+                                      ((BluetoothSerialInterface) ChameleonSettings.getActiveSerialIOPort()).isDeviceConnected()) {
                                    ChameleonIO.detectChameleonType();
                                    ChameleonIO.initializeDevice();
                                    UITabUtils.initializeToolsTab(TAB_TOOLS_MITEM_SLOTS, TabFragment.UITAB_DATA[TAB_TOOLS].tabInflatedView);
@@ -526,13 +523,13 @@ public class LiveLoggerActivity extends AppCompatActivity {
                if(ChameleonIO.WAITING_FOR_RESPONSE) {
                     ChameleonIO.WAITING_FOR_RESPONSE = false;
                }
-               ChameleonSerialIOInterface serialIOPort = Settings.getActiveSerialIOPort();
+               ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
                if(serialIOPort != null) {
                     serialIOPort.shutdownSerial();
                }
-               Settings.SERIALIO_IFACE_ACTIVE_INDEX = -1;
+               ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = -1;
                clearStatusIcon(R.id.statusIconBT);
-               Settings.initializeSerialIOConnections();
+               ChameleonSettings.initializeSerialIOConnections();
           }
           else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED)) {
                byte[] serialByteData = intent.getByteArrayExtra("DATA");
@@ -591,7 +588,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
       */
      public void actionButtonExit(View view) {
           ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
-          ChameleonSerialIOInterface serialIOPort = Settings.getActiveSerialIOPort();
+          ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
           if(serialIOPort != null) {
                serialIOPort.shutdownSerial();
           }
@@ -625,7 +622,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
       * @param view calling Button
       */
      public void actionButtonCreateNewEvent(View view) {
-          if(Settings.getActiveSerialIOPort() == null) {
+          if(ChameleonSettings.getActiveSerialIOPort() == null) {
                MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Cannot run command since serial IO over USB/BT is not configured."));
                return;
           }
@@ -803,7 +800,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
       * @param view pressed Button
       */
      public void actionButtonUploadCard(View view) {
-          if(Settings.getActiveSerialIOPort() == null)
+          if(ChameleonSettings.getActiveSerialIOPort() == null)
                return;
           ChameleonCommands.uploadCardImageByXModem();
      }
@@ -839,7 +836,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
      public void actionButtonSendAPDU(View view) {
           String sendMode = ((Button) view).getTag().toString();
-          ApduGUITools.sendAPDUToChameleon(sendMode);
+          ApduGUITools.sendAPDUToChameleon(sendMode, false);
+     }
+
+     public void actionButtonSendRawAPDU(View view) {
+          String sendMode = ((Button) view).getTag().toString();
+          ApduGUITools.sendAPDUToChameleon(sendMode, true);
      }
 
      public void actionButtonAPDUSearchCmd(View view) {

@@ -33,6 +33,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:orientation="horizontal"
         android:weightSum="1.0"
         android:layout_marginBottom="0dp"
+        android:background="?colorPrimary"
         android:paddingBottom="0dp">
 
         <CheckBox
@@ -56,6 +57,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:text="LBLXXXXX"
             android:textSize="10sp"
             android:textStyle="bold|italic"
+            android:textColor="?colorPrimaryDark"
             android:paddingLeft="0dp"
             android:paddingRight="5dp" />
 
@@ -92,6 +94,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:text="LOG_TYPE"
             android:textSize="9sp"
             android:textStyle="bold|italic"
+            android:textColor="?colorPrimaryDark"
             android:paddingLeft="5dp"/>
 
         <TextView
@@ -106,6 +109,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:text="XXB"
             android:textSize="10sp"
             android:textStyle="bold|italic"
+            android:textColor="?colorPrimaryDark"
             android:paddingLeft="5dp"/>
 
         <TextView
@@ -120,6 +124,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:text="+XXX ms"
             android:textSize="10sp"
             android:textStyle="bold|italic"
+            android:textColor="?colorPrimaryDark"
             android:paddingLeft="5dp"/>
 
         <TextView
@@ -134,6 +139,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:text="CPR/ENT: 0.0000"
             android:textSize="9sp"
             android:textStyle="bold|italic"
+            android:textColor="?colorPrimaryDark"
             android:paddingLeft="5dp"/>
 
     </LinearLayout>
@@ -161,6 +167,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:textSize="10sp"
             android:textStyle="bold|normal|italic"
             android:textAllCaps="true"
+            android:textColor="?colorPrimaryDark"
             android:typeface="sans"
             android:drawableLeft="@drawable/plus_duplicate_marker16"
             android:drawablePadding="2dp"
@@ -182,7 +189,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:paddingLeft="35dp"
             android:singleLine="true"
             android:textSize="8sp"
-            android:textStyle="bold|normal" />
+            android:textStyle="bold|normal"
+            android:textColor="?colorPrimaryDark" />
 
         <TextView
             android:id="@+id/text_logdata_ascii"
@@ -195,7 +203,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:paddingLeft="35dp"
             android:singleLine="false"
             android:textSize="8sp"
-            android:textStyle="bold|normal" />
+            android:textStyle="bold|normal"
+            android:textColor="?colorPrimaryDark" />
 
         <TextView
             android:id="@+id/text_apdu"
@@ -208,7 +217,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:paddingLeft="35dp"
             android:singleLine="false"
             android:textSize="8sp"
-            android:textStyle="bold|normal|italic" />
+            android:textStyle="bold|normal|italic"
+            android:textColor="?colorPrimaryDark" />
 
     </GridLayout>
 

@@ -17,186 +17,259 @@ available at the following link:
 https://github.com/maxieds/ChameleonMiniLiveDebugger
 -->
 
-<androidx.appcompat.widget.LinearLayoutCompat
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RadioGroup
-        android:id="@+id/themeRadioGroup"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+    <ScrollView
+        android:id="@+id/tools_menu_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fadeScrollbars="false"
+        android:orientation="vertical"
+        android:scrollbarSize="25dp"
+        android:verticalScrollbarPosition="right">
 
-        <RadioButton
-            android:id="@+id/themeRadioButtonAmber"
-            android:buttonTint="?colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:drawableLeft="@drawable/thememarker24"
-            android:drawablePadding="5dp"
-            android:text="Amber" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
 
-        <RadioButton
-            android:id="@+id/themeRadioButtonAtlanta"
-            android:buttonTint="?colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:drawableLeft="@drawable/thememarker24"
-            android:drawablePadding="5dp"
-            android:text="Atlanta" />
+            <!--<LinearLayout
+                android:id="@+id/themesPickerPreviewColorSwatchesContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
 
-        <RadioButton
-            android:id="@+id/themeRadioButtonBlack"
-            android:buttonTint="?colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:drawableLeft="@drawable/thememarker24"
-            android:drawablePadding="5dp"
-            android:text="Black" />
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="left"
+                    android:paddingRight="10dp"
+                    android:singleLine="false"
+                    android:text="Selected Theme Colors: "
+                    android:textSize="11sp"
+                    android:textStyle="bold|normal"
+                    android:textColor="?colorPrimaryDark" />
 
-        <RadioButton
-            android:id="@+id/themeRadioButtonBlue"
-            android:buttonTint="?colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:drawableLeft="@drawable/thememarker24"
-            android:drawablePadding="5dp"
-            android:text="Blue" />
+                <TextView
+                    android:layout_height="20dp"
+                    android:layout_width="20dp"
+                    android:background="?colorPrimary"
+                    android:text="P - ⬛"
+                    android:textSize="16sp"
+                    android:textStyle="bold|normal"
+                    android:textColor="?colorPrimary" />
 
-        <RadioButton
-            android:id="@+id/themeRadioButtonChicky"
-            android:buttonTint="?colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:drawableLeft="@drawable/thememarker24"
-            android:drawablePadding="5dp"
-            android:text="Chicky" />
+                <TextView
+                    android:layout_height="20dp"
+                    android:layout_width="20dp"
+                    android:background="?colorPrimaryDark"
+                    android:text="PD - ⬛"
+                    android:textSize="16sp"
+                    android:textStyle="bold|normal"
+                    android:textColor="?colorPrimaryDark" />
 
-        <RadioButton
-            android:id="@+id/themeRadioButtonChocolate"
-            android:buttonTint="?colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:drawableLeft="@drawable/thememarker24"
-            android:drawablePadding="5dp"
-            android:text="Chocolate" />
+                <TextView
+                    android:layout_height="20dp"
+                    android:layout_width="20dp"
+                    android:background="?colorAccent"
+                    android:text="A - ⬛"
+                    android:textSize="16sp"
+                    android:textStyle="bold|normal"
+                    android:textColor="?colorAccent" />
 
-        <RadioButton
-            android:id="@+id/themeRadioButtonGoldenrod"
-            android:buttonTint="?colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:drawableLeft="@drawable/thememarker24"
-            android:drawablePadding="5dp"
-            android:text="Goldenrod" />
+                <TextView
+                    android:layout_height="20dp"
+                    android:layout_width="20dp"
+                    android:background="?colorPrimaryDarkLog"
+                    android:text="PDL - ⬛"
+                    android:textSize="16sp"
+                    android:textStyle="bold|normal"
+                    android:textColor="?colorPrimaryDarkLog" />
 
-        <RadioButton
-            android:id="@+id/themeRadioButtonStdGreen"
-            android:buttonTint="?colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:drawableLeft="@drawable/thememarker24"
-            android:drawablePadding="5dp"
-            android:text="Standard Green" />
+                <TextView
+                    android:layout_height="20dp"
+                    android:layout_width="20dp"
+                    android:background="?colorAccentLog"
+                    android:text="AL - ⬛"
+                    android:textSize="16sp"
+                    android:textStyle="bold|normal"
+                    android:textColor="?colorAccentLog" />
 
-        <RadioButton
-            android:id="@+id/themeRadioButtonLightblue"
-            android:buttonTint="?colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:drawableLeft="@drawable/thememarker24"
-            android:drawablePadding="5dp"
-            android:text="Lightblue" />
+                <TextView
+                    android:layout_height="20dp"
+                    android:layout_width="20dp"
+                    android:background="?colorAccentHighlight"
+                    android:text="AH - ⬛"
+                    android:textSize="16sp"
+                    android:textStyle="bold|normal"
+                    android:textColor="?colorAccentHighlight" />
 
-        <RadioButton
-            android:id="@+id/themeRadioButtonLinuxGOB"
-            android:buttonTint="?colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:drawableLeft="@drawable/thememarker24"
-            android:drawablePadding="5dp"
-            android:text="Linux Green On Black" />
+            </LinearLayout>-->
 
-        <RadioButton
-            android:id="@+id/themeRadioButtonPurple"
-            android:buttonTint="?colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:drawableLeft="@drawable/thememarker24"
-            android:drawablePadding="5dp"
-            android:text="Purple" />
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="3dp"
+                android:background="@android:color/black" />
 
-        <RadioButton
-            android:id="@+id/themeRadioButtonRed"
-            android:buttonTint="?colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:drawableLeft="@drawable/thememarker24"
-            android:drawablePadding="5dp"
-            android:text="Red" />
+            <RadioGroup
+                android:id="@+id/themeRadioGroup"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-        <RadioButton
-            android:id="@+id/themeRadioButtonRedmond"
-            android:buttonTint="?colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:drawableLeft="@drawable/thememarker24"
-            android:drawablePadding="5dp"
-            android:text="Redmond" />
+                <RadioButton
+                    android:id="@+id/themeRadioButtonAtlanta"
+                    android:buttonTint="?colorPrimaryDark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:drawableLeft="@drawable/chameleonicon32_atlanta"
+                    android:drawablePadding="5dp"
+                    android:text="Atlanta" />
 
-        <RadioButton
-            android:id="@+id/themeRadioButtonTeal"
-            android:buttonTint="?colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:drawableLeft="@drawable/thememarker24"
-            android:drawablePadding="5dp"
-            android:text="Teal" />
+                <RadioButton
+                    android:id="@+id/themeRadioButtonBlack"
+                    android:buttonTint="?colorPrimaryDark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:drawableLeft="@drawable/chameleonlogo32_black"
+                    android:drawablePadding="5dp"
+                    android:text="Black" />
 
-        <RadioButton
-            android:id="@+id/themeRadioButtonUrbanaDesfire"
-            android:buttonTint="?colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:drawableLeft="@drawable/thememarker24"
-            android:drawablePadding="5dp"
-            android:text="Urbana DESFire" />
+                <RadioButton
+                    android:id="@+id/themeRadioButtonChameleonRainbow"
+                    android:buttonTint="?colorPrimaryDark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:drawableLeft="@drawable/thememarker24"
+                    android:drawablePadding="5dp"
+                    android:text="Chameleon Rainbow" />
 
-        <RadioButton
-            android:id="@+id/themeRadioButtonWhite"
-            android:buttonTint="?colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:drawableLeft="@drawable/thememarker24"
-            android:drawablePadding="5dp"
-            android:text="White" />
+                <RadioButton
+                    android:id="@+id/themeRadioButtonChicky"
+                    android:buttonTint="?colorPrimaryDark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:drawableLeft="@drawable/chameleonlogo32_chicky"
+                    android:drawablePadding="5dp"
+                    android:text="Chicky" />
 
-        <RadioButton
-            android:id="@+id/themeRadioButtonWinter"
-            android:buttonTint="?colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:drawableLeft="@drawable/thememarker24"
-            android:drawablePadding="5dp"
-            android:text="Winter" />
+                <RadioButton
+                    android:id="@+id/themeRadioButtonFrosty"
+                    android:buttonTint="?colorPrimaryDark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:drawableLeft="@drawable/chameleonlogo32_frosty"
+                    android:drawablePadding="5dp"
+                    android:text="Frosty" />
 
-    </RadioGroup>
+                <RadioButton
+                    android:id="@+id/themeRadioButtonLinuxGOB"
+                    android:buttonTint="?colorPrimaryDark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:drawableLeft="@drawable/chameleonlogo32_linuxgob"
+                    android:drawablePadding="5dp"
+                    android:text="Linux Green on Black" />
 
-</androidx.appcompat.widget.LinearLayoutCompat>
+                <RadioButton
+                    android:id="@+id/themeRadioButtonPurple"
+                    android:buttonTint="?colorPrimaryDark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:drawableLeft="@drawable/chameleonlogo32_purple"
+                    android:drawablePadding="5dp"
+                    android:text="Purple" />
+
+                <RadioButton
+                    android:id="@+id/themeRadioButtonRed"
+                    android:buttonTint="?colorPrimaryDark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:drawableLeft="@drawable/chameleonlogo32_red"
+                    android:drawablePadding="5dp"
+                    android:text="Red" />
+
+                <RadioButton
+                    android:id="@+id/themeRadioButtonRedmond"
+                    android:buttonTint="?colorPrimaryDark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:drawableLeft="@drawable/chameleonicon32_redmond"
+                    android:drawablePadding="5dp"
+                    android:text="Redmond" />
+
+                <RadioButton
+                    android:id="@+id/themeRadioButtonSunshine"
+                    android:buttonTint="?colorPrimaryDark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:drawableLeft="@drawable/chameleonlogo32_sunshine"
+                    android:drawablePadding="5dp"
+                    android:text="Sunshine" />
+
+                <RadioButton
+                    android:id="@+id/themeRadioButtonStdGreen"
+                    android:buttonTint="?colorPrimaryDark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:drawableLeft="@drawable/chameleonlogo32_rainbow"
+                    android:drawablePadding="5dp"
+                    android:text="Standard Green (Default)" />
+
+                <RadioButton
+                    android:id="@+id/themeRadioButtonTeal"
+                    android:buttonTint="?colorPrimaryDark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:drawableLeft="@drawable/chameleonlogo32_teal"
+                    android:drawablePadding="5dp"
+                    android:text="Teal" />
+
+                <RadioButton
+                    android:id="@+id/themeRadioButtonUrbanaDesfire"
+                    android:buttonTint="?colorPrimaryDark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:drawableLeft="@drawable/chameleonicon32_desfire"
+                    android:drawablePadding="5dp"
+                    android:text="Urbana DESFire" />
+
+                <RadioButton
+                    android:id="@+id/themeRadioButtonWinter"
+                    android:buttonTint="?colorPrimaryDark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:drawableLeft="@drawable/chameleonicon32_winter"
+                    android:drawablePadding="5dp"
+                    android:text="Winter" />
+
+            </RadioGroup>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="3dp"
+                android:background="@android:color/black" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

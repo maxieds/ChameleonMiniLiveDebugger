@@ -42,17 +42,22 @@ def getGitCommitDate() {
 
 android {
 
-    compileSdkVersion 29
+    def configBuildTimeStamp = getDateTimestamp()
     defaultConfig {
+
         applicationId "com.maxieds.chameleonminilivedebugger"
-        minSdkVersion 29
+        minSdkVersion 26
         targetSdkVersion 29
-        versionCode 85 + 8080
-        versionName "1.2.4"
+        compileSdkVersion 29
+        versionCode 86 + 8080
+        versionName "1.2.5"
         multiDexEnabled true
 
         buildConfigField "String", "GIT_COMMIT_HASH", "\"" + getGitCommitHash() + "\""
         buildConfigField "String", "GIT_COMMIT_DATE", "\"" + getGitCommitDate() + "\""
+
+        setProperty("archivesBaseName", "ChameleonMiniLiveDebugger-v$versionName-$configBuildTimeStamp".replace(".", "-"))
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -74,12 +79,6 @@ android {
     buildToolsVersion '29.0.2'
 
     flavorDimensions "mode"
-    def configBuildTimeStamp = getDateTimestamp()
-    applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-            def apkName = "ChameleonMiniLiveDebugger-${variant.name}-vc${variant.versionCode}-v${variant.versionName}-${configBuildTimeStamp}.apk"
-        }
-    }
     productFlavors {
         free {
             versionNameSuffix "-free"

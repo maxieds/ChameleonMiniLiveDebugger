@@ -18,6 +18,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 package com.maxieds.chameleonminilivedebugger;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -137,6 +138,7 @@ public class LogEntryUI extends LogEntryBase {
 
     public View cloneLayoutContainer() {
         LinearLayout mainEntryContainerClone = (LinearLayout) LiveLoggerActivity.defaultInflater.inflate(R.layout.log_entry_ui, null);
+        mainEntryContainerClone.setAlpha(LOGENTRY_GUI_ALPHA);
         ImageView inoutDirIndicatorClone = (ImageView) mainEntryContainerClone.findViewById(R.id.inputDirIndicatorImg);
         inoutDirIndicatorClone.setImageDrawable(inoutDirIndicator.getDrawable());
         ImageView apduParseStatusClone = (ImageView) mainEntryContainerClone.findViewById(R.id.apduParseStatusImg);

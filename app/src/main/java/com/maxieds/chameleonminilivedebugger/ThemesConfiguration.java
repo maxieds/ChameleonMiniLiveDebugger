@@ -23,9 +23,12 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.appcompat.app.AlertDialog;
@@ -65,44 +68,22 @@ public class ThemesConfiguration {
      * @param themeDesc
      * @ref res/values/style.xml
      */
-    public static void setLocalTheme(String themeDesc, boolean canResetBackgroundData) {
+    public static int setLocalTheme(String themeDesc, boolean applyTheme) {
         int themeID;
-        boolean resetBackground = false;
-        int bgResID = 0;
         switch(themeDesc) {
-            case "Amber":
-                themeID = R.style.AppThemeAmber;
-                break;
             case "Atlanta":
                 themeID = R.style.AppThemeAtlanta;
                 break;
             case "Black":
                 themeID = R.style.AppThemeBlack;
                 break;
-            case "Blue":
-                themeID = R.style.AppThemeBlue;
-                break;
-            case "Chocolate":
-                themeID = R.style.AppThemeChocolate;
-                break;
             case "Chicky":
                 themeID = R.style.AppThemeChicky;
                 break;
-            case "Goldenrod":
-                themeID = R.style.AppThemeGoldenrod;
+            case "Frosty":
+                themeID = R.style.AppThemeFrosty;
                 break;
-            case "Standard Green":
-                if(BuildConfig.FLAVOR.equals("paid")) {
-                    themeID = R.style.AppThemeGreenPaid;
-                }
-                else {
-                    themeID = R.style.AppThemeGreen;
-                }
-                break;
-            case "Lightblue":
-                themeID = R.style.AppThemeLightblue;
-                break;
-            case "Linux Green On Black":
+            case "Linux Green on Black":
                 themeID = R.style.AppThemeLinuxGreenOnBlack;
                 break;
             case "Purple":
@@ -117,27 +98,37 @@ public class ThemesConfiguration {
             case "Teal":
                 themeID = R.style.AppThemeTeal;
                 break;
+            case "Sunshine":
+                themeID = R.style.AppThemeSunshine;
+                break;
+            case "Standard Green (Default)":
+                if(BuildConfig.FLAVOR.equals("paid")) {
+                    themeID = R.style.AppThemeGreenPaid;
+                }
+                else {
+                    themeID = R.style.AppThemeGreen;
+                }
+                break;
             case "Urbana DESFire":
                 themeID = R.style.AppThemeUrbanaDesfire;
-                break;
-            case "White":
-                themeID = R.style.AppThemeWhite;
                 break;
             case "Winter":
                 themeID = R.style.AppThemeWinter;
                 break;
             default:
-                themeID = R.style.AppThemeGreen;
+                return appThemeResID;
         }
-        Log.w(TAG, themeDesc);
-        Log.w(TAG, String.valueOf(themeID));
-        LiveLoggerActivity.getInstance().setTheme(themeID);
-        appThemeResID = themeID;
-
+        if(applyTheme) {
+            Log.w(TAG, themeDesc);
+            Log.w(TAG, String.valueOf(themeID));
+            LiveLoggerActivity.getInstance().setTheme(themeID);
+            appThemeResID = themeID;
+        }
+        return themeID;
     }
 
     public static void actionButtonAppSettings(View view) {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(LiveLoggerActivity.getInstance());
+        AlertDialog.Builder dialog = new AlertDialog.Builder(LiveLoggerActivity.getInstance(), appThemeResID);
         final View dialogView = LiveLoggerActivity.getInstance().getLayoutInflater().inflate(R.layout.theme_config, null);
         // set the correct current theme as the selected radio button:
         RadioGroup themeRadioGroup = (RadioGroup) dialogView.findViewById(R.id.themeRadioGroup);
@@ -153,31 +144,46 @@ public class ThemesConfiguration {
         themesScroller.addView(dialogView);
         dialog.setView(themesScroller);
         dialog.setIcon(R.drawable.settingsgears24);
+        dialog.setMessage("Set the color profile and toolbar icon for the application.");
         dialog.setTitle( "Application Themes:");
-        dialog.setPositiveButton( "Set Theme", new DialogInterface.OnClickListener(){
+        dialog.setPositiveButton( "Set Theme️", new DialogInterface.OnClickListener(){
             @Override
             public void onClick(DialogInterface dialog, int whichBtn) {
-
                 int getSelectedOption = ((RadioGroup) dialogView.findViewById(R.id.themeRadioGroup)).getCheckedRadioButtonId();
                 String themeID = ((RadioButton) dialogView.findViewById(getSelectedOption)).getText().toString();
                 String themeDesc = themeID;
                 setLocalTheme(themeDesc, true);
                 storedAppTheme = themeDesc;
-
                 // store the theme setting for when the app reopens:
                 ThemesConfiguration.storedAppTheme = themeDesc;
                 AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.THEMEID_PREFERENCE);
-
                 // finally, apply the theme settings by (essentially) restarting the activity UI:
                 MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("THEME", "New theme installed: " + themeDesc));
-
                 LiveLoggerActivity.getInstance().recreate();
 
             }
-
         });
+        //dialog.setNeutralButton( "Preview", null);
         dialog.setNegativeButton( "Cancel", null);
         dialog.setInverseBackgroundForced(true);
-        dialog.show();
+        final AlertDialog displayDialog = dialog.create();
+        displayDialog.show();
+        /*displayDialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View dialog) {
+                int getSelectedOption = ((RadioGroup) dialogView.findViewById(R.id.themeRadioGroup)).getCheckedRadioButtonId();
+                String themeID = ((RadioButton) dialogView.findViewById(getSelectedOption)).getText().toString();
+                String themeDesc = themeID;
+                LinearLayout previewThemeColorContainer = dialogView.findViewById(R.id.themesPickerPreviewColorSwatchesContainer);
+                if(previewThemeColorContainer == null) {
+                    return;
+                }
+                for(int b = 1; b < previewThemeColorContainer.getChildCount(); b++) {
+                    TextView curColorSwatchView = (TextView) previewThemeColorContainer.getChildAt(b);
+                    curColorSwatchView.setTextAppearance(LiveLoggerActivity.getInstance().getApplicationContext(), setLocalTheme(themeDesc, false));
+                    curColorSwatchView.setBackgroundColor(curColorSwatchView.getCurrentTextColor());
+                }
+            }
+        });*/
     }
 }

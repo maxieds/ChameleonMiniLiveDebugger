@@ -87,6 +87,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left|center_vertical"
+                    android:enabled="false"
                     android:text="Allow Android NFC exchanges" />
 
                 <ImageView

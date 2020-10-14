@@ -65,27 +65,25 @@ public class TabFragment extends Fragment {
     public static final int TAB_TOOLS_MITEM_COLUMNS = TAB_MENU_ITEM_DEFAULT_COLUMNS;
     public static final int TAB_TOOLS_MITEM_SLOTS = 0;
     public static final int TAB_TOOLS_MITEM_TAGCONFIG = 1;
-    public static final int TAB_TOOLS_MITEM_CMDS = 2;
-    public static final int TAB_TOOLS_MITEM_PERIPHERALS = 3;
-    public static final int TAB_TOOLS_MITEM_APDU = 4;
+    public static final int TAB_TOOLS_MITEM_CMDS = 3;
+    public static final int TAB_TOOLS_MITEM_PERIPHERALS = 4;
+    public static final int TAB_TOOLS_MITEM_APDU = 2;
 
     public static final int TAB_EXPORT_MITEM_COLUMNS = TAB_MENU_ITEM_DEFAULT_COLUMNS;
     public static final int TAB_EXPORT_MITEM_EXPORTLOGS = 0;
-    public static final int TAB_EXPORT_MITEM_DOWNLOAD = 1;
-    public static final int TAB_EXPORT_MITEM_UPLOAD = 2;
+    public static final int TAB_EXPORT_MITEM_UPLOAD_DOWNLOAD = 1;
+    public static final int TAB_EXPORT_MITEM_CLONE = 2;
 
-    public static final int TAB_SCRIPTING_MITEM_COLUMNS = 2;
-    public static final int TAB_SCRIPTING_MITEM_LOAD_IMPORT_CHKSYNTAX = 0;
-    public static final int TAB_SCRIPTING_MITEM_VIEW_SCRIPT_OUTPUT = 1;
-    public static final int TAB_SCRIPTING_MITEM_SCRIPT_EDITOR_VIEWER = 2;
-    public static final int TAB_SCRIPTING_MITEM_RUNTIME_REGISTER_VIEWS = 3;
-    public static final int TAB_SCRIPTING_MITEM_HELP = 4;
+    public static final int TAB_SCRIPTING_MITEM_COLUMNS = 3;
+    public static final int TAB_SCRIPTING_MITEM_LOAD_IMPORT = 0;
+    public static final int TAB_SCRIPTING_MITEM_RUN_VIEW_SCRIPT_OUTPUT = 1;
+    public static final int TAB_SCRIPTING_MITEM_RUNTIME_REGISTER_VIEWS = 2;
 
     public static final int TAB_CONFIG_MITEM_COLUMNS = 4;
     public static final int TAB_CONFIG_MITEM_SETTINGS = 0;
     public static final int TAB_CONFIG_MITEM_CONNECT = 1;
-    public static final int TAB_CONFIG_MITEM_SCRIPTING = 2;
-    public static final int TAB_CONFIG_MITEM_THEMES = 3;
+    public static final int TAB_CONFIG_MITEM_LOGGING = 2;
+    public static final int TAB_CONFIG_MITEM_SCRIPTING = 3;
 
     public static class UITab {
 
@@ -237,7 +235,7 @@ public class TabFragment extends Fragment {
                 new String[] {
                         "Live Logs",
                         "Log Tools",
-                        "Search Logs"
+                        "Search"
                 },
                 new int[]{
                         R.layout.log_tab_logs,
@@ -251,32 +249,33 @@ public class TabFragment extends Fragment {
                 TAB_TOOLS_MITEM_COLUMNS,
                 new String[] {
                         "Slot View",
-                        "Set Tag Type",
+                        "Set Tag Types",
+                        "Raw APDU",
                         "Commands",
-                        "Peripherals",
-                        "Send Raw APDU"
+                        "Peripheral Actions",
+
                 },
                 new int[]{
                         R.layout.tools_tab_slots,
                         R.layout.tools_tab_tag_config,
+                        R.layout.tools_tab_apdu,
                         R.layout.tools_tab_commands,
                         R.layout.tools_tab_peripherals,
-                        R.layout.tools_tab_apdu
                 });
         UITAB_DATA[TAB_EXPORT] = new UITab(
                 TAB_EXPORT,
                 R.drawable.insertbinary24,
-                "Export",
+                "Device I/O",
                 TAB_EXPORT_MITEM_COLUMNS,
                 new String[] {
                         "Export Logs",
-                        "Download",
-                        "Upload and Clone",
+                        "Upload/Download",
+                        "Clone Tags",
                 },
                 new int[]{
                         R.layout.export_tab_save_logs,
-                        R.layout.export_tab_download,
-                        R.layout.export_tab_upload
+                        R.layout.export_tab_upload_download,
+                        R.layout.export_tab_clone
                 });
         UITAB_DATA[TAB_SCRIPTING] = new UITab(
                 TAB_SCRIPTING,
@@ -284,14 +283,12 @@ public class TabFragment extends Fragment {
                 "Scripts",
                 TAB_SCRIPTING_MITEM_COLUMNS,
                 new String[] {
-                        "Load and Import",
+                        "Load/Import",
                         "Run Script",
-                        "Variable View",
-                        "Help and Syntax"
+                        "Variable View"
                 },
                 new int[] {
                         R.layout.scripting_tab_load_import,
-                        R.layout.tab_under_construction,
                         R.layout.tab_under_construction,
                         R.layout.tab_under_construction
 
@@ -304,14 +301,14 @@ public class TabFragment extends Fragment {
                 TAB_CONFIG_MITEM_COLUMNS,
                 new String[] {
                         "General",
-                        "Device List",
-                        "Scripting",
-                        "Themes"
+                        "Devices",
+                        "Logging",
+                        "Scripting"
                 },
                 new int[] {
                         R.layout.config_tab_general_settings,
                         R.layout.config_tab_connect,
-                        R.layout.tab_under_construction,
+                        R.layout.config_tab_logging,
                         R.layout.tab_under_construction
                 });
     }

@@ -94,7 +94,7 @@ public class ExportTools {
      */
     public static Runnable eotSleepRunnable = new Runnable() {
         public void run() {
-            ChameleonSerialIOInterface serialIOPort = Settings.getActiveSerialIOPort();
+            ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
             if(serialIOPort == null || !serialIOPort.serialConfigured()) {
                 return;
             }
@@ -174,7 +174,7 @@ public class ExportTools {
      * @ref LiveLoggerActivity.usbReaderCallback
      */
     public static void performXModemSerialDownload(byte[] liveLogData) {
-        ChameleonSerialIOInterface serialIOPort = Settings.getActiveSerialIOPort();
+        ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
         if(serialIOPort == null || !serialIOPort.serialConfigured()) {
             return;
         }
@@ -244,7 +244,7 @@ public class ExportTools {
      * @ref LiveLoggerActivity.actionButtonExportLogDownload
      */
     public static boolean downloadByXModem(String issueCmd, String outfilePrefix, boolean throwToLiveParam) {
-        ChameleonSerialIOInterface serialIOPort = Settings.getActiveSerialIOPort();
+        ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
         if(serialIOPort == null || !serialIOPort.serialConfigured()) {
             return false;
         }
@@ -329,7 +329,7 @@ public class ExportTools {
      * @param liveLogData
      */
     public static void performXModemSerialUpload(byte[] liveLogData) {
-        ChameleonSerialIOInterface serialIOPort = Settings.getActiveSerialIOPort();
+        ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
         if(serialIOPort == null || !serialIOPort.serialConfigured()) {
             return;
         }
@@ -423,7 +423,7 @@ public class ExportTools {
      * @ref LiveLoggerActivity.actionButtonUploadCard
      */
     public static void uploadCardFileByXModem(InputStream cardInputStream) {
-        ChameleonSerialIOInterface serialIOPort = Settings.getActiveSerialIOPort();
+        ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
         if(serialIOPort == null || !serialIOPort.serialConfigured() || cardInputStream == null)
             return;
         LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusupload16);

@@ -33,7 +33,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:drawableLeft="@drawable/modemplug16"
         android:drawablePadding="5dp"
         android:singleLine="true"
-        android:text="Download Binary Data via XMODEM:"
+        android:text="Upload | Download Tag Binary Dump via XMODEM:"
         android:textSize="14sp"
         android:textAllCaps="true"
         android:textStyle="bold|italic" />
@@ -48,24 +48,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:layout_height="wrap_content"
         android:layout_margin="1dp"
         android:background="?colorAccentLog"
-        android:columnCount="13"
+        android:columnCount="2"
         android:orientation="horizontal"
         android:padding="2dp"
         android:rowCount="1">
-
-        <Button
-            style="@style/GridButtons"
-            android:drawableLeft="@drawable/log24"
-            android:tag="LOGDOWNLOAD"
-            android:onClick="actionButtonExportLogDownload"
-            android:text="Log to File" />
-
-        <Button
-            style="@style/GridButtons"
-            android:drawableLeft="@drawable/uploaddownload24"
-            android:tag="LOGDOWNLOAD2LIVE"
-            android:onClick="actionButtonExportLogDownload"
-            android:text="Log to Live" />
 
         <Button
             style="@style/GridButtons"
@@ -73,6 +59,13 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:tag="DOWNLOAD"
             android:onClick="actionButtonExportLogDownload"
             android:text="Save Tag Data" />
+
+        <Button
+            style="@style/GridButtons"
+            android:drawableLeft="@drawable/idcard24"
+            android:tag="UPLOAD"
+            android:onClick="actionButtonUploadCard"
+            android:text="UPLOAD TAG MFD-DUMP" />
 
     </GridLayout>
 

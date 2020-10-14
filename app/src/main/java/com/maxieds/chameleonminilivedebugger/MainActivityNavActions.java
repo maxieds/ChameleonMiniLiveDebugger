@@ -18,6 +18,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 package com.maxieds.chameleonminilivedebugger;
 
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -44,7 +45,6 @@ public class MainActivityNavActions {
         rawAboutStr = rawAboutStr.replace("%%GIT_COMMIT_DATE%%", String.valueOf(BuildConfig.GIT_COMMIT_DATE));
         int aboutLinkColor = LiveLoggerActivity.getInstance().getTheme().obtainStyledAttributes(new int[] {R.attr.colorAboutLinkColor}).getColor(0, LiveLoggerActivity.getInstance().getResources().getColor(R.color.colorBigVeryBadError));
         rawAboutStr = rawAboutStr.replace("%%ABOUTLINKCOLOR%%", String.format(Locale.ENGLISH, "#%06X", 0xFFFFFF & aboutLinkColor));
-        //builder1.setMessage(Html.fromHtml(rawAboutStr, Html.FROM_HTML_MODE_LEGACY));
 
         WebView wv = new WebView(LiveLoggerActivity.getInstance());
         wv.getSettings().setJavaScriptEnabled(false);
@@ -52,15 +52,14 @@ public class MainActivityNavActions {
         wv.setBackgroundColor(ThemesConfiguration.getThemeColorVariant(R.attr.colorAccentHighlight));
         wv.getSettings().setLoadWithOverviewMode(true);
         wv.getSettings().setUseWideViewPort(true);
-        //wv.getSettings().setBuiltInZoomControls(true);
         wv.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
         wv.setInitialScale(10);
 
         adBuilder.setCancelable(true);
         adBuilder.setTitle("");
-        adBuilder.setIcon(R.drawable.chameleonicon_about64_roundicon);
+        adBuilder.setIcon(LiveLoggerActivity.getInstance().getResources().getDrawable(R.drawable.chameleonicon_about64_roundicon));
         adBuilder.setPositiveButton(
-                "Done",
+                "Done -- Back to Previous",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();

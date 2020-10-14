@@ -22,7 +22,6 @@ import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -44,9 +43,10 @@ import com.shawnlin.numberpicker.NumberPicker;
 
 import java.util.Locale;
 
-import static android.widget.NumberPicker.OnScrollListener.SCROLL_STATE_IDLE;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG_MITEM_CONNECT;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG_MITEM_LOGGING;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG_MITEM_SCRIPTING;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG_MITEM_SETTINGS;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
@@ -108,60 +108,7 @@ public class UITabUtils {
             logScroller.addView(MainActivityLogUtils.logDataFeed);
             MainActivityLogUtils.logScrollView = logScroller;
         }
-        else if(menuItemIdx == TAB_LOG_MITEM_LOGTOOLS) {
-            UITabUtils.connectPeripheralSpinnerAdapter(tabMainLayoutView, R.id.LogModeSpinner,
-                       R.array.LogModeOptions, ChameleonPeripherals.spinnerLogModeAdapter, "LOGMODE?");
-            String loggingMinDataFieldValue = String.format(Locale.ENGLISH, "%d", ChameleonLogUtils.LOGGING_MIN_DATA_BYTES);
-            ((EditText) tabMainLayoutView.findViewById(R.id.loggingLogDataMinBytesField)).setText(loggingMinDataFieldValue);
-            ((EditText) tabMainLayoutView.findViewById(R.id.loggingLogDataMinBytesField)).addTextChangedListener(new TextWatcher() {
-                @Override
-                public void afterTextChanged(Editable s) {
-                    LiveLoggerActivity.getInstance().actionButtonSetMinimumLogDataLength(null);
-                }
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    LiveLoggerActivity.getInstance().actionButtonSetMinimumLogDataLength(null);
-                }
-            });
-            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingConfigClearOnNewConnect)).setChecked(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT);
-            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingConfigClearOnNewConnect)).setOnClickListener(new CheckBox.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    CheckBox cb = (CheckBox) view;
-                    ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT = cb.isChecked();
-                    AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE);
-                }
-            });
-            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingConfigCollapseCommonEntries)).setChecked(ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES);
-            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingConfigCollapseCommonEntries)).setOnClickListener(new CheckBox.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    CheckBox cb = (CheckBox) view;
-                    ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES = cb.isChecked();
-                    AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES);
-                }
-            });
-            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingEnableToolbarStatusUpdates)).setChecked(ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES);
-            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingEnableToolbarStatusUpdates)).setOnClickListener(new CheckBox.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    CheckBox cb = (CheckBox) view;
-                    boolean previouslyChecked = ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES;
-                    ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES = cb.isChecked();
-                    AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_ENABLE_LIVE_STATUS_UPDATES);
-                    if(!previouslyChecked && ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) {
-                        if(Settings.getActiveSerialIOPort() != null) {
-                            ChameleonIO.DeviceStatusSettings.startPostingStats(250);
-                        }
-                    }
-                    else if(previouslyChecked && !ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) {
-                        ChameleonIO.DeviceStatusSettings.stopPostingStats();
-                    }
-                }
-            });
-        }
+        else if(menuItemIdx == TAB_LOG_MITEM_LOGTOOLS) {}
         else if(menuItemIdx == TAB_LOG_MITEM_SEARCH) {
             int states[][] = {{android.R.attr.state_checked}, {}};
             int colors[] = {
@@ -212,7 +159,7 @@ public class UITabUtils {
                 for(int si = 0; si < ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOT_COUNT; si++) {
                     ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[si].createSlotConfigUILayout(si);
                     ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[si].updateLayoutParameters();
-                    if(si + 1 == activeSlotNumber && Settings.getActiveSerialIOPort() != null) {
+                    if(si + 1 == activeSlotNumber && ChameleonSettings.getActiveSerialIOPort() != null) {
                         ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].getTagConfigurationsListFromDevice();
                         ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].readParametersFromChameleonSlot();
                         ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].updateLayoutParameters();
@@ -220,39 +167,14 @@ public class UITabUtils {
                     }
                 }
             }
-            else if (Settings.getActiveSerialIOPort() != null) {
+            else if (ChameleonSettings.getActiveSerialIOPort() != null) {
                 ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].getTagConfigurationsListFromDevice();
                 ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].readParametersFromChameleonSlot();
                 ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].updateLayoutParameters();
                 ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].enableLayout();
             }
         }
-        else if(menuItemIdx == TAB_TOOLS_MITEM_TAGCONFIG) {
-            /*Spinner tagConfigModeSpinner = tabMainLayoutView.findViewById(R.id.tagConfigModeSpinner);
-            if(tagConfigModeSpinner == null) {
-                return false;
-            }
-            ChameleonSerialIOInterface serialPort = Settings.getActiveSerialIOPort();
-            if(serialPort == null) {
-                String[] tagConfigModesArray = LiveLoggerActivity.getInstance().getResources().getStringArray(R.array.FullTagConfigModes);
-                tagConfigModeSpinner.setAdapter(new ArrayAdapter<String>(tabMainLayoutView.getContext(),
-                        android.R.layout.simple_list_item_1, tagConfigModesArray));
-            }
-            else {
-                String configModesList = ChameleonIO.getSettingFromDevice("CONFIG=?");
-                String[] tagConfigModesArray = configModesList.replace(" ", "").split(",");
-                String activeConfigMode = ChameleonIO.getSettingFromDevice("CONFIG?");
-                int selectionIndex = 0;
-                for (int si = 0; si < tagConfigModeSpinner.getAdapter().getCount(); si++) {
-                    if (tagConfigModeSpinner.getAdapter().getItem(si).toString().equals(activeConfigMode)) {
-                        tagConfigModeSpinner.setSelection(si, false);
-                        break;
-                    }
-                }
-                tagConfigModeSpinner.setAdapter(new ArrayAdapter<String>(tabMainLayoutView.getContext(),
-                        android.R.layout.simple_list_item_1, tagConfigModesArray));
-            }*/
-        }
+        else if(menuItemIdx == TAB_TOOLS_MITEM_TAGCONFIG) {}
         else if(menuItemIdx == TAB_TOOLS_MITEM_CMDS) {
             Switch fieldSwitch = (Switch) tabMainLayoutView.findViewById(R.id.fieldOnOffSwitch);
             fieldSwitch.setChecked(ChameleonIO.deviceStatus.FIELD);
@@ -270,7 +192,7 @@ public class UITabUtils {
             });
             SeekBar thresholdSeekbar = (SeekBar) tabMainLayoutView.findViewById(R.id.thresholdSeekbar);
             int threshold = 400;
-            if(Settings.getActiveSerialIOPort() != null) {
+            if(ChameleonSettings.getActiveSerialIOPort() != null) {
                 try {
                     threshold = Integer.parseInt(ChameleonIO.getSettingFromDevice("THRESHOLD?"));
                 }
@@ -297,6 +219,34 @@ public class UITabUtils {
                 }
             });
             LiveLoggerActivity.setSignalStrengthIndicator(thresholdSeekbar.getProgress());
+            SeekBar timeoutSeekbar = (SeekBar) tabMainLayoutView.findViewById(R.id.cmdTimeoutSeekbar);
+            int timeout = 1;
+            if(ChameleonSettings.getActiveSerialIOPort() != null) {
+                try {
+                   timeout = Integer.parseInt(ChameleonIO.getSettingFromDevice("TIMEOUT?"));
+                }
+                catch(NumberFormatException nfe) {}
+                timeoutSeekbar.setProgress(timeout);
+            }
+            timeoutSeekbar.incrementProgressBy(2);
+            ((TextView) tabMainLayoutView.findViewById(R.id.cmdTimeoutSeekbarValueText)).setText(String.format(Locale.ENGLISH, "% 4d (x128) ms", timeout));
+            final View tmtSeekbarView = tabMainLayoutView;
+            timeoutSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
+                TextView labelText = (TextView) tmtSeekbarView.findViewById(R.id.thresholdSeekbarValueText);
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    labelText.setText(String.format(Locale.ENGLISH, "% 4d (x128) ms", progress));
+                }
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {}
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    int nextTimeout = seekBar.getProgress();
+                    ChameleonIO.executeChameleonMiniCommand("TIMEOUT=" + String.valueOf(nextTimeout), ChameleonIO.TIMEOUT);
+                    ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+                    ChameleonIO.TIMEOUT = nextTimeout;
+                }
+            });
         }
         else if(menuItemIdx == TAB_TOOLS_MITEM_PERIPHERALS) {
             connectPeripheralSpinnerAdapter(tabMainLayoutView, R.id.RButtonSpinner, R.array.RButtonOptions, ChameleonPeripherals.spinnerRButtonAdapter, "RBUTTON?");
@@ -326,49 +276,49 @@ public class UITabUtils {
         if(menuItemIdx == TAB_CONFIG_MITEM_SETTINGS) {
              // allow USB checkbox setup:
              CheckBox cbAllowUSB = tabMainLayoutView.findViewById(R.id.settingsAllowWiredUSB);
-             cbAllowUSB.setChecked(Settings.allowWiredUSB);
+             cbAllowUSB.setChecked(ChameleonSettings.allowWiredUSB);
              cbAllowUSB.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
                  @Override
                  public void onCheckedChanged(CompoundButton cb, boolean checked) {
-                     Settings.allowWiredUSB = checked;
-                     if(Settings.getActiveSerialIOPort() == null) {
-                         Settings.stopSerialIOConnectionDiscovery();
-                         Settings.initializeSerialIOConnections();
+                     ChameleonSettings.allowWiredUSB = checked;
+                     if(ChameleonSettings.getActiveSerialIOPort() == null) {
+                         ChameleonSettings.stopSerialIOConnectionDiscovery();
+                         ChameleonSettings.initializeSerialIOConnections();
                      }
                  }
              });
              // allow bluetooth checkbox setup:
              CheckBox cbAllowBT = tabMainLayoutView.findViewById(R.id.settingsAllowBluetooth);
-             cbAllowBT.setChecked(Settings.allowBluetooth);
+             cbAllowBT.setChecked(ChameleonSettings.allowBluetooth);
              cbAllowBT.setOnClickListener(new View.OnClickListener() {
                  @Override
                  public void onClick(View cbView) {
                      CheckBox cb = (CheckBox) cbView;
-                     Settings.allowBluetooth = cb.isChecked();
+                     ChameleonSettings.allowBluetooth = cb.isChecked();
                      AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.ALLOW_BLUETOOTH_PREFERENCE);
-                     if(Settings.getActiveSerialIOPort() == null) {
-                         Settings.stopSerialIOConnectionDiscovery();
-                         Settings.initializeSerialIOConnections();
+                     if(ChameleonSettings.getActiveSerialIOPort() == null) {
+                         ChameleonSettings.stopSerialIOConnectionDiscovery();
+                         ChameleonSettings.initializeSerialIOConnections();
                      }
                  }
              });
              // allow NFC checkbox setup:
              CheckBox cbAllowNFC = tabMainLayoutView.findViewById(R.id.settingsAllowAndroidNFC);
-             cbAllowNFC.setChecked(Settings.allowAndroidNFC);
+             cbAllowNFC.setChecked(ChameleonSettings.allowAndroidNFC);
              cbAllowNFC.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
                  @Override
                  public void onCheckedChanged(CompoundButton cb, boolean checked) {
-                     Settings.allowAndroidNFC = checked;
+                     ChameleonSettings.allowAndroidNFC = checked;
                      // TODO: init NFC in library for MFC cloning ...
                  }
              });
              // bi/unidirectional sniffing checkbox setup:
              CheckBox cbUseBidirSniff = tabMainLayoutView.findViewById(R.id.settingsUseBidirectionalSniffing);
-             cbUseBidirSniff.setChecked(Settings.sniffingMode == Settings.SNIFFING_MODE_BIDIRECTIONAL);
+             cbUseBidirSniff.setChecked(ChameleonSettings.sniffingMode == ChameleonSettings.SNIFFING_MODE_BIDIRECTIONAL);
              cbUseBidirSniff.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
                  @Override
                  public void onCheckedChanged(CompoundButton cb, boolean checked) {
-                     Settings.sniffingMode = checked ? Settings.SNIFFING_MODE_BIDIRECTIONAL : Settings.SNIFFING_MODE_UNIDIRECTIONAL;
+                     ChameleonSettings.sniffingMode = checked ? ChameleonSettings.SNIFFING_MODE_BIDIRECTIONAL : ChameleonSettings.SNIFFING_MODE_UNIDIRECTIONAL;
                      // TODO: configure unidirectional versus bidirectional sniffing mode ...
                  }
              });
@@ -377,7 +327,7 @@ public class UITabUtils {
              serialBaudRateSpinner.setAdapter(new ArrayAdapter<Integer>(tabMainLayoutView.getContext(),
                      android.R.layout.simple_list_item_1, ChameleonSerialIOInterface.UART_BAUD_RATES));
              for (int si = 0; si <  serialBaudRateSpinner.getAdapter().getCount(); si++) {
-                 if (serialBaudRateSpinner.getAdapter().getItem(si).equals(Integer.valueOf(Settings.serialBaudRate))) {
+                 if (serialBaudRateSpinner.getAdapter().getItem(si).equals(Integer.valueOf(ChameleonSettings.serialBaudRate))) {
                      serialBaudRateSpinner.setSelection(si, false);
                      break;
                  }
@@ -386,15 +336,15 @@ public class UITabUtils {
                  Integer[] localSpinnerList = ChameleonSerialIOInterface.UART_BAUD_RATES;
                  int lastSelectedPosition = 0;
                  public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                     if(Settings.getActiveSerialIOPort() == null) {
+                     if(ChameleonSettings.getActiveSerialIOPort() == null) {
                          return;
                      }
                      else if(i == lastSelectedPosition) {
                          return;
                      }
                      lastSelectedPosition = i;
-                     Settings.serialBaudRate = localSpinnerList[i].intValue();
-                     Settings.getActiveSerialIOPort().setSerialBaudRate(Settings.serialBaudRate);
+                     ChameleonSettings.serialBaudRate = localSpinnerList[i].intValue();
+                     ChameleonSettings.getActiveSerialIOPort().setSerialBaudRate(ChameleonSettings.serialBaudRate);
                  }
                  public void onNothingSelected(AdapterView<?> adapterView) {
                      return;
@@ -404,10 +354,10 @@ public class UITabUtils {
         else if(menuItemIdx == TAB_CONFIG_MITEM_CONNECT) {
             // Android bluetooth settings config:
             TextView btStatusText = tabMainLayoutView.findViewById(R.id.androidBluetoothStatusText);
-            String btStatus = ((BluetoothSerialInterface) Settings.serialIOPorts[Settings.BTIO_IFACE_INDEX]).isBluetoothEnabled() ? "Enabled" : "Disabled";
+            String btStatus = ((BluetoothSerialInterface) ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX]).isBluetoothEnabled() ? "Enabled" : "Disabled";
             btStatusText.setText(btStatus);
             Button btSettingsBtn = tabMainLayoutView.findViewById(R.id.androidBTSettingsButton);
-            btSettingsBtn.setEnabled(Settings.allowBluetooth);
+            btSettingsBtn.setEnabled(ChameleonSettings.allowBluetooth);
             btSettingsBtn.setOnClickListener(new Button.OnClickListener() {
                 @Override
                 public void onClick(View btn) {
@@ -426,27 +376,27 @@ public class UITabUtils {
                 }
             });
             // Chameleon device connection information:
-            boolean isChameleonDevConn = Settings.getActiveSerialIOPort() != null;
+            boolean isChameleonDevConn = ChameleonSettings.getActiveSerialIOPort() != null;
             EditText deviceNameText = tabMainLayoutView.findViewById(R.id.slotNicknameText);
             deviceNameText.addTextChangedListener(new TextWatcher() {
                 public void afterTextChanged(Editable editStr) {}
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    Settings.chameleonDeviceNickname = s.toString();
-                    AndroidSettingsStorage.updateValueByKey(Settings.chameleonDeviceSerialNumber, AndroidSettingsStorage.PROFILE_NAME_PREFERENCE);
+                    ChameleonSettings.chameleonDeviceNickname = s.toString();
+                    AndroidSettingsStorage.updateValueByKey(ChameleonSettings.chameleonDeviceSerialNumber, AndroidSettingsStorage.PROFILE_NAME_PREFERENCE);
                 }
             });
             TextView chamTypeText = tabMainLayoutView.findViewById(R.id.chameleonTypeText);
             TextView hardwareIDText = tabMainLayoutView.findViewById(R.id.hardwareSerialIDText);
             TextView connStatusText = tabMainLayoutView.findViewById(R.id.connectionStatusText);
             if(isChameleonDevConn) {
-                deviceNameText.setText(AndroidSettingsStorage.getStringValueByKey(Settings.chameleonDeviceSerialNumber, AndroidSettingsStorage.PROFILE_NAME_PREFERENCE));
+                deviceNameText.setText(AndroidSettingsStorage.getStringValueByKey(ChameleonSettings.chameleonDeviceSerialNumber, AndroidSettingsStorage.PROFILE_NAME_PREFERENCE));
                 chamTypeText.setText(ChameleonIO.getDeviceDescription(ChameleonIO.CHAMELEON_MINI_BOARD_TYPE));
-                hardwareIDText.setText(Settings.chameleonDeviceSerialNumber);
-                connStatusText.setText(Settings.getActiveSerialIOPort().isWiredUSB() ? "USB connection" : "BT connection");
+                hardwareIDText.setText(ChameleonSettings.chameleonDeviceSerialNumber);
+                connStatusText.setText(ChameleonSettings.getActiveSerialIOPort().isWiredUSB() ? "USB connection" : "BT connection");
             }
             else {
-                deviceNameText.setText(Settings.chameleonDeviceNickname);
+                deviceNameText.setText(ChameleonSettings.chameleonDeviceNickname);
                 chamTypeText.setText("None");
                 hardwareIDText.setText("None");
                 connStatusText.setText("Not connected");
@@ -456,12 +406,12 @@ public class UITabUtils {
             chamConnectBtn.setOnClickListener(new Button.OnClickListener() {
                 @Override
                 public void onClick(View btn) {
-                    if(Settings.getActiveSerialIOPort() != null) {
+                    if(ChameleonSettings.getActiveSerialIOPort() != null) {
                         Utils.displayToastMessageShort("Chameleon device already connected.");
                     }
                     else {
-                        Settings.stopSerialIOConnectionDiscovery();
-                        Settings.initializeSerialIOConnections();
+                        ChameleonSettings.stopSerialIOConnectionDiscovery();
+                        ChameleonSettings.initializeSerialIOConnections();
                         Utils.displayToastMessageShort("Attempting to connect to chameleon device.");
                     }
                 }
@@ -470,18 +420,73 @@ public class UITabUtils {
             chamDisconnectBtn.setOnClickListener(new Button.OnClickListener() {
                 @Override
                 public void onClick(View btn) {
-                    if(Settings.getActiveSerialIOPort() == null) {
+                    if(ChameleonSettings.getActiveSerialIOPort() == null) {
                         Utils.displayToastMessageShort("Chameleon device not yet connected.");
                     }
                     else {
-                        Settings.stopSerialIOConnectionDiscovery();
-                        ChameleonSerialIOInterface serialPort = Settings.getActiveSerialIOPort();
+                        ChameleonSettings.stopSerialIOConnectionDiscovery();
+                        ChameleonSerialIOInterface serialPort = ChameleonSettings.getActiveSerialIOPort();
                         serialPort.shutdownSerial();
                         Utils.displayToastMessageShort("Shutdown connection to active chameleon device.");
                     }
                 }
             });
         }
+        else if(menuItemIdx == TAB_CONFIG_MITEM_LOGGING) {
+            UITabUtils.connectPeripheralSpinnerAdapter(tabMainLayoutView, R.id.LogModeSpinner,
+                    R.array.LogModeOptions, ChameleonPeripherals.spinnerLogModeAdapter, "LOGMODE?");
+            String loggingMinDataFieldValue = String.format(Locale.ENGLISH, "%d", ChameleonLogUtils.LOGGING_MIN_DATA_BYTES);
+            ((EditText) tabMainLayoutView.findViewById(R.id.loggingLogDataMinBytesField)).setText(loggingMinDataFieldValue);
+            ((EditText) tabMainLayoutView.findViewById(R.id.loggingLogDataMinBytesField)).addTextChangedListener(new TextWatcher() {
+                @Override
+                public void afterTextChanged(Editable s) {
+                    LiveLoggerActivity.getInstance().actionButtonSetMinimumLogDataLength(null);
+                }
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    LiveLoggerActivity.getInstance().actionButtonSetMinimumLogDataLength(null);
+                }
+            });
+            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingConfigClearOnNewConnect)).setChecked(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT);
+            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingConfigClearOnNewConnect)).setOnClickListener(new CheckBox.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CheckBox cb = (CheckBox) view;
+                    ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT = cb.isChecked();
+                    AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE);
+                }
+            });
+            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingConfigCollapseCommonEntries)).setChecked(ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES);
+            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingConfigCollapseCommonEntries)).setOnClickListener(new CheckBox.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CheckBox cb = (CheckBox) view;
+                    ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES = cb.isChecked();
+                    AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES);
+                }
+            });
+            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingEnableToolbarStatusUpdates)).setChecked(ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES);
+            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingEnableToolbarStatusUpdates)).setOnClickListener(new CheckBox.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CheckBox cb = (CheckBox) view;
+                    boolean previouslyChecked = ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES;
+                    ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES = cb.isChecked();
+                    AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_ENABLE_LIVE_STATUS_UPDATES);
+                    if(!previouslyChecked && ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) {
+                        if(ChameleonSettings.getActiveSerialIOPort() != null) {
+                            ChameleonIO.DeviceStatusSettings.startPostingStats(250);
+                        }
+                    }
+                    else if(previouslyChecked && !ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) {
+                        ChameleonIO.DeviceStatusSettings.stopPostingStats();
+                    }
+                }
+            });
+        }
+        else if(menuItemIdx == TAB_CONFIG_MITEM_SCRIPTING) {}
         return true;
     }
 
@@ -501,7 +506,7 @@ public class UITabUtils {
         spinnerAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, spinnerList);
         Spinner spinner = (Spinner) view.findViewById(spinnerID);
         spinner.setAdapter(spinnerAdapter);
-        if(queryCmd != null && Settings.getActiveSerialIOPort() != null) {
+        if(queryCmd != null && ChameleonSettings.getActiveSerialIOPort() != null) {
             String deviceSetting = ChameleonIO.getSettingFromDevice(queryCmd);
             spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(deviceSetting));
         }

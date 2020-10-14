@@ -55,7 +55,7 @@ public class UIDCommands {
 
     public static void getBitsHelper(String action) {
         String dataBytesStr = new String();
-        if(action.equals("UID") && Settings.getActiveSerialIOPort() != null) {
+        if(action.equals("UID") && ChameleonSettings.getActiveSerialIOPort() != null) {
             dataBytesStr = ChameleonIO.deviceStatus.UID;
         }
         else if(action.equals("RANDOM")) {

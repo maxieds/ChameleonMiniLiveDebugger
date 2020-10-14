@@ -117,12 +117,11 @@ public class ApduGUITools {
         return adbuilder.create();
     }
 
-    public static void sendAPDUToChameleon(String sendMode) {
+    public static void sendAPDUToChameleon(String sendMode, boolean sendRaw) {
+        String sendCmd = sendRaw ? "SEND_RAW " : "SEND ";
         String sendBytesStr = ApduUtils.apduTransceiveCmd.getPayloadData(sendMode);
-        String respData = ChameleonIO.getSettingFromDevice("SEND " + sendBytesStr);
-        MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("APDU", "SEND Response:\n" + respData));
-        respData = ChameleonIO.getSettingFromDevice("SEND_RAW " + sendBytesStr);
-        MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("APDU", "SEND_RAW Response:\n" + respData));
+        String respData = ChameleonIO.getSettingFromDevice(sendCmd + sendBytesStr);
+        MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("APDU TRANSFER", sendCmd + "Response:\n" + respData));
     }
 
     public static void searchAPDUDatabase(String searchText) {

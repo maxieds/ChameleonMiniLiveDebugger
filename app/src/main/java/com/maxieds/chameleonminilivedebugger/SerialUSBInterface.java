@@ -17,12 +17,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
@@ -35,7 +33,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -63,7 +60,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
     public SerialUSBInterface(Context context) {
         notifyContext = context;
         serialPort = null;
-        baudRate = Settings.serialBaudRate;
+        baudRate = ChameleonSettings.serialBaudRate;
         serialConfigured = false;
         receiversRegistered = false;
     }
@@ -119,7 +116,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
 
     public int setSerialBaudRate(int brate) {
         baudRate = brate;
-        Settings.serialBaudRate = baudRate;
+        ChameleonSettings.serialBaudRate = baudRate;
         if(serialPort != null) {
             serialPort.setBaudRate(baudRate);
             return baudRate;
@@ -136,7 +133,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
     private Handler scanDeviceHandler = new Handler();
     private Runnable scanDeviceRunnable = new Runnable() {
         public void run() {
-            if (Settings.getActiveSerialIOPort() != null || configureSerial() != 0) {
+            if (ChameleonSettings.getActiveSerialIOPort() != null || configureSerial() != 0) {
                 scanDeviceHandler.removeCallbacksAndMessages(this);
             } else {
                 scanDeviceHandler.removeCallbacksAndMessages(this);
@@ -207,7 +204,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
         }
         serialPort = UsbSerialDevice.createUsbSerialDevice(device, connection);
         if(serialPort != null && serialPort.open()) {
-            serialPort.setBaudRate(Settings.serialBaudRate);
+            serialPort.setBaudRate(ChameleonSettings.serialBaudRate);
             serialPort.setDataBits(UsbSerialInterface.DATA_BITS_8);
             serialPort.setDataBits(USB_DATA_BITS);
             serialPort.setStopBits(UsbSerialInterface.STOP_BITS_1);
@@ -222,11 +219,11 @@ public class SerialUSBInterface extends SerialIOReceiver {
             return STATUS_OK;
         }
         activeDevice = device;
-        Settings.chameleonDeviceSerialNumber = String.format(Locale.ENGLISH, "%s-%s", activeDevice.getProductName(), activeDevice.getVersion());
+        ChameleonSettings.chameleonDeviceSerialNumber = String.format(Locale.ENGLISH, "%s-%s", activeDevice.getProductName(), activeDevice.getVersion());
         ChameleonIO.PAUSED = false;
         serialConfigured = true;
         receiversRegistered = true;
-        Settings.SERIALIO_IFACE_ACTIVE_INDEX = Settings.USBIO_IFACE_INDEX;
+        ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = ChameleonSettings.USBIO_IFACE_INDEX;
         LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUSB, R.drawable.usbconnected16);
         notifyStatus("USB STATUS: ", "Successfully configured the device in passive logging mode...\n" + getActiveDeviceInfo());
         return STATUS_TRUE;
@@ -258,7 +255,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
         return new UsbSerialInterface.UsbReadCallback() {
             @Override
             public void onReceivedData(byte[] liveLogData) {
-                Settings.serialIOPorts[Settings.USBIO_IFACE_INDEX].onReceivedData(liveLogData);
+                ChameleonSettings.serialIOPorts[ChameleonSettings.USBIO_IFACE_INDEX].onReceivedData(liveLogData);
             }
         };
     }
@@ -331,8 +328,8 @@ public class SerialUSBInterface extends SerialIOReceiver {
                 synchronized (this) {
                     SerialUSBInterface.usbPermissionsGranted = true;
                     if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                        if (!Settings.serialIOPorts[Settings.BTIO_IFACE_INDEX].serialConfigured()) {
-                            if (Settings.serialIOPorts[Settings.USBIO_IFACE_INDEX].configureSerial() != 0) {
+                        if (!ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX].serialConfigured()) {
+                            if (ChameleonSettings.serialIOPorts[ChameleonSettings.USBIO_IFACE_INDEX].configureSerial() != 0) {
                                 ChameleonIO.DeviceStatusSettings.stopPostingStats();
                                 ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
                                 ChameleonIO.DeviceStatusSettings.startPostingStats(100);
@@ -358,8 +355,8 @@ public class SerialUSBInterface extends SerialIOReceiver {
             broadcastIntent.putExtra(UsbManager.EXTRA_DEVICE, usbDevice);
         }
         LocalBroadcastManager.getInstance(context).sendBroadcast(broadcastIntent);
-        if (!Settings.serialIOPorts[Settings.BTIO_IFACE_INDEX].serialConfigured()) {
-            if (Settings.serialIOPorts[Settings.USBIO_IFACE_INDEX].configureSerial() != 0) {
+        if (!ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX].serialConfigured()) {
+            if (ChameleonSettings.serialIOPorts[ChameleonSettings.USBIO_IFACE_INDEX].configureSerial() != 0) {
                 ChameleonIO.DeviceStatusSettings.stopPostingStats();
                 ChameleonIO.DeviceStatusSettings.startPostingStats(500);
                 SerialUSBInterface.usbPermissionsGranted = true;

@@ -17,6 +17,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -115,6 +116,7 @@ public class LogEntryMetadataRecord extends LogEntryBase {
      */
     private static Map<String, Integer> prefixIconMap = new HashMap<String, Integer>();
     static {
+        prefixIconMap.put("WELCOME", R.drawable.welcome_icon24);
         prefixIconMap.put("READER", Integer.valueOf(R.drawable.binarymobile24));
         prefixIconMap.put("SNIFFER", R.drawable.binarysearch24);
         prefixIconMap.put("STATUS", R.drawable.phonebubble24);
@@ -138,7 +140,7 @@ public class LogEntryMetadataRecord extends LogEntryBase {
         prefixIconMap.put("SEARCH", R.drawable.searchicon24);
         prefixIconMap.put("THEME", R.drawable.themecheck24);
         prefixIconMap.put("DUMP_MFU", R.drawable.phonebubble24);
-        prefixIconMap.put("APDU", R.drawable.sendarrow24v2);
+        prefixIconMap.put("APDU TRANSFER", R.drawable.sendarrow24v2);
         prefixIconMap.put("CLONE", R.drawable.clone);
         prefixIconMap.put("CONFIG?", R.drawable.configq24);
     }
