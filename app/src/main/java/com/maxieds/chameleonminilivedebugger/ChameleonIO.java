@@ -69,6 +69,7 @@ public class ChameleonIO {
     public static int CHAMELEON_DEVICE_USBVID = 0x00;
     public static int CHAMELEON_DEVICE_USBPID = 0x00;
     public static int CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_UNKNOWN;
+    public static String CHAMELEON_MINI_BOARD_TYPE_DESC = "<UNKNOWN>";
 
     public static String getDeviceDescription(int chameleonBoardType) {
         switch(chameleonBoardType) {
@@ -138,6 +139,7 @@ public class ChameleonIO {
             }
         }
         String chameleonDeviceType = getDeviceDescription(CHAMELEON_MINI_BOARD_TYPE);
+        CHAMELEON_MINI_BOARD_TYPE_DESC = chameleonDeviceType;
         String statusMsg = String.format(Locale.ENGLISH, "New Chameleon discovered over %s: %s.", deviceConnType, chameleonDeviceType);
         Utils.displayToastMessageShort(statusMsg);
         return CHAMELEON_MINI_BOARD_TYPE;

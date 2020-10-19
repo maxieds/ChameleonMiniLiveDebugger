@@ -52,7 +52,6 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 
-import java.util.ArrayList;
 import java.util.Locale;
 
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG;
@@ -127,15 +126,30 @@ public class LiveLoggerActivity extends AppCompatActivity {
      /**
       * Default handler for  all uncaught exceptions.
       */
-     private Thread.UncaughtExceptionHandler unCaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
-          @Override
-          public void uncaughtException(Thread thread, Throwable ex) {
-               String msgParam = "An unknown error happened in the application. Please upgrade to the latest version if a newer one is available, or ";
-               msgParam += "contact the developer at maxieds@gmail.com to report whatever action you took to generate this error!";
-               MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("UNRECOGNIZED EXCEPTION", msgParam));
-               System.exit(-1);
-          }
-     };
+     private void setUnhandledExceptionHandler() {
+          Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+               @Override
+               public void uncaughtException(Thread paramThread, Throwable paramExcpt) {
+                    Intent startCrashRptIntent = new Intent(LiveLoggerActivity.this, CrashReportActivity.class);
+                    startCrashRptIntent.setAction(CrashReportActivity.INTENT_ACTION_START_ACTIVITY);
+                    startCrashRptIntent.setType ("plain/text");
+                    startCrashRptIntent.putExtra(CrashReportActivity.INTENT_STACK_TRACE, Log.getStackTraceString(paramExcpt.getCause().getCause()));
+                    startCrashRptIntent.putExtra(CrashReportActivity.INTENT_TIMESTAMP, Utils.getTimestamp());
+                    startCrashRptIntent.putExtra(CrashReportActivity.INTENT_CHAMELEON_DEVICE_TYPE, ChameleonIO.CHAMELEON_MINI_BOARD_TYPE);
+                    String chameleonSerialType = ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX < 0 ? "NULL" :
+                                      (ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX == ChameleonSettings.USBIO_IFACE_INDEX ? "USB" : "BT");
+                    startCrashRptIntent.putExtra(CrashReportActivity.INTENT_SERIAL_CONNECTION_TYPE, chameleonSerialType);
+                    startCrashRptIntent.putExtra(CrashReportActivity.INTENT_CHAMELEON_CONFIG, ChameleonIO.DeviceStatusSettings.CONFIG);
+                    startCrashRptIntent.putExtra(CrashReportActivity.INTENT_CHAMELEON_LOGMODE, ChameleonIO.DeviceStatusSettings.LOGMODE);
+                    startCrashRptIntent.putExtra(CrashReportActivity.INTENT_CHAMELEON_TIMEOUT, ChameleonIO.DeviceStatusSettings.TIMEOUT);
+                    startActivity(startCrashRptIntent);
+                    try {
+                         Thread.sleep(1250);
+                    } catch(InterruptedException intExcpt) {}
+                    finish(); // System.exit(-1);
+               }
+          });
+     }
 
      private static BroadcastReceiver serialIOActionReceiver = null;
      private static IntentFilter serialIOActionFilter = null;
@@ -253,6 +267,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
           defaultInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
           defaultContext = getApplicationContext();
 
+          setUnhandledExceptionHandler();
+
           AndroidSettingsStorage.loadPreviousSettings(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE);
           if(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT) {
                MainActivityLogUtils.clearAllLogs();
@@ -279,7 +295,9 @@ public class LiveLoggerActivity extends AppCompatActivity {
                        "android.permission.USB_PERMISSION",
                        "android.permission.BLUETOOTH",
                        "android.permission.BLUETOOTH_ADMIN",
-                       "android.permission.ACCESS_COARSE_LOCATION"
+                       "android.permission.ACCESS_COARSE_LOCATION",
+                       "android.permission.VIBRATE",
+                       "android.permission.WAKE_LOCK"
                };
                if (android.os.Build.VERSION.SDK_INT >= 23) {
                     requestPermissions(permissions, 200);
@@ -290,8 +308,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
           reconfigureSerialIODevices();
 
-          String userGreeting = getString(R.string.initialUserGreetingMsg);
+          String userGreeting = getString(R.string.appInitialUserGreetingMsg);
           MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("WELCOME", userGreeting));
+          if(BuildConfig.FLAVOR.equals("paid")) {
+               String disclaimerStmt = getString(R.string.appPaidFlavorDisclaimerEULA);
+               MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("DISCLAIMER", disclaimerStmt));
+          }
 
           clearStatusIcon(R.id.statusIconNewMsg);
           clearStatusIcon(R.id.statusIconNewXFer);
@@ -534,7 +556,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
       */
      @Override
      public void onPause() {
-          reconfigureSerialIODevices();
+          AndroidSettingsStorage.saveAllSettings();
           super.onPause();
      }
 
@@ -546,6 +568,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
      public void onResume() {
           reconfigureSerialIODevices();
           super.onResume();
+     }
+
+     @Override
+     public void onDestroy() {
+          AndroidSettingsStorage.saveAllSettings();
+          super.onDestroy();
      }
 
      /**
@@ -816,7 +844,7 @@ public class LiveLoggerActivity extends AppCompatActivity {
           ApduGUITools.searchAPDUDatabase(searchText);
      }
 
-     public void actionButtonAPDUCopyCmd(View view) {
+     public void actionButtonAPDUCmd(View view) {
           String tagIndex = ((Button) view).getTag().toString();
           int apduCmdIndex = Integer.valueOf(tagIndex);
           ApduGUITools.copyAPDUCommand(apduCmdIndex);

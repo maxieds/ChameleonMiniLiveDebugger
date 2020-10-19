@@ -224,7 +224,6 @@ public class ChameleonLogUtils {
     public static final String LOGMODE_OFF = "OFF";
     public static final String LOGMODE_MEM = "MEMORY";
     public static final String LOGMODE_LIVE = "LIVE";
-    public static final String LOGMODE_LIVE_FLUSH_NOW = "LIVE_FLUSH_NOW";
     public static final String LOGMODE_OFF_WITH_NOTIFY_SELECT_STATE = "OFF-NOTIFY";
     public static final String LOGMODE_LIVE_WITH_NOTIFY_SELECT_STATE = "LIVE-NOTIFY";
 

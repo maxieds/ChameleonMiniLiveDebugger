@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+This program (The Chameleon Mini Live Debugger) is free software written by
+Maxie Dion Schmidt: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+The complete license provided with source distributions of this library is
+available at the following link:
+https://github.com/maxieds/ChameleonMiniLiveDebugger
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.maxieds.chameleonminilivedebugger.CrashReportActivity">
+
+    <Toolbar
+        style="@style/ActionBarTheme"
+        android:id="@+id/crashReportActivityToolbar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:title="@string/app_name"
+        android:background="?actionBarBackgroundColor"
+        android:theme="@style/ActionBarTheme"
+        android:popupTheme="@style/Actionbar.PopupTheme"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="?deviceStatusBarDividerColor" />
+
+    <ScrollView
+        android:id="@+id/crashReportActivityMainScroller"
+        style="@style/AppTheme"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="?colorPrimaryDark"
+        android:fadeScrollbars="false"
+        android:orientation="vertical"
+        android:scrollbarSize="25dp"
+        android:verticalScrollbarPosition="right"
+        >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:background="?deviceStatusBarBackgroundColor"
+            android:orientation="horizontal"
+            android:paddingLeft="5dp"
+            android:paddingRight="4dp">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:singleLine="false"
+                android:text="@string/appCrashReportStatusMsg"
+                android:textStyle="bold|italic"
+                android:textSize="12sp"
+                android:textColor="?colorPrimaryDark" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?deviceStatusBarDividerColor" />
+
+            <TextView
+                android:id="@+id/crashReportActivityStackTraceText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:singleLine="false"
+                android:textStyle="normal" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:background="?deviceStatusBarDividerColor" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="0dp"
+                android:padding="0dp"
+                android:orientation="horizontal"
+                android:paddingLeft="5dp"
+                android:paddingRight="4dp">
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/copy_stack_trace_icon24"
+                    android:onClick="actionButtonCopyStackTrace"
+                    android:text="Copy Stack Trace" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/send_new_issue_report_icon24"
+                    android:onClick="actionButtonSendIssueReport"
+                    android:text="Send Issue Report" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/copy_stack_trace_icon24"
+                    android:onClick="actionButtonRestartCMLDMainActivity"
+                    android:text="Restart CMLD" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:background="?deviceStatusBarDividerColor" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

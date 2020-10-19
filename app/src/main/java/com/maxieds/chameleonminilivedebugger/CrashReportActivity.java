@@ -1,0 +1,242 @@
+/*
+This program (The Chameleon Mini Live Debugger) is free software written by
+Maxie Dion Schmidt: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+The complete license provided with source distributions of this library is
+available at the following link:
+https://github.com/maxieds/ChameleonMiniLiveDebugger
+*/
+
+package com.maxieds.chameleonminilivedebugger;
+
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toolbar;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class CrashReportActivity extends AppCompatActivity {
+
+    private static final String TAG = CrashReportActivity.class.getSimpleName();
+
+    public static final String INTENT_ACTION_START_ACTIVITY = "Intent.CrashReport.Action.StartRecoveryActivity";
+    public static final String INTENT_ACTION_RESTART_CMLD_ACTIVITY = "Intent.CrashReport.Action.RestartCMLDMainActivity";
+    public static final String INTENT_STACK_TRACE = "Intent.CrashReport.StackTrace";
+    public static final String INTENT_TIMESTAMP = "Intent.CrashReport.Timestamp";
+    public static final String INTENT_CHAMELEON_DEVICE_TYPE = "Intent.CrashReport.ChameleonDeviceType";
+    public static final String INTENT_SERIAL_CONNECTION_TYPE = "Intent.CrashReport.";
+    public static final String INTENT_CHAMELEON_CONFIG = "Intent.CrashReport.ChameleonConfigType";
+    public static final String INTENT_CHAMELEON_LOGMODE = "Intent.CrashReport.ChameleonLogMode";
+    public static final String INTENT_CHAMELEON_TIMEOUT = "Intent.CrashReport.ChameleonCmdTimeout";
+
+    private String stackTrace;
+    private String timeStamp;
+    private String chameleonDeviceType;
+    private String serialConnType;
+    private String chameleonConfig;
+    private String chameleonLogMode;
+    private String chameleonTimeout;
+
+    private Handler vibrateNotifyHandler;
+    private Runnable vibrateNotifyRunnable;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+
+        ThemesConfiguration.setLocalTheme(ThemesConfiguration.storedAppTheme, true);
+        setContentView(R.layout.activity_crash_report);
+        configureLayoutToolbar();
+        if(getIntent() != null && getIntent().getAction() != null && getIntent().getAction().equals(INTENT_ACTION_START_ACTIVITY)) {
+            stackTrace = getIntent().getStringExtra(INTENT_STACK_TRACE);
+            timeStamp = getIntent().getStringExtra(INTENT_TIMESTAMP);
+            chameleonDeviceType = getIntent().getStringExtra(INTENT_CHAMELEON_DEVICE_TYPE);
+            serialConnType = getIntent().getStringExtra(INTENT_SERIAL_CONNECTION_TYPE);
+            chameleonConfig = getIntent().getStringExtra(INTENT_CHAMELEON_CONFIG);
+            chameleonLogMode = getIntent().getStringExtra(INTENT_CHAMELEON_LOGMODE);
+            chameleonTimeout = getIntent().getStringExtra(INTENT_CHAMELEON_TIMEOUT);
+            configureLayoutDisplay(getIntent());
+        }
+        else {
+            finish();
+        }
+        vibrateNotifyHandler = new Handler();
+        vibrateNotifyRunnable = new Runnable() {
+            @Override
+            public void run() {
+                signalCrashByVibration();
+            }
+        };
+        vibrateNotifyHandler.postDelayed(vibrateNotifyRunnable, 500);
+
+    }
+
+    protected void configureLayoutToolbar() {
+        Toolbar crashRptToolbar = (Toolbar) findViewById(R.id.crashReportActivityToolbar);
+        crashRptToolbar.setTitle("Chameleon Mini Live Debugger");
+        crashRptToolbar.setSubtitle("Crash report summary | v" + BuildConfig.VERSION_NAME);
+        getWindow().setTitleColor(ThemesConfiguration.getThemeColorVariant(R.attr.actionBarBackgroundColor));
+        getWindow().setStatusBarColor(ThemesConfiguration.getThemeColorVariant(R.attr.colorPrimaryDark));
+        getWindow().setNavigationBarColor(ThemesConfiguration.getThemeColorVariant(R.attr.colorPrimaryDark));
+    }
+
+    protected void configureLayoutDisplay(Intent launchIntent) {
+        TextView tvStackTraceData = (TextView) findViewById(R.id.crashReportActivityStackTraceText);
+        tvStackTraceData.setSingleLine(false);
+        tvStackTraceData.setText(highlightStackTrace(stackTrace), TextView.BufferType.SPANNABLE);
+    }
+
+    public static class StringHighlightTextSpec {
+
+        public String matchRegexPattern;
+        public int matchHighlightColor;
+        public int matchStyleType;
+
+        StringHighlightTextSpec(String regexPattern, int highlightColor, int styleType) {
+            matchRegexPattern = regexPattern;
+            matchHighlightColor = highlightColor;
+            matchStyleType = styleType;
+        }
+
+    }
+
+    protected SpannableStringBuilder highlightStackTrace(String inputStackTrace) {
+        StringHighlightTextSpec[] highlightPatterns = {
+                /* File names */
+                new StringHighlightTextSpec("\\w+\\.java", getColor(R.color.StackTraceFileNameColor), Typeface.ITALIC),
+                /* Exception type */
+                new StringHighlightTextSpec("\\w+Exception", getColor(R.color.StackTraceExecptionColor), Typeface.BOLD_ITALIC),
+                /* Line numbers */
+                new StringHighlightTextSpec("(:)\\d+", getColor(R.color.StackTraceLineNumberColor), Typeface.BOLD_ITALIC),
+                /* Function name */
+                new StringHighlightTextSpec("(\\.)\\w+(\\()", getColor(R.color.StackTraceFunctionNameColor), Typeface.ITALIC),
+                /* Misc syntax */
+                new StringHighlightTextSpec("[\\{\\}\\[\\]:\\.\\<\\>\\(\\)]", getColor(R.color.StackTraceMiscSyntaxColor), Typeface.NORMAL),
+        };
+        SpannableStringBuilder highlightedStackTrace = new SpannableStringBuilder(inputStackTrace);
+        highlightedStackTrace.setSpan(new ForegroundColorSpan(ThemesConfiguration.getThemeColorVariant(R.attr.colorAccentLog)),
+                                0, inputStackTrace.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        for(StringHighlightTextSpec hlSpec : highlightPatterns) {
+            Pattern matchRegexPattern = Pattern.compile(hlSpec.matchRegexPattern);
+            Matcher patternMatcher = matchRegexPattern.matcher(inputStackTrace);
+            StyleSpan matchStyleSpan = new StyleSpan(hlSpec.matchStyleType);
+            ForegroundColorSpan matchColorSpan = new ForegroundColorSpan(hlSpec.matchHighlightColor);
+            while(patternMatcher.find()) {
+                highlightedStackTrace.setSpan(matchStyleSpan, patternMatcher.start(), patternMatcher.end(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                highlightedStackTrace.setSpan(matchColorSpan, patternMatcher.start(), patternMatcher.end(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+        }
+        return highlightedStackTrace;
+    }
+
+    protected void signalCrashByVibration() {
+        Vibrator deviceVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        long[] vibratePattern = { 0, 350, 500, 350, 500, 1250 };
+        if(!deviceVibrator.hasVibrator()) {
+            return;
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            deviceVibrator.vibrate(VibrationEffect.createWaveform(vibratePattern, 0));
+        }
+        else {
+            deviceVibrator.vibrate(500);
+        }
+    }
+
+    private String getEncodedNewGitHubIssueURL() {
+        String newIssueURL = "https://github.com/maxieds/ChameleonMiniLiveDebugger/issues/new?";
+        String[][] issueContentsData = new String[][] {
+                { "CMLD Version",           String.format(Locale.ENGLISH, "v%s (%d:%d)",
+                                                          BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE,
+                                                          BuildConfig.VERSION_CODE - 8080) },
+                { "CMLD GitHub Commit",     String.format(Locale.ENGLISH, "%s @ %s",
+                                                          BuildConfig.GIT_COMMIT_HASH, BuildConfig.GIT_COMMIT_DATE) },
+                { "CMLD Build Date",        BuildConfig.BUILD_TIMESTAMP },
+                { "Chameleon Type",         chameleonDeviceType },
+                { "Serial Connection Type", serialConnType },
+                { "Chameleon Config",       chameleonConfig },
+                { "Chameleon Logmode",      chameleonLogMode },
+                { "Chameleon Timeout",      chameleonTimeout },
+                { "Android Device",         Build.DEVICE },
+                { "Android Manufacturer",   Build.MANUFACTURER },
+                { "Android Brand",          Build.BRAND },
+                { "Android Product",        Build.PRODUCT },
+                { "Android Model",          Build.MODEL },
+                { "Android Hardware",       Build.HARDWARE},
+                { "Android SDK",            String.format(Locale.ENGLISH, "%d", Build.VERSION.SDK_INT) },
+                { "Android OS Release",     String.format(Locale.ENGLISH, "%s %s (%s / %s)",
+                                                          Build.VERSION.BASE_OS, Build.VERSION.RELEASE,
+                                                          Build.VERSION.CODENAME, Build.VERSION.INCREMENTAL) },
+                { "Android Board",          Build.BOARD },
+                { "Android Type",           Build.TYPE },
+        };
+        StringBuilder assembleIssueContentBldr = new StringBuilder();
+        for(int sidx = 0; sidx < issueContentsData.length; sidx++) {
+            assembleIssueContentBldr.append("* *" + issueContentsData[0] + "*: " + issueContentsData[1] + "\n");
+        }
+        String issueBodyText = "@maxieds:\n\n" + "**Crash data summary:**\n" + assembleIssueContentBldr.toString();
+        issueBodyText += "**Stack trace:**\n\" + \"```java\n" + stackTrace + "\n```\n";
+        issueBodyText += "**Additional comments:**\n\n*NONE*\n";
+        String issueTitle = String.format(Locale.ENGLISH, "Crash Report: CMLD %s running %s %s [SDK %d] on device %s %s %s",
+                                          BuildConfig.VERSION_NAME, Build.VERSION.BASE_OS, Build.VERSION.INCREMENTAL,
+                                          Build.VERSION.SDK_INT, Build.MANUFACTURER, Build.PRODUCT, Build.MODEL);
+        newIssueURL += String.format(Locale.ENGLISH, "title=%s&body=%s&assignee=maxieds",
+                                     Utils.encodeAsciiToURL(issueTitle), Utils.encodeAsciiToURL(issueBodyText));
+        return newIssueURL;
+    }
+
+    private boolean sendNewGitHubIssue() {
+        String newIssueURL = getEncodedNewGitHubIssueURL();
+        Intent startIssueBrowserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(newIssueURL));
+        startActivity(startIssueBrowserIntent);
+        return true;
+    }
+
+    public void actionButtonCopyStackTrace(View btn) {
+        ClipboardManager sysClipBoard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clipDataPlain = ClipData.newPlainText("CMLD Crash Stack Trace", stackTrace);
+        sysClipBoard.setPrimaryClip(clipDataPlain);
+    }
+
+    public void actionButtonSendIssueReport(View btn) {
+        sendNewGitHubIssue();
+    }
+
+    public void actionButtonRestartCMLDMainActivity(View btn) {
+        Intent restartCMLDMainActivityIntent = new Intent(CrashReportActivity.this, LiveLoggerActivity.class);
+        restartCMLDMainActivityIntent.setAction(CrashReportActivity.INTENT_ACTION_RESTART_CMLD_ACTIVITY);
+        startActivity(restartCMLDMainActivityIntent);
+        finish();
+    }
+
+}

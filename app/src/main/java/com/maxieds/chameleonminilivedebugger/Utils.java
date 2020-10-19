@@ -30,6 +30,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -467,6 +469,16 @@ public class Utils {
                 (byte) ((workingCRC >> 8) & 0x00ff)
         };
         return crcBytes;
+    }
+
+    public static String encodeAsciiToURL(String inputText) {
+        try {
+            return URLEncoder.encode(inputText, "utf-8");
+        } catch(UnsupportedEncodingException uee) {
+            Log.e(TAG, "ERROR: Invalid encoding for the URL string \"" + inputText + "\"");
+            uee.printStackTrace();
+        }
+        return "";
     }
 
 }

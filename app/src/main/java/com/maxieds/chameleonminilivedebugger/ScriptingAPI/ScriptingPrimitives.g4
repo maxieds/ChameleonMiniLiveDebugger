@@ -115,3 +115,5 @@ BinaryOperation: AssignmentOperator | EqualsComparisonOperator | NotEqualsCompar
                  BitwiseAndOperator | BitwiseOrOperator | BitwiseXorOperator |
                  ArithmeticPlusEqualsOperator | ArithmeticMinusEqualsOperator |
                  ArithmeticAstEqualsOperator ;
+
+// TODO: Support for ternary operator?

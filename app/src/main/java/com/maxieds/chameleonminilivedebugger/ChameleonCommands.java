@@ -121,76 +121,7 @@ public class ChameleonCommands {
 
     public static void createNewCommandEvent(String createCmd) {
         String msgParam = "";
-        if(createCmd.equals("READER")) {
-            ChameleonIO.setReaderConfigMode(ChameleonIO.TIMEOUT);
-            try {
-                Thread.sleep(100);
-            } catch(InterruptedException ie) {}
-            msgParam = "Set Chameleon mode to READER.";
-        }
-        else if(createCmd.equals("SNIFFER")) {
-            ChameleonIO.setLoggerConfigMode(ChameleonIO.TIMEOUT);
-            try {
-                Thread.sleep(100);
-            } catch(InterruptedException ie) {}
-            msgParam = "Set Chameleon mode to SNIFFER.";
-        }
-        else if(createCmd.equals("DETECT")) {
-            msgParam = ChameleonIO.getSettingFromDevice("config=MF_DETECTION");
-        }
-        else if(createCmd.equals("ULTRALIGHT")) {
-            if(!ChameleonIO.REVE_BOARD)
-                msgParam = ChameleonIO.getSettingFromDevice("CONFIG=MF_ULTRALIGHT");
-            else
-                msgParam = ChameleonIO.getSettingFromDevice("config=MF_ULTRALIGHT");
-        }
-        else if(createCmd.equals("CLASSIC-1K")) {
-            if(!ChameleonIO.REVE_BOARD)
-                msgParam = ChameleonIO.getSettingFromDevice("CONFIG=MF_CLASSIC_1K");
-            else
-                msgParam = ChameleonIO.getSettingFromDevice( "config=MF_CLASSIC_1K");
-        }
-        else if(createCmd.equals("CLASSIC-4K")) {
-            if(!ChameleonIO.REVE_BOARD)
-                msgParam = ChameleonIO.getSettingFromDevice("CONFIG=MF_CLASSIC_4K");
-            else
-                msgParam = ChameleonIO.getSettingFromDevice("config=MF_CLASSIC_4K");
-        }
-        else if(createCmd.equals("CLASSIC-1K7B")) {
-            if(!ChameleonIO.REVE_BOARD)
-                msgParam = ChameleonIO.getSettingFromDevice("CONFIG=MF_CLASSIC_1K_7B");
-            else
-                msgParam = ChameleonIO.getSettingFromDevice("config=MF_CLASSIC_1K_7B");
-        }
-        else if(createCmd.equals("CLASSIC-4K7B")) {
-            if(!ChameleonIO.REVE_BOARD)
-                msgParam = ChameleonIO.getSettingFromDevice("CONFIG=MF_CLASSIC_4K_7B");
-            else
-                msgParam = ChameleonIO.getSettingFromDevice("config=MF_CLASSIC_4K_7B");
-        }
-        else if(createCmd.equals("MF-DESFIRE-EV1-4K")) {
-            ChameleonIO.executeChameleonMiniCommand("CONFIG=MF_DESFIRE_EV1_4K", ChameleonIO.TIMEOUT);
-            msgParam = "NOTE: You must use the firmware from https://github.com/maxieds/ChameleonMini to have the DESFire chip support enabled.";
-        }
-        else if(createCmd.equals("MFU-EV1-80B")) {
-            if(!ChameleonIO.REVE_BOARD)
-                msgParam = ChameleonIO.getSettingFromDevice("CONFIG=MF_ULTRALIGHT_EV1_80B");
-            else
-                msgParam = ChameleonIO.getSettingFromDevice("config=MF_ULTRALIGHT_EV1_80B");
-        }
-        else if(createCmd.equals("MFU-EV1-164B")) {
-            if(!ChameleonIO.REVE_BOARD)
-                msgParam = ChameleonIO.getSettingFromDevice("CONFIG=MF_ULTRALIGHT_EV1_80B");
-            else
-                msgParam = ChameleonIO.getSettingFromDevice("config=MF_ULTRALIGHT_EV1_80B");
-        }
-        else if(createCmd.equals("CFGNONE")) {
-            if(!ChameleonIO.REVE_BOARD)
-                msgParam = ChameleonIO.getSettingFromDevice("CONFIG=NONE");
-            else
-                msgParam = ChameleonIO.getSettingFromDevice("config=NONE");
-        }
-        else if(createCmd.equals("LIST CONFIG")) {
+        if(createCmd.equals("LIST CONFIG")) {
             if(!ChameleonIO.REVE_BOARD)
                 msgParam = ChameleonIO.getSettingFromDevice("CONFIG=?");
             else
@@ -221,9 +152,12 @@ public class ChameleonCommands {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "RE: LOG REPLAY: This is a wishlist feature. It might be necessary to add it to the firmware and implement it in hardware. Not currently implemented."));
             return;
         }
-        else if(createCmd.equals("STATUS") || createCmd.equals("NEW EVENT") ||
-                createCmd.equals("ERROR") || createCmd.equals("LOCATION") ||
-                createCmd.equals("CARD INFO")) {
+        else if(createCmd.equals("STATUS") || createCmd.equals("SET ACTIVITY") ||
+                createCmd.equals("ON FOOT") || createCmd.equals("LOCATION") ||
+                createCmd.equals("CARD INFO") || createCmd.equals("DOOR") ||
+                createCmd.equals("VENDING") || createCmd.equals("HOME") ||
+                createCmd.equals("WORK") || createCmd.equals(" DEVICE PROFILE") ||
+                createCmd.equals("TODO LIST")) {
             try {
                 MainActivityLogUtils.displayUserInputPrompt("Description of the new event? ");
                 Looper.loop();

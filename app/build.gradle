@@ -49,8 +49,8 @@ android {
         minSdkVersion 26
         targetSdkVersion 29
         compileSdkVersion 29
-        versionCode 88 + 8080
-        versionName "1.2.7"
+        versionCode 89 + 8080
+        versionName "1.2.8"
         multiDexEnabled true
 
         buildConfigField "String", "GIT_COMMIT_HASH", "\"" + getGitCommitHash() + "\""
@@ -65,13 +65,14 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
-            shrinkResources false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             crunchPngs false
         }
         debug {
             minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             crunchPngs false
         }
@@ -81,13 +82,15 @@ android {
     flavorDimensions "mode"
     productFlavors {
         free {
+            applicationId "com.maxieds.chameleonminilivedebugger.free"
             versionNameSuffix "-free"
             dimension "mode"
             buildConfigField "boolean", "PAID_APP_VERSION", "false"
-            buildConfigField "boolean", "REPORT_CRASHES", "true"
+            buildConfigField "boolean", "REPORT_CRASHES", "false"
             buildConfigField "String", "BUILD_TIMESTAMP", "\"" + configBuildTimeStamp + "\""
-            resConfigs "en", "en_US", "en_UK", "de"
+            resConfigs "en", "en_US", "en_UK", "de", "fr", "ru"
             manifestPlaceholders = [
+                    appLabelDesc       : "@string/app_display_short_name",
                     appIcon            : "@mipmap/chameleon_app_icon_round",
                     appRoundIcon       : "@mipmap/chameleon_app_icon_round",
                     appTheme           : "@style/AppThemeGreen",
@@ -96,6 +99,7 @@ android {
             ]
         }
         paid {
+            applicationId "com.maxieds.chameleonminilivedebugger.paid"
             applicationIdSuffix ".paid"
             versionNameSuffix "-paid"
             buildConfigField "boolean", "PAID_APP_VERSION", "true"
@@ -104,6 +108,7 @@ android {
             resConfigs "en", "en_US", "en_UK", "de"
             dimension "mode"
             manifestPlaceholders = [
+                    appLabelDesc       : "@string/app_display_short_name (Paid)",
                     appIcon            : "@drawable/chameleonicon64_paid",
                     appRoundIcon       : "@drawable/chameleonicon64_paid",
                     appTheme           : "@style/AppThemeGreenPaid",

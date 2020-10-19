@@ -319,8 +319,6 @@ public class ChameleonScripting {
 
     }
 
-    // TODO ...
-
     // need to return script context ...
     public static boolean LoadNewScript(String scriptFilePath) {
         return false;
@@ -330,5 +328,8 @@ public class ChameleonScripting {
     public static boolean LoadNewScript(@AttrRes int scriptRawResPath) {
         return false;
     }
+
+    // saveChameleonState()
+    // https://developer.android.com/reference/android/media/RingtoneManager#ACTION_RINGTONE_PICKER
 
 }

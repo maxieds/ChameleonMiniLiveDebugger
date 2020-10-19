@@ -277,15 +277,15 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/statusicon24"
+                    android:drawableLeft="@drawable/activity_annotation24"
                     android:onClick="actionButtonCreateNewEvent"
-                    android:text="NEW EVENT" />
+                    android:text="SET ACTIVITY" />
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/erroricon24"
+                    android:drawableLeft="@drawable/onfoot_annotation24"
                     android:onClick="actionButtonCreateNewEvent"
-                    android:text="ERROR" />
+                    android:text="ON FOOT" />
 
                 <Button
                     style="@style/GridButtons"
@@ -313,16 +313,34 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/phone24"
+                    android:drawableLeft="@drawable/systick_annotation24"
                     android:onClick="actionButtonCreateNewEvent"
-                    android:text="PHONE" />
-
+                    android:text="SYSTICK" />
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/powaction24"
+                    android:drawableLeft="@drawable/home_annotation24"
                     android:onClick="actionButtonCreateNewEvent"
-                    android:text="ONCLICK" />
+                    android:text="HOME" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/work_annotation24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="WORK" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/chameleon_device_profile_annotation24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="DEVICE PROFILE" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/todo26"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="TODO LIST" />
+
 
             </GridLayout>
 

@@ -29,9 +29,6 @@ public class AndroidSettingsStorage {
 
     private static final String TAG = AndroidSettingsStorage.class.getSimpleName();
 
-    //private static final String CHAMELEON_PROFILES_TAG = "ChameleonProfiles";
-    //private static final String CHAMELEON_PROFILE_NAMES_TAG = "ChameleonProfileNames";
-    //private static final String CHAMELEON_PROFILE_SERIALS_TAG = "ChameleonProfileSerials";
     public static final String DEFAULT_CMLDAPP_PROFILE = "CMLDAppProfile";
 
     public static final String THEMEID_PREFERENCE = "themeID";
@@ -102,6 +99,10 @@ public class AndroidSettingsStorage {
             return false;
         }
         return true;
+    }
+
+    public static boolean saveAllSettings() {
+        return loadPreviousSettings(DEFAULT_CMLDAPP_PROFILE);
     }
 
     public static boolean updateValueByKey(String profileTag, String prefsKey) {

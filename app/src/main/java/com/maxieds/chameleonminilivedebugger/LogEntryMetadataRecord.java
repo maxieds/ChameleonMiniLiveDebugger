@@ -18,12 +18,16 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 package com.maxieds.chameleonminilivedebugger;
 
 import android.graphics.drawable.GradientDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -117,6 +121,7 @@ public class LogEntryMetadataRecord extends LogEntryBase {
     private static Map<String, Integer> prefixIconMap = new HashMap<String, Integer>();
     static {
         prefixIconMap.put("WELCOME", R.drawable.welcome_icon24);
+        prefixIconMap.put("DISCLAIMER", R.drawable.disclaimer_stmt_icon24);
         prefixIconMap.put("READER", Integer.valueOf(R.drawable.binarymobile24));
         prefixIconMap.put("SNIFFER", R.drawable.binarysearch24);
         prefixIconMap.put("STATUS", R.drawable.phonebubble24);
@@ -142,7 +147,12 @@ public class LogEntryMetadataRecord extends LogEntryBase {
         prefixIconMap.put("DUMP_MFU", R.drawable.phonebubble24);
         prefixIconMap.put("APDU TRANSFER", R.drawable.sendarrow24v2);
         prefixIconMap.put("CLONE", R.drawable.clone);
-        prefixIconMap.put("CONFIG?", R.drawable.configq24);
+        prefixIconMap.put("SET ACTIVITY", R.drawable.activity_annotation24);
+        prefixIconMap.put("ON FOOT", R.drawable.onfoot_annotation24);
+        prefixIconMap.put("HOME", R.drawable.home_annotation24);
+        prefixIconMap.put("WORK", R.drawable.work_annotation24);
+        prefixIconMap.put("DEVICE PROFILE", R.drawable.chameleon_device_profile_annotation24);
+        prefixIconMap.put("TODO LIST", R.drawable.todo26);
     }
 
     /**
@@ -163,6 +173,41 @@ public class LogEntryMetadataRecord extends LogEntryBase {
             iconResID = R.drawable.msgbubble24;
         else
             iconResID = iconResIDInt.intValue();
+
+        // some metadata types require preprocessing of the eventMsg:
+        if(eventID.equals("LOCATION")) {
+            String[] locCoords = Utils.getGPSLocationCoordinates();
+            String locationDetails = "";
+            locationDetails += String.format(Locale.ENGLISH, "Coordinates: (%s lat, %s long)\n", locCoords[0], locCoords[1]);
+            try {
+                Geocoder gc = new Geocoder(LiveLoggerActivity.getInstance(), Locale.getDefault());
+                List<Address> gcAddrs = gc.getFromLocation(Double.parseDouble(locCoords[0]), Double.parseDouble(locCoords[0]), 1);
+                if (gcAddrs != null && gcAddrs.size() > 0) {
+                    locationDetails += String.format(Locale.ENGLISH, "Address: %s, %s, %s %s\n",
+                                                     gcAddrs.get(0).getAddressLine(0), gcAddrs.get(0).getLocality(),
+                                                     gcAddrs.get(0).getAdminArea(), gcAddrs.get(0).getPostalCode(),
+                                                     gcAddrs.get(0).getCountryName());
+                    String knownLocID = gcAddrs.get(0).getFeatureName();
+                    if(knownLocID != null) {
+                        locationDetails += String.format(Locale.ENGLISH, "Known ID: %s", knownLocID);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if(eventMsg.length() > 0) {
+                eventMsg = locationDetails + "\n\n" + eventMsg;
+            }
+        }
+        else if(eventID.equals("TODO LIST")) {
+            String[] listLines = eventMsg.split("\n");
+            eventMsg = "";
+            for(int lineNo = 0; lineNo < listLines.length; lineNo++) {
+                String lineData = listLines[lineNo];
+                eventMsg += " • " + lineData + "\n";
+            }
+        }
+
         LogEntryMetadataRecord eventRecord = new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, eventID, eventMsg);
         eventRecord.tvRecTitle.setCompoundDrawablesWithIntrinsicBounds(iconResID, 0, 0, 0);
         return eventRecord;

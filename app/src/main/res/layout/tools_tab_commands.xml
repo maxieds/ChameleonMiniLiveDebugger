@@ -227,14 +227,14 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/fingerprintq24"
+                    android:drawableLeft="@drawable/dump_mfu24"
                     android:onClick="actionButtonRunCommand"
                     android:tag="DUMP_MFU"
                     android:text="DUMP-MFU" />
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/find24"
+                    android:drawableLeft="@drawable/fingerprintq24"
                     android:onClick="actionButtonRunCommand"
                     android:tag="IDENTIFY"
                     android:text="IDENTIFY" />
@@ -452,7 +452,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?colorPrimaryDarkLog"
-                android:drawableLeft="@drawable/uididentifier16"
+                android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
                 android:drawablePadding="5dp"
                 android:singleLine="true"
                 android:text="DESFire Tag Configuration Commands:"
@@ -513,84 +513,84 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonDESFireTerminalCommand"
                     android:tag="DF_SETHDR=ATS %s"
                     android:text="Set-ATS" />
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonDESFireTerminalCommand"
                     android:tag="DF_SETHDR=HardwareVersion %s"
                     android:text="Set-HWVer" />
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonDESFireTerminalCommand"
                     android:tag="DF_SETHDR=SoftwareVersion %s"
                     android:text="Set-SWVer" />
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonDESFireTerminalCommand"
                     android:tag="DF_SETHDR=BatchNumber %s"
                     android:text="Set-BatchNo" />
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonDESFireTerminalCommand"
                     android:tag="DF_SETHDR=ProductionDate %s"
                     android:text="Set-ProdDate" />
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonDESFireTerminalCommand"
                     android:tag="DF_PPRINT_PICC FullImage"
                     android:text="PPrint-Full" />
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonDESFireTerminalCommand"
                     android:tag="DF_PPRINT_PICC HeaderData"
                     android:text="PPrint-PICCHDR" />
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonDESFireTerminalCommand"
                     android:tag="DF_FWINFO"
                     android:text="FWINFO" />
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonDESFireTerminalCommand"
                     android:tag="DF_LOGMODE=1"
                     android:text="LOGMODE=ON" />
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonDESFireTerminalCommand"
                     android:tag="DF_LOGMODE=0"
                     android:text="LOGMODE=OFF" />
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonDESFireTerminalCommand"
                     android:tag="DF_TESTMODE=1"
                     android:text="TESTMODE=ON" />
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonDESFireTerminalCommand"
                     android:tag="DF_TESTMODE=0"
                     android:text="TESTMODE=OFF" />

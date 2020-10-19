@@ -133,6 +133,7 @@ public class TabFragment extends Fragment {
             String indexRefTag = String.format(Locale.ENGLISH, "%d:%d", tabIndex, midx);
             Button menuItem = (Button) menuItemsNav.findViewWithTag(indexRefTag);
             menuItem.setTypeface(Typeface.DEFAULT, Typeface.BOLD_ITALIC);
+            menuItem.performClick();
             if((this == UITAB_DATA[TAB_LOG]) && (midx == TAB_LOG_MITEM_LOGS)) {
                 MainActivityLogUtils.moveLiveLogTabScrollerToBottom();
             }
@@ -273,7 +274,7 @@ public class TabFragment extends Fragment {
                 "Device I/O",
                 TAB_EXPORT_MITEM_COLUMNS,
                 new String[] {
-                        "Upload/Download Tag Dump",
+                        "Up|Download Tag Dump",
                         "Clone Tags",
                 },
                 new int[]{
@@ -300,7 +301,7 @@ public class TabFragment extends Fragment {
         UITAB_DATA[TAB_CONFIG] = new UITab(
                 TAB_CONFIG,
                 R.drawable.configtab24,
-                "Config",
+                "Settings",
                 TAB_CONFIG_MITEM_COLUMNS,
                 new String[] {
                         "General",

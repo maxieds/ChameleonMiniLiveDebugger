@@ -17,8 +17,28 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 <resources>
     <string name="app_name">Chameleon Mini Live Debugger</string>
-    <string name="app_display_short_name">Chameleon Live Logger</string>
+    <string name="app_display_short_name">Chameleon Logger</string>
     <string name="app_desc">GUI and portable logging interface for the Chameleon Mini NFC pentesting boards</string>
+    <string name="appInitialUserGreetingMsg">
+               Thank you for using and testing this Android application.
+               \nA detailed man page and instructions for using the
+               \nChameleon Mini Live Debugger (CMLD) are found on
+               \nthe project WIKI pages at the next link:\n
+               https://github.com/maxieds/ChameleonMiniLiveDebugger/wiki.
+               \n\nStay safe out there!
+    </string>
+    <string name="appPaidFlavorDisclaimerEULA">
+               This program is distributed in the hope that it will be useful,
+               \nbut WITHOUT ANY WARRANTY; without even the implied warranty of
+               \nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+               \n\nThe developer is not liable for any damages arising in contract
+               \ntort or otherwise from the use or inability to use this software.
+               \n\nForgive the developer for needing to say this.
+    </string>
+    <string name="appCrashReportStatusMsg">
+        An unknown error happened in the application!
+        Please submit a new issue report to let the developer know there is a problem.
+    </string>
     <string name="aboutapp">
         &lt;h1>About the CMLD application&lt;/h1>
         This application is copyright (&lt;i>© 2017-2020&lt;/i>) and developed in the free time of its author Maxie D. Schmidt
@@ -68,13 +88,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     </string>
     <string name="apphtmlheader">&lt;html>&lt;head>&lt;style>a { text-decoration: underline; color: %%ABOUTLINKCOLOR%%; font-weight: bold; font-style: italic; }&lt;/style>&lt;/head>&lt;body></string>
     <string name="apphtmlfooter">&lt;/body>&lt;/html></string>
-    <string name="initialUserGreetingMsg">Thank you for using and testing this Android application.
-               \nA detailed man page and instructions for using the
-               \nChameleon Mini Live Debugger (CMLD) are found on
-               \nthe project WIKI pages at the next link:\n
-               https://github.com/maxieds/ChameleonMiniLiveDebugger/wiki.
-               \n\nStay safe out there!
-    </string>
     <string name="chameleonCmdAppendixTroubleshooting">
         Note that all of the different variations of the Chameleon Mini hardware devices do not all support the same
         commands. The commands supported by the device are programmed into the firmware that must be flashed onto the
@@ -553,7 +566,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
     <string-array name="LogModeOptions">
         <item>LIVE</item>
-        <item>LIVE_FLUSH_NOW</item>
         <item>LIVE-NOTIFY</item>
         <item>MEMORY</item>
         <item>OFF</item>

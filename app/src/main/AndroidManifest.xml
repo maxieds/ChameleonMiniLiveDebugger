@@ -23,20 +23,22 @@
 
     <protected-broadcast android:name="android.hardware.usb.action.USB_STATE" />
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.USB_PERMISSION" android:required="true" />
     <uses-permission android:name="android.permission.BLUETOOTH" android:required="false" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:required="false" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:required="false" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:required="false" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" android:required="false" />
+    <uses-permission android:name="android.permission.VIBRATE" android:required="false" />
 
     <uses-feature android:name="android.hardware.usb.host" android:required="true" />
     <uses-feature android:name="android.hardware.usb.accessory" android:required="false" />
     <uses-feature android:name="android.bluetooth" android:required="false" />
-    <uses-feature android:name="android.bluetooth.le" android:required="false"/>
-    <uses-feature android:name="android.hardware.nfc" android:required="false" />
+    <uses-feature android:name="android.bluetooth.le" android:required="false" />
+    <!--<uses-feature android:name="android.hardware.nfc" android:required="false" />-->
 
     <!-- TODO: See https://developer.android.com/guide/topics/manifest/permission-group-element -->
 
@@ -44,11 +46,11 @@
         android:theme="${appTheme}"
         android:description="@string/app_desc"
         android:icon="${appIcon}"
-        android:label="@string/app_display_short_name"
+        android:label="${appLabelDesc}"
         android:roundIcon="${appRoundIcon}"
         android:launchMode="singleTop"
         android:noHistory="false"
-        android:excludeFromRecents="true"
+        android:excludeFromRecents="false"
         android:testOnly="${appDebug}"
         android:hardwareAccelerated="true"
         android:manageSpaceActivity=".LiveLoggerActivity"
@@ -66,7 +68,8 @@
             android:clearTaskOnLaunch="true"
             android:hardwareAccelerated="true"
             android:uiOptions="none"
-            android:stateNotNeeded="true">
+            android:stateNotNeeded="true"
+            android:exported="true">
 
             <intent-filter android:priority="1000">
                 <action android:name="android.intent.action.MAIN" />
