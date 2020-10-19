@@ -72,6 +72,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:id="@+id/stackTraceHeaderTextBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_gravity="center_vertical"
         android:background="?colorPrimaryDarkLog"
         android:drawableLeft="@drawable/stack_trace_header_icon"
         android:drawablePadding="14dp"
@@ -80,7 +82,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:padding="5dp"
         android:singleLine="true"
         android:text="Stack Trace: "
-        android:textSize="16sp"
+        android:textSize="17sp"
         android:textColor="?colorPrimaryDark"
         android:textAllCaps="true"
         android:textStyle="bold|italic" />
@@ -104,8 +106,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_marginBottom="0dp"
+            android:gravity="center_vertical"
+            android:layout_gravity="center_vertical"
             android:orientation="horizontal"
             android:background="?colorPrimaryDark"
             android:paddingLeft="5dp"
@@ -115,6 +119,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:id="@+id/crashReportActivityStackTraceText"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:layout_gravity="center_vertical"
                 android:singleLine="false"
                 android:inputType="textMultiLine"

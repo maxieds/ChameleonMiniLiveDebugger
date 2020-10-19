@@ -52,8 +52,4 @@ public class ChameleonMiniLiveDebuggerActivity extends AppCompatActivity {
         return defaultContext;
     }
 
-    public void setStatusIcon(int iconID, int iconDrawable) {}
-
-    public void clearStatusIcon(int iconID) {}
-
 }

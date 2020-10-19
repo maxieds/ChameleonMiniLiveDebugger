@@ -63,7 +63,9 @@ public class MainActivityLogUtils {
                     LinearLayout lastLogElt = (LinearLayout) logDataFeed.getChildAt(logDataFeed.getChildCount() - 1);
                     lastLogElt.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
                     int bottomEltHeight = lastLogElt.getMeasuredHeight();
-                    logScroller.scrollTo(0, logScroller.getBottom() + bottomEltHeight);
+                    if(logScroller.getBottom() <= lastLogElt.getBottom()) {
+                        logScroller.scrollTo(0, logScroller.getBottom() + bottomEltHeight);
+                    }
                 }
             }, 75);
         }
@@ -81,10 +83,10 @@ public class MainActivityLogUtils {
         }
         else if(LiveLoggerActivity.getLiveLoggerInstance().getSelectedTab() != TAB_LOG && LiveLoggerActivity.getInstance() != null) {
             if(logEntry instanceof LogEntryUI) {
-                LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconNewXFer, R.drawable.statusxfer16);
+                LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconNewXFer, R.drawable.statusxfer16);
             }
             else {
-                LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconNewMsg, R.drawable.statusnewmsg16);
+                LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconNewMsg, R.drawable.statusnewmsg16);
             }
         }
         if(logDataFeed != null && logDataEntries != null) {
@@ -95,7 +97,9 @@ public class MainActivityLogUtils {
             TabLayout tabLayout = (TabLayout) LiveLoggerActivity.getInstance().findViewById(R.id.tab_layout);
             if(tabLayout != null) {
                 tabLayout.getTabAt(TAB_LOG).select();
-                TabFragment.UITAB_DATA[TAB_LOG].selectMenuItem(TAB_LOG_MITEM_LOGS);
+                if(TabFragment.UITAB_DATA[TAB_LOG].lastMenuIndex != TAB_LOG_MITEM_LOGS) {
+                    TabFragment.UITAB_DATA[TAB_LOG].selectMenuItem(TAB_LOG_MITEM_LOGS);
+                }
             }
         }
         moveLiveLogTabScrollerToBottom();

@@ -125,7 +125,7 @@ public class ExportTools {
                 }
                 else {
                     outfile.delete();
-                    LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+                    LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
                     MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Maximum number of NAK errors exceeded. Download of data aborted."));
                 }
             }
@@ -145,7 +145,7 @@ public class ExportTools {
                     ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
                 }
                 else {
-                    LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+                    LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
                     MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "File transmission errors encountered. Maximum number of NAK errors exceeded. Download of data aborted."));
                 }
             }
@@ -248,7 +248,7 @@ public class ExportTools {
         if(serialIOPort == null || !serialIOPort.serialConfigured()) {
             return false;
         }
-        LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
+        LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
         String outfilePath = outfilePrefix + "-" + Utils.getTimestamp().replace(":", "") + ".dump";
         File downloadsFolder = new File("//sdcard//Download//");
         boolean docsFolderExists = true;
@@ -260,7 +260,7 @@ public class ExportTools {
         }
         else {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to save output in Downloads folder."));
-            LiveLoggerActivity.getInstance().clearStatusIcon(R.id.statusIconUlDl);
+            LiveLoggerActivity.getLiveLoggerInstance().clearStatusIcon(R.id.statusIconUlDl);
             return false;
         }
 
@@ -270,7 +270,7 @@ public class ExportTools {
         } catch(Exception ioe) {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
             ioe.printStackTrace();
-            LiveLoggerActivity.getInstance().clearStatusIcon(R.id.statusIconUlDl);
+            LiveLoggerActivity.getLiveLoggerInstance().clearStatusIcon(R.id.statusIconUlDl);
             return false;
         }
 
@@ -391,7 +391,7 @@ public class ExportTools {
         } catch(Exception ioe) {
             String cardFilePath = LiveLoggerActivity.defaultContext.getResources().getResourceName(rawResID);
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to open chosen resource \"" + cardFilePath + "\": " + ioe.getMessage()));
-            LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             return;
         }
     }
@@ -404,7 +404,7 @@ public class ExportTools {
     public static void uploadCardFileByXModem(String cardFilePath) {
         if(new File(cardFilePath).length() % XMODEM_BLOCK_SIZE != 0) {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Invalid file size for the selected card file \"" + cardFilePath + "\". Aborting."));
-            LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             return;
         }
         try {
@@ -412,7 +412,7 @@ public class ExportTools {
             uploadCardFileByXModem(istream);
         } catch(IOException ioe) {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to open chosen file \"" + cardFilePath + "\": " + ioe.getMessage()));
-            LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             return;
         }
     }
@@ -426,7 +426,7 @@ public class ExportTools {
         ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
         if(serialIOPort == null || !serialIOPort.serialConfigured() || cardInputStream == null)
             return;
-        LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusupload16);
+        LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusupload16);
         streamSrc = cardInputStream;
         serialIOPort.acquireSerialPortNoInterrupt();
         ChameleonIO.WAITING_FOR_XMODEM = true;
@@ -539,7 +539,7 @@ public class ExportTools {
      * @ref LiveLoggerActivity.actionButtonDumpMFU
      */
     public static boolean saveBinaryDumpMFU(String filePathPrefix) {
-        LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
+        LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
         String mimeType = "application/octet-stream";
         String outfilePath = filePathPrefix + Utils.getTimestamp().replace(":", "") + ".bin";
         File downloadsFolder = new File("//sdcard//Download//");
@@ -553,7 +553,7 @@ public class ExportTools {
         }
         else {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to save output in Downloads folder."));
-            LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             return false;
         }
         try {
@@ -566,7 +566,7 @@ public class ExportTools {
             fout.close();
         } catch(Exception ioe) {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
-            LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             ioe.printStackTrace();
             return false;
         }

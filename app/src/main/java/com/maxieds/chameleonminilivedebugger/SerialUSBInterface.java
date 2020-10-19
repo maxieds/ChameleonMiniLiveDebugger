@@ -157,7 +157,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
         if(activeDevice == null) {
             return "";
         }
-        String devInfo = String.format(Locale.ENGLISH, "Manufacturer: %s\nProduct Name: %s\nVersion: %s\nDevice Serial: %s\nUSB Dev: %s",
+        String devInfo = String.format(Locale.ENGLISH, "Manufacturer:  %s\nProduct Name:  %s\nVersion:       %s\nDevice Serial: %s\nUSB Dev:       %s",
                                        activeDevice.getManufacturerName(), activeDevice.getProductName(),
                                        activeDevice.getVersion(), activeDevice.getSerialNumber(),
                                        activeDevice.getDeviceName());
@@ -224,8 +224,8 @@ public class SerialUSBInterface extends SerialIOReceiver {
         serialConfigured = true;
         receiversRegistered = true;
         ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = ChameleonSettings.USBIO_IFACE_INDEX;
-        LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUSB, R.drawable.usbconnected16);
-        notifyStatus("USB STATUS: ", "Successfully configured the device in passive logging mode...\n" + getActiveDeviceInfo());
+        LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUSB, R.drawable.usbconnected16);
+        notifyStatus("USB STATUS: ", "Successfully configured the device ...\n\nChameleon:     " + getActiveDeviceInfo());
         return STATUS_TRUE;
     }
 

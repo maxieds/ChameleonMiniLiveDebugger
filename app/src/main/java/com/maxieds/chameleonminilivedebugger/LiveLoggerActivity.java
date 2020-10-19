@@ -164,8 +164,21 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
                Runnable configDeviceRunnable = new Runnable() {
                     public void run() {
                          ChameleonIO.detectChameleonType();
-                         ChameleonIO.initializeDevice();
+                         //ChameleonIO.initializeDevice();
+                         int activeSlotNumber;
+                         try {
+                              activeSlotNumber = Integer.parseInt(ChameleonIO.getSettingFromDevice("SETTING?"), 10);
+                         } catch(NumberFormatException nfe) {
+                              nfe.printStackTrace();
+                              activeSlotNumber = 1;
+                         }
+                         ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].getTagConfigurationsListFromDevice();
+                         ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].readParametersFromChameleonSlot();
+                         ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].updateLayoutParameters();
+                         ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].enableLayout();
+                         ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
                          ChameleonIO.DeviceStatusSettings.startPostingStats(400);
+                         TabFragment.UITAB_DATA[TabFragment.TAB_CONFIG].changeMenuItemDisplay(TabFragment.TAB_CONFIG_MITEM_LOGGING, true);
                     }
                };
                ChameleonIO.DeviceStatusSettings.stopPostingStats();
@@ -316,11 +329,6 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
           if(getIntent() != null && getIntent().getBooleanExtra(CrashReportActivity.INTENT_CMLD_RECOVERED_FROM_CRASH, false)) {
                Utils.displayToastMessageLong("Chameleon Mini Live Debugger recovered from crash.");
           }
-          else if(BuildConfig.BUILD_TYPE.equals("debug")){
-               // crash the app the first time it runs:
-               String nullStr = null;
-               nullStr.length();
-          }
 
      }
 
@@ -371,9 +379,9 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
                     LiveLoggerActivity.selectedTab = position;
                     switch (position) {
                          case TAB_LOG:
-                              LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconNewMsg);
-                              LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconNewXFer);
-                              LiveLoggerActivity.runningActivity.clearStatusIcon(R.id.statusIconUlDl);
+                              LiveLoggerActivity.getLiveLoggerInstance().clearStatusIcon(R.id.statusIconNewMsg);
+                              LiveLoggerActivity.getLiveLoggerInstance().clearStatusIcon(R.id.statusIconNewXFer);
+                              LiveLoggerActivity.getLiveLoggerInstance().clearStatusIcon(R.id.statusIconUlDl);
                               break;
                          default:
                               break;
@@ -434,18 +442,29 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
                     Runnable configDeviceRunnable = new Runnable() {
                          public void run() {
                               ChameleonIO.detectChameleonType();
-                              ChameleonIO.initializeDevice();
-                              UITabUtils.initializeToolsTab(TAB_TOOLS_MITEM_SLOTS, TabFragment.UITAB_DATA[TAB_TOOLS].tabInflatedView);
+                              //ChameleonIO.initializeDevice();
+                              int activeSlotNumber;
+                              try {
+                                   activeSlotNumber = Integer.parseInt(ChameleonIO.getSettingFromDevice("SETTING?"), 10);
+                              } catch(NumberFormatException nfe) {
+                                   nfe.printStackTrace();
+                                   activeSlotNumber = 1;
+                              }
+                              ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].getTagConfigurationsListFromDevice();
+                              ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].readParametersFromChameleonSlot();
+                              ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].updateLayoutParameters();
+                              ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].enableLayout();
+                              ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
+                              TabFragment.UITAB_DATA[TabFragment.TAB_CONFIG].changeMenuItemDisplay(TabFragment.TAB_CONFIG_MITEM_LOGGING, true);
                               ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
                               ChameleonIO.DeviceStatusSettings.startPostingStats(0);
                          }
                     };
                     ChameleonIO.DeviceStatusSettings.stopPostingStats();
-                    configDeviceHandler.postDelayed(configDeviceRunnable, 400);
-                    ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
                     if(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT) {
                          MainActivityLogUtils.clearAllLogs();
                     }
+                    configDeviceHandler.postDelayed(configDeviceRunnable, 400);
                     setStatusIcon(R.id.statusIconUSB, R.drawable.usbconnected16);
                }
           }
@@ -461,8 +480,6 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
                }
                ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = -1;
                setStatusIcon(R.id.statusIconUSB, R.drawable.usbdisconnected16);
-               unregisterReceiver(SerialUSBInterface.usbPermissionsReceiver);
-               SerialUSBInterface.usbPermissionsReceiverConfig = false;
                ChameleonSettings.initializeSerialIOConnections();
           }
           else if(intent.getAction().equals(BluetoothDevice.ACTION_FOUND)) {
@@ -488,9 +505,20 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
                               if(ChameleonSettings.getActiveSerialIOPort() != null &&
                                       ((BluetoothSerialInterface) ChameleonSettings.getActiveSerialIOPort()).isDeviceConnected()) {
                                    ChameleonIO.detectChameleonType();
-                                   ChameleonIO.initializeDevice();
-                                   UITabUtils.initializeToolsTab(TAB_TOOLS_MITEM_SLOTS, TabFragment.UITAB_DATA[TAB_TOOLS].tabInflatedView);
+                                   //ChameleonIO.initializeDevice();
+                                   int activeSlotNumber;
+                                   try {
+                                        activeSlotNumber = Integer.parseInt(ChameleonIO.getSettingFromDevice("SETTING?"), 10);
+                                   } catch(NumberFormatException nfe) {
+                                        nfe.printStackTrace();
+                                        activeSlotNumber = 1;
+                                   }
+                                   ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].getTagConfigurationsListFromDevice();
+                                   ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].readParametersFromChameleonSlot();
+                                   ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].updateLayoutParameters();
+                                   ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].enableLayout();
                                    ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
+                                   TabFragment.UITAB_DATA[TabFragment.TAB_CONFIG].changeMenuItemDisplay(TabFragment.TAB_CONFIG_MITEM_LOGGING, true);
                                    ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
                                    ChameleonIO.DeviceStatusSettings.startPostingStats(0);
                                    setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
@@ -501,7 +529,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
                          }
                     };
                     ChameleonIO.DeviceStatusSettings.stopPostingStats();
-                    configDeviceHandler.postDelayed(configDeviceRunnable, 200);
+                    configDeviceHandler.postDelayed(configDeviceRunnable, 400);
                }
           }
           else if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_DISCONNECTED) ||
@@ -861,6 +889,9 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
 
      public void actionButtonSetMinimumLogDataLength(View view) {
           EditText logMinDataLengthField = (EditText) findViewById(R.id.loggingLogDataMinBytesField);
+          if(logMinDataLengthField == null) {
+               return;
+          }
           String fieldText = logMinDataLengthField.getText().toString();
           if(fieldText.length() == 0) {
                return;

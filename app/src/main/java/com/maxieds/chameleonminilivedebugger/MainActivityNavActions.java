@@ -73,15 +73,15 @@ public class MainActivityNavActions {
     public static void setSignalStrengthIndicator(int threshold) {
         double signalStrength = threshold / 4500.0;
         if (signalStrength >= 0.80)
-            LiveLoggerActivity.getInstance().setStatusIcon(R.id.signalStrength, R.drawable.signalbars5);
+            LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.signalStrength, R.drawable.signalbars5);
         else if (signalStrength >= 0.60)
-            LiveLoggerActivity.getInstance().setStatusIcon(R.id.signalStrength, R.drawable.signalbars4);
+            LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.signalStrength, R.drawable.signalbars4);
         else if (signalStrength >= 0.40)
-            LiveLoggerActivity.getInstance().setStatusIcon(R.id.signalStrength, R.drawable.signalbars3);
+            LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.signalStrength, R.drawable.signalbars3);
         else if (signalStrength >= 0.20)
-            LiveLoggerActivity.getInstance().setStatusIcon(R.id.signalStrength, R.drawable.signalbars2);
+            LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.signalStrength, R.drawable.signalbars2);
         else
-            LiveLoggerActivity.getInstance().setStatusIcon(R.id.signalStrength, R.drawable.signalbars1);
+            LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.signalStrength, R.drawable.signalbars1);
     }
 
     public static AlertDialog getHelpTopicsDialog() {

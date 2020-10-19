@@ -178,11 +178,11 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface {
                 if(ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_CODECRX_STATUS_INDICATOR &&
                         (ChameleonLogUtils.LogCode.LOG_CODE_MAP.get(logCode) == LOG_INFO_CODEC_RX_DATA ||
                                 ChameleonLogUtils.LogCode.LOG_CODE_MAP.get(logCode) == LOG_INFO_CODEC_RX_DATA_W_PARITY)) {
-                    LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusCodecRXDataEvent, R.drawable.toolbar_icon16_codec_rx);
+                    LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusCodecRXDataEvent, R.drawable.toolbar_icon16_codec_rx);
                 }
                 else if(ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_RDRFLDDETECT_STATUS_INDICATOR &&
                         ChameleonLogUtils.LogCode.LOG_CODE_MAP.get(logCode) == LOG_INFO_CODEC_READER_FIELD_DETECTED) {
-                    LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusReaderFieldDetectedEvent, R.drawable.toolbar_icon16_reader_field_detected);
+                    LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusReaderFieldDetectedEvent, R.drawable.toolbar_icon16_reader_field_detected);
                 }
                 continue;
             }

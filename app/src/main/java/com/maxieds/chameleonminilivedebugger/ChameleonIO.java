@@ -145,7 +145,7 @@ public class ChameleonIO {
         return CHAMELEON_MINI_BOARD_TYPE;
     }
 
-    public static boolean initializeDevice() {
+    /*public static boolean initializeDevice() {
         AndroidSettingsStorage.loadPreviousSettings(ChameleonSettings.chameleonDeviceSerialNumber);
         if(LiveLoggerActivity.getSelectedTab() == TAB_TOOLS &&
            TabFragment.UITAB_DATA[LiveLoggerActivity.getSelectedTab()].lastMenuIndex == TAB_TOOLS_MITEM_SLOTS) {
@@ -171,7 +171,7 @@ public class ChameleonIO {
         }
         Log.i(TAG, "TODO: setup bi-directional sniffing if necessary ...");
         return true;
-    }
+    }*/
 
     /**
      * Default timeout to use when communicating with the device.
@@ -471,46 +471,6 @@ public class ChameleonIO {
     }
 
     public static DeviceStatusSettings deviceStatus = new ChameleonIO.DeviceStatusSettings();
-
-    /**
-     * Put the device into sniffer / logger mode.
-     *
-     * @param timeout
-     * @return SerialRespCode status code (OK)
-     */
-    public static SerialRespCode setLoggerConfigMode(int timeout) {
-        // TODO: Modern firmware may have multiple sniffer modes ...
-        if(!REVE_BOARD) {
-            SerialRespCode cfgResp = executeChameleonMiniCommand("CONFIG=ISO14443A_SNIFF", timeout);
-            ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-            return cfgResp;
-        }
-        else {
-            SerialRespCode cfgResp = executeChameleonMiniCommand("config=ISO14443A_SNIFF", timeout);
-            ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-            return cfgResp;
-        }
-    }
-
-    /**
-     * Put the device into reader mode.
-     *
-     * @param timeout
-     * @return SerialRespCode status code (OK)
-     */
-    public static SerialRespCode setReaderConfigMode(int timeout) {
-        // TODO: Modern firmware may have multiple reader modes ...
-        if(!REVE_BOARD) {
-            SerialRespCode cfgResp = executeChameleonMiniCommand("CONFIG=ISO14443A_READER", timeout);
-            ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-            return cfgResp;
-        }
-        else {
-            SerialRespCode cfgResp = executeChameleonMiniCommand("config=ISO14443A_READER", timeout);
-            ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-            return cfgResp;
-        }
-    }
 
     /**
      * Executes the passed command by sending the command to the device.

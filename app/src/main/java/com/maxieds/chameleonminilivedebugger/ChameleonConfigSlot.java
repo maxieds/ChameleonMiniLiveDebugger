@@ -149,11 +149,7 @@ public class ChameleonConfigSlot {
             uidSize = Integer.parseInt(ChameleonIO.getSettingFromDevice("UIDSIZE?"));
             tagMemorySize = Integer.parseInt(ChameleonIO.getSettingFromDevice("MEMSIZE?"));
             isLocked = ChameleonIO.getSettingFromDevice("READONLY?") == "1" ? true : false;
-            // this will only work if the UIDMODE, SAKMODE commands are supported in the firmware:
-            //uidMode = ChameleonIO.getSettingFromDevice("UIDMODE?") == "1" ? true : false;
             fieldSetting = ChameleonIO.getSettingFromDevice("FIELD?") == "1" ? true : false;
-            //sakAtqaMode = ChameleonIO.getSettingFromDevice("SAKMODE?") == "1" ? true : false;
-            //getTagConfigurationsListFromDevice();
         } catch(NumberFormatException nfe) {
             nfe.printStackTrace();
             return false;
@@ -173,7 +169,6 @@ public class ChameleonConfigSlot {
         try {
             ChameleonIO.getSettingFromDevice(String.format(Locale.ENGLISH, "SETTING=%d", nextSlot));
             readParametersFromChameleonSlot();
-            //ChameleonIO.getSettingFromDevice(String.format(Locale.ENGLISH, "SETTING=%d", activeSlot));
         } catch(Exception exe) {
             exe.printStackTrace();
             return false;
@@ -202,31 +197,39 @@ public class ChameleonConfigSlot {
          return true;
     }
 
+    public boolean updateLayoutParameters(boolean readNewTagConfigs) {
+        EditText slotNicknameDisplay = slotConfigLayout.findViewById(R.id.slotNicknameText);
+        slotNicknameDisplay.setText(slotNickname);
+        TextView slotNumberLabel = slotConfigLayout.findViewById(R.id.slotOnOffNumberText);
+        slotNumberLabel.setText(String.format(Locale.ENGLISH, "SLOT #%02d", slotIndex));
+        Spinner tagConfigModeSpinner = slotConfigLayout.findViewById(R.id.tagConfigModeSpinner);
+        if(tagConfigModeSpinner == null) {
+            return false;
+        }
+        ChameleonSerialIOInterface serialPort = ChameleonSettings.getActiveSerialIOPort();
+        if(serialPort == null) {
+            String[] tagConfigModesArray = LiveLoggerActivity.getInstance().getResources().getStringArray(R.array.FullTagConfigModes);
+            tagConfigModeSpinner.setAdapter(new ArrayAdapter<String>(slotConfigLayout.getContext(),
+                    android.R.layout.simple_list_item_1, tagConfigModesArray));
+        }
+        else if(readNewTagConfigs) {
+            getTagConfigurationsListFromDevice();
+        }
+        TextView uidBytes = (TextView) slotConfigLayout.findViewById(R.id.uidBytesText);
+        uidHexDisplayStr = Utils.formatUIDString(uidHexBytes, " ");
+        uidBytes.setText(uidHexDisplayStr);
+        TextView memSizeText = (TextView) slotConfigLayout.findViewById(R.id.memorySizeText);
+        memSizeText.setText(String.format(Locale.ENGLISH, "%dB | %dK", tagMemorySize, tagMemorySize / 1024));
+        Switch lockSwitch = (Switch) slotConfigLayout.findViewById(R.id.readonlyOnOffSwitch);
+        lockSwitch.setChecked(isLocked);
+        Switch fieldModeSwitch = (Switch) slotConfigLayout.findViewById(R.id.fieldOnOffSwitch);
+        fieldModeSwitch.setChecked(fieldSetting);
+        slotConfigLayout.setEnabled(isEnabled);
+        return true;
+    }
+
     public boolean updateLayoutParameters() {
-         EditText slotNicknameDisplay = slotConfigLayout.findViewById(R.id.slotNicknameText);
-         slotNicknameDisplay.setText(slotNickname);
-         TextView slotNumberLabel = slotConfigLayout.findViewById(R.id.slotOnOffNumberText);
-         slotNumberLabel.setText(String.format(Locale.ENGLISH, "SLOT #%02d", slotIndex));
-         Spinner configModeSpinner = (Spinner) slotConfigLayout.findViewById(R.id.tagConfigModeSpinner);
-         //configModeSpinner.setAdapter(new ArrayAdapter<String>(slotConfigLayout.getContext(),
-         //        android.R.layout.simple_list_item_1, tagConfigModes));
-         //for(int si = 0; si < configModeSpinner.getAdapter().getCount(); si++) {
-         //    if (configModeSpinner.getAdapter().getItem(si).toString().equals(tagConfigType)) {
-         //        configModeSpinner.setSelection(si, false);
-         //        break;
-         //    }
-         //}
-         TextView uidBytes = (TextView) slotConfigLayout.findViewById(R.id.uidBytesText);
-         uidHexDisplayStr = Utils.formatUIDString(uidHexBytes, " ");
-         uidBytes.setText(uidHexDisplayStr);
-         TextView memSizeText = (TextView) slotConfigLayout.findViewById(R.id.memorySizeText);
-         memSizeText.setText(String.format(Locale.ENGLISH, "%dB | %dK", tagMemorySize, tagMemorySize / 1024));
-         Switch lockSwitch = (Switch) slotConfigLayout.findViewById(R.id.readonlyOnOffSwitch);
-         lockSwitch.setChecked(isLocked);
-         Switch fieldModeSwitch = (Switch) slotConfigLayout.findViewById(R.id.fieldOnOffSwitch);
-         fieldModeSwitch.setChecked(fieldSetting);
-         slotConfigLayout.setEnabled(isEnabled);
-         return true;
+        return updateLayoutParameters(true);
     }
 
     public boolean enableLayout() {
@@ -261,9 +264,9 @@ public class ChameleonConfigSlot {
                 String nextConfigMode = localSpinnerList[i];
                 String setConfigCmd = String.format(Locale.ENGLISH, "CONFIG=%s", nextConfigMode);
                 ChameleonIO.getSettingFromDevice(setConfigCmd);
-                ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
                 readParametersFromChameleonSlot();
-                updateLayoutParameters();
+                updateLayoutParameters(false);
+                ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             }
             public void onNothingSelected(AdapterView<?> adapterView) {
                 return;

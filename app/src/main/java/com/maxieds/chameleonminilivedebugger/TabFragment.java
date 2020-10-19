@@ -225,7 +225,7 @@ public class TabFragment extends Fragment {
             TabFragment.UITAB_DATA[tabIdx].changeMenuItemDisplay(menuItemIdx);
         }
 
-        public boolean changeMenuItemDisplay(int mitemIdx) {
+        public boolean changeMenuItemDisplay(int mitemIdx, boolean updateDeviceGUI) {
             if(tabInflatedView == null) {
                 return false;
             }
@@ -236,6 +236,9 @@ public class TabFragment extends Fragment {
             if(tabMainLayoutView == null) {
                 tabMainLayoutView = TabFragment.defaultInflater.inflate(menuItemLayout[mitemIdx], containerLayout, false);
                 tabMenuItemLayouts[mitemIdx] = tabMainLayoutView;
+                if(updateDeviceGUI) {
+                    UITabUtils.initializeTabMainContent(tabIndex, mitemIdx, tabMainLayoutView);
+                }
             }
             containerLayout.addView(tabMainLayoutView);
             if((mitemIdx != lastMenuIndex || firstTabLoad) && (mitemIdx >= 0) && (mitemIdx < menuItemText.length)) {
@@ -244,6 +247,10 @@ public class TabFragment extends Fragment {
                 firstTabLoad = false;
             }
             return true;
+        }
+
+        public boolean changeMenuItemDisplay(int mitemIdx) {
+            return changeMenuItemDisplay(mitemIdx, false);
         }
 
     }

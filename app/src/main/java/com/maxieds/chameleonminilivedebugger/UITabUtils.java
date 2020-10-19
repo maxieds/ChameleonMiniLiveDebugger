@@ -154,6 +154,13 @@ public class UITabUtils {
                 }
             });
             int activeSlotNumber = settingsNumberPicker.getValue();
+            if(ChameleonSettings.getActiveSerialIOPort() != null) {
+                try {
+                    activeSlotNumber = Integer.parseInt(ChameleonIO.getSettingFromDevice("SETTING?"), 10);
+                } catch(NumberFormatException nfe) {
+                    nfe.printStackTrace();
+                }
+            }
             LinearLayout slotConfigContainer = tabMainLayoutView.findViewById(R.id.slotConfigLayoutsContainer);
             if(slotConfigContainer.getChildCount() == 0) {
                 for(int si = 0; si < ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOT_COUNT; si++) {
@@ -492,7 +499,7 @@ public class UITabUtils {
                             ChameleonIO.DeviceStatusSettings.startPostingStats(0);
                         }
                     }
-                    else if(!ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) {
+                    else {
                         if(ChameleonSettings.getActiveSerialIOPort() != null) {
                             ChameleonIO.DeviceStatusSettings.stopPostingStats();
                         }

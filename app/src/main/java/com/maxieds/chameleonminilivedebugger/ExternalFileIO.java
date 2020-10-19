@@ -40,7 +40,7 @@ public class ExternalFileIO {
     public static String FIRMWARE_SUBDIR = "firmware//";
 
     public static void exportOutputFile(String fileType) {
-        LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
+        LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
         String mimeType = "message/rfc822";
         String outfilePath = "logdata-" + Utils.getTimestamp().replace(":", "") + "." + fileType;
         File downloadsFolder = new File("//sdcard//Download//");
@@ -54,7 +54,7 @@ public class ExternalFileIO {
         }
         else {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to save output in Downloads folder."));
-            LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             return;
         }
         try {
@@ -73,7 +73,7 @@ public class ExternalFileIO {
             }
         } catch(Exception ioe) {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
-            LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             ioe.printStackTrace();
             return;
         }

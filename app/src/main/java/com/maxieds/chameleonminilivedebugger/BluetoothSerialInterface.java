@@ -83,7 +83,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
                     configDeviceHandler.removeCallbacks(this);
                     ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
                     ChameleonIO.DeviceStatusSettings.startPostingStats(0);
-                    LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
+                    LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
                 }
                 else {
                     Log.i(TAG, "BLE device __NOT__ connected! ... Looping");
