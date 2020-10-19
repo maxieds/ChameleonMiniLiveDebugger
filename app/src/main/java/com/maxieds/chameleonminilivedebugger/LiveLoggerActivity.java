@@ -125,16 +125,13 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
           Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
                @Override
                public void uncaughtException(Thread paramThread, Throwable paramExcpt) {
-                    Log.i("TAGTAG", "Inside unhandled interrupt exception ... ");
                     Intent startCrashRptIntent = new Intent(liveLoggerActivityContext, CrashReportActivity.class);
                     startCrashRptIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startCrashRptIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startCrashRptIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startCrashRptIntent.setAction(CrashReportActivity.INTENT_ACTION_START_ACTIVITY);
                     startCrashRptIntent.setType ("plain/text");
-                    Log.i("TAGTAG", "Inside unhandled interrupt exception II ... ");
                     String stackTraceAsText = Utils.getStackTraceAsText(paramExcpt);
-                    Log.i("TAGTAG", "Inside unhandled interrupt exception III ... ");
                     startCrashRptIntent.putExtra(CrashReportActivity.INTENT_STACK_TRACE, stackTraceAsText);
                     startCrashRptIntent.putExtra(CrashReportActivity.INTENT_TIMESTAMP, Utils.getTimestamp());
                     startCrashRptIntent.putExtra(CrashReportActivity.INTENT_CHAMELEON_DEVICE_TYPE, ChameleonIO.CHAMELEON_MINI_BOARD_TYPE_DESC);
@@ -144,11 +141,8 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
                     startCrashRptIntent.putExtra(CrashReportActivity.INTENT_CHAMELEON_CONFIG, ChameleonIO.DeviceStatusSettings.CONFIG);
                     startCrashRptIntent.putExtra(CrashReportActivity.INTENT_CHAMELEON_LOGMODE, ChameleonIO.DeviceStatusSettings.LOGMODE);
                     startCrashRptIntent.putExtra(CrashReportActivity.INTENT_CHAMELEON_TIMEOUT, ChameleonIO.DeviceStatusSettings.TIMEOUT);
-                    Log.i("TAGTAG", "Inside unhandled interrupt exception IV ... ");
                     startActivity(startCrashRptIntent);
-                    Log.i("TAGTAG", "Inside unhandled interrupt exception V ... ");
                     liveLoggerActivityContext.finish();
-                    Log.i("TAGTAG", "Inside unhandled interrupt exception VI ... ");
                     System.exit(-1);
                }
           });
@@ -322,7 +316,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
           if(getIntent() != null && getIntent().getBooleanExtra(CrashReportActivity.INTENT_CMLD_RECOVERED_FROM_CRASH, false)) {
                Utils.displayToastMessageLong("Chameleon Mini Live Debugger recovered from crash.");
           }
-          else {
+          else if(BuildConfig.BUILD_TYPE.equals("debug")){
                // crash the app the first time it runs:
                String nullStr = null;
                nullStr.length();

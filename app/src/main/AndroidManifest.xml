@@ -48,7 +48,7 @@
         android:label="${appLabelDesc}"
         android:roundIcon="${appRoundIcon}"
         android:theme="${appTheme}"
-        android:launchMode="singleInstance"
+        android:launchMode="singleTop"
         android:noHistory="false"
         android:excludeFromRecents="false"
         android:testOnly="${appDebug}"

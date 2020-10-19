@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -59,8 +60,7 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
     public static final String INTENT_CHAMELEON_LOGMODE = "Intent.CrashReport.ChameleonLogMode";
     public static final String INTENT_CHAMELEON_TIMEOUT = "Intent.CrashReport.ChameleonCmdTimeout";
 
-    public static final String CRASH_REPORT_THEME_NAME = "Crash Report";
-    public static final int CRASH_REPORT_THEME_RESID = R.style.AppThemeCrashReport;
+    public static final String CRASH_REPORT_THEME_NAME = "Standard Green (Default)";  // "Crash Report";
 
     private String stackTrace;
     private String timeStamp;
@@ -117,6 +117,15 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
     }
 
     protected void configureLayoutDisplay(Intent launchIntent) {
+        TextView tvStackTraceHeader = (TextView) findViewById(R.id.stackTraceHeaderTextBar);
+        GradientDrawable hdrGradientBg = new GradientDrawable(
+                GradientDrawable.Orientation.BL_TR,
+                new int[] {
+                        Utils.getColorFromTheme(R.attr.colorAccent),
+                        Utils.getColorFromTheme(R.attr.colorAccentHighlight)
+                });
+        hdrGradientBg.setCornerRadius(27f);
+        tvStackTraceHeader.setBackground(hdrGradientBg);
         TextView tvStackTraceData = (TextView) findViewById(R.id.crashReportActivityStackTraceText);
         tvStackTraceData.setSingleLine(false);
         tvStackTraceData.setText(highlightStackTrace(stackTrace), TextView.BufferType.SPANNABLE);
@@ -271,11 +280,9 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
         restartCMLDMainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         restartCMLDMainActivityIntent.setAction(CrashReportActivity.INTENT_ACTION_RESTART_CMLD_ACTIVITY);
         restartCMLDMainActivityIntent.putExtra(INTENT_CMLD_RECOVERED_FROM_CRASH, true);
-        PendingIntent restartCMLDMainActivityPendingIntent = PendingIntent.getActivity(ChameleonMiniLiveDebugger.getInstance().getBaseContext(), 0,
-                                                                                       restartCMLDMainActivityIntent, PendingIntent.FLAG_ONE_SHOT);
-        AlarmManager alarmRecoverMainActivity = (AlarmManager) ChameleonMiniLiveDebugger.getInstance().getBaseContext().getSystemService(Context.ALARM_SERVICE);
-        alarmRecoverMainActivity.set(AlarmManager.RTC, System.currentTimeMillis() + 100, restartCMLDMainActivityPendingIntent);
+        startActivity(restartCMLDMainActivityIntent);
         finish();
+        System.exit(-2);
     }
 
 }
