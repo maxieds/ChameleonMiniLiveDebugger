@@ -141,7 +141,7 @@ public class ChameleonIO {
         String chameleonDeviceType = getDeviceDescription(CHAMELEON_MINI_BOARD_TYPE);
         CHAMELEON_MINI_BOARD_TYPE_DESC = chameleonDeviceType;
         String statusMsg = String.format(Locale.ENGLISH, "New Chameleon discovered over %s: %s.", deviceConnType, chameleonDeviceType);
-        Utils.displayToastMessageShort(statusMsg);
+        Utils.displayToastMessageLong(statusMsg);
         return CHAMELEON_MINI_BOARD_TYPE;
     }
 
@@ -321,19 +321,19 @@ public class ChameleonIO {
         /**
          * The status settings summarized at the top of the GUI window.
          */
-        public static String CONFIG;
-        public static String UID;
-        public static String LASTUID = "00000000000000";
-        public static String LOGMODE = "NONE";
-        public static int UIDSIZE;
-        public static int MEMSIZE;
-        public static int LOGSIZE;
-        public static int DIP_SETTING = 1;
-        public static boolean FIELD;
-        public static boolean READONLY;
-        public static boolean CHARGING;
-        public static int THRESHOLD;
-        public static String TIMEOUT;
+        public static String CONFIG = "NOT SET";
+        public static String UID = "NOT SET";
+        public static String LASTUID = "NOT SET";
+        public static String LOGMODE = "NOT SET";
+        public static int UIDSIZE = 0;
+        public static int MEMSIZE = 0;
+        public static int LOGSIZE = 0;
+        public static int DIP_SETTING = 0;
+        public static boolean FIELD = false;
+        public static boolean READONLY = false;
+        public static boolean CHARGING = false;
+        public static int THRESHOLD = 0;
+        public static String TIMEOUT = "NOT SET";
 
         /**
          * How often do we update / refresh the stats at the top of the window?

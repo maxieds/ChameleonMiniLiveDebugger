@@ -18,7 +18,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 package com.maxieds.chameleonminilivedebugger;
 
 import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -87,7 +86,7 @@ public class MainActivityNavActions {
 
     public static AlertDialog getHelpTopicsDialog() {
         AlertDialog.Builder adBuilder = new AlertDialog.Builder(LiveLoggerActivity.getInstance(), R.style.SpinnerTheme);
-        View adView = LiveLoggerActivity.getInstance().defaultInflater.inflate(R.layout.help_dialog, null);
+        View adView = LiveLoggerActivity.getInstance().getDefaultInflater().inflate(R.layout.help_dialog, null);
         final View adViewFinal = adView;
 
         Button cmdRespButton = (Button) adView.findViewById(R.id.cmdRespButton);

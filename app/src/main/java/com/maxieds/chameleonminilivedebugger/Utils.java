@@ -481,4 +481,21 @@ public class Utils {
         return "";
     }
 
+    public static String getStackTraceAsText(Throwable ex) {
+        if(ex == null) {
+            return "";
+        }
+        String stackTraceText = "";
+        if(ex.getMessage() != null) {
+            stackTraceText += ex.getMessage() + "\n\n";
+        }
+        StackTraceElement[] stackTraceEltsInit = ex.getStackTrace();
+        String[] stackTraceElts = new String[stackTraceEltsInit.length];
+        for(int stidx = 0; stidx < stackTraceElts.length; stidx++) {
+            stackTraceElts[stidx] = String.format(Locale.ENGLISH, "L%02d| %s", stidx + 1, stackTraceEltsInit[stidx].toString());
+        }
+        stackTraceText += String.join("\n", stackTraceElts);
+        return stackTraceText;
+    }
+
 }

@@ -16,119 +16,181 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 */
 
 grammar ScriptingAPI;
-import LexerMembers;
+import LexerMembers, ScriptingPrimitives;
 
-ErrorHandlingFunction: 'TODO' ;
-LoggingFunction:       'TODO' ;
-ScriptingAPIFunction:  ErrorHandlingFunction | LoggingFunction | 'TODO' ;
+FunctionParameterArgType: ExpressionEvalTerm ;
+FunctionParameterArgsList: FunctionParameterArgType | (FunctionParameterArgType ', ' FunctionParameterArgType) ;
+ScriptingAPIFunctionName:  ScriptControlFlowFunctions | PrintingAndLoggingFunctions | VariableTypeFunctions |
+                           DebuggingFunctions | EnvironmentFunctions | ChameleonCommandAndLogFunctions |
+                           StringFunctions | FileIOFunctions | APDUHandlingFunctions |
+                           CryptoAndHashFunctions | UtilityFunctions ;
+ScriptingAPIFunction:      ScriptingAPIFunctionName '(' FunctionParameterArgsList ')' |
+                           ScriptingAPIFunctionName '()' ;
 
 /* Script control flow functions: */
-//exit() | exit(code);
+ExitFuncName:               'Exit' ;
+
+ScriptControlFlowFunctions: ExitFuncName ;
 
 /* Console printing and logging functions: */
-PrintFuncName:         'Print' ;
-PrintfFuncName:        'Printf' ;
-PrintLog:              'PrintLog' ;
-PrintfLog:             'PrintfLog' ;
-//ToastMsg;
+PrintFuncName:              'Print' ;
+PrintfFuncName:             'Printf' ;
+PrintLogFuncName:           'PrintLog' ;
+PrintfLogFuncName:          'PrintfLog' ;
+DisplayToastFuncName:       'DisplayToast' ;
+
+PrintingAndLoggingFunctions: PrintFuncName | PrintfFuncName | PrintLogFuncName |
+                             PrintfLogFuncName | DisplayToastFuncName ;
 
 /* Type conversion and checking functions: */
-AsInteger32FuncName:   'AsInt32' ;
-EvalBooleanFuncName:   'EvaluateBoolean' ;
-AsStringFuncName:
-AsHexStringFuncName:
-AsBinaryStringFuncName:
-AsByteArrayFuncName:
-GetLengthFuncName:
-IsConstantFuncName:
-IsFloatFuncName:
-IsHexFuncName:
-IsDecimalFuncName:
-IsNumericFuncName:
-IsStringFuncName:
-IsArrayFuncName:
-GetTypeFuncName:
-GetArrayDataTypeFuncName:
-// Sizeof (in bytes);
-// Integer.parseInt(str, base);
-// Integer.ToString(int, base);
+AsInteger32FuncName:      'AsInt32' ;
+EvalAsBooleanFuncName:    'EvaluateAsBoolean' ;
+AsStringFuncName:         'AsString' ;
+AsHexStringFuncName:      'AsHexString' ;
+AsBinaryStringFuncName:   'AsBinaryString' ;
+AsByteArrayFuncName:      'AsByteArray' ;
+GetLengthFuncName:        'GetLength' ;
+IsConstantFuncName:       'IsConstant' ;
+IsFloatFuncName:          'IsFloat' ;
+IsHexFuncName:            'IsHex' ;
+IsDecimalFuncName:        'IsDecimal' ;
+IsNumericFuncName:        'IsNumeric' ;
+IsStringFuncName:         'IsString' ;
+IsArrayFuncName:          'IsArray' ;
+GetArrayDataTypeFuncName: 'GetArrayDataType' ;
+GetTypeFuncName:          'GetType' ;
+GetTypeSizeofFuncName:    'Sizeof' ;
+ToStringFuncName:         'ToString' ; // (int, base);
 
-
-
+VariableTypeFunctions:     AsInteger32FuncName | EvalAsBooleanFuncName | AsStringFuncName |
+                           AsHexStringFuncName | AsBinaryStringFuncName | AsByteArrayFuncName |
+                           GetLengthFuncName | IsConstantFuncName | IsFloatFuncName |
+                           IsHexFuncName | IsDecimalFuncName | IsNumericFuncName |
+                           IsStringFuncName | IsArrayFuncName | GetArrayDataTypeFuncName |
+                           GetTypeFuncName | GetTypeSizeofFuncName | ToStringFuncName ;
 
 /* Debugging and assertion commands */
-// Assert, AssertEquals, AssertNotEquals;
+AssertFuncName:            'Assert' ;
+AssertEqualFuncName:       'AssertEqual' ;
+AssertNotEqualFuncName:    'AssertNotEqual' ;
+
+DebuggingFunctions:         AssertFuncName | AssertEqualFuncName | AssertNotEqualFuncName ;
 
 /* Environmental variables: */
-// GetEnv(name);
+GetEnvFuncName:             'GetEnv' ;
+
+EnvironmentFunctions:        GetEnvFuncName ;
 
 /* Chameleon command and command output post processing functions: */
-CmdGetResponseFuncName:              '' ;
-CmdGetResponseCodeFuncName:          '' ;
-GetResponseDataFuncName:             '' ;
-CmdIsSuccessFuncName:                '' ;
-CmdIsErrorFuncName:                  '' ;
-CmdContainsDataFuncName:             '' ;
-CmdGetIntermedLogsFuncName:          '' ;
-CmdSaveDeviceStateFuncName:          '' ;
-CmdRestoreDeviceStateFuncName:       '' ;
-CmdDonloadTagFuncName:               '' ;
-CmdUploadTagFuncName:                '' ;
-CmdDownloadLogsFuncName:             '' ;
-// State = Cfg,Logmode,setting $,Readonly,Field,Threshold,Timeout,UID;
+CmdGetResponseFuncName:              'GetCommandResponse' ;
+CmdGetResponseCodeFuncName:          'GetCommandResponseCode' ;
+CmdGetResponseDescFuncName:          'GetCommandResponseDesc' ;
+GetResponseDataFuncName:             'GetCommandResponseData' ;
+CmdIsSuccessFuncName:                'CommandIsSuccess' ;
+CmdIsErrorFuncName:                  'CommandIsError' ;
+CmdContainsDataFuncName:             'CommandContainsData' ;
+CmdGetIntermedLogsFuncName:          'GetIntermediateLogs' ;
+CmdSaveDeviceStateFuncName:          'SaveDeviceState' ;
+CmdRestoreDeviceStateFuncName:       'RestoreDeviceState' ;
+CmdDownloadTagFuncName:              'DownloadTagDump' ;
+CmdUploadTagFuncName:                'UploadTagDump' ;
+CmdDownloadLogsFuncName:             'DownloadLogs' ;
 
-// TODO: Get functions for log types ...
-// LogType; LogDataLength; LogTime; LogData; LogDirection;
-// LogByteCode; LogDesc;
+GetLogTypeFuncName:                  'GetLogType' ;
+GetLogDataLengthFuncName:            'GetLogDataLength' ;
+GetLogSystickTimeFuncName:           'GetLogSystickTime' ;
+GetLogDataFuncName:                  'GetLogData' ;
+GetLogDirectionFuncName:             'GetLogDirection' ;
+GetLogByteCodeFuncName:              'GetLogByteCode' ;
+GetLogDescFuncName:                  'GetLogDesc' ;
+
+ChameleonCommandAndLogFunctions:     CmdGetResponseFuncName | CmdGetResponseCodeFuncName | CmdGetResponseDescFuncName |
+                                     GetResponseDataFuncName | CmdIsSuccessFuncName | CmdIsErrorFuncName |
+                                     CmdContainsDataFuncName | CmdGetIntermedLogsFuncName | CmdSaveDeviceStateFuncName |
+                                     CmdRestoreDeviceStateFuncName | CmdDownloadTagFuncName | CmdUploadTagFuncName |
+                                     CmdDownloadLogsFuncName | GetLogTypeFuncName | GetLogDataLengthFuncName |
+                                     GetLogSystickTimeFuncName | GetLogDataFuncName | GetLogByteCodeFuncName |
+                                     GetLogDescFuncName ;
 
 /* File I/O functions: */
-// fscanf
-// rwXML (useful for associative arrays, store into hashed array);
-// rwCSV(delim); rwBinaryData; rwTextFile(from, to); rwJSON;
-// Chdir/SetCWD
-// FileExists; TouchFile; Mkdir? SetPerms;
+// fscanf  // These can be done later
+// rwXML (useful for associative arrays, store into hashed array);  // These can be done later
+// rwCSV(delim); rwBinaryData; rwTextFile(from, to); rwJSON; // These can be done later
+
+FileIOFunctions:                   ;
 
 /* String handling functions: */
-// string search / find first or last of (with pattern matching / Java regex support)
-// replace pattern
-// contains
-// strip; CompressWhitespaces;
-// remove carriage returns: "\r\n -> \n" ;
-// Substr(from); Substr(from,length);
+StringSearchFuncName:              'Find' ;
+StringContainsFuncName:            'Contains' ;
+StringReplaceFuncName:             'Replace' ;
+StringStripFuncName:               'Strip' ;
+StringCompressWhitepaceFuncName:   'CompressWhitespace' ;
+SubstrFuncName:                    'Substr' ;
+
+StringFunctions:                   StringSearchFuncName | StringContainsFuncName | StringReplaceFuncName |
+                                   StringStripFuncName | StringCompressWhitepaceFuncName |
+                                   SubstrFuncName ;
 
 /* APDU handling functions: */
-// AsWrappedAPDU($v -- assumes have prepended CLA,INS); -> ByteArray
-// AsWrappedAPDU($v, CLA,INS,P1,P2);
-// ExtractDataFromWrapped
-// ExtractDataFromNative
-// SearchStatusCodes;
-// SearchInsCodes;
-// SearchCLACodes;
+AsWrappedAPDUFuncName:                 'AsWrappedAPDU' ; // ($v -- assumes have prepended CLA,INS); -> ByteArray | ($v, CLA,INS,P1,P2)
+ExtractDataFromWrappedAPDUFuncName:    'ExtractDataFromWrappedAPDU' ;
+ExtractDataFromNativeAPDUFuncName:     'ExtractDataFromNativeAPDU' ;
+SearchAPDUCStatusCodes:                'SearchAPDUStatusCodes' ;
+SearchAPDUInsCodes:                    'SearchAPDUInsCodes' ;
+SearchAPDUClaCodes:                    'SearchAPDUClaCodes' ;
+// Possibly later: PrintNFCAnticol(UID,ATQA,SAK,ATS);
 
-// Possibly: PrintNFCAnticol(UID,ATQA,SAK,ATS);
+APDUHandlingFunctions:                 AsWrappedAPDUFuncName | ExtractDataFromWrappedAPDUFuncName |
+                                       ExtractDataFromNativeAPDUFuncName |
+                                       SearchAPDUCStatusCodes | SearchAPDUInsCodes |
+                                       SearchAPDUClaCodes ;
 
 /* Crypto and hash related functionality: */
-// get random bytes: ByteArray | Integer32
-// different hashes: hashCode|base64enc/dec|MD5|SHA1|SHA256|SHA512 (java.security.MessageDigest);
-// GetCRC16Bytes; AppendCRC16Bytes; CheckCRC16Bytes;
+GetRandomBytesFuncName:       'RandomBytes' ;
+GetRandomIntFuncName:         'RandomInt32' ;
+EncodeBase64HashFuncName:     'EncodeBase64' ;
+DecodeBase64FuncName:         'DecodeBase64' ;
+GetMD5HashFuncName:           'GetMD5Hash' ;     // (java.security.MessageDigest)
+GetSHA1FuncName:              'GetSHA1Hash' ;
+GetSHA256FuncName:            'GetSHA256Hash' ;
+GetSHA512FuncName:            'GetSHA512Hash' ;
+GetCRC16FuncName:             'GetCRC16' ;
+AppendCRC16FuncName:          'AppendCRC16' ;
+CheckCRC16FuncName:           'CheckCRC16' ;
+GetCommonMFCKeysFuncName:     'GetCommonMFCKeys' ;
 // Enc/Dec schemes: crypto1|DES|3DES|2KDEA|AES(128,192,256);
 // AES mode options: CTR|ECB|CBC|OTF;
-// GetCommonMFCKeys
+
+CryptoAndHashFunctions:       GetRandomBytesFuncName | GetRandomIntFuncName | EncodeBase64HashFuncName |
+                              DecodeBase64FuncName | GetMD5HashFuncName | GetSHA1FuncName |
+                              GetSHA256FuncName | GetSHA512FuncName | GetCRC16FuncName |
+                              AppendCRC16FuncName | CheckCRC16FuncName | GetCommonMFCKeysFuncName ;
 
 /* Misc utility functions: */
-GetTimestampFuncName:  'GetTimestamp' ;
-GetLocationFuncName:   'GetLocation'  ;
-// SeedRandom(blank for time | $v);
-// ReverseEndian(Int32|ByteArray, optional packing size);
-// GetRandomUUID
-// MemoryXOR(ByteArray|Int32);
-// Math.max/min;
-// ArrayReverse; ArrayShiftL/R; ArrayPadR/L; ArrayConcat; GetSubarray;
-// GetConstantString; GetConstantByteArray;
-// GetLocation(Short|Long|VVerbose|specially %f formatted string);
-// Byte.ReverseBits (|Int32|ByteArray);
-// computeEntropy;
-// BytesFromRange; IntsFromRange;
-// Int32ToShort; Int32ToByte;
+GetTimestampFuncName:          'GetTimestamp' ;
+GetLocationFuncName:           'GetLocation'  ;  // (Short|Long|VVerbose|specially %f formatted string)
+SeedRandomFuncName:            'SeedRandom' ;    // (blank for time | $v)
+MemoryXORFuncName:             'MemoryXOR' ;     // ??? Add to default Utils ???
+MaxFuncName:                   'Max' ;
+MinFuncName:                   'Min' ;
+ArrayAppendFuncName:           'Append' ;
+ArrayReverseFuncName:          'Reverse' ;
+ArrayShiftLeftFuncName:        'ShiftLeft' ;
+ArrayShiftRightFuncName:       'ShiftRight' ;
+ArrayPadLeftFuncName:          'PadLeft' ;
+ArrayPadRightFuncName:         'PadRight' ;
+GetSubarrayFuncName:           'GetSubarray' ;
+GetConstantStringFuncName:     'GetConstantString' ;
+GetConstantByteArrayFuncName:  'GetConstantArray' ;
+ReverseBitsFuncName:           'ReverseBits' ;
+ComputeEntropyFuncName:        'ComputeEntropy' ;
+GetBytesFromRangeFuncName:     'ByteRange' ;
+GetIntegersFromRangeFuncName:  'IntegerRange' ;
 
-
+UtilityFunctions:              GetTimestampFuncName | GetLocationFuncName | SeedRandomFuncName |
+                               MemoryXORFuncName | MaxFuncName | MinFuncName |
+                               ArrayAppendFuncName | ArrayReverseFuncName | ArrayShiftLeftFuncName |
+                               ArrayShiftRightFuncName | ArrayPadLeftFuncName | ArrayPadRightFuncName |
+                               GetSubarrayFuncName | GetConstantStringFuncName | GetConstantByteArrayFuncName |
+                               ReverseBitsFuncName | ComputeEntropyFuncName | GetBytesFromRangeFuncName |
+                               GetIntegersFromRangeFuncName ;

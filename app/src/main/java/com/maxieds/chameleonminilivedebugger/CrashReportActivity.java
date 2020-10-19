@@ -17,6 +17,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -30,26 +32,25 @@ import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toolbar;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CrashReportActivity extends AppCompatActivity {
+public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
 
     private static final String TAG = CrashReportActivity.class.getSimpleName();
 
     public static final String INTENT_ACTION_START_ACTIVITY = "Intent.CrashReport.Action.StartRecoveryActivity";
     public static final String INTENT_ACTION_RESTART_CMLD_ACTIVITY = "Intent.CrashReport.Action.RestartCMLDMainActivity";
+    public static final String INTENT_CMLD_RECOVERED_FROM_CRASH = "Intent.CrashReport.CMLDRestartRecoveredFromCrash";
     public static final String INTENT_STACK_TRACE = "Intent.CrashReport.StackTrace";
     public static final String INTENT_TIMESTAMP = "Intent.CrashReport.Timestamp";
     public static final String INTENT_CHAMELEON_DEVICE_TYPE = "Intent.CrashReport.ChameleonDeviceType";
@@ -57,6 +58,9 @@ public class CrashReportActivity extends AppCompatActivity {
     public static final String INTENT_CHAMELEON_CONFIG = "Intent.CrashReport.ChameleonConfigType";
     public static final String INTENT_CHAMELEON_LOGMODE = "Intent.CrashReport.ChameleonLogMode";
     public static final String INTENT_CHAMELEON_TIMEOUT = "Intent.CrashReport.ChameleonCmdTimeout";
+
+    public static final String CRASH_REPORT_THEME_NAME = "Crash Report";
+    public static final int CRASH_REPORT_THEME_RESID = R.style.AppThemeCrashReport;
 
     private String stackTrace;
     private String timeStamp;
@@ -73,8 +77,10 @@ public class CrashReportActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "Starting the crash report activity NOW ... ");
+        AndroidSettingsStorage.loadPreviousSettings(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE);
 
-        ThemesConfiguration.setLocalTheme(ThemesConfiguration.storedAppTheme, true);
+        ThemesConfiguration.setLocalTheme(CRASH_REPORT_THEME_NAME, true);
         setContentView(R.layout.activity_crash_report);
         configureLayoutToolbar();
         if(getIntent() != null && getIntent().getAction() != null && getIntent().getAction().equals(INTENT_ACTION_START_ACTIVITY)) {
@@ -105,9 +111,9 @@ public class CrashReportActivity extends AppCompatActivity {
         Toolbar crashRptToolbar = (Toolbar) findViewById(R.id.crashReportActivityToolbar);
         crashRptToolbar.setTitle("Chameleon Mini Live Debugger");
         crashRptToolbar.setSubtitle("Crash report summary | v" + BuildConfig.VERSION_NAME);
-        getWindow().setTitleColor(ThemesConfiguration.getThemeColorVariant(R.attr.actionBarBackgroundColor));
-        getWindow().setStatusBarColor(ThemesConfiguration.getThemeColorVariant(R.attr.colorPrimaryDark));
-        getWindow().setNavigationBarColor(ThemesConfiguration.getThemeColorVariant(R.attr.colorPrimaryDark));
+        getWindow().setTitleColor(ThemesConfiguration.getThemeColorVariant(this, R.attr.actionBarBackgroundColor));
+        getWindow().setStatusBarColor(ThemesConfiguration.getThemeColorVariant(this, R.attr.colorPrimaryDark));
+        getWindow().setNavigationBarColor(ThemesConfiguration.getThemeColorVariant(this, R.attr.colorPrimaryDark));
     }
 
     protected void configureLayoutDisplay(Intent launchIntent) {
@@ -130,22 +136,47 @@ public class CrashReportActivity extends AppCompatActivity {
 
     }
 
+
+    public static final int STACK_TRACE_LINE_MAX_CHARS = 20;
     protected SpannableStringBuilder highlightStackTrace(String inputStackTrace) {
-        StringHighlightTextSpec[] highlightPatterns = {
-                /* File names */
+        /* Do preprocessing to get the line wrapping to work: */
+        inputStackTrace = inputStackTrace.replaceAll("\\(", "\\( ");
+        inputStackTrace = inputStackTrace.replaceAll("\\)", " \\)");
+        inputStackTrace = inputStackTrace.replaceAll("\\.(\\w+\\( .*:.* \\))", "\\.\\-\\-\n     $1");
+        String[] subLinesToTrim = inputStackTrace.split("\\-\\-");
+        for(int sidx = 0; sidx < subLinesToTrim.length; sidx++) {
+            String[] splitLine = subLinesToTrim[sidx].split("\n");
+            if(splitLine.length > 2) {
+                continue;
+            }
+            else if(splitLine.length == 0) {
+                subLinesToTrim[sidx] = "\n";
+            }
+            boolean needEllipses = splitLine[0].length() >= STACK_TRACE_LINE_MAX_CHARS;
+            subLinesToTrim[sidx] = splitLine[0].substring(0, Math.min(splitLine[0].length(), STACK_TRACE_LINE_MAX_CHARS - 1)) +
+                    (needEllipses ? "<...>" : "") + "\n" + (splitLine.length == 2 ? splitLine[1] + "\n" : "");
+        }
+        inputStackTrace = String.join("", subLinesToTrim);
+        return new SpannableStringBuilder(inputStackTrace);
+        /* Define and match the regex patterns we want to highlight: */
+        /*StringHighlightTextSpec[] highlightPatterns = {
+                // File names --
                 new StringHighlightTextSpec("\\w+\\.java", getColor(R.color.StackTraceFileNameColor), Typeface.ITALIC),
-                /* Exception type */
+                // Exception type --
                 new StringHighlightTextSpec("\\w+Exception", getColor(R.color.StackTraceExecptionColor), Typeface.BOLD_ITALIC),
-                /* Line numbers */
-                new StringHighlightTextSpec("(:)\\d+", getColor(R.color.StackTraceLineNumberColor), Typeface.BOLD_ITALIC),
-                /* Function name */
+                // LHS display line numbers --
+                new StringHighlightTextSpec("^L\\d+|", Color.DKGRAY, Typeface.BOLD_ITALIC),
+                // Line numbers --
+                new StringHighlightTextSpec("(:)\\d+ (\\))", getColor(R.color.StackTraceLineNumberColor), Typeface.BOLD_ITALIC),
+                // Function name --
                 new StringHighlightTextSpec("(\\.)\\w+(\\()", getColor(R.color.StackTraceFunctionNameColor), Typeface.ITALIC),
-                /* Misc syntax */
-                new StringHighlightTextSpec("[\\{\\}\\[\\]:\\.\\<\\>\\(\\)]", getColor(R.color.StackTraceMiscSyntaxColor), Typeface.NORMAL),
+                // Misc syntax --
+                new StringHighlightTextSpec("\\<\\.\\.\\.\\>", Color.LTGRAY, Typeface.BOLD_ITALIC),
+                new StringHighlightTextSpec("[\\{\\}\\[\\]\\:\\.\\<\\>\\(\\)]", getColor(R.color.StackTraceMiscSyntaxColor), Typeface.NORMAL),
         };
         SpannableStringBuilder highlightedStackTrace = new SpannableStringBuilder(inputStackTrace);
         highlightedStackTrace.setSpan(new ForegroundColorSpan(ThemesConfiguration.getThemeColorVariant(R.attr.colorAccentLog)),
-                                0, inputStackTrace.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                0, inputStackTrace.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         for(StringHighlightTextSpec hlSpec : highlightPatterns) {
             Pattern matchRegexPattern = Pattern.compile(hlSpec.matchRegexPattern);
             Matcher patternMatcher = matchRegexPattern.matcher(inputStackTrace);
@@ -156,7 +187,8 @@ public class CrashReportActivity extends AppCompatActivity {
                 highlightedStackTrace.setSpan(matchColorSpan, patternMatcher.start(), patternMatcher.end(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }
-        return highlightedStackTrace;
+        return highlightedStackTrace;*/
+
     }
 
     protected void signalCrashByVibration() {
@@ -166,10 +198,10 @@ public class CrashReportActivity extends AppCompatActivity {
             return;
         }
         else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            deviceVibrator.vibrate(VibrationEffect.createWaveform(vibratePattern, 0));
+            deviceVibrator.vibrate(VibrationEffect.createWaveform(vibratePattern, -1));
         }
         else {
-            deviceVibrator.vibrate(500);
+            deviceVibrator.vibrate(vibratePattern, -1);
         }
     }
 
@@ -233,9 +265,16 @@ public class CrashReportActivity extends AppCompatActivity {
     }
 
     public void actionButtonRestartCMLDMainActivity(View btn) {
-        Intent restartCMLDMainActivityIntent = new Intent(CrashReportActivity.this, LiveLoggerActivity.class);
+        Intent restartCMLDMainActivityIntent = new Intent(this, LiveLoggerActivity.class);
+        restartCMLDMainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        restartCMLDMainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        restartCMLDMainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         restartCMLDMainActivityIntent.setAction(CrashReportActivity.INTENT_ACTION_RESTART_CMLD_ACTIVITY);
-        startActivity(restartCMLDMainActivityIntent);
+        restartCMLDMainActivityIntent.putExtra(INTENT_CMLD_RECOVERED_FROM_CRASH, true);
+        PendingIntent restartCMLDMainActivityPendingIntent = PendingIntent.getActivity(ChameleonMiniLiveDebugger.getInstance().getBaseContext(), 0,
+                                                                                       restartCMLDMainActivityIntent, PendingIntent.FLAG_ONE_SHOT);
+        AlarmManager alarmRecoverMainActivity = (AlarmManager) ChameleonMiniLiveDebugger.getInstance().getBaseContext().getSystemService(Context.ALARM_SERVICE);
+        alarmRecoverMainActivity.set(AlarmManager.RTC, System.currentTimeMillis() + 100, restartCMLDMainActivityPendingIntent);
         finish();
     }
 

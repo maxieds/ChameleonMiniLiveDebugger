@@ -17,14 +17,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
-import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -34,7 +30,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.lifecycle.LiveData;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -84,7 +79,7 @@ public class MainActivityLogUtils {
         if(LiveLoggerActivity.getInstance() == null) {
             return;
         }
-        else if(LiveLoggerActivity.getInstance().getSelectedTab() != TAB_LOG && LiveLoggerActivity.getInstance() != null) {
+        else if(LiveLoggerActivity.getLiveLoggerInstance().getSelectedTab() != TAB_LOG && LiveLoggerActivity.getInstance() != null) {
             if(logEntry instanceof LogEntryUI) {
                 LiveLoggerActivity.getInstance().setStatusIcon(R.id.statusIconNewXFer, R.drawable.statusxfer16);
             }
@@ -101,7 +96,6 @@ public class MainActivityLogUtils {
             if(tabLayout != null) {
                 tabLayout.getTabAt(TAB_LOG).select();
                 TabFragment.UITAB_DATA[TAB_LOG].selectMenuItem(TAB_LOG_MITEM_LOGS);
-                moveLiveLogTabScrollerToBottom();
             }
         }
         moveLiveLogTabScrollerToBottom();

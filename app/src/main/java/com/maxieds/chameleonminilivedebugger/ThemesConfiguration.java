@@ -17,18 +17,13 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
-import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.appcompat.app.AlertDialog;
@@ -45,6 +40,11 @@ public class ThemesConfiguration {
     @ColorInt
     public static int getThemeColorVariant(int attrID) {
         return LiveLoggerActivity.getInstance().getTheme().obtainStyledAttributes(new int[] {attrID}).getColor(0, attrID);
+    }
+
+    @ColorInt
+    public static int getThemeColorVariant(ChameleonMiniLiveDebuggerActivity activity, int attrID) {
+        return activity.getInstance().getTheme().obtainStyledAttributes(new int[] {attrID}).getColor(0, attrID);
     }
 
     /**
@@ -79,6 +79,9 @@ public class ThemesConfiguration {
                 break;
             case "Chicky":
                 themeID = R.style.AppThemeChicky;
+                break;
+            case "Crash Report":
+                themeID = R.style.AppThemeCrashReport;
                 break;
             case "Frosty":
                 themeID = R.style.AppThemeFrosty;
@@ -163,27 +166,9 @@ public class ThemesConfiguration {
 
             }
         });
-        //dialog.setNeutralButton( "Preview", null);
         dialog.setNegativeButton( "Cancel", null);
         dialog.setInverseBackgroundForced(true);
         final AlertDialog displayDialog = dialog.create();
         displayDialog.show();
-        /*displayDialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View dialog) {
-                int getSelectedOption = ((RadioGroup) dialogView.findViewById(R.id.themeRadioGroup)).getCheckedRadioButtonId();
-                String themeID = ((RadioButton) dialogView.findViewById(getSelectedOption)).getText().toString();
-                String themeDesc = themeID;
-                LinearLayout previewThemeColorContainer = dialogView.findViewById(R.id.themesPickerPreviewColorSwatchesContainer);
-                if(previewThemeColorContainer == null) {
-                    return;
-                }
-                for(int b = 1; b < previewThemeColorContainer.getChildCount(); b++) {
-                    TextView curColorSwatchView = (TextView) previewThemeColorContainer.getChildAt(b);
-                    curColorSwatchView.setTextAppearance(LiveLoggerActivity.getInstance().getApplicationContext(), setLocalTheme(themeDesc, false));
-                    curColorSwatchView.setBackgroundColor(curColorSwatchView.getCurrentTextColor());
-                }
-            }
-        });*/
     }
 }

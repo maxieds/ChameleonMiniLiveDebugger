@@ -48,7 +48,9 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:layout_columnWeight="0.33"
-        android:orientation="vertical"></LinearLayout>
+        android:orientation="vertical"
+        android:descendantFocusability="afterDescendants">
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"

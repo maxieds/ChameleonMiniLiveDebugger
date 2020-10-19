@@ -38,43 +38,48 @@
     <uses-feature android:name="android.hardware.usb.accessory" android:required="false" />
     <uses-feature android:name="android.bluetooth" android:required="false" />
     <uses-feature android:name="android.bluetooth.le" android:required="false" />
-    <!--<uses-feature android:name="android.hardware.nfc" android:required="false" />-->
 
     <!-- TODO: See https://developer.android.com/guide/topics/manifest/permission-group-element -->
 
     <application
-        android:theme="${appTheme}"
+        android:name=".ChameleonMiniLiveDebugger"
         android:description="@string/app_desc"
         android:icon="${appIcon}"
         android:label="${appLabelDesc}"
         android:roundIcon="${appRoundIcon}"
-        android:launchMode="singleTop"
+        android:theme="${appTheme}"
+        android:launchMode="singleInstance"
         android:noHistory="false"
         android:excludeFromRecents="false"
         android:testOnly="${appDebug}"
         android:hardwareAccelerated="true"
+        android:supportsRtl="true"
         android:manageSpaceActivity=".LiveLoggerActivity"
         android:defaultToDeviceProtectedStorage="true"
         android:usesCleartextTraffic="false"
         android:installLocation="${installLocation}"
         android:requestLegacyExternalStorage="true"
+        android:allowBackup="true"
         >
 
         <uses-library android:name="com.android.future.usb.accessory" />
 
-        <activity android:name=".LiveLoggerActivity"
+        <activity
+            android:name=".LiveLoggerActivity"
             android:screenOrientation="nosensor"
             android:alwaysRetainTaskState="true"
             android:clearTaskOnLaunch="true"
             android:hardwareAccelerated="true"
             android:uiOptions="none"
             android:stateNotNeeded="true"
-            android:exported="true">
+            android:exported="true"
+            >
 
             <intent-filter android:priority="1000">
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+                <category android:name="android.intent.category.HOME" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -88,12 +93,10 @@
             </intent-filter>
             <meta-data android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" android:resource="@xml/custom_usb_device_filter"/>
 
-            <!--
             <intent-filter>
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
                 <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
             </intent-filter>
-            -->
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -105,6 +108,18 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
+        </activity>
+
+        <activity
+            android:name=".CrashReportActivity"
+            android:screenOrientation="nosensor"
+            android:alwaysRetainTaskState="true"
+            android:clearTaskOnLaunch="true"
+            android:hardwareAccelerated="true"
+            android:uiOptions="none"
+            android:stateNotNeeded="true"
+            android:exported="true"
+            >
         </activity>
 
     </application>

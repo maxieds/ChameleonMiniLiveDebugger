@@ -24,6 +24,7 @@ import android.os.Bundle;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,6 +94,7 @@ public class TabFragment extends Fragment {
         public int tabNumColumns;
         public int lastMenuIndex;
         public View tabInflatedView;
+        public View[] tabMenuItemLayouts;
         public boolean tabViewInit;
         public boolean firstTabLoad;
 
@@ -109,6 +111,10 @@ public class TabFragment extends Fragment {
             initializeLayout();
             menuItemText = new String[mitemText.length];
             menuItemLayout = new int[mitemLayout.length];
+            tabMenuItemLayouts = new View[mitemLayout.length];
+            for(int vidx = 0; vidx < tabMenuItemLayouts.length; vidx++) {
+                tabMenuItemLayouts[vidx] = null;
+            }
             System.arraycopy(mitemText, 0, menuItemText, 0, mitemText.length);
             System.arraycopy(mitemLayout, 0, menuItemLayout, 0, mitemLayout.length);
         }
@@ -133,10 +139,18 @@ public class TabFragment extends Fragment {
             String indexRefTag = String.format(Locale.ENGLISH, "%d:%d", tabIndex, midx);
             Button menuItem = (Button) menuItemsNav.findViewWithTag(indexRefTag);
             menuItem.setTypeface(Typeface.DEFAULT, Typeface.BOLD_ITALIC);
-            menuItem.performClick();
-            if((this == UITAB_DATA[TAB_LOG]) && (midx == TAB_LOG_MITEM_LOGS)) {
-                MainActivityLogUtils.moveLiveLogTabScrollerToBottom();
-            }
+            final Button menuItemFinal = menuItem;
+            Handler performBtnClickHandler = new Handler();
+            Runnable performBtnClickRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    menuItemFinal.performClick();
+                    if(tabIndex == TAB_LOG && midx == TAB_LOG_MITEM_LOGS) {
+                        MainActivityLogUtils.moveLiveLogTabScrollerToBottom();
+                    }
+                }
+            };
+            performBtnClickHandler.postDelayed(performBtnClickRunnable, 100);
             return true;
         }
 
@@ -156,7 +170,6 @@ public class TabFragment extends Fragment {
             return true;
         }
 
-        //@SuppressLint("ResourceType")
         public View createTabView() {
             if(tabViewInit || tabInflatedView == null) {
                 return null;
@@ -191,6 +204,9 @@ public class TabFragment extends Fragment {
                         UITab.onMenuItemClick(view);
                     }
                 });
+                menuItemClick.setFocusableInTouchMode(false);
+                menuItemClick.setFocusable(false);
+                menuItemClick.setClickable(true);
                 menuItemsNav.addView(menuItemClick);
                 totalItems++;
             }
@@ -210,20 +226,23 @@ public class TabFragment extends Fragment {
         }
 
         public boolean changeMenuItemDisplay(int mitemIdx) {
-            if((mitemIdx == lastMenuIndex && !firstTabLoad) ||
-                    mitemIdx < 0 || mitemIdx >= menuItemText.length) {
-                return false;
-            }
-            else if(tabInflatedView == null) {
+            if(tabInflatedView == null) {
                 return false;
             }
             LinearLayout containerLayout = (LinearLayout) tabInflatedView.findViewById(R.id.tabMainContent);
             containerLayout.removeAllViews();
-            View tabMainLayoutView = TabFragment.defaultInflater.inflate(menuItemLayout[mitemIdx], containerLayout, false);
+            containerLayout.clearFocus();
+            View tabMainLayoutView = tabMenuItemLayouts[mitemIdx];
+            if(tabMainLayoutView == null) {
+                tabMainLayoutView = TabFragment.defaultInflater.inflate(menuItemLayout[mitemIdx], containerLayout, false);
+                tabMenuItemLayouts[mitemIdx] = tabMainLayoutView;
+            }
             containerLayout.addView(tabMainLayoutView);
-            UITabUtils.initializeTabMainContent(tabIndex, mitemIdx, tabMainLayoutView);
-            selectMenuItem(mitemIdx);
-            firstTabLoad = false;
+            if((mitemIdx != lastMenuIndex || firstTabLoad) && (mitemIdx >= 0) && (mitemIdx < menuItemText.length)) {
+                UITabUtils.initializeTabMainContent(tabIndex, mitemIdx, tabMainLayoutView);
+                selectMenuItem(mitemIdx);
+                firstTabLoad = false;
+            }
             return true;
         }
 

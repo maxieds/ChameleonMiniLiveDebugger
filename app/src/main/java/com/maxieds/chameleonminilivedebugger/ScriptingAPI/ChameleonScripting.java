@@ -17,7 +17,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
-import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.net.Uri;
 
@@ -29,7 +28,6 @@ import com.maxieds.chameleonminilivedebugger.R;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
 import java.io.File;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -329,7 +327,7 @@ public class ChameleonScripting {
         return false;
     }
 
-    // saveChameleonState()
+    // saveChameleonState() ; State = Cfg,Logmode,setting $,Readonly,Field,Threshold,Timeout,UID;
     // https://developer.android.com/reference/android/media/RingtoneManager#ACTION_RINGTONE_PICKER
 
 }

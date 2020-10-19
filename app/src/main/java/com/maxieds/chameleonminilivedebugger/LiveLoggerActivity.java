@@ -68,25 +68,19 @@ import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_
  * @author  Maxie D. Schmidt
  * @since   12/31/17
  */
-public class LiveLoggerActivity extends AppCompatActivity {
+public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
 
      private static final String TAG = LiveLoggerActivity.class.getSimpleName();
 
      /**
-      * We assume there is only one instance of the singleton activity running at a time.
-      */
-     private static LiveLoggerActivity runningActivity = null;
-     Bundle localSavedInstanceState;
-
-     public static LiveLoggerActivity getInstance() { return runningActivity; }
-
-     /**
       * Static variables used across classes.
       */
-     public static LayoutInflater defaultInflater;
-     public static Context defaultContext;
      private static ViewPager viewPager;
      private static int selectedTab = TAB_TOOLS;
+
+     public static LiveLoggerActivity getLiveLoggerInstance() {
+          return (LiveLoggerActivity) runningActivity;
+     }
 
      public static int getSelectedTab() { return selectedTab; }
      public static void setSelectedTab(int tabIdx) {
@@ -127,26 +121,35 @@ public class LiveLoggerActivity extends AppCompatActivity {
       * Default handler for  all uncaught exceptions.
       */
      private void setUnhandledExceptionHandler() {
+          final AppCompatActivity liveLoggerActivityContext = this;
           Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
                @Override
                public void uncaughtException(Thread paramThread, Throwable paramExcpt) {
-                    Intent startCrashRptIntent = new Intent(LiveLoggerActivity.this, CrashReportActivity.class);
+                    Log.i("TAGTAG", "Inside unhandled interrupt exception ... ");
+                    Intent startCrashRptIntent = new Intent(liveLoggerActivityContext, CrashReportActivity.class);
+                    startCrashRptIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startCrashRptIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startCrashRptIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startCrashRptIntent.setAction(CrashReportActivity.INTENT_ACTION_START_ACTIVITY);
                     startCrashRptIntent.setType ("plain/text");
-                    startCrashRptIntent.putExtra(CrashReportActivity.INTENT_STACK_TRACE, Log.getStackTraceString(paramExcpt.getCause().getCause()));
+                    Log.i("TAGTAG", "Inside unhandled interrupt exception II ... ");
+                    String stackTraceAsText = Utils.getStackTraceAsText(paramExcpt);
+                    Log.i("TAGTAG", "Inside unhandled interrupt exception III ... ");
+                    startCrashRptIntent.putExtra(CrashReportActivity.INTENT_STACK_TRACE, stackTraceAsText);
                     startCrashRptIntent.putExtra(CrashReportActivity.INTENT_TIMESTAMP, Utils.getTimestamp());
-                    startCrashRptIntent.putExtra(CrashReportActivity.INTENT_CHAMELEON_DEVICE_TYPE, ChameleonIO.CHAMELEON_MINI_BOARD_TYPE);
+                    startCrashRptIntent.putExtra(CrashReportActivity.INTENT_CHAMELEON_DEVICE_TYPE, ChameleonIO.CHAMELEON_MINI_BOARD_TYPE_DESC);
                     String chameleonSerialType = ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX < 0 ? "NULL" :
                                       (ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX == ChameleonSettings.USBIO_IFACE_INDEX ? "USB" : "BT");
                     startCrashRptIntent.putExtra(CrashReportActivity.INTENT_SERIAL_CONNECTION_TYPE, chameleonSerialType);
                     startCrashRptIntent.putExtra(CrashReportActivity.INTENT_CHAMELEON_CONFIG, ChameleonIO.DeviceStatusSettings.CONFIG);
                     startCrashRptIntent.putExtra(CrashReportActivity.INTENT_CHAMELEON_LOGMODE, ChameleonIO.DeviceStatusSettings.LOGMODE);
                     startCrashRptIntent.putExtra(CrashReportActivity.INTENT_CHAMELEON_TIMEOUT, ChameleonIO.DeviceStatusSettings.TIMEOUT);
+                    Log.i("TAGTAG", "Inside unhandled interrupt exception IV ... ");
                     startActivity(startCrashRptIntent);
-                    try {
-                         Thread.sleep(1250);
-                    } catch(InterruptedException intExcpt) {}
-                    finish(); // System.exit(-1);
+                    Log.i("TAGTAG", "Inside unhandled interrupt exception V ... ");
+                    liveLoggerActivityContext.finish();
+                    Log.i("TAGTAG", "Inside unhandled interrupt exception VI ... ");
+                    System.exit(-1);
                }
           });
      }
@@ -244,9 +247,8 @@ public class LiveLoggerActivity extends AppCompatActivity {
      @Override
      protected void onCreate(Bundle savedInstanceState) {
 
-          // fix bug where the tabs are blank when the application is relaunched:
           super.onCreate(savedInstanceState);
-          if(runningActivity == null || !isTaskRoot()) {
+          if(getInstance() == null || !isTaskRoot()) {
                Log.i(TAG, "Created new activity");
           }
           if(!isTaskRoot()) {
@@ -257,17 +259,12 @@ public class LiveLoggerActivity extends AppCompatActivity {
                     Log.i(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead of re-launching.");
                     finish();
                     serialIOReceiversRegistered = false;
-                    return;
                }
           }
 
-          boolean completeRestart = (runningActivity == null);
-          runningActivity = this;
-          localSavedInstanceState = savedInstanceState;
-          defaultInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-          defaultContext = getApplicationContext();
-
           setUnhandledExceptionHandler();
+
+          boolean completeRestart = (getInstance() == null);
 
           AndroidSettingsStorage.loadPreviousSettings(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE);
           if(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT) {
@@ -308,6 +305,13 @@ public class LiveLoggerActivity extends AppCompatActivity {
 
           reconfigureSerialIODevices();
 
+          clearStatusIcon(R.id.statusIconNewMsg);
+          clearStatusIcon(R.id.statusIconNewXFer);
+          clearStatusIcon(R.id.signalStrength);
+          clearStatusIcon(R.id.statusIconBT);
+          clearStatusIcon(R.id.statusCodecRXDataEvent);
+          clearStatusIcon(R.id.statusReaderFieldDetectedEvent);
+
           String userGreeting = getString(R.string.appInitialUserGreetingMsg);
           MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("WELCOME", userGreeting));
           if(BuildConfig.FLAVOR.equals("paid")) {
@@ -315,12 +319,14 @@ public class LiveLoggerActivity extends AppCompatActivity {
                MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("DISCLAIMER", disclaimerStmt));
           }
 
-          clearStatusIcon(R.id.statusIconNewMsg);
-          clearStatusIcon(R.id.statusIconNewXFer);
-          clearStatusIcon(R.id.signalStrength);
-          clearStatusIcon(R.id.statusIconBT);
-          clearStatusIcon(R.id.statusCodecRXDataEvent);
-          clearStatusIcon(R.id.statusReaderFieldDetectedEvent);
+          if(getIntent() != null && getIntent().getBooleanExtra(CrashReportActivity.INTENT_CMLD_RECOVERED_FROM_CRASH, false)) {
+               Utils.displayToastMessageLong("Chameleon Mini Live Debugger recovered from crash.");
+          }
+          else {
+               // crash the app the first time it runs:
+               String nullStr = null;
+               nullStr.length();
+          }
 
      }
 

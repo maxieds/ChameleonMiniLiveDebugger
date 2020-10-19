@@ -452,13 +452,13 @@ public class UITabUtils {
             ((EditText) tabMainLayoutView.findViewById(R.id.loggingLogDataMinBytesField)).addTextChangedListener(new TextWatcher() {
                 @Override
                 public void afterTextChanged(Editable s) {
-                    LiveLoggerActivity.getInstance().actionButtonSetMinimumLogDataLength(null);
+                    LiveLoggerActivity.getLiveLoggerInstance().actionButtonSetMinimumLogDataLength(null);
                 }
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    LiveLoggerActivity.getInstance().actionButtonSetMinimumLogDataLength(null);
+                    LiveLoggerActivity.getLiveLoggerInstance().actionButtonSetMinimumLogDataLength(null);
                 }
             });
             ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingConfigClearOnNewConnect)).setChecked(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT);
