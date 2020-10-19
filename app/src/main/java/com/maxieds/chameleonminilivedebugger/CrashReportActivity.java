@@ -60,7 +60,7 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
     public static final String INTENT_CHAMELEON_LOGMODE = "Intent.CrashReport.ChameleonLogMode";
     public static final String INTENT_CHAMELEON_TIMEOUT = "Intent.CrashReport.ChameleonCmdTimeout";
 
-    public static final String CRASH_REPORT_THEME_NAME = "Standard Green (Default)";  // "Crash Report";
+    public static final String CRASH_REPORT_THEME_NAME = "Standard Green (Default)";
 
     private String stackTrace;
     private String timeStamp;
@@ -77,7 +77,6 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        Log.i(TAG, "Starting the crash report activity NOW ... ");
         AndroidSettingsStorage.loadPreviousSettings(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE);
 
         ThemesConfiguration.setLocalTheme(CRASH_REPORT_THEME_NAME, true);
@@ -145,8 +144,8 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
 
     }
 
-
     public static final int STACK_TRACE_LINE_MAX_CHARS = 20;
+
     protected SpannableStringBuilder highlightStackTrace(String inputStackTrace) {
         /* Do preprocessing to get the line wrapping to work: */
         inputStackTrace = inputStackTrace.replaceAll("\\(", "\\( ");
@@ -166,38 +165,8 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
                     (needEllipses ? "<...>" : "") + "\n" + (splitLine.length == 2 ? splitLine[1] + "\n" : "");
         }
         inputStackTrace = String.join("", subLinesToTrim);
+        stackTrace = inputStackTrace;
         return new SpannableStringBuilder(inputStackTrace);
-        /* Define and match the regex patterns we want to highlight: */
-        /*StringHighlightTextSpec[] highlightPatterns = {
-                // File names --
-                new StringHighlightTextSpec("\\w+\\.java", getColor(R.color.StackTraceFileNameColor), Typeface.ITALIC),
-                // Exception type --
-                new StringHighlightTextSpec("\\w+Exception", getColor(R.color.StackTraceExecptionColor), Typeface.BOLD_ITALIC),
-                // LHS display line numbers --
-                new StringHighlightTextSpec("^L\\d+|", Color.DKGRAY, Typeface.BOLD_ITALIC),
-                // Line numbers --
-                new StringHighlightTextSpec("(:)\\d+ (\\))", getColor(R.color.StackTraceLineNumberColor), Typeface.BOLD_ITALIC),
-                // Function name --
-                new StringHighlightTextSpec("(\\.)\\w+(\\()", getColor(R.color.StackTraceFunctionNameColor), Typeface.ITALIC),
-                // Misc syntax --
-                new StringHighlightTextSpec("\\<\\.\\.\\.\\>", Color.LTGRAY, Typeface.BOLD_ITALIC),
-                new StringHighlightTextSpec("[\\{\\}\\[\\]\\:\\.\\<\\>\\(\\)]", getColor(R.color.StackTraceMiscSyntaxColor), Typeface.NORMAL),
-        };
-        SpannableStringBuilder highlightedStackTrace = new SpannableStringBuilder(inputStackTrace);
-        highlightedStackTrace.setSpan(new ForegroundColorSpan(ThemesConfiguration.getThemeColorVariant(R.attr.colorAccentLog)),
-                0, inputStackTrace.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        for(StringHighlightTextSpec hlSpec : highlightPatterns) {
-            Pattern matchRegexPattern = Pattern.compile(hlSpec.matchRegexPattern);
-            Matcher patternMatcher = matchRegexPattern.matcher(inputStackTrace);
-            StyleSpan matchStyleSpan = new StyleSpan(hlSpec.matchStyleType);
-            ForegroundColorSpan matchColorSpan = new ForegroundColorSpan(hlSpec.matchHighlightColor);
-            while(patternMatcher.find()) {
-                highlightedStackTrace.setSpan(matchStyleSpan, patternMatcher.start(), patternMatcher.end(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                highlightedStackTrace.setSpan(matchColorSpan, patternMatcher.start(), patternMatcher.end(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-        }
-        return highlightedStackTrace;*/
-
     }
 
     protected void signalCrashByVibration() {
