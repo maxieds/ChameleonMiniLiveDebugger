@@ -126,34 +126,38 @@ public class TabFragment extends Fragment {
             firstTabLoad = true;
         }
 
-        public boolean selectMenuItem(int midx) {
-            if((midx == lastMenuIndex && !firstTabLoad) || midx < 0 || midx >= menuItemText.length) {
+        public boolean selectMenuItem(int midx, boolean performBtnClick) {
+            if(midx < 0 || midx >= menuItemText.length) {
                 return false;
             }
             else if(tabInflatedView == null) {
                 return false;
             }
-            if(!firstTabLoad) {
-                deselectMenuItem(lastMenuIndex);
-            }
+            deselectMenuItem(lastMenuIndex);
             lastMenuIndex = midx;
             GridLayout menuItemsNav = (GridLayout) tabInflatedView.findViewById(R.id.tabMenuItemsNav);
             String indexRefTag = String.format(Locale.ENGLISH, "%d:%d", tabIndex, midx);
             Button menuItem = (Button) menuItemsNav.findViewWithTag(indexRefTag);
             menuItem.setTypeface(Typeface.DEFAULT, Typeface.BOLD_ITALIC);
             final Button menuItemFinal = menuItem;
-            Handler performBtnClickHandler = new Handler();
-            Runnable performBtnClickRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    menuItemFinal.performClick();
-                    if(tabIndex == TAB_LOG && midx == TAB_LOG_MITEM_LOGS) {
-                        MainActivityLogUtils.moveLiveLogTabScrollerToBottom();
+            if(performBtnClick) {
+                Handler performBtnClickHandler = new Handler();
+                Runnable performBtnClickRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        menuItemFinal.performClick();
+                        if (tabIndex == TAB_LOG && midx == TAB_LOG_MITEM_LOGS) {
+                            MainActivityLogUtils.moveLiveLogTabScrollerToBottom();
+                        }
                     }
-                }
-            };
-            performBtnClickHandler.postDelayed(performBtnClickRunnable, 100);
+                };
+                performBtnClickHandler.postDelayed(performBtnClickRunnable, 100);
+            }
             return true;
+        }
+
+        public boolean selectMenuItem(int midx) {
+            return selectMenuItem(midx, true);
         }
 
         private boolean deselectMenuItem(int midx) {
@@ -248,6 +252,7 @@ public class TabFragment extends Fragment {
                 ((LinearLayout) tabMainLayoutView.getParent()).removeView(tabMainLayoutView);
             }
             containerLayout.addView(tabMainLayoutView);
+            selectMenuItem(mitemIdx, false);
             return true;
         }
 

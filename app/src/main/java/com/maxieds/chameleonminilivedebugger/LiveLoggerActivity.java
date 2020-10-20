@@ -100,8 +100,10 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
       * @ref R.id.statusIconNewXFer
       */
      public void setStatusIcon(int iconID, int iconDrawable) {
-          ((ImageView) findViewById(iconID)).setAlpha(255);
-          ((ImageView) findViewById(iconID)).setImageDrawable(getResources().getDrawable(iconDrawable));
+          if(findViewById(iconID) != null) {
+               ((ImageView) findViewById(iconID)).setAlpha(255);
+               ((ImageView) findViewById(iconID)).setImageDrawable(getResources().getDrawable(iconDrawable));
+          }
      }
 
      /**
@@ -113,7 +115,9 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
       * @ref R.id.statusIconNewXFer
       */
      public void clearStatusIcon(int iconID) {
-          ((ImageView) findViewById(iconID)).setAlpha(127);
+          if(findViewById(iconID) != null) {
+               ((ImageView) findViewById(iconID)).setAlpha(127);
+          }
      }
 
      /**
@@ -230,8 +234,18 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
      protected void onCreate(Bundle savedInstanceState) {
 
           super.onCreate(savedInstanceState);
-          if(getInstance() == null || !isTaskRoot()) {
+          if(getInstance() == null) {
                Log.i(TAG, "Created new activity");
+          }
+          else if(!isTaskRoot()) {
+               Log.i(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
+               final Intent intent = getIntent();
+               final String intentAction = intent.getAction();
+               if (intentAction != null && (intentAction.equals(UsbManager.ACTION_USB_DEVICE_DETACHED) || intentAction.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED))) {
+                    Log.i(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead of re-launching.");
+                    finish();
+                    return;
+               }
           }
 
           setUnhandledExceptionHandler();
@@ -433,6 +447,12 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
                     serialIOPort.shutdownSerial();
                }
                ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = -1;
+               try {
+                    int lastActiveSlotNumber = ChameleonIO.DeviceStatusSettings.DIP_SETTING;
+                    ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[lastActiveSlotNumber - 1].disableLayout();
+               } catch(Exception ex) {
+                    ex.printStackTrace();
+               }
                setStatusIcon(R.id.statusIconUSB, R.drawable.usbdisconnected16);
                ChameleonSettings.initializeSerialIOConnections();
           }
