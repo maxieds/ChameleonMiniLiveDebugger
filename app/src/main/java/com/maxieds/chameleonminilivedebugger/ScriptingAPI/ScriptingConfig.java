@@ -17,9 +17,14 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
+import android.view.View;
+
 public class ScriptingConfig {
 
+    private static final String TAG = ScriptingConfig.class.getSimpleName();
 
-    // setConfigByGUITag(tag, value=bool|string)
+    public static boolean initializeScriptingConfigGUI(View cfgBaseLayout) {
+        return true;
+    }
 
 }

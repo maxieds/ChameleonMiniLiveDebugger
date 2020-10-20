@@ -68,27 +68,8 @@ VariableStartSymbol: '$' ;
 VariableName: VariableNameStartChar (VariableNameMiddleChar)* ;
 VariableDeclaration: 'define var' VariableStartSymbol VariableName NewLineBreak;
 VariableReference: VariableStartSymbol VariableName {}; // TODO
-VariablePropertyAccessor: '->';
-VariablePropertyGetName: VariableReference VariablePropertyAccessor 'getHashName()'
-                         { _input._variableReference.getName(); };
-VariablePropertyGetType: VariableReference VariablePropertyAccessor 'getType()'
-                         { _input._variableReference.getTypeName(); };
-VariablePropertyToString: VariableReference VariablePropertyAccessor 'asString()'
-                          { _input._variableReference.getValueAsString(); };
-VariablePropertyToInteger: VariableReference VariablePropertyAccessor 'asInteger()'
-                           { _input._variableReference.getValueAsInteger(); };
-VariablePropertyToBoolean: VariableReference VariablePropertyAccessor 'asBoolean()'
-                           { _input._variableReference.getValueAsBoolean(); };
-VariablePropertyToBytes: VariableReference VariablePropertyAccessor 'asBytes()'
-                         { _input._variableReference.getValueAsBytes(); };
-VariablePropertyExists: VariableReference VariablePropertyAccessor 'exists()'
-                        { TokenExists(_input._variableReference.getName()); };
-VariablePropertyEvaluate: VariableReference VariablePropertyAccessor 'eval()' ;
-VariableProperty: VariablePropertyGetName | VariablePropertyGetType | VariablePropertyToString |
-                      VariablePropertyToInteger | VariablePropertyToBoolean |
-                      VariablePropertyToBytes | VariablePropertyExists | VariablePropertyEvaluate ;
 
-ExpressionEvalTerm: VariableProperty | Operator |
+ExpressionEvalTerm: VariableReference | Operator |
                     TypeLiteral | MacroConstant -> mode(CONTEXT_EXPR_EVAL);
 
 EqualsComparisonOperator: ExpressionEvalTerm WhiteSpace '==' WhiteSpace ExpressionEvalTerm ;

@@ -64,7 +64,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/programmer2"
+                    android:drawableLeft="@drawable/random_uid_icon24"
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="RANDOM UID" />
 

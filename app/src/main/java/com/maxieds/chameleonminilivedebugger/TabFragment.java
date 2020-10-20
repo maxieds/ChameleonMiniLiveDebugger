@@ -266,7 +266,7 @@ public class TabFragment extends Fragment {
     static {
         UITAB_DATA[TAB_LOG] = new UITab(
                 TAB_LOG,
-                R.drawable.nfc24v1,
+                R.drawable.logtab_icon24,
                 "Logs",
                 TAB_LOG_MITEM_COLUMNS,
                 new String[] {
@@ -303,11 +303,11 @@ public class TabFragment extends Fragment {
                 });
         UITAB_DATA[TAB_EXPORT] = new UITab(
                 TAB_EXPORT,
-                R.drawable.insertbinary24,
+                R.drawable.device_io_icon24,
                 "Device I/O",
                 TAB_EXPORT_MITEM_COLUMNS,
                 new String[] {
-                        "Up|Download Tag Dump",
+                        "Up|Download Tags",
                         "Clone Tags",
                 },
                 new int[]{
@@ -316,13 +316,13 @@ public class TabFragment extends Fragment {
                 });
         UITAB_DATA[TAB_SCRIPTING] = new UITab(
                 TAB_SCRIPTING,
-                R.drawable.scriptingtab24,
+                R.drawable.scriptingtab24_icon_v3,
                 "Scripts",
                 TAB_SCRIPTING_MITEM_COLUMNS,
                 new String[] {
-                        "Load/Import",
-                        "Run Script",
-                        "Variable View"
+                        "Main",
+                        "Output",
+                        "Register View"
                 },
                 new int[] {
                         R.layout.scripting_tab_load_import,

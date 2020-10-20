@@ -409,24 +409,24 @@ public class ChameleonIO {
                     LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(new Runnable() {
                         public void run() {
                             try {
-                                ((TextView) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.deviceConfigText)).setText(CONFIG);
+                                ((TextView) LiveLoggerActivity.getContentView(R.id.deviceConfigText)).setText(CONFIG);
                                 String formattedUID = Utils.formatUIDString(UID, ":");
-                                ((TextView) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.deviceConfigUID)).setText(formattedUID);
+                                ((TextView) LiveLoggerActivity.getContentView(R.id.deviceConfigUID)).setText(formattedUID);
                                 String subStats1 = String.format(Locale.ENGLISH, "REV%s|MEM-%dK|LOG-%s-%dK", ChameleonIO.REVE_BOARD ? "E" : "G", round(MEMSIZE / 1024), LOGMODE, round(LOGSIZE / 1024));
-                                ((TextView) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.deviceStats1)).setText(subStats1);
+                                ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats1)).setText(subStats1);
                                 String subStats2 = String.format(Locale.ENGLISH, "SLOT-%d|%s|FLD-%s|CHRG-%s", DIP_SETTING, READONLY ? "RO" : "RW", FIELD ? "1" : "0", CHARGING ? "1" : "0");
-                                ((TextView) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.deviceStats2)).setText(subStats2);
+                                ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats2)).setText(subStats2);
                                 String subStats3 = String.format(Locale.ENGLISH, "THRS-%dmv|TMT-%s", THRESHOLD, TIMEOUT.replace(" ", ""));
-                                ((TextView) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.deviceStats3)).setText(subStats3);
-                                SeekBar thresholdSeekbar = (SeekBar) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.thresholdSeekbar);
+                                ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats3)).setText(subStats3);
+                                SeekBar thresholdSeekbar = (SeekBar) LiveLoggerActivity.getContentView(R.id.thresholdSeekbar);
                                 if (thresholdSeekbar != null) {
                                     thresholdSeekbar.setProgress(THRESHOLD);
-                                    ((TextView) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.thresholdSeekbarValueText)).setText(String.format(Locale.ENGLISH, "% 5d mV", THRESHOLD));
+                                    ((TextView) LiveLoggerActivity.getContentView(R.id.thresholdSeekbarValueText)).setText(String.format(Locale.ENGLISH, "% 5d mV", THRESHOLD));
                                 }
-                                SeekBar timeoutSeekbar = (SeekBar) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.cmdTimeoutSeekbar);
+                                SeekBar timeoutSeekbar = (SeekBar) LiveLoggerActivity.getContentView(R.id.cmdTimeoutSeekbar);
                                 if (thresholdSeekbar != null) {
                                     thresholdSeekbar.setProgress(THRESHOLD);
-                                    ((TextView) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.cmdTimeoutSeekbarValueText)).setText(String.format(Locale.ENGLISH, "% 4d (x128) ms", TIMEOUT));
+                                    ((TextView) LiveLoggerActivity.getContentView(R.id.cmdTimeoutSeekbarValueText)).setText(String.format(Locale.ENGLISH, "% 4d (x128) ms", TIMEOUT));
                                 }
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -470,7 +470,6 @@ public class ChameleonIO {
             Log.i(TAG, "serial port is null executing command");
             return null;
         }
-        Log.i(TAG, "sending data buffer");
         serialPort.sendDataBuffer(sendBuf);
         return OK;
     }

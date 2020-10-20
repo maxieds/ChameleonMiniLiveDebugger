@@ -94,7 +94,7 @@ android {
                     appRoundIcon       : "@mipmap/chameleon_app_icon_round",
                     appTheme           : "@style/AppThemeGreen",
                     appDebug           : "false",
-                    installLocation    : "internalOnly"
+                    installLocation    : "preferExternal" // "internalOnly"
             ]
         }
         paid {

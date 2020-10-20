@@ -23,5 +23,5 @@ FileContents: (ScriptLine)+ EOF;
 ScriptLine: WhiteSpace (VariableDeclaration | AssignmentOperator | Command)
             WhiteSpace NewLineBreak | NewLineBreak;
 
-ChameleonCommand: '$(' (WhiteSpace)* ExpressionEvalTerm (WhiteSpace)* ')' ;
+ChameleonCommand: '$$(' (WhiteSpace)* ExpressionEvalTerm (WhiteSpace)* ')' ;
 Command:    ScriptingAPIFunction | ChameleonCommand | 'pass' ;

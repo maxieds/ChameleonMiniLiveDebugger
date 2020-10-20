@@ -34,6 +34,7 @@ import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -45,6 +46,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
+import androidx.annotation.IdRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
@@ -79,6 +81,46 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
 
      public static LiveLoggerActivity getLiveLoggerInstance() {
           return (LiveLoggerActivity) runningActivity;
+     }
+
+     private static View liveLoggerActivityMainContentView = null;
+
+     public static View getContentView(@IdRes int viewResId) {
+          View mainContentView = LiveLoggerActivity.getLiveLoggerInstance().findViewById(android.R.id.content);
+          if(mainContentView == null || mainContentView.findViewById(viewResId) == null) {
+               mainContentView = LiveLoggerActivity.getLiveLoggerInstance().findViewById(android.R.id.content).getRootView();
+               if (mainContentView == null || mainContentView.findViewById(viewResId) == null) {
+                    mainContentView = LiveLoggerActivity.getLiveLoggerInstance().getWindow().getDecorView().findViewById(android.R.id.content);
+                    if (mainContentView == null || mainContentView.findViewById(viewResId) == null) {
+                         mainContentView = LiveLoggerActivity.getLiveLoggerInstance().getWindow().getDecorView().getRootView();
+                         if (mainContentView == null || mainContentView.findViewById(viewResId) == null) {
+                              mainContentView = LiveLoggerActivity.getLiveLoggerInstance().getWindow().getDecorView();
+                              if (mainContentView == null || mainContentView.findViewById(viewResId) == null) {
+                                   mainContentView = LiveLoggerActivity.getInstance().findViewById(viewResId);
+                                   if (mainContentView == null) {
+                                        mainContentView = liveLoggerActivityMainContentView;
+                                        if (mainContentView != null) {
+                                             Log.i(TAG, "liveLoggerActivityMainContentView");
+                                             return mainContentView.findViewById(viewResId);
+                                        } else {
+                                             return null;
+                                        }
+                                   }
+                                   Log.i(TAG, "NONE -> findViewById(viewResId)");
+                                   return mainContentView;
+                              }
+                              Log.i(TAG, "getWindow().getDecorView()");
+                              return mainContentView.findViewById(viewResId);
+                         }
+                         Log.i(TAG, "findViewById(android.R.id.content).getRootView()");
+                         return mainContentView.findViewById(viewResId);
+                    }
+                    Log.i(TAG, "getWindow().getDecorView().findViewById(android.R.id.content)");
+                    return mainContentView.findViewById(viewResId);
+               }
+          }
+          Log.i(TAG, "findViewById(android.R.id.content)");
+          return mainContentView.findViewById(viewResId);
      }
 
      public static int getSelectedTab() { return selectedTab; }
@@ -154,6 +196,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
      private static BroadcastReceiver serialIOActionReceiver = null;
      private static IntentFilter serialIOActionFilter = null;
      private static boolean serialIOReceiversRegistered = false;
+     private static boolean serialUSBDeviceSettingsNeedUpdate = true;
 
      protected void reconfigureSerialIODevices() {
           if(ChameleonSettings.serialIOPorts == null) {
@@ -213,15 +256,19 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
                Runnable configDeviceRunnable = new Runnable() {
                     public void run() {
                          ChameleonIO.detectChameleonType();
-                         ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
                          TabFragment.UITAB_DATA[TabFragment.TAB_TOOLS].changeMenuItemDisplay(TAB_TOOLS_MITEM_SLOTS, true);
                          TabFragment.UITAB_DATA[TabFragment.TAB_CONFIG].changeMenuItemDisplay(TabFragment.TAB_CONFIG_MITEM_LOGGING, true);
+                         ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
                          ChameleonIO.DeviceStatusSettings.updateAllStatusAndPost(false);
-                         ChameleonIO.DeviceStatusSettings.startPostingStats(400);
+                         ChameleonIO.DeviceStatusSettings.updateAllStatusAndPost(false); /* Make sure the device returned the correct data to display */
+                         ChameleonIO.DeviceStatusSettings.startPostingStats(0);
+                         serialUSBDeviceSettingsNeedUpdate = false;
                     }
                };
-               ChameleonIO.DeviceStatusSettings.stopPostingStats();
-               configDeviceHandler.postDelayed(configDeviceRunnable, 500);
+               if(serialUSBDeviceSettingsNeedUpdate) {
+                    ChameleonIO.DeviceStatusSettings.stopPostingStats();
+                    configDeviceHandler.postDelayed(configDeviceRunnable, 0);
+               }
           }
      }
 
@@ -242,6 +289,9 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
                final Intent intent = getIntent();
                final String intentAction = intent.getAction();
                if (intentAction != null && (intentAction.equals(UsbManager.ACTION_USB_DEVICE_DETACHED) || intentAction.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED))) {
+                    if(LiveLoggerActivity.getLiveLoggerInstance() != null) {
+                         LiveLoggerActivity.getLiveLoggerInstance().onNewIntent(intent);
+                    }
                     Log.i(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead of re-launching.");
                     finish();
                     return;
@@ -250,7 +300,8 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
 
           setUnhandledExceptionHandler();
 
-          boolean completeRestart = (getInstance() == null);
+          boolean completeRestart = (getLiveLoggerInstance() == null);
+          serialUSBDeviceSettingsNeedUpdate = true;
 
           AndroidSettingsStorage.loadPreviousSettings(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE);
           if(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT) {
@@ -289,13 +340,6 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR); // keep app from crashing when the screen rotates
           }
 
-          final Intent intent = getIntent();
-          final String intentAction = intent.getAction();
-          if (intentAction == null || (intentAction != null && !intentAction.equals(UsbManager.ACTION_USB_DEVICE_DETACHED) &&
-                  !intentAction.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED))) {
-               reconfigureSerialIODevices();
-          }
-
           clearStatusIcon(R.id.statusIconNewMsg);
           clearStatusIcon(R.id.statusIconNewXFer);
           clearStatusIcon(R.id.signalStrength);
@@ -313,6 +357,15 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
           if(getIntent() != null && getIntent().getBooleanExtra(CrashReportActivity.INTENT_CMLD_RECOVERED_FROM_CRASH, false)) {
                Utils.displayToastMessageLong("Chameleon Mini Live Debugger recovered from crash.");
           }
+
+          Handler runAfterGUIInitDeviceHandler = new Handler();
+          Runnable configDeviceRunnable = new Runnable() {
+               public void run() {
+                    liveLoggerActivityMainContentView = findViewById(android.R.id.content);
+                    reconfigureSerialIODevices();
+               }
+          };
+          runAfterGUIInitDeviceHandler.postDelayed(configDeviceRunnable, 300);
 
      }
 
@@ -432,7 +485,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
                     if(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT) {
                          MainActivityLogUtils.clearAllLogs();
                     }
-                    configDeviceHandler.postDelayed(configDeviceRunnable, 400);
+                    configDeviceRunnable.run();
                     setStatusIcon(R.id.statusIconUSB, R.drawable.usbconnected16);
                }
           }
@@ -447,6 +500,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
                     serialIOPort.shutdownSerial();
                }
                ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = -1;
+               serialUSBDeviceSettingsNeedUpdate = true;
                try {
                     int lastActiveSlotNumber = ChameleonIO.DeviceStatusSettings.DIP_SETTING;
                     ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[lastActiveSlotNumber - 1].disableLayout();
@@ -482,6 +536,8 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
                                    ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
                                    TabFragment.UITAB_DATA[TabFragment.TAB_TOOLS].changeMenuItemDisplay(TAB_TOOLS_MITEM_SLOTS, true);
                                    TabFragment.UITAB_DATA[TabFragment.TAB_CONFIG].changeMenuItemDisplay(TabFragment.TAB_CONFIG_MITEM_LOGGING, true);
+                                   ChameleonIO.DeviceStatusSettings.updateAllStatusAndPost(false);
+                                   ChameleonIO.DeviceStatusSettings.updateAllStatusAndPost(false); /* Make sure the device returned the correct data to display */
                                    ChameleonIO.DeviceStatusSettings.startPostingStats(0);
                                    setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
                               }

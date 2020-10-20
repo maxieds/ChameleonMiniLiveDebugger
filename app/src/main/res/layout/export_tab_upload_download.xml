@@ -33,7 +33,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:drawableLeft="@drawable/modemplug16"
         android:drawablePadding="5dp"
         android:singleLine="true"
-        android:text="Upload | Download Tag Dump via XMODEM:"
+        android:text="Upload | Download Tag via XMODEM:"
         android:textSize="14sp"
         android:textAllCaps="true"
         android:textStyle="bold|italic" />

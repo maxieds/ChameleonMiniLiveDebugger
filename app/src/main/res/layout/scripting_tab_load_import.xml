@@ -37,34 +37,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:orientation="vertical"
             android:padding="2dp">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?colorPrimaryDarkLog"
-                android:drawableLeft="@drawable/notes16"
-                android:drawablePadding="5dp"
-                android:singleLine="true"
-                android:text="Future Scripting Functionality: "
-                android:textAllCaps="true"
-                android:textStyle="bold|italic"/>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="?colorPrimaryDark" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?colorAccent"
-                android:drawablePadding="5dp"
-                android:singleLine="false"
-                android:textAllCaps="false"
-                android:textStyle="normal"
-                android:textSize="10sp"
-                android:typeface="serif"
-                android:text="@string/chameleonScriptingForthcomingFeatures"
-                android:textColor="?colorPrimaryDark"/>
 
         </LinearLayout>
 

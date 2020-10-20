@@ -502,6 +502,36 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:drawablePadding="3dp"
                     android:textSize="11sp"
                     android:singleLine="true"
+                    android:text="Datestamp format: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?android:colorPrimaryDark" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:src="@drawable/datestamp_icon24"
+                    android:background="@android:color/transparent"
+                    />
+
+                <EditText
+                    android:id="@+id/scriptingConfigDatestampFormat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:paddingLeft="4dp"
+                    android:hint="%Y-%m-%d-%H%M%S"
+                    android:singleLine="true"
+                    android:textSize="11sp"
+                    android:textColor="?colorPrimaryDarkLog" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:textSize="11sp"
+                    android:singleLine="true"
                     android:text="Script path: "
                     android:textStyle="bold|italic"
                     android:textColor="?android:colorPrimaryDark" />
