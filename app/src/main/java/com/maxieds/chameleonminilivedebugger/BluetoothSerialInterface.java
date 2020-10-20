@@ -59,7 +59,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
     public static void displayAndroidBluetoothSettings() {
         Intent intentOpenBluetoothSettings = new Intent();
         intentOpenBluetoothSettings.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
-        LiveLoggerActivity.getInstance().startActivity(intentOpenBluetoothSettings);
+        LiveLoggerActivity.getLiveLoggerInstance().startActivity(intentOpenBluetoothSettings);
     }
 
     public boolean configureSerialConnection(BluetoothDevice btDev) {
@@ -82,6 +82,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
                 if(ChameleonSettings.getActiveSerialIOPort() != null && btGattConnectorBLEDevice.isDeviceConnected()) {
                     configDeviceHandler.removeCallbacks(this);
                     ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+                    ChameleonIO.deviceStatus.updateAllStatusAndPost(false); /* Make sure the device returned the correct data to display */
                     ChameleonIO.DeviceStatusSettings.startPostingStats(0);
                     LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
                 }

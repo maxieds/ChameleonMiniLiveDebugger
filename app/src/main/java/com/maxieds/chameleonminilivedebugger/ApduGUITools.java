@@ -44,12 +44,12 @@ public class ApduGUITools {
     }
 
     public static AlertDialog getApduManualDataEntryDialog() {
-        AlertDialog.Builder adbuilder = new AlertDialog.Builder(LiveLoggerActivity.getInstance());
+        AlertDialog.Builder adbuilder = new AlertDialog.Builder(LiveLoggerActivity.getLiveLoggerInstance());
         adbuilder.setTitle("Set APDU Command Components: ");
-        String instrMsg = LiveLoggerActivity.getInstance().getString(R.string.apduEntryInstructions);
+        String instrMsg = LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apduEntryInstructions);
         adbuilder.setMessage(instrMsg);
 
-        EditText apduCmdEntry = new EditText(LiveLoggerActivity.getInstance());
+        EditText apduCmdEntry = new EditText(LiveLoggerActivity.getLiveLoggerInstance());
         apduCmdEntry.setHint("xx|xx|xx|xx|data-bytes");
         final EditText apduCmdEntryFinal = apduCmdEntry;
         adbuilder.setView(apduCmdEntryFinal);

@@ -145,34 +145,6 @@ public class ChameleonIO {
         return CHAMELEON_MINI_BOARD_TYPE;
     }
 
-    /*public static boolean initializeDevice() {
-        AndroidSettingsStorage.loadPreviousSettings(ChameleonSettings.chameleonDeviceSerialNumber);
-        if(LiveLoggerActivity.getSelectedTab() == TAB_TOOLS &&
-           TabFragment.UITAB_DATA[LiveLoggerActivity.getSelectedTab()].lastMenuIndex == TAB_TOOLS_MITEM_SLOTS) {
-            try {
-                int activeSlot = ChameleonIO.DeviceStatusSettings.DIP_SETTING;
-                ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlot - 1].readParametersFromChameleonSlot(activeSlot, activeSlot);
-                for (int si = 0; si < ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOT_COUNT; si++) {
-                    ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[si].resetLayoutParameters(si + 1);
-                    ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[si].updateLayoutParameters();
-                }
-            } catch(NumberFormatException nfe) {
-                nfe.printStackTrace();
-                return false;
-            }
-        }
-        else {
-            int selectedTab = LiveLoggerActivity.getSelectedTab();
-            int selectedMenuIdx = TabFragment.UITAB_DATA[selectedTab].lastMenuIndex;
-            View tabView = TabFragment.UITAB_DATA[selectedTab].tabInflatedView;
-            UITabUtils.initializeTabMainContent(selectedTab, selectedMenuIdx, tabView);
-            int activeSlot = Math.max(0, ChameleonIO.DeviceStatusSettings.DIP_SETTING - 1);
-            ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlot].readParametersFromChameleonSlot();
-        }
-        Log.i(TAG, "TODO: setup bi-directional sniffing if necessary ...");
-        return true;
-    }*/
-
     /**
      * Default timeout to use when communicating with the device.
      */
@@ -338,7 +310,7 @@ public class ChameleonIO {
         /**
          * How often do we update / refresh the stats at the top of the window?
          */
-        public static final int STATS_UPDATE_INTERVAL = 4500; // 4.5 seconds
+        public static final int STATS_UPDATE_INTERVAL = 6500; // 4.5 seconds
         public static boolean postingStatsInProgress = false;
         public static Handler statsUpdateHandler = new Handler();
         public static Runnable statsUpdateRunnable = new Runnable() {
@@ -360,6 +332,7 @@ public class ChameleonIO {
 
         public static void startPostingStats(int msDelay) {
             if(postingStatsInProgress || !ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) {
+                statsUpdateHandler.removeCallbacksAndMessages(statsUpdateRunnable);
                 return;
             }
             postingStatsInProgress = true;
@@ -369,7 +342,7 @@ public class ChameleonIO {
         /**
          * Queries the live device for its status settings.
          */
-        public static boolean updateAllStatus(boolean resetTimer) {
+        public static boolean updateAllStatus() {
             try {
                 if (!ChameleonIO.REVE_BOARD) {
                     CONFIG = ChameleonIO.getSettingFromDevice("CONFIG?", CONFIG);
@@ -426,34 +399,34 @@ public class ChameleonIO {
                 @Override
                 public void run() {
                     try {
-                        boolean haveUpdates = updateAllStatus(resetTimer);
+                        boolean haveUpdates = updateAllStatus();
                     }
                     catch(Exception nfe) {
                         nfe.printStackTrace();
                         stopPostingStats();
                         return;
                     }
-                    LiveLoggerActivity.getInstance().runOnUiThread(new Runnable() {
+                    LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(new Runnable() {
                         public void run() {
                             try {
-                                ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceConfigText)).setText(CONFIG);
+                                ((TextView) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.deviceConfigText)).setText(CONFIG);
                                 String formattedUID = Utils.formatUIDString(UID, ":");
-                                ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceConfigUID)).setText(formattedUID);
+                                ((TextView) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.deviceConfigUID)).setText(formattedUID);
                                 String subStats1 = String.format(Locale.ENGLISH, "REV%s|MEM-%dK|LOG-%s-%dK", ChameleonIO.REVE_BOARD ? "E" : "G", round(MEMSIZE / 1024), LOGMODE, round(LOGSIZE / 1024));
-                                ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceStats1)).setText(subStats1);
+                                ((TextView) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.deviceStats1)).setText(subStats1);
                                 String subStats2 = String.format(Locale.ENGLISH, "SLOT-%d|%s|FLD-%s|CHRG-%s", DIP_SETTING, READONLY ? "RO" : "RW", FIELD ? "1" : "0", CHARGING ? "1" : "0");
-                                ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceStats2)).setText(subStats2);
+                                ((TextView) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.deviceStats2)).setText(subStats2);
                                 String subStats3 = String.format(Locale.ENGLISH, "THRS-%dmv|TMT-%s", THRESHOLD, TIMEOUT.replace(" ", ""));
-                                ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.deviceStats3)).setText(subStats3);
-                                SeekBar thresholdSeekbar = (SeekBar) LiveLoggerActivity.getInstance().findViewById(R.id.thresholdSeekbar);
+                                ((TextView) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.deviceStats3)).setText(subStats3);
+                                SeekBar thresholdSeekbar = (SeekBar) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.thresholdSeekbar);
                                 if (thresholdSeekbar != null) {
                                     thresholdSeekbar.setProgress(THRESHOLD);
-                                    ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.thresholdSeekbarValueText)).setText(String.format(Locale.ENGLISH, "% 5d mV", THRESHOLD));
+                                    ((TextView) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.thresholdSeekbarValueText)).setText(String.format(Locale.ENGLISH, "% 5d mV", THRESHOLD));
                                 }
-                                SeekBar timeoutSeekbar = (SeekBar) LiveLoggerActivity.getInstance().findViewById(R.id.cmdTimeoutSeekbar);
+                                SeekBar timeoutSeekbar = (SeekBar) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.cmdTimeoutSeekbar);
                                 if (thresholdSeekbar != null) {
                                     thresholdSeekbar.setProgress(THRESHOLD);
-                                    ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.cmdTimeoutSeekbarValueText)).setText(String.format(Locale.ENGLISH, "% 4d (x128) ms", TIMEOUT));
+                                    ((TextView) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.cmdTimeoutSeekbarValueText)).setText(String.format(Locale.ENGLISH, "% 4d (x128) ms", TIMEOUT));
                                 }
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -463,7 +436,7 @@ public class ChameleonIO {
                 }
             };
             setToolbarSettingsDataThread.start();
-            if (resetTimer && postingStatsInProgress) {
+            if (resetTimer) {
                 statsUpdateHandler.removeCallbacksAndMessages(statsUpdateRunnable);
                 statsUpdateHandler.postDelayed(statsUpdateRunnable, STATS_UPDATE_INTERVAL);
             }

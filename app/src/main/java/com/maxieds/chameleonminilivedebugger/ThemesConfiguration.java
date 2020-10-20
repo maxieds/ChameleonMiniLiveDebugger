@@ -39,7 +39,7 @@ public class ThemesConfiguration {
      */
     @ColorInt
     public static int getThemeColorVariant(int attrID) {
-        return LiveLoggerActivity.getInstance().getTheme().obtainStyledAttributes(new int[] {attrID}).getColor(0, attrID);
+        return LiveLoggerActivity.getLiveLoggerInstance().getTheme().obtainStyledAttributes(new int[] {attrID}).getColor(0, attrID);
     }
 
     @ColorInt
@@ -58,7 +58,7 @@ public class ThemesConfiguration {
     public static Runnable setThemeRunner = new Runnable() {
         @Override
         public void run() {
-            setLocalTheme(storedAppTheme, true);
+            setLocalTheme(storedAppTheme, true, LiveLoggerActivity.getLiveLoggerInstance());
         }
     };
 
@@ -68,7 +68,7 @@ public class ThemesConfiguration {
      * @param themeDesc
      * @ref res/values/style.xml
      */
-    public static int setLocalTheme(String themeDesc, boolean applyTheme) {
+    public static int setLocalTheme(String themeDesc, boolean applyTheme, ChameleonMiniLiveDebuggerActivity activity) {
         int themeID;
         switch(themeDesc) {
             case "Atlanta":
@@ -112,6 +112,14 @@ public class ThemesConfiguration {
                     themeID = R.style.AppThemeGreen;
                 }
                 break;
+            case "Standard Green":
+                if(BuildConfig.FLAVOR.equals("paid")) {
+                    themeID = R.style.AppThemeGreenPaid;
+                }
+                else {
+                    themeID = R.style.AppThemeGreen;
+                }
+                break;
             case "Urbana DESFire":
                 themeID = R.style.AppThemeUrbanaDesfire;
                 break;
@@ -124,15 +132,15 @@ public class ThemesConfiguration {
         if(applyTheme) {
             Log.w(TAG, themeDesc);
             Log.w(TAG, String.valueOf(themeID));
-            LiveLoggerActivity.getInstance().setTheme(themeID);
+            activity.getInstance().setTheme(themeID);
             appThemeResID = themeID;
         }
         return themeID;
     }
 
     public static void actionButtonAppSettings(View view) {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(LiveLoggerActivity.getInstance(), appThemeResID);
-        final View dialogView = LiveLoggerActivity.getInstance().getLayoutInflater().inflate(R.layout.theme_config, null);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(LiveLoggerActivity.getLiveLoggerInstance(), appThemeResID);
+        final View dialogView = LiveLoggerActivity.getLiveLoggerInstance().getLayoutInflater().inflate(R.layout.theme_config, null);
         // set the correct current theme as the selected radio button:
         RadioGroup themeRadioGroup = (RadioGroup) dialogView.findViewById(R.id.themeRadioGroup);
         for(int rb = 0; rb < themeRadioGroup.getChildCount(); rb++) {
@@ -143,7 +151,7 @@ public class ThemesConfiguration {
             }
         }
         // finish constructing the theme selection dialog:
-        ScrollView themesScroller = new ScrollView(LiveLoggerActivity.getInstance());
+        ScrollView themesScroller = new ScrollView(LiveLoggerActivity.getLiveLoggerInstance());
         themesScroller.addView(dialogView);
         dialog.setView(themesScroller);
         dialog.setIcon(R.drawable.settingsgears24);
@@ -155,14 +163,14 @@ public class ThemesConfiguration {
                 int getSelectedOption = ((RadioGroup) dialogView.findViewById(R.id.themeRadioGroup)).getCheckedRadioButtonId();
                 String themeID = ((RadioButton) dialogView.findViewById(getSelectedOption)).getText().toString();
                 String themeDesc = themeID;
-                setLocalTheme(themeDesc, true);
+                setLocalTheme(themeDesc, true, LiveLoggerActivity.getLiveLoggerInstance());
                 storedAppTheme = themeDesc;
                 // store the theme setting for when the app reopens:
                 ThemesConfiguration.storedAppTheme = themeDesc;
                 AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.THEMEID_PREFERENCE);
                 // finally, apply the theme settings by (essentially) restarting the activity UI:
                 MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("THEME", "New theme installed: " + themeDesc));
-                LiveLoggerActivity.getInstance().recreate();
+                LiveLoggerActivity.getLiveLoggerInstance().recreate();
 
             }
         });

@@ -179,7 +179,7 @@ public class LogEntryMetadataRecord extends LogEntryBase {
             String locationDetails = "";
             locationDetails += String.format(Locale.ENGLISH, "Coordinates: (%s lat, %s long)\n", locCoords[0], locCoords[1]);
             try {
-                Geocoder gc = new Geocoder(LiveLoggerActivity.getInstance(), Locale.getDefault());
+                Geocoder gc = new Geocoder(LiveLoggerActivity.getLiveLoggerInstance(), Locale.getDefault());
                 List<Address> gcAddrs = gc.getFromLocation(Double.parseDouble(locCoords[0]), Double.parseDouble(locCoords[0]), 1);
                 if (gcAddrs != null && gcAddrs.size() > 0) {
                     locationDetails += String.format(Locale.ENGLISH, "Address: %s, %s, %s %s\n",

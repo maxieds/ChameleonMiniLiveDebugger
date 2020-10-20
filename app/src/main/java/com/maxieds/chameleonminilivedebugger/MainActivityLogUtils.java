@@ -56,7 +56,7 @@ public class MainActivityLogUtils {
             logScrollView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    ScrollView logScroller = (ScrollView) LiveLoggerActivity.getInstance().findViewById(R.id.log_scroll_view);
+                    ScrollView logScroller = (ScrollView) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.log_scroll_view);
                     if(logScroller == null) {
                         return;
                     }
@@ -78,10 +78,10 @@ public class MainActivityLogUtils {
      * @see LogEntryMetadataRecord
      */
     public static void appendNewLog(LogEntryBase logEntry) {
-        if(LiveLoggerActivity.getInstance() == null) {
+        if(LiveLoggerActivity.getLiveLoggerInstance() == null) {
             return;
         }
-        else if(LiveLoggerActivity.getLiveLoggerInstance().getSelectedTab() != TAB_LOG && LiveLoggerActivity.getInstance() != null) {
+        else if(LiveLoggerActivity.getLiveLoggerInstance().getSelectedTab() != TAB_LOG && LiveLoggerActivity.getLiveLoggerInstance() != null) {
             if(logEntry instanceof LogEntryUI) {
                 LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconNewXFer, R.drawable.statusxfer16);
             }
@@ -94,7 +94,7 @@ public class MainActivityLogUtils {
             logDataEntries.add(logEntry);
         }
         if(logEntry instanceof LogEntryMetadataRecord) { // switch to the log tab to display the results:
-            TabLayout tabLayout = (TabLayout) LiveLoggerActivity.getInstance().findViewById(R.id.tab_layout);
+            TabLayout tabLayout = (TabLayout) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.tab_layout);
             if(tabLayout != null) {
                 tabLayout.getTabAt(TAB_LOG).select();
                 if(TabFragment.UITAB_DATA[TAB_LOG].lastMenuIndex != TAB_LOG_MITEM_LOGS) {
@@ -178,11 +178,11 @@ public class MainActivityLogUtils {
      * @param directionFlag
      */
     public static void setSelectedXFerOnLogs(int directionFlag) {
-        Drawable dirArrowIcon = LiveLoggerActivity.getInstance().getResources().getDrawable(R.drawable.xfer16);
+        Drawable dirArrowIcon = LiveLoggerActivity.getLiveLoggerInstance().getResources().getDrawable(R.drawable.xfer16);
         if(directionFlag == 1)
-            dirArrowIcon = LiveLoggerActivity.getInstance().getResources().getDrawable(R.drawable.incoming16v2);
+            dirArrowIcon = LiveLoggerActivity.getLiveLoggerInstance().getResources().getDrawable(R.drawable.incoming16v2);
         else if(directionFlag == 2)
-            dirArrowIcon = LiveLoggerActivity.getInstance().getResources().getDrawable(R.drawable.outgoing16v2);
+            dirArrowIcon = LiveLoggerActivity.getLiveLoggerInstance().getResources().getDrawable(R.drawable.outgoing16v2);
         for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
             View logEntryView = logDataFeed.getChildAt(vi);
             if (logDataEntries.get(vi) instanceof LogEntryUI) {
@@ -249,9 +249,9 @@ public class MainActivityLogUtils {
      * @see res/layout/log_tab_logtoolsols.xml
      */
     public static void displayUserInputPrompt(String promptMsg) {
-        final EditText userInput = new EditText(LiveLoggerActivity.getInstance());
+        final EditText userInput = new EditText(LiveLoggerActivity.getLiveLoggerInstance());
         userInput.setHint("What is the event description?");
-        new AlertDialog.Builder(LiveLoggerActivity.getInstance())
+        new AlertDialog.Builder(LiveLoggerActivity.getLiveLoggerInstance())
                 .setTitle(promptMsg)
                 .setMessage("Enter annotation for the current log.")
                 .setView(userInput)
@@ -271,16 +271,16 @@ public class MainActivityLogUtils {
     public static void performLogSearch() {
         long startTime = System.currentTimeMillis();
         // clear out the existing search data first:
-        ScrollView searchResultsScroller = (ScrollView) LiveLoggerActivity.getInstance().findViewById(R.id.searchResultsScrollView);
+        ScrollView searchResultsScroller = (ScrollView) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.searchResultsScrollView);
         if(searchResultsScroller.getChildCount() != 0) {
             searchResultsScroller.removeViewAt(0);
         }
-        LinearLayout searchResultsContainer = new LinearLayout(LiveLoggerActivity.getInstance().getApplicationContext());
+        LinearLayout searchResultsContainer = new LinearLayout(LiveLoggerActivity.getLiveLoggerInstance().getApplicationContext());
         searchResultsContainer.setOrientation(LinearLayout.VERTICAL);
         searchResultsScroller.addView(searchResultsContainer);
 
-        boolean selectedBytes = ((RadioButton) LiveLoggerActivity.getInstance().findViewById(R.id.radio_search_bytes)).isChecked();
-        String searchString = ((TextView) LiveLoggerActivity.getInstance().findViewById(R.id.userInputSearchData)).getText().toString();
+        boolean selectedBytes = ((RadioButton) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.radio_search_bytes)).isChecked();
+        String searchString = ((TextView) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.userInputSearchData)).getText().toString();
         if(searchString.equals(""))
             return;
         else if(selectedBytes && !Utils.stringIsHexadecimal(searchString)) {
@@ -292,10 +292,10 @@ public class MainActivityLogUtils {
         }
         searchString = searchString.toLowerCase(Locale.ENGLISH);
 
-        boolean searchStatus = ((CheckBox) LiveLoggerActivity.getInstance().findViewById(R.id.entrySearchIncludeStatus)).isChecked();
-        boolean searchAPDU = ((CheckBox) LiveLoggerActivity.getInstance().findViewById(R.id.entrySearchAPDU)).isChecked();
-        boolean searchLogPayload = ((CheckBox) LiveLoggerActivity.getInstance().findViewById(R.id.entrySearchRawLogData)).isChecked();
-        boolean searchLogHeaders = ((CheckBox) LiveLoggerActivity.getInstance().findViewById(R.id.entrySearchLogHeaders)).isChecked();
+        boolean searchStatus = ((CheckBox) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.entrySearchIncludeStatus)).isChecked();
+        boolean searchAPDU = ((CheckBox) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.entrySearchAPDU)).isChecked();
+        boolean searchLogPayload = ((CheckBox) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.entrySearchRawLogData)).isChecked();
+        boolean searchLogHeaders = ((CheckBox) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.entrySearchLogHeaders)).isChecked();
         int matchCount = 0;
         Log.i(TAG, "Searching for: " + searchString);
         for(int vi = 0; vi < logDataEntries.size(); vi++) {

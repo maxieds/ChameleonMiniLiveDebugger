@@ -27,13 +27,13 @@ public class AndroidNFCExchange {
     private static final String TAG = AndroidNFCExchange.class.getSimpleName();
 
     public static boolean isNFCEnabled() {
-        NfcManager nfcManager = (NfcManager) LiveLoggerActivity.getInstance().getSystemService(Context.NFC_SERVICE);
+        NfcManager nfcManager = (NfcManager) LiveLoggerActivity.getLiveLoggerInstance().getSystemService(Context.NFC_SERVICE);
         NfcAdapter nfcAdapter = nfcManager.getDefaultAdapter();
         return nfcAdapter != null && nfcAdapter.isEnabled();
     }
 
     public static boolean isNFCAvailable() {
-        NfcManager nfcManager = (NfcManager) LiveLoggerActivity.getInstance().getSystemService(Context.NFC_SERVICE);
+        NfcManager nfcManager = (NfcManager) LiveLoggerActivity.getLiveLoggerInstance().getSystemService(Context.NFC_SERVICE);
         NfcAdapter nfcAdapter = nfcManager.getDefaultAdapter();
         return nfcAdapter != null;
     }
@@ -45,7 +45,7 @@ public class AndroidNFCExchange {
         }
         Intent intentOpenNFCSettings = new Intent();
         intentOpenNFCSettings.setAction(android.provider.Settings.ACTION_NFC_SETTINGS);
-        LiveLoggerActivity.getInstance().startActivity(intentOpenNFCSettings);
+        LiveLoggerActivity.getLiveLoggerInstance().startActivity(intentOpenNFCSettings);
     }
 
 }

@@ -225,7 +225,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
         receiversRegistered = true;
         ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = ChameleonSettings.USBIO_IFACE_INDEX;
         LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUSB, R.drawable.usbconnected16);
-        notifyStatus("USB STATUS: ", "Successfully configured the device ...\n\nChameleon:     " + getActiveDeviceInfo());
+        notifyStatus("USB STATUS: ", "Chameleon:     " + getActiveDeviceInfo());
         return STATUS_TRUE;
     }
 
@@ -330,15 +330,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
             if (intentAction.equals(ACTION_USB_PERMISSION)) {
                 synchronized (this) {
                     SerialUSBInterface.usbPermissionsGranted = true;
-                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                        if (!ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX].serialConfigured()) {
-                            if (ChameleonSettings.serialIOPorts[ChameleonSettings.USBIO_IFACE_INDEX].configureSerial() != 0) {
-                                ChameleonIO.DeviceStatusSettings.stopPostingStats();
-                                ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-                                ChameleonIO.DeviceStatusSettings.startPostingStats(100);
-                            }
-                        }
-                    } else {
+                    if (!intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                         UsbDevice usbDev = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                         Log.d(TAG, "Permission denied for USB device " + usbDev);
                     }
@@ -348,6 +340,9 @@ public class SerialUSBInterface extends SerialIOReceiver {
     };
 
     public static void registerUSBPermission(Intent intent, Context context) {
+        if(SerialUSBInterface.usbPermissionsGranted) {
+            return;
+        }
         if(!usbPermissionsReceiverConfig) {
             context.registerReceiver(SerialUSBInterface.usbPermissionsReceiver, usbPermsFilter);
             SerialUSBInterface.usbPermissionsReceiverConfig = true;

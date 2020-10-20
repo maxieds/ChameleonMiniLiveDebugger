@@ -138,11 +138,11 @@ public class ExportTools {
                     ioe.printStackTrace();
                 } finally {
                     ChameleonIO.UPLOAD = false;
-                    //ChameleonIO.getSettingFromDevice("READONLY=" + (ChameleonIO.deviceStatus.READONLY ? "1" : "0"));
                     serialIOPort.releaseSerialPortLock();
                 }
                 if(!ExportTools.transmissionErrorOccurred) {
                     ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+                    ChameleonIO.deviceStatus.updateAllStatusAndPost(false); /* Make sure the device returned the correct data to display */
                 }
                 else {
                     LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
@@ -596,6 +596,7 @@ public class ExportTools {
         }
         ChameleonIO.executeChameleonMiniCommand("CONFIG=MF_ULTRALIGHT", ChameleonIO.TIMEOUT);
         ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+        ChameleonIO.deviceStatus.updateAllStatusAndPost(false); /* Make sure the device returned the correct data to display */
         for(int page = 0; page < dataBytes.length; page += 4) {
             byte[] apduSendBytesHdr = {
                     (byte) 0xff, // CLA

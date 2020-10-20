@@ -364,12 +364,16 @@ public class Utils {
         return ThemesConfiguration.getThemeColorVariant(colorResID);
     }
 
+    public static int getColorFromTheme(int colorResID, ChameleonMiniLiveDebuggerActivity activity) {
+        return ThemesConfiguration.getThemeColorVariant(activity, colorResID);
+    }
+
     private static final int GPS_LONGITUDE_CINDEX = 0;
     private static final int GPS_LATITUDE_CINDEX = 1;
 
     public static String[] getGPSLocationCoordinates() {
         try {
-            LocationManager locationManager = (LocationManager) LiveLoggerActivity.getInstance().getSystemService(Context.LOCATION_SERVICE);
+            LocationManager locationManager = (LocationManager) LiveLoggerActivity.getLiveLoggerInstance().getSystemService(Context.LOCATION_SERVICE);
             Location locGPSProvider = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             Location locNetProvider = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             long gpsProviderLocTime = 0, netProviderLocTime = 0;
@@ -403,7 +407,8 @@ public class Utils {
     }
 
     public static void displayToastMessage(String toastMsg, int msgDuration) {
-        Toast toastDisplay = Toast.makeText(LiveLoggerActivity.getInstance(), toastMsg, msgDuration);
+        Toast toastDisplay = Toast.makeText(
+                LiveLoggerActivity.getLiveLoggerInstance(), toastMsg, msgDuration);
         toastDisplay.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 0, 0);
         int toastBackgroundColor = Utils.getColorFromTheme(R.attr.colorPrimaryDark);
         toastDisplay.getView().getBackground().setColorFilter(toastBackgroundColor, PorterDuff.Mode.SRC_IN);

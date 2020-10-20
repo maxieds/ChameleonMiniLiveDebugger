@@ -60,7 +60,7 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
     public static final String INTENT_CHAMELEON_LOGMODE = "Intent.CrashReport.ChameleonLogMode";
     public static final String INTENT_CHAMELEON_TIMEOUT = "Intent.CrashReport.ChameleonCmdTimeout";
 
-    public static final String CRASH_REPORT_THEME_NAME = "Standard Green (Default)";
+    public static final String CRASH_REPORT_THEME_NAME = "Standard Green";
 
     private String stackTrace;
     private String timeStamp;
@@ -79,7 +79,7 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
         super.onCreate(savedInstanceState);
         AndroidSettingsStorage.loadPreviousSettings(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE);
 
-        ThemesConfiguration.setLocalTheme(CRASH_REPORT_THEME_NAME, true);
+        ThemesConfiguration.setLocalTheme(CRASH_REPORT_THEME_NAME, true, this);
         setContentView(R.layout.activity_crash_report);
         configureLayoutToolbar();
         if(getIntent() != null && getIntent().getAction() != null && getIntent().getAction().equals(INTENT_ACTION_START_ACTIVITY)) {
@@ -90,7 +90,7 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
             chameleonConfig = getIntent().getStringExtra(INTENT_CHAMELEON_CONFIG);
             chameleonLogMode = getIntent().getStringExtra(INTENT_CHAMELEON_LOGMODE);
             chameleonTimeout = getIntent().getStringExtra(INTENT_CHAMELEON_TIMEOUT);
-            configureLayoutDisplay(getIntent());
+            configureLayoutDisplay();
         }
         else {
             finish();
@@ -115,13 +115,13 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
         getWindow().setNavigationBarColor(ThemesConfiguration.getThemeColorVariant(this, R.attr.colorPrimaryDark));
     }
 
-    protected void configureLayoutDisplay(Intent launchIntent) {
+    protected void configureLayoutDisplay() {
         TextView tvStackTraceHeader = (TextView) findViewById(R.id.stackTraceHeaderTextBar);
         GradientDrawable hdrGradientBg = new GradientDrawable(
                 GradientDrawable.Orientation.BL_TR,
                 new int[] {
-                        Utils.getColorFromTheme(R.attr.colorAccent),
-                        Utils.getColorFromTheme(R.attr.colorAccentHighlight)
+                        Utils.getColorFromTheme(R.attr.colorAccent, this),
+                        Utils.getColorFromTheme(R.attr.colorAccentHighlight, this)
                 });
         hdrGradientBg.setCornerRadius(27f);
         tvStackTraceHeader.setBackground(hdrGradientBg);

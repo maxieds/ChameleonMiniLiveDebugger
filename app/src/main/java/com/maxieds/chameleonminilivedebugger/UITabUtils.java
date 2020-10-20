@@ -87,6 +87,9 @@ public class UITabUtils {
 
     public static boolean initializeLoggingTab(int menuItemIdx, View tabMainLayoutView) {
         if(menuItemIdx == TAB_LOG_MITEM_LOGS && !MainActivityLogUtils.logDataFeedConfigured) {
+            if(MainActivityLogUtils.logDataFeed == null) {
+                MainActivityLogUtils.logDataFeed = new LinearLayout(LiveLoggerActivity.getLiveLoggerInstance());
+            }
             ScrollView logScroller = (ScrollView) tabMainLayoutView.findViewById(R.id.log_scroll_view);
             logScroller.removeAllViews();
             LinearLayout logDataFeed = MainActivityLogUtils.logDataFeed;
@@ -96,17 +99,6 @@ public class UITabUtils {
             MainActivityLogUtils.logScrollView = logScroller;
             MainActivityLogUtils.logDataFeed = logDataFeed;
             MainActivityLogUtils.logDataFeedConfigured = true;
-        }
-        else if(menuItemIdx == TAB_LOG_MITEM_LOGS) {
-            if(MainActivityLogUtils.logDataFeed == null) {
-                MainActivityLogUtils.logDataFeed = new LinearLayout(LiveLoggerActivity.getInstance());
-            }
-            ScrollView logScroller = (ScrollView) tabMainLayoutView.findViewById(R.id.log_scroll_view);
-            if(MainActivityLogUtils.logScrollView.getChildCount() > 0) {
-                MainActivityLogUtils.logScrollView.removeViewAt(0);
-            }
-            logScroller.addView(MainActivityLogUtils.logDataFeed);
-            MainActivityLogUtils.logScrollView = logScroller;
         }
         else if(menuItemIdx == TAB_LOG_MITEM_LOGTOOLS) {}
         else if(menuItemIdx == TAB_LOG_MITEM_SEARCH) {
@@ -165,107 +157,123 @@ public class UITabUtils {
             if(slotConfigContainer.getChildCount() == 0) {
                 for(int si = 0; si < ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOT_COUNT; si++) {
                     ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[si].createSlotConfigUILayout(si);
-                    ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[si].updateLayoutParameters();
-                    if(si + 1 == activeSlotNumber && ChameleonSettings.getActiveSerialIOPort() != null) {
-                        ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].getTagConfigurationsListFromDevice();
-                        ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].readParametersFromChameleonSlot();
-                        ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].updateLayoutParameters();
-                        ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].enableLayout();
-                    }
                 }
             }
-            else if (ChameleonSettings.getActiveSerialIOPort() != null) {
-                ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].getTagConfigurationsListFromDevice();
-                ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].readParametersFromChameleonSlot();
-                ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].updateLayoutParameters();
-                ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumber - 1].enableLayout();
-                Switch swLockTag = (Switch) slotConfigContainer.findViewById(R.id.fieldOnOffSwitch);
-                swLockTag.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        ChameleonIO.executeChameleonMiniCommand("READONLY=" + (isChecked ? "1" : "0"), ChameleonIO.TIMEOUT);
+            if (ChameleonSettings.getActiveSerialIOPort() != null) {
+                final int activeSlotNumberConst = activeSlotNumber;
+                Thread configureSlotGetDataThread = new Thread() {
+                    @Override
+                    public void run() {
+                        ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumberConst - 1].getTagConfigurationsListFromDevice();
+                        ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumberConst - 1].readParametersFromChameleonSlot();
+                        ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumberConst - 1].updateLayoutParameters();
+                        ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumberConst - 1].enableLayout();
+                        Switch swLockTag = (Switch) slotConfigContainer.findViewById(R.id.fieldOnOffSwitch);
+                        swLockTag.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                ChameleonIO.executeChameleonMiniCommand("READONLY=" + (isChecked ? "1" : "0"), ChameleonIO.TIMEOUT);
+                            }
+                        });
+                        Switch swField = (Switch) slotConfigContainer.findViewById(R.id.fieldOnOffSwitch);
+                        swField.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                ChameleonIO.executeChameleonMiniCommand("FIELD=" + (isChecked ? "1" : "0"), ChameleonIO.TIMEOUT);
+                            }
+                        });
                     }
-                });
-                Switch swField = (Switch) slotConfigContainer.findViewById(R.id.fieldOnOffSwitch);
-                swField.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        ChameleonIO.executeChameleonMiniCommand("FIELD=" + (isChecked ? "1" : "0"), ChameleonIO.TIMEOUT);
-                    }
-                });
+                };
+                LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(configureSlotGetDataThread);
             }
         }
         else if(menuItemIdx == TAB_TOOLS_MITEM_TAGCONFIG) {}
         else if(menuItemIdx == TAB_TOOLS_MITEM_CMDS) {
-            Switch fieldSwitch = (Switch) tabMainLayoutView.findViewById(R.id.fieldOnOffSwitch);
-            fieldSwitch.setChecked(ChameleonIO.deviceStatus.FIELD);
-            fieldSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    ChameleonIO.executeChameleonMiniCommand("FIELD=" + (isChecked ? "1" : "0"), ChameleonIO.TIMEOUT);
-                }
-            });
-            Switch roSwitch = (Switch) tabMainLayoutView.findViewById(R.id.readonlyOnOffSwitch);
-            roSwitch.setChecked(ChameleonIO.deviceStatus.READONLY);
-            roSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    ChameleonIO.executeChameleonMiniCommand("READONLY=" + (isChecked ? "1" : "0"), ChameleonIO.TIMEOUT);
-                }
-            });
-            SeekBar thresholdSeekbar = (SeekBar) tabMainLayoutView.findViewById(R.id.thresholdSeekbar);
-            int threshold = 400;
-            if(ChameleonSettings.getActiveSerialIOPort() != null) {
-                try {
-                    threshold = Integer.parseInt(ChameleonIO.getSettingFromDevice("THRESHOLD?"));
-                }
-                catch(NumberFormatException nfe) {}
-                thresholdSeekbar.setProgress(threshold);
-            }
-            thresholdSeekbar.incrementProgressBy(25);
-            ((TextView) tabMainLayoutView.findViewById(R.id.thresholdSeekbarValueText)).setText(String.format(Locale.ENGLISH, "% 5d mV", threshold));
-            final View seekbarView = tabMainLayoutView;
-            thresholdSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
-                TextView labelText = (TextView) seekbarView.findViewById(R.id.thresholdSeekbarValueText);
+            Thread cfgToolsCmdsDataThread = new Thread() {
                 @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    labelText.setText(String.format(Locale.ENGLISH, "% 5d mV", progress));
+                public void run() {
+                    Switch fieldSwitch = (Switch) tabMainLayoutView.findViewById(R.id.fieldOnOffSwitch);
+                    fieldSwitch.setChecked(ChameleonIO.deviceStatus.FIELD);
+                    fieldSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            ChameleonIO.executeChameleonMiniCommand("FIELD=" + (isChecked ? "1" : "0"), ChameleonIO.TIMEOUT);
+                        }
+                    });
+                    Switch roSwitch = (Switch) tabMainLayoutView.findViewById(R.id.readonlyOnOffSwitch);
+                    roSwitch.setChecked(ChameleonIO.deviceStatus.READONLY);
+                    roSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            ChameleonIO.executeChameleonMiniCommand("READONLY=" + (isChecked ? "1" : "0"), ChameleonIO.TIMEOUT);
+                        }
+                    });
+                    SeekBar thresholdSeekbar = (SeekBar) tabMainLayoutView.findViewById(R.id.thresholdSeekbar);
+                    int threshold = 400;
+                    if (ChameleonSettings.getActiveSerialIOPort() != null) {
+                        try {
+                            threshold = Integer.parseInt(ChameleonIO.getSettingFromDevice("THRESHOLD?"));
+                        } catch (NumberFormatException nfe) {
+                        }
+                        thresholdSeekbar.setProgress(threshold);
+                    }
+                    thresholdSeekbar.incrementProgressBy(25);
+                    ((TextView) tabMainLayoutView.findViewById(R.id.thresholdSeekbarValueText)).setText(String.format(Locale.ENGLISH, "% 5d mV", threshold));
+                    final View seekbarView = tabMainLayoutView;
+                    thresholdSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                        TextView labelText = (TextView) seekbarView.findViewById(R.id.thresholdSeekbarValueText);
+
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                            labelText.setText(String.format(Locale.ENGLISH, "% 5d mV", progress));
+                        }
+
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {
+                        }
+
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {
+                            int nextThreshold = seekBar.getProgress();
+                            LiveLoggerActivity.setSignalStrengthIndicator(nextThreshold);
+                            ChameleonIO.executeChameleonMiniCommand("THRESHOLD=" + String.valueOf(nextThreshold), ChameleonIO.TIMEOUT);
+                            ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+                            ChameleonIO.deviceStatus.updateAllStatusAndPost(false); /* Make sure the device returned the correct data to display */
+                        }
+                    });
+                    LiveLoggerActivity.setSignalStrengthIndicator(thresholdSeekbar.getProgress());
+                    SeekBar timeoutSeekbar = (SeekBar) tabMainLayoutView.findViewById(R.id.cmdTimeoutSeekbar);
+                    int timeout = 1;
+                    if (ChameleonSettings.getActiveSerialIOPort() != null) {
+                        try {
+                            timeout = Integer.parseInt(ChameleonIO.getSettingFromDevice("TIMEOUT?"));
+                        } catch (NumberFormatException nfe) {
+                        }
+                        timeoutSeekbar.setProgress(timeout);
+                    }
+                    timeoutSeekbar.incrementProgressBy(2);
+                    ((TextView) tabMainLayoutView.findViewById(R.id.cmdTimeoutSeekbarValueText)).setText(String.format(Locale.ENGLISH, "% 4d (x128) ms", timeout));
+                    final View tmtSeekbarView = tabMainLayoutView;
+                    timeoutSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                        TextView labelText = (TextView) tmtSeekbarView.findViewById(R.id.thresholdSeekbarValueText);
+
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                            labelText.setText(String.format(Locale.ENGLISH, "% 4d (x128) ms", progress));
+                        }
+
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {
+                        }
+
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {
+                            int nextTimeout = seekBar.getProgress();
+                            ChameleonIO.executeChameleonMiniCommand("TIMEOUT=" + String.valueOf(nextTimeout), ChameleonIO.TIMEOUT);
+                            ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+                            ChameleonIO.deviceStatus.updateAllStatusAndPost(false); /* Make sure the device returned the correct data to display */
+                            ChameleonIO.TIMEOUT = nextTimeout;
+                        }
+                    });
                 }
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {}
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                    int nextThreshold = seekBar.getProgress();
-                    LiveLoggerActivity.setSignalStrengthIndicator(nextThreshold);
-                    ChameleonIO.executeChameleonMiniCommand("THRESHOLD=" + String.valueOf(nextThreshold), ChameleonIO.TIMEOUT);
-                    ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-                }
-            });
-            LiveLoggerActivity.setSignalStrengthIndicator(thresholdSeekbar.getProgress());
-            SeekBar timeoutSeekbar = (SeekBar) tabMainLayoutView.findViewById(R.id.cmdTimeoutSeekbar);
-            int timeout = 1;
-            if(ChameleonSettings.getActiveSerialIOPort() != null) {
-                try {
-                   timeout = Integer.parseInt(ChameleonIO.getSettingFromDevice("TIMEOUT?"));
-                }
-                catch(NumberFormatException nfe) {}
-                timeoutSeekbar.setProgress(timeout);
-            }
-            timeoutSeekbar.incrementProgressBy(2);
-            ((TextView) tabMainLayoutView.findViewById(R.id.cmdTimeoutSeekbarValueText)).setText(String.format(Locale.ENGLISH, "% 4d (x128) ms", timeout));
-            final View tmtSeekbarView = tabMainLayoutView;
-            timeoutSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
-                TextView labelText = (TextView) tmtSeekbarView.findViewById(R.id.thresholdSeekbarValueText);
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    labelText.setText(String.format(Locale.ENGLISH, "% 4d (x128) ms", progress));
-                }
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {}
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                    int nextTimeout = seekBar.getProgress();
-                    ChameleonIO.executeChameleonMiniCommand("TIMEOUT=" + String.valueOf(nextTimeout), ChameleonIO.TIMEOUT);
-                    ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-                    ChameleonIO.TIMEOUT = nextTimeout;
-                }
-            });
+            };
+            LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(cfgToolsCmdsDataThread);
         }
         else if(menuItemIdx == TAB_TOOLS_MITEM_PERIPHERALS) {
             connectPeripheralSpinnerAdapter(tabMainLayoutView, R.id.RButtonSpinner, R.array.RButtonOptions, ChameleonPeripherals.spinnerRButtonAdapter, "RBUTTON?");
@@ -280,7 +288,7 @@ public class UITabUtils {
             ApduUtils.buildFullInstructionsList();
             ApduUtils.tabView = tabMainLayoutView;
             ScrollView sv = (ScrollView) tabMainLayoutView.findViewById(R.id.apduSearchResultsScrollView);
-            LinearLayout searchResultsContainer = new LinearLayout(LiveLoggerActivity.getInstance());
+            LinearLayout searchResultsContainer = new LinearLayout(LiveLoggerActivity.getLiveLoggerInstance());
             searchResultsContainer.setOrientation(LinearLayout.VERTICAL);
             sv.addView(searchResultsContainer);
         }
@@ -570,14 +578,19 @@ public class UITabUtils {
         Spinner spinner = (Spinner) view.findViewById(spinnerID);
         spinner.setAdapter(spinnerAdapter);
         if(ChameleonSettings.getActiveSerialIOPort() != null) {
-            String deviceSetting = ChameleonIO.getSettingFromDevice("LOGMODE?");
-            if(ChameleonLogUtils.LOGMODE_NOTIFY_STATE && deviceSetting.equals(ChameleonLogUtils.LOGMODE_LIVE)) {
-                deviceSetting = ChameleonLogUtils.LOGMODE_LIVE_WITH_NOTIFY_SELECT_STATE;
-            }
-            else if(ChameleonLogUtils.LOGMODE_NOTIFY_STATE && deviceSetting.equals(ChameleonLogUtils.LOGMODE_OFF)) {
-                deviceSetting = ChameleonLogUtils.LOGMODE_OFF_WITH_NOTIFY_SELECT_STATE;
-            }
-            spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(deviceSetting));
+            Thread cfgLogSettingsDataThread = new Thread() {
+                @Override
+                public void run() {
+                    String deviceSetting = ChameleonIO.getSettingFromDevice("LOGMODE?");
+                    if (ChameleonLogUtils.LOGMODE_NOTIFY_STATE && deviceSetting.equals(ChameleonLogUtils.LOGMODE_LIVE)) {
+                        deviceSetting = ChameleonLogUtils.LOGMODE_LIVE_WITH_NOTIFY_SELECT_STATE;
+                    } else if (ChameleonLogUtils.LOGMODE_NOTIFY_STATE && deviceSetting.equals(ChameleonLogUtils.LOGMODE_OFF)) {
+                        deviceSetting = ChameleonLogUtils.LOGMODE_OFF_WITH_NOTIFY_SELECT_STATE;
+                    }
+                    spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(deviceSetting));
+                }
+            };
+            LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(cfgLogSettingsDataThread);
         }
         final Spinner localSpinnerRef = spinner;
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

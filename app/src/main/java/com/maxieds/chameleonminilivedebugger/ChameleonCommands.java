@@ -83,7 +83,7 @@ public class ChameleonCommands {
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setDataAndType(Uri.parse("//sdcard//Download//"), "*/*");
         try {
-            LiveLoggerActivity.getInstance().startActivityForResult(Intent.createChooser(intent, "Select a Card File to Upload"), LiveLoggerActivity.FILE_SELECT_CODE);
+            LiveLoggerActivity.getLiveLoggerInstance().startActivityForResult(Intent.createChooser(intent, "Select a Card File to Upload"), LiveLoggerActivity.FILE_SELECT_CODE);
         } catch (android.content.ActivityNotFoundException e) {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to choose card file: " + e.getMessage()));
         }

@@ -173,7 +173,7 @@ public class LogEntryUI extends LogEntryBase {
         mainEntryContainer.setAlpha(LOGENTRY_GUI_ALPHA);
         entrySelect = (CheckBox) mainContainerRef.findViewById(R.id.entrySelect);
         inoutDirIndicator = (ImageView) mainContainerRef.findViewById(R.id.inputDirIndicatorImg);
-        inoutDirIndicator.setImageDrawable(LiveLoggerActivity.getInstance().getResources().getDrawable(getDataDirectionMarker()));
+        inoutDirIndicator.setImageDrawable(LiveLoggerActivity.getLiveLoggerInstance().getResources().getDrawable(getDataDirectionMarker()));
         apduParseStatus = (ImageView) mainContainerRef.findViewById(R.id.apduParseStatusImg);
         tvLabel = (TextView) mainContainerRef.findViewById(R.id.text_label);
         recordID = ++MainActivityLogUtils.RECORDID;

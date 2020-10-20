@@ -32,20 +32,21 @@ public class MainActivityNavActions {
     private static final String TAG = MainActivityNavActions.class.getSimpleName();
 
     public static AlertDialog getAboutTheAppDialog() {
-        AlertDialog.Builder adBuilder = new AlertDialog.Builder(LiveLoggerActivity.getInstance(), R.style.SpinnerTheme);
-        String rawAboutStr = LiveLoggerActivity.getInstance().getString(R.string.apphtmlheader) +
-                LiveLoggerActivity.getInstance().getString(R.string.aboutapp) +
-                LiveLoggerActivity.getInstance().getString(R.string.privacyhtml) +
-                LiveLoggerActivity.getInstance().getString(R.string.apphtmlfooter);
+        AlertDialog.Builder adBuilder = new AlertDialog.Builder(LiveLoggerActivity.getLiveLoggerInstance(), R.style.SpinnerTheme);
+        String rawAboutStr = LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlheader) +
+                LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.aboutapp) +
+                LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.privacyhtml) +
+                LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlfooter);
         rawAboutStr = rawAboutStr.replace("%%ANDROID_VERSION_CODE%%", String.valueOf(BuildConfig.VERSION_CODE));
         rawAboutStr = rawAboutStr.replace("%%ANDROID_VERSION_NAME%%", String.valueOf(BuildConfig.VERSION_NAME));
         rawAboutStr = rawAboutStr.replace("%%ANDROID_FLAVOR_NAME%%", String.valueOf(BuildConfig.FLAVOR) + ", " + BuildConfig.BUILD_TIMESTAMP);
         rawAboutStr = rawAboutStr.replace("%%GIT_COMMIT_HASH%%", String.valueOf(BuildConfig.GIT_COMMIT_HASH));
         rawAboutStr = rawAboutStr.replace("%%GIT_COMMIT_DATE%%", String.valueOf(BuildConfig.GIT_COMMIT_DATE));
-        int aboutLinkColor = LiveLoggerActivity.getInstance().getTheme().obtainStyledAttributes(new int[] {R.attr.colorAboutLinkColor}).getColor(0, LiveLoggerActivity.getInstance().getResources().getColor(R.color.colorBigVeryBadError));
+        int aboutLinkColor = LiveLoggerActivity.getLiveLoggerInstance().getTheme().obtainStyledAttributes(new int[] {R.attr.colorAboutLinkColor}).getColor(0,
+                             LiveLoggerActivity.getLiveLoggerInstance().getResources().getColor(R.color.colorBigVeryBadError));
         rawAboutStr = rawAboutStr.replace("%%ABOUTLINKCOLOR%%", String.format(Locale.ENGLISH, "#%06X", 0xFFFFFF & aboutLinkColor));
 
-        WebView wv = new WebView(LiveLoggerActivity.getInstance());
+        WebView wv = new WebView(LiveLoggerActivity.getLiveLoggerInstance());
         wv.getSettings().setJavaScriptEnabled(false);
         wv.loadDataWithBaseURL(null, rawAboutStr, "text/html", "UTF-8", "");
         wv.setBackgroundColor(ThemesConfiguration.getThemeColorVariant(R.attr.colorAccentHighlight));
@@ -85,8 +86,8 @@ public class MainActivityNavActions {
     }
 
     public static AlertDialog getHelpTopicsDialog() {
-        AlertDialog.Builder adBuilder = new AlertDialog.Builder(LiveLoggerActivity.getInstance(), R.style.SpinnerTheme);
-        View adView = LiveLoggerActivity.getInstance().getDefaultInflater().inflate(R.layout.help_dialog, null);
+        AlertDialog.Builder adBuilder = new AlertDialog.Builder(LiveLoggerActivity.getLiveLoggerInstance(), R.style.SpinnerTheme);
+        View adView = LiveLoggerActivity.getLiveLoggerInstance().getDefaultInflater().inflate(R.layout.help_dialog, null);
         final View adViewFinal = adView;
 
         Button cmdRespButton = (Button) adView.findViewById(R.id.cmdRespButton);
@@ -94,9 +95,9 @@ public class MainActivityNavActions {
             @Override
             public void onClick(View v) {
                 WebView wv = (WebView) adViewFinal.findViewById(R.id.wvDisplayHelpTopic);
-                String rawHTMLString = LiveLoggerActivity.getInstance().getString(R.string.apphtmlheader) +
-                        LiveLoggerActivity.getInstance().getString(R.string.helpCmdResp) +
-                        LiveLoggerActivity.getInstance().getString(R.string.apphtmlfooter);
+                String rawHTMLString = LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlheader) +
+                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.helpCmdResp) +
+                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlfooter);
                 wv.loadData(rawHTMLString, "text/html", "UTF-8");
             }
         });
@@ -105,9 +106,9 @@ public class MainActivityNavActions {
             @Override
             public void onClick(View v) {
                 WebView wv = (WebView) adViewFinal.findViewById(R.id.wvDisplayHelpTopic);
-                String rawHTMLString = LiveLoggerActivity.getInstance().getString(R.string.apphtmlheader) +
-                        LiveLoggerActivity.getInstance().getString(R.string.helpRevECmds) +
-                        LiveLoggerActivity.getInstance().getString(R.string.apphtmlfooter);
+                String rawHTMLString = LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlheader) +
+                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.helpRevECmds) +
+                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlfooter);
                 wv.loadDataWithBaseURL(null, rawHTMLString, "text/html", "UTF-8", "");
             }
         });
@@ -116,9 +117,9 @@ public class MainActivityNavActions {
             @Override
             public void onClick(View v) {
                 WebView wv = (WebView) adViewFinal.findViewById(R.id.wvDisplayHelpTopic);
-                String rawHTMLString = LiveLoggerActivity.getInstance().getString(R.string.apphtmlheader) +
-                        LiveLoggerActivity.getInstance().getString(R.string.helpRevGCmds) +
-                        LiveLoggerActivity.getInstance().getString(R.string.apphtmlfooter);
+                String rawHTMLString = LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlheader) +
+                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.helpRevGCmds) +
+                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlfooter);
                 wv.loadData(rawHTMLString, "text/html", "UTF-8");
             }
         });
@@ -127,9 +128,9 @@ public class MainActivityNavActions {
             @Override
             public void onClick(View v) {
                 WebView wv = (WebView) adViewFinal.findViewById(R.id.wvDisplayHelpTopic);
-                String rawHTMLString = LiveLoggerActivity.getInstance().getString(R.string.apphtmlheader) +
-                        LiveLoggerActivity.getInstance().getString(R.string.helpButtonSettings) +
-                        LiveLoggerActivity.getInstance().getString(R.string.apphtmlfooter);
+                String rawHTMLString = LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlheader) +
+                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.helpButtonSettings) +
+                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlfooter);
                 wv.loadData(rawHTMLString, "text/html", "UTF-8");
             }
         });
@@ -138,9 +139,9 @@ public class MainActivityNavActions {
             @Override
             public void onClick(View v) {
                 WebView wv = (WebView) adViewFinal.findViewById(R.id.wvDisplayHelpTopic);
-                String rawHTMLString = LiveLoggerActivity.getInstance().getString(R.string.apphtmlheader) +
-                        LiveLoggerActivity.getInstance().getString(R.string.helpLEDSettings) +
-                        LiveLoggerActivity.getInstance().getString(R.string.apphtmlfooter);
+                String rawHTMLString = LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlheader) +
+                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.helpLEDSettings) +
+                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlfooter);
                 wv.loadData(rawHTMLString, "text/html", "UTF-8");
             }
         });
@@ -149,9 +150,9 @@ public class MainActivityNavActions {
             @Override
             public void onClick(View v) {
                 WebView wv = (WebView) adViewFinal.findViewById(R.id.wvDisplayHelpTopic);
-                String rawHTMLString = LiveLoggerActivity.getInstance().getString(R.string.apphtmlheader) +
-                        LiveLoggerActivity.getInstance().getString(R.string.helpLogging) +
-                        LiveLoggerActivity.getInstance().getString(R.string.apphtmlfooter);
+                String rawHTMLString = LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlheader) +
+                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.helpLogging) +
+                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlfooter);
                 wv.loadData(rawHTMLString, "text/html", "UTF-8");
             }
         });

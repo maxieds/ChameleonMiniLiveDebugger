@@ -77,13 +77,13 @@ public class ExternalFileIO {
             ioe.printStackTrace();
             return;
         }
-        DownloadManager downloadManager = (DownloadManager) LiveLoggerActivity.getInstance().defaultContext.getSystemService(DOWNLOAD_SERVICE);
+        DownloadManager downloadManager = (DownloadManager) LiveLoggerActivity.getLiveLoggerInstance().defaultContext.getSystemService(DOWNLOAD_SERVICE);
         downloadManager.addCompletedDownload(outfile.getName(), outfile.getName(), true, "text/plain",
                 outfile.getAbsolutePath(), outfile.length(),true);
 
-        boolean saveFileChecked = ((RadioButton) LiveLoggerActivity.getInstance().findViewById(R.id.radio_save_storage)).isChecked();
-        boolean emailFileChecked = ((RadioButton) LiveLoggerActivity.getInstance().findViewById(R.id.radio_save_email)).isChecked();
-        boolean shareFileChecked = ((RadioButton) LiveLoggerActivity.getInstance().findViewById(R.id.radio_save_share)).isChecked();
+        boolean saveFileChecked = ((RadioButton) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.radio_save_storage)).isChecked();
+        boolean emailFileChecked = ((RadioButton) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.radio_save_email)).isChecked();
+        boolean shareFileChecked = ((RadioButton) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.radio_save_share)).isChecked();
         if(emailFileChecked || shareFileChecked) {
             Intent i = new Intent(Intent.ACTION_SEND);
             i.setType(mimeType);
@@ -91,7 +91,7 @@ public class ExternalFileIO {
             i.putExtra(Intent.EXTRA_SUBJECT, "Chameleon Mini Log Data Output (Log Attached)");
             i.putExtra(Intent.EXTRA_TEXT, "See subject.");
             i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            LiveLoggerActivity.getInstance().startActivity(Intent.createChooser(i, "Share the file ... "));
+            LiveLoggerActivity.getLiveLoggerInstance().startActivity(Intent.createChooser(i, "Share the file ... "));
         }
         MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("EXPORT", "Saved log file to \"" + outfilePath + "\"."));
 

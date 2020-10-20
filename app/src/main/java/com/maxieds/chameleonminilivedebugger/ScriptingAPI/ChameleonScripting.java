@@ -63,7 +63,7 @@ public class ChameleonScripting {
             return false;
         }
         Uri systemFileUri = Uri.fromFile(systemFile);
-        ContentResolver contentResolverSvc = LiveLoggerActivity.getInstance().getContentResolver();
+        ContentResolver contentResolverSvc = LiveLoggerActivity.getLiveLoggerInstance().getContentResolver();
         if(contentResolverSvc == null) {
             return false;
         }
@@ -233,7 +233,7 @@ public class ChameleonScripting {
                 case VariableTypeStorageFilePath:
                     return varValueAsString;
                 case VariableTypeRawFileFilePath:
-                    return LiveLoggerActivity.getInstance().getResources().getResourceName(varValueAsInt);
+                    return LiveLoggerActivity.getLiveLoggerInstance().getResources().getResourceName(varValueAsInt);
                 case VariableTypeBytes:
                     return Utils.bytes2Hex(varValueAsByteArray);
                 case VariableTypeBoolean:

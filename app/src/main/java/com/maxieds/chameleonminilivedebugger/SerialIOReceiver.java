@@ -156,10 +156,12 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface {
 
     public void onReceivedData(byte[] liveLogData) {
 
+        if(liveLogData == null || liveLogData.length == 0) {
+            return;
+        }
         Log.d(getInterfaceLoggingTag(), "SerialReaderCallback Received Data: (HEX) " + Utils.bytes2Hex(liveLogData));
         Log.d(getInterfaceLoggingTag(), "SerialReaderCallback Received Data: (TXT) " + Utils.bytes2Ascii(liveLogData));
 
-        //ArrayList<Byte[]> splitLogData = splitReceivedDataIntoLogs(liveLogData);
         ArrayList<Byte[]> splitLogData = new ArrayList<Byte[]>();
         splitLogData.add(ArrayUtils.toObject(liveLogData));
         for(int sidx = 0; sidx < splitLogData.size(); sidx++) {

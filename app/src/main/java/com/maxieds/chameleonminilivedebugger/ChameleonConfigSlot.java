@@ -109,11 +109,11 @@ public class ChameleonConfigSlot {
         knownTagKeys = new String[0];
         storedKeys = new String[0];
         tagSectorSize = tagBlockSize = 0;
-        tagConfigModes = LiveLoggerActivity.getInstance().getResources().getStringArray(R.array.FullTagConfigModes);
+        tagConfigModes = LiveLoggerActivity.getLiveLoggerInstance().getResources().getStringArray(R.array.FullTagConfigModes);
     }
 
     public View createSlotConfigUILayout(int slotNumber) {
-        LayoutInflater layoutInflater = LiveLoggerActivity.getInstance().getLayoutInflater();
+        LayoutInflater layoutInflater = LiveLoggerActivity.getLiveLoggerInstance().getLayoutInflater();
         View tabView = TabFragment.UITAB_DATA[TabFragment.TAB_TOOLS].tabInflatedView;
         if(tabView == null) {
             slotConfigLayout = null;
@@ -208,7 +208,7 @@ public class ChameleonConfigSlot {
         }
         ChameleonSerialIOInterface serialPort = ChameleonSettings.getActiveSerialIOPort();
         if(serialPort == null) {
-            String[] tagConfigModesArray = LiveLoggerActivity.getInstance().getResources().getStringArray(R.array.FullTagConfigModes);
+            String[] tagConfigModesArray = LiveLoggerActivity.getLiveLoggerInstance().getResources().getStringArray(R.array.FullTagConfigModes);
             tagConfigModeSpinner.setAdapter(new ArrayAdapter<String>(slotConfigLayout.getContext(),
                     android.R.layout.simple_list_item_1, tagConfigModesArray));
         }
@@ -235,7 +235,7 @@ public class ChameleonConfigSlot {
     public boolean enableLayout() {
         slotConfigLayout.setEnabled(true);
         ImageView slotOnOffImageMarker = slotConfigLayout.findViewById(R.id.slotOnOffMarker);
-        Drawable slotEnabledMarker = LiveLoggerActivity.getInstance().getResources().getDrawable(R.drawable.slot_on);
+        Drawable slotEnabledMarker = LiveLoggerActivity.getLiveLoggerInstance().getResources().getDrawable(R.drawable.slot_on);
         slotOnOffImageMarker.setImageDrawable(slotEnabledMarker);
         // set onClick handlers here:
         EditText slotNicknameEditor = slotConfigLayout.findViewById(R.id.slotNicknameText);
@@ -267,6 +267,7 @@ public class ChameleonConfigSlot {
                 readParametersFromChameleonSlot();
                 updateLayoutParameters(false);
                 ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
+                ChameleonIO.deviceStatus.updateAllStatusAndPost(false); /* Make sure the device returned the correct data to display */
             }
             public void onNothingSelected(AdapterView<?> adapterView) {
                 return;
@@ -302,7 +303,7 @@ public class ChameleonConfigSlot {
 
     public boolean disableLayout() {
         ImageView slotOnOffImageMarker = slotConfigLayout.findViewById(R.id.slotOnOffMarker);
-        Drawable slotEnabledMarker = LiveLoggerActivity.getInstance().getResources().getDrawable(R.drawable.slot_off);
+        Drawable slotEnabledMarker = LiveLoggerActivity.getLiveLoggerInstance().getResources().getDrawable(R.drawable.slot_off);
         slotOnOffImageMarker.setImageDrawable(slotEnabledMarker);
         slotConfigLayout.setEnabled(false);
         isEnabled = false;

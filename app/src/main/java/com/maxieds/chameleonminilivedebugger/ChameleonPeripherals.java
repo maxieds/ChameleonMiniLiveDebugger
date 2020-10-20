@@ -46,7 +46,7 @@ public class ChameleonPeripherals {
     public static void actionButtonRestorePeripheralDefaults(View view) {
         if (ChameleonSettings.getActiveSerialIOPort() != null) {
             // next, query the defaults from the device to get accurate settings (if the device is connected):
-            int[] spinnerIDs = {
+            final int[] spinnerIDs = {
                     R.id.RButtonSpinner,
                     R.id.RButtonLongSpinner,
                     R.id.LButtonSpinner,
@@ -55,7 +55,7 @@ public class ChameleonPeripherals {
                     R.id.LEDGreenSpinner,
                     R.id.ButtonMyRevEBoardSpinner
             };
-            String[] queryCmds = {
+            final String[] queryCmds = {
                     "RBUTTON?",
                     "RBUTTON_LONG?",
                     "LBUTTON?",
@@ -64,30 +64,28 @@ public class ChameleonPeripherals {
                     "LEDGREEN?",
                     "button?"
             };
-            for (int i = 0; i < spinnerIDs.length; i++) {
-                Log.i(TAG, queryCmds[i]);
-                Spinner curSpinner = (Spinner) LiveLoggerActivity.getInstance().findViewById(spinnerIDs[i]);
-                if(curSpinner == null) {
-                    continue;
+            Thread restorePeripheralsDataThread = new Thread() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < spinnerIDs.length; i++) {
+                        Log.i(TAG, queryCmds[i]);
+                        Spinner curSpinner = (Spinner) LiveLoggerActivity.getLiveLoggerInstance().findViewById(spinnerIDs[i]);
+                        if (curSpinner == null) {
+                            continue;
+                        }
+                        String deviceSetting = ChameleonIO.getSettingFromDevice(queryCmds[i]);
+                        LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                curSpinner.setSelection(((ArrayAdapter<String>) curSpinner.getAdapter()).getPosition(deviceSetting));
+                            }
+                        });
+                    }
                 }
-                String deviceSetting = ChameleonIO.getSettingFromDevice(queryCmds[i]);
-                curSpinner.setSelection(((ArrayAdapter<String>) curSpinner.getAdapter()).getPosition(deviceSetting));
-            }
-            // handle FIELD and READ-ONLY switches:
-            String fieldSetting = ChameleonIO.getSettingFromDevice("FIELD?");
-            Switch fieldSwitch = LiveLoggerActivity.getInstance().findViewById(R.id.fieldOnOffSwitch);
-            if(fieldSwitch == null) {
-                return;
-            }
-            fieldSwitch.setChecked(fieldSetting.equals("0") ? false : true);
-            String roQueryCmd = ChameleonIO.REVE_BOARD ? "readonly?" : "READONLY?";
-            String roSetting = ChameleonIO.getSettingFromDevice(roQueryCmd);
-            Switch roSwitch = LiveLoggerActivity.getInstance().findViewById(R.id.readonlyOnOffSwitch);
-            if(roSwitch == null) {
-                return;
-            }
-            roSwitch.setChecked(roSetting.equals("0") ? false : true);
+            };
+            restorePeripheralsDataThread.start();
         }
+
     }
 
 }

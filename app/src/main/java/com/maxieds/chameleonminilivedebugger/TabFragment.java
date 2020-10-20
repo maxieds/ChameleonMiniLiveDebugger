@@ -133,7 +133,9 @@ public class TabFragment extends Fragment {
             else if(tabInflatedView == null) {
                 return false;
             }
-            deselectMenuItem(lastMenuIndex);
+            if(!firstTabLoad) {
+                deselectMenuItem(lastMenuIndex);
+            }
             lastMenuIndex = midx;
             GridLayout menuItemsNav = (GridLayout) tabInflatedView.findViewById(R.id.tabMenuItemsNav);
             String indexRefTag = String.format(Locale.ENGLISH, "%d:%d", tabIndex, midx);
@@ -222,7 +224,7 @@ public class TabFragment extends Fragment {
             }
             int tabIdx = Integer.parseInt(tagIndices[0]);
             int menuItemIdx = Integer.parseInt(tagIndices[1]);
-            TabFragment.UITAB_DATA[tabIdx].changeMenuItemDisplay(menuItemIdx);
+            TabFragment.UITAB_DATA[tabIdx].changeMenuItemDisplay(menuItemIdx, true);
         }
 
         public boolean changeMenuItemDisplay(int mitemIdx, boolean updateDeviceGUI) {
@@ -233,19 +235,19 @@ public class TabFragment extends Fragment {
             containerLayout.removeAllViews();
             containerLayout.clearFocus();
             View tabMainLayoutView = tabMenuItemLayouts[mitemIdx];
-            if(tabMainLayoutView == null) {
+            if((tabMainLayoutView == null) && (mitemIdx >= 0) && (mitemIdx < menuItemText.length)) {
                 tabMainLayoutView = TabFragment.defaultInflater.inflate(menuItemLayout[mitemIdx], containerLayout, false);
                 tabMenuItemLayouts[mitemIdx] = tabMainLayoutView;
-                if(updateDeviceGUI) {
-                    UITabUtils.initializeTabMainContent(tabIndex, mitemIdx, tabMainLayoutView);
-                }
-            }
-            containerLayout.addView(tabMainLayoutView);
-            if((mitemIdx != lastMenuIndex || firstTabLoad) && (mitemIdx >= 0) && (mitemIdx < menuItemText.length)) {
-                UITabUtils.initializeTabMainContent(tabIndex, mitemIdx, tabMainLayoutView);
                 selectMenuItem(mitemIdx);
                 firstTabLoad = false;
             }
+            else if(updateDeviceGUI) {
+                UITabUtils.initializeTabMainContent(tabIndex, mitemIdx, tabMainLayoutView);
+            }
+            if(tabMainLayoutView.getParent() != null) {
+                ((LinearLayout) tabMainLayoutView.getParent()).removeView(tabMainLayoutView);
+            }
+            containerLayout.addView(tabMainLayoutView);
             return true;
         }
 
