@@ -106,7 +106,7 @@ android {
             resConfigs "en", "en_US", "en_UK", "de"
             dimension "mode"
             manifestPlaceholders = [
-                    appLabelDesc       : "@string/app_display_short_name (Paid)",
+                    appLabelDesc       : "@string/app_display_short_name",
                     appIcon            : "@drawable/chameleonicon64_paid",
                     appRoundIcon       : "@drawable/chameleonicon64_paid",
                     appTheme           : "@style/AppThemeGreenPaid",
