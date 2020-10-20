@@ -333,7 +333,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:text="Notify reader field detected events"
                     android:enabled="true"
                     android:checked="true"
-
                     />
 
                 <View

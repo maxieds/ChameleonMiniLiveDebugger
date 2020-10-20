@@ -346,7 +346,7 @@ public class TabFragment extends Fragment {
                         R.layout.config_tab_general_settings,
                         R.layout.config_tab_connect,
                         R.layout.config_tab_logging,
-                        R.layout.tab_under_construction
+                        R.layout.config_tab_scripting
                 });
     }
 

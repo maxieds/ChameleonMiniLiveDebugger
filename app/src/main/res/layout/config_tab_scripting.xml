@@ -1,0 +1,634 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+This program (The Chameleon Mini Live Debugger) is free software written by
+Maxie Dion Schmidt: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+The complete license provided with source distributions of this library is
+available at the following link:
+https://github.com/maxieds/ChameleonMiniLiveDebugger
+-->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:id="@+id/tools_menu_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fadeScrollbars="false"
+        android:orientation="vertical"
+        android:scrollbarSize="25dp"
+        android:verticalScrollbarPosition="right"
+        android:background="?colorPrimary">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_margin="2dp"
+            android:orientation="vertical"
+            android:padding="2dp">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:background="?colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/binary_shell_file_icon"
+                android:drawablePadding="5dp"
+                android:singleLine="true"
+                android:text="General configuration: "
+                android:textSize="18sp"
+                android:textAllCaps="true"
+                android:textStyle="bold|italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="1"
+                android:padding="0dp"
+                android:rowCount="10">
+
+                <CheckBox
+                    android:theme="@style/CheckBoxTheme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical|end"
+                    android:layout_marginLeft="10dp"
+                    android:button="@null"
+                    android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+                    android:layout_marginEnd="15dp"
+                    android:text="Save ascii output to file automatically"
+                    android:enabled="true"
+                    android:checked="true"
+                    />
+
+                <CheckBox
+                    android:theme="@style/CheckBoxTheme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical|end"
+                    android:layout_marginLeft="10dp"
+                    android:button="@null"
+                    android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+                    android:layout_marginEnd="15dp"
+                    android:text="Append ascii output data to existing file"
+                    android:enabled="true"
+                    android:checked="true"
+                    />
+
+                <CheckBox
+                    android:theme="@style/CheckBoxTheme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical|end"
+                    android:layout_marginLeft="10dp"
+                    android:button="@null"
+                    android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+                    android:layout_marginEnd="15dp"
+                    android:text="Datestamp ascii output files"
+                    android:enabled="true"
+                    android:checked="true"
+                    />
+
+                <CheckBox
+                    android:theme="@style/CheckBoxTheme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical|end"
+                    android:layout_marginLeft="10dp"
+                    android:button="@null"
+                    android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+                    android:layout_marginEnd="15dp"
+                    android:text="Set global R|W permissions on output files"
+                    android:enabled="true"
+                    android:checked="true"
+                    />
+
+                <CheckBox
+                    android:theme="@style/CheckBoxTheme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical|end"
+                    android:layout_marginLeft="10dp"
+                    android:button="@null"
+                    android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+                    android:layout_marginEnd="15dp"
+                    android:text="Use verbose error logging"
+                    android:enabled="true"
+                    android:checked="true"
+                    />
+
+                <CheckBox
+                    android:theme="@style/CheckBoxTheme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical|end"
+                    android:layout_marginLeft="10dp"
+                    android:button="@null"
+                    android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+                    android:layout_marginEnd="15dp"
+                    android:text="Vibrate phone after exit"
+                    android:enabled="true"
+                    android:checked="true"
+                    />
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:background="?colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/scripting_runtime_settings_icon"
+                android:drawablePadding="5dp"
+                android:singleLine="true"
+                android:text="Runtime Settings: "
+                android:textAllCaps="true"
+                android:textSize="18sp"
+                android:textStyle="bold|italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="1"
+                android:padding="0dp"
+                android:rowCount="10">
+
+                <CheckBox
+                    android:theme="@style/CheckBoxTheme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical|end"
+                    android:layout_marginLeft="10dp"
+                    android:button="@null"
+                    android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+                    android:layout_marginEnd="15dp"
+                    android:text="Restore Chameleon state after instance"
+                    android:enabled="true"
+                    android:checked="true"
+                    />
+
+                <CheckBox
+                    android:theme="@style/CheckBoxTheme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical|end"
+                    android:layout_marginLeft="10dp"
+                    android:button="@null"
+                    android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+                    android:layout_marginEnd="15dp"
+                    android:text="Terminate on exceptions"
+                    android:enabled="true"
+                    android:checked="true"
+                    />
+
+                <CheckBox
+                    android:theme="@style/CheckBoxTheme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical|end"
+                    android:layout_marginLeft="10dp"
+                    android:button="@null"
+                    android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+                    android:layout_marginEnd="15dp"
+                    android:text="Duplicate console output to Android logs"
+                    android:enabled="true"
+                    android:checked="true"
+                    />
+
+                <CheckBox
+                    android:theme="@style/CheckBoxTheme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical|end"
+                    android:layout_marginLeft="10dp"
+                    android:button="@null"
+                    android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+                    android:layout_marginEnd="15dp"
+                    android:text="Print live logs to console"
+                    android:enabled="true"
+                    android:checked="true"
+                    />
+
+                <CheckBox
+                    android:theme="@style/CheckBoxTheme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical|end"
+                    android:layout_marginLeft="10dp"
+                    android:button="@null"
+                    android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+                    android:layout_marginEnd="15dp"
+                    android:text="Disable toolbar status updates while running"
+                    android:enabled="false"
+                    android:checked="true"
+                    />
+
+                <CheckBox
+                    android:theme="@style/CheckBoxTheme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical|end"
+                    android:layout_marginLeft="10dp"
+                    android:button="@null"
+                    android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+                    android:layout_marginEnd="15dp"
+                    android:text="Vibrate phone on exception"
+                    android:enabled="true"
+                    android:checked="true"
+                    />
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="?colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/scripting_envvar_icon"
+                android:drawablePadding="5dp"
+                android:singleLine="true"
+                android:text="Set Env Variables: "
+                android:textAllCaps="true"
+                android:textSize="18sp"
+                android:textStyle="bold|italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="2"
+                android:padding="0dp"
+                android:rowCount="10">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:singleLine="true"
+                    android:text="Set $ev0: "
+                    android:textSize="11sp"
+                    android:textStyle="bold|italic"
+                    android:textColor="?android:colorPrimaryDark" />
+
+                <EditText
+                    android:id="@+id/scriptingConfigEnvVarEV0"
+                    android:layout_width="150dp"
+                    android:layout_columnWeight="1"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="4dp"
+                    android:hint="0675f7b102"
+                    android:textSize="11sp"
+                    android:singleLine="true"
+                    android:textColor="?colorPrimaryDarkLog" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:singleLine="true"
+                    android:text="Set $ev1: "
+                    android:textSize="11sp"
+                    android:textStyle="bold|italic"
+                    android:textColor="?android:colorPrimaryDark" />
+
+                <EditText
+                    android:id="@+id/scriptingConfigEnvVarEV1"
+                    android:layout_width="150dp"
+                    android:layout_columnWeight="1"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="4dp"
+                    android:textSize="11sp"
+                    android:hint="&lt;secret passphrase&gt;"
+                    android:singleLine="true"
+                    android:textColor="?colorPrimaryDarkLog" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:singleLine="true"
+                    android:text="Set $ek0 (key data): "
+                    android:textSize="11sp"
+                    android:textStyle="bold|italic"
+                    android:textColor="?android:colorPrimaryDark" />
+
+                <EditText
+                    android:id="@+id/scriptingConfigEnvVarEVK0"
+                    android:layout_width="150dp"
+                    android:layout_columnWeight="1"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="4dp"
+                    android:textSize="11sp"
+                    android:hint="FFFFFFF7D3F7"
+                    android:singleLine="true"
+                    android:textColor="?colorPrimaryDarkLog" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:singleLine="true"
+                    android:text="Set $ek1 (key data): "
+                    android:textSize="11sp"
+                    android:textStyle="bold|italic"
+                    android:textColor="?android:colorPrimaryDark" />
+
+                <EditText
+                    android:id="@+id/scriptingConfigEnvVarEVK1"
+                    android:layout_width="150dp"
+                    android:layout_columnWeight="1"
+                    android:layout_height="wrap_content"
+                    android:textSize="11sp"
+                    android:paddingLeft="4dp"
+                    android:hint="A0A1A2A3A4A5"
+                    android:singleLine="true"
+                    android:textColor="?colorPrimaryDarkLog" />
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:background="?colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/scripting_folder_icon"
+                android:drawablePadding="5dp"
+                android:singleLine="true"
+                android:text="File I/O defaults: "
+                android:textSize="18sp"
+                android:textAllCaps="true"
+                android:textStyle="bold|italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="3"
+                android:padding="0dp" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:textSize="11sp"
+                    android:singleLine="true"
+                    android:text="Output base name: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?android:colorPrimaryDark" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:src="@drawable/file_basename_icon24"
+                    android:background="@android:color/transparent"
+                    />
+
+                <EditText
+                    android:id="@+id/scriptingConfigDefaultOutFileBaseName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:paddingLeft="4dp"
+                    android:hint="chameleon-script"
+                    android:singleLine="true"
+                    android:textSize="11sp"
+                    android:textColor="?colorPrimaryDarkLog" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:textSize="11sp"
+                    android:singleLine="true"
+                    android:text="Log base name: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?android:colorPrimaryDark" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:src="@drawable/file_basename_icon24"
+                    android:background="@android:color/transparent"
+                    />
+
+                <EditText
+                    android:id="@+id/scriptingConfigDefaultLogFileBaseName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:paddingLeft="4dp"
+                    android:textSize="11sp"
+                    android:hint="chameleon-logs"
+                    android:singleLine="true"
+                    android:textColor="?colorPrimaryDarkLog" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:textSize="11sp"
+                    android:singleLine="true"
+                    android:text="Script path: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?android:colorPrimaryDark" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:src="@drawable/open_folder_icon24"
+                    android:background="@android:color/transparent"
+                    />
+
+                <EditText
+                    android:id="@+id/scriptingConfigDefaultScriptLocPath"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:paddingLeft="4dp"
+                    android:textSize="11sp"
+                    android:hint="/path/to/Downloads/ChameleonScripts"
+                    android:singleLine="true"
+                    android:textColor="?colorPrimaryDarkLog" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:textSize="11sp"
+                    android:singleLine="true"
+                    android:text="File output path: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?android:colorPrimaryDark" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:src="@drawable/open_folder_icon24"
+                    android:background="@android:color/transparent"
+                    />
+
+                <EditText
+                    android:id="@+id/scriptingConfigDefaultOutFilePath"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:paddingLeft="4dp"
+                    android:textSize="11sp"
+                    android:hint="/path/to/ChameleonScriptOutput"
+                    android:singleLine="true"
+                    android:textColor="?colorPrimaryDarkLog" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:textSize="11sp"
+                    android:singleLine="true"
+                    android:text="Script CWD: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?android:colorPrimaryDark" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:src="@drawable/open_folder_icon24"
+                    android:background="@android:color/transparent"
+                    />
+
+                <EditText
+                    android:id="@+id/scriptingConfigDefaultScriptCWD"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:paddingLeft="4dp"
+                    android:textSize="11sp"
+                    android:hint="/path/to/user/home"
+                    android:singleLine="true"
+                    android:textColor="?colorPrimaryDarkLog" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:textSize="11sp"
+                    android:singleLine="true"
+                    android:text="Extra keys file: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?android:colorPrimaryDark" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:src="@drawable/open_folder_icon24"
+                    android:background="@android:color/transparent"
+                    />
+
+                <EditText
+                    android:id="@+id/scriptingConfigExtraKeysFile"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:paddingLeft="4dp"
+                    android:textSize="11sp"
+                    android:hint="/path/to/mfc-keys-list.csv"
+                    android:singleLine="true"
+                    android:textColor="?colorPrimaryDarkLog" />
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@android:color/transparent" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
