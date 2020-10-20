@@ -325,7 +325,7 @@ public class TabFragment extends Fragment {
                         "Register View"
                 },
                 new int[] {
-                        R.layout.scripting_tab_load_import,
+                        R.layout.tab_under_construction, // R.layout.scripting_tab_load_import,
                         R.layout.tab_under_construction,
                         R.layout.tab_under_construction
 

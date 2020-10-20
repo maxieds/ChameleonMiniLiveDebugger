@@ -86,7 +86,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
      private static View liveLoggerActivityMainContentView = null;
 
      public static View getContentView(@IdRes int viewResId) {
-          View mainContentView = LiveLoggerActivity.getLiveLoggerInstance().findViewById(android.R.id.content);
+          View mainContentView = liveLoggerActivityMainContentView;
           if(mainContentView == null || mainContentView.findViewById(viewResId) == null) {
                mainContentView = LiveLoggerActivity.getLiveLoggerInstance().findViewById(android.R.id.content).getRootView();
                if (mainContentView == null || mainContentView.findViewById(viewResId) == null) {
@@ -98,9 +98,9 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
                               if (mainContentView == null || mainContentView.findViewById(viewResId) == null) {
                                    mainContentView = LiveLoggerActivity.getInstance().findViewById(viewResId);
                                    if (mainContentView == null) {
-                                        mainContentView = liveLoggerActivityMainContentView;
+                                        mainContentView = LiveLoggerActivity.getLiveLoggerInstance().findViewById(android.R.id.content);;
                                         if (mainContentView != null) {
-                                             Log.i(TAG, "liveLoggerActivityMainContentView");
+                                             Log.i(TAG, "findViewById(android.R.id.content)");
                                              return mainContentView.findViewById(viewResId);
                                         } else {
                                              return null;
@@ -119,7 +119,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
                     return mainContentView.findViewById(viewResId);
                }
           }
-          Log.i(TAG, "findViewById(android.R.id.content)");
+          Log.i(TAG, "liveLoggerActivityMainContentView");
           return mainContentView.findViewById(viewResId);
      }
 
