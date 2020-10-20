@@ -88,7 +88,8 @@ VariableProperty: VariablePropertyGetName | VariablePropertyGetType | VariablePr
                       VariablePropertyToInteger | VariablePropertyToBoolean |
                       VariablePropertyToBytes | VariablePropertyExists | VariablePropertyEvaluate ;
 
-ExpressionEvalTerm: VariableProperty | TypeLiteral | MacroConstant -> mode(CONTEXT_EXPR_EVAL);
+ExpressionEvalTerm: VariableProperty | Operator |
+                    TypeLiteral | MacroConstant -> mode(CONTEXT_EXPR_EVAL);
 
 EqualsComparisonOperator: ExpressionEvalTerm WhiteSpace '==' WhiteSpace ExpressionEvalTerm ;
 NotEqualsComparisonOperator: ExpressionEvalTerm WhiteSpace '!=' WhiteSpace ExpressionEvalTerm ;
@@ -108,12 +109,13 @@ ArithmeticMinusEqualsOperator: ExpressionEvalTerm WhiteSpace '-=' WhiteSpace Exp
 ArithmeticAstEqualsOperator: ExpressionEvalTerm WhiteSpace '*=' WhiteSpace ExpressionEvalTerm ;
 AssignmentOperator: DefEqualsOperator | ArithmeticPlusEqualsOperator |
                     ArithmeticMinusEqualsOperator | ArithmeticAstEqualsOperator ;
+TernaryOperator:    ExpressionEvalTerm (WhiteSpace)* '?' (WhiteSpace)* ExpressionEvalTerm
+                    (WhiteSpace)* ':' (WhiteSpace)* ExpressionEvalTerm (WhiteSpace)* ;
 
-UnaryOperation: LogicalNotOperator | BitwiseNotOperator;
+UnaryOperation:  LogicalNotOperator | BitwiseNotOperator;
 BinaryOperation: AssignmentOperator | EqualsComparisonOperator | NotEqualsComparisonOperator |
                  IdenticallyEqualComparisonOperator | LogicalAndOperator | LogicalOrOperator |
                  BitwiseAndOperator | BitwiseOrOperator | BitwiseXorOperator |
                  ArithmeticPlusEqualsOperator | ArithmeticMinusEqualsOperator |
                  ArithmeticAstEqualsOperator ;
-
-// TODO: Support for ternary operator?
+Operator:        UnaryOperation | BinaryOperation | TernaryOperator ;

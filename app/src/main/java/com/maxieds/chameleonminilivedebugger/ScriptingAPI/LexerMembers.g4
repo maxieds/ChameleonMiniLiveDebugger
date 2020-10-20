@@ -40,5 +40,4 @@ lexer grammar LexerMembers;
      private ScriptVariable _variableReference;
      private ScriptVariable _variablePropertyResult;
 
-
 }

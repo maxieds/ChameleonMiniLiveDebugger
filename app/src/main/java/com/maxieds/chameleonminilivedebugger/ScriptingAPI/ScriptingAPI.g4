@@ -113,11 +113,20 @@ ChameleonCommandAndLogFunctions:     CmdGetResponseFuncName | CmdGetResponseCode
                                      GetLogDescFuncName ;
 
 /* File I/O functions: */
-// fscanf  // These can be done later
-// rwXML (useful for associative arrays, store into hashed array);  // These can be done later
-// rwCSV(delim); rwBinaryData; rwTextFile(from, to); rwJSON; // These can be done later
+FscanfFuncName:           'Fscanf' ;
+ReadXMLFileFuncName:      'ReadXMLFile' ;
+ReadCSVFileFuncName:      'ReadCSVFile' ;
+ReadTextFileName:         'ReadTextFile' ;
+ReadBinaryFileFuncName:   'ReadBinaryFile' ;
+WriteXMLFileFuncName:     'WriteXMLFile' ;
+WriteCSVFileFuncName:     'WriteCSVFile' ;
+WriteTextFileName:        'WriteTextFile' ;
+WriteBinaryFileFuncName:  'WriteBinaryFile' ;
 
-FileIOFunctions:                   ;
+FileIOFunctions:          FscanfFuncName | ReadXMLFileFuncName | ReadXMLFileFuncName |
+                          ReadTextFileName | ReadBinaryFileFuncName |
+                          WriteXMLFileFuncName | WriteCSVFileFuncName |
+                          WriteTextFileName | WriteBinaryFileFuncName ;
 
 /* String handling functions: */
 StringSearchFuncName:              'Find' ;
@@ -135,15 +144,15 @@ StringFunctions:                   StringSearchFuncName | StringContainsFuncName
 AsWrappedAPDUFuncName:                 'AsWrappedAPDU' ; // ($v -- assumes have prepended CLA,INS); -> ByteArray | ($v, CLA,INS,P1,P2)
 ExtractDataFromWrappedAPDUFuncName:    'ExtractDataFromWrappedAPDU' ;
 ExtractDataFromNativeAPDUFuncName:     'ExtractDataFromNativeAPDU' ;
-SearchAPDUCStatusCodes:                'SearchAPDUStatusCodes' ;
-SearchAPDUInsCodes:                    'SearchAPDUInsCodes' ;
-SearchAPDUClaCodes:                    'SearchAPDUClaCodes' ;
-// Possibly later: PrintNFCAnticol(UID,ATQA,SAK,ATS);
+SearchAPDUCStatusCodesFuncName:        'SearchAPDUStatusCodes' ;
+SearchAPDUInsCodesFuncName:            'SearchAPDUInsCodes' ;
+SearchAPDUClaCodesFuncName:            'SearchAPDUClaCodes' ;
+NFCAntiColFuncName:                    'NFCAntiCol' ; // returns arrays: (UID,ATQA,SAK,ATS)
 
 APDUHandlingFunctions:                 AsWrappedAPDUFuncName | ExtractDataFromWrappedAPDUFuncName |
                                        ExtractDataFromNativeAPDUFuncName |
-                                       SearchAPDUCStatusCodes | SearchAPDUInsCodes |
-                                       SearchAPDUClaCodes ;
+                                       SearchAPDUCStatusCodesFuncName | SearchAPDUInsCodesFuncName |
+                                       SearchAPDUClaCodesFuncName | NFCAntiColFuncName;
 
 /* Crypto and hash related functionality: */
 GetRandomBytesFuncName:       'RandomBytes' ;
@@ -157,14 +166,20 @@ GetSHA512FuncName:            'GetSHA512Hash' ;
 GetCRC16FuncName:             'GetCRC16' ;
 AppendCRC16FuncName:          'AppendCRC16' ;
 CheckCRC16FuncName:           'CheckCRC16' ;
-GetCommonMFCKeysFuncName:     'GetCommonMFCKeys' ;
-// Enc/Dec schemes: crypto1|DES|3DES|2KDEA|AES(128,192,256);
-// AES mode options: CTR|ECB|CBC|OTF;
+GetCommonKeysFuncName:        'GetCommonKeys' ;
+GetUserKeysFuncName:          'GetUserKeys' ;
+
+EncryptionSchemeModes:         'AES128-CBC' | 'AES128-ECB' |
+                               'DES-CBC' | 'DES-ECB' | '3DES-CBC' | '3DES-ECB' ;
+CryptoEncryptFuncName:         'Encrypt' ;
+CryptoDescryptFuncName:        'Decrypt' ;
 
 CryptoAndHashFunctions:       GetRandomBytesFuncName | GetRandomIntFuncName | EncodeBase64HashFuncName |
                               DecodeBase64FuncName | GetMD5HashFuncName | GetSHA1FuncName |
                               GetSHA256FuncName | GetSHA512FuncName | GetCRC16FuncName |
-                              AppendCRC16FuncName | CheckCRC16FuncName | GetCommonMFCKeysFuncName ;
+                              AppendCRC16FuncName | CheckCRC16FuncName |
+                              GetCommonKeysFuncName | GetUserKeysFuncName |
+                              CryptoEncryptFuncName | CryptoDescryptFuncName ;
 
 /* Misc utility functions: */
 GetTimestampFuncName:          'GetTimestamp' ;

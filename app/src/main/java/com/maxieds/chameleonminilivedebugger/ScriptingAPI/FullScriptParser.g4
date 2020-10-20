@@ -16,33 +16,12 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 */
 
 grammar FullScriptParser;
-import LexerMembers, ScriptingPrimitives, ScriptingAPI, ChameleonTerminalScripting;
+import LexerMembers, ScriptingPrimitives, ScriptingAPI;
 
 FileContents: (ScriptLine)+ EOF;
 
-ScriptLine: WhiteSpace (ExecuteCommand | VariableDeclaration | AssignmentOperator | BuiltInFunction)
+ScriptLine: WhiteSpace (VariableDeclaration | AssignmentOperator | Command)
             WhiteSpace NewLineBreak | NewLineBreak;
 
-ExecuteCommand: ChameleonExecuteCommand | 'pass' ;
-BuiltInFunction: ScriptingAPIFunction ;
-
-/* Maybe for later (future revisions):
-
-FunctionName: VariableName ;
-FunctionParametersList: '...' ;
-FunctionVoidDeclaration: 'function void' FunctionName '(' FunctionParametersList ')' WhiteSpace
-                         '{' NewLineBreak (ScriptLine)* '}' ;
-FunctionValueDeclaration: 'function var' FunctionName '(' FunctionParametersList ')' WhiteSpace
-                         '{' NewLineBreak (ScriptLine)*
-                         'return' (VariableReference | VariableProperty) NewLineBreak '}' ;
-
-ConditionalLabel: 'if' | 'elif' | 'else' ;
-ConditionalStatement: ConditionalLabel WhiteSpace ExpressionEvalTerm WhiteSpace ':' ;
-ConditionalBlock: ConditionalStatement WhiteSpace '{' WhiteSpace NewLineBreak
-                  (ScriptLine)+ WhiteSpace '}' WhiteSpace NewLineBreak ;
-
-LoopLabel: 'while' ;
-LoopStatement: LoopLabel WhiteSpace '[' WhiteSpace ExpressionEvalTerm WhiteSpace ']:' ;
-LoopBlock: LoopStatement WhiteSpace '{' WhiteSpace NewLineBreak
-           (ScriptLine)+ WhiteSpace '}' WhiteSpace NewLineBreak  ;
-*/
+ChameleonCommand: '$(' (WhiteSpace)* ExpressionEvalTerm (WhiteSpace)* ')' ;
+Command:    ScriptingAPIFunction | ChameleonCommand | 'pass' ;
