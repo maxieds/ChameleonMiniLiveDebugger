@@ -1,3 +1,4 @@
+
 /*
 This program (The Chameleon Mini Live Debugger) is free software written by
 Maxie Dion Schmidt: you can redistribute it and/or modify
@@ -20,8 +21,16 @@ import LexerMembers, ScriptingPrimitives, ScriptingAPI;
 
 FileContents: (ScriptLine)+ EOF;
 
-ScriptLine: WhiteSpace (VariableDeclaration | AssignmentOperator | Command)
-            WhiteSpace NewLineBreak | NewLineBreak;
+ScriptLine:              (WhiteSpace)* (VariableDeclaration | AssignmentOperator | Command | MiscSyntax)
+                         (WhiteSpace)* NewLineBreak |
+                         NewLineBreak -> channel(HIDDEN) ;
 
-ChameleonCommand: '$$(' (WhiteSpace)* ExpressionEvalTerm (WhiteSpace)* ')' ;
-Command:    ScriptingAPIFunction | ChameleonCommand | 'pass' ;
+LabelSyntax:             StringLiteral ':' ;
+SetBreakpointSyntax:    'set' (WhiteSpace)* 'breakpoint' ;
+MiscSyntax:              LabelSyntax | SetBreakpointSyntax ;
+
+ChameleonCommand:       '$$(' (WhiteSpace)* ExpressionEvalTerm (WhiteSpace)* ')' ;
+GotoLabelCommand:       'goto' (WhiteSpace)* (StringLiteral | VariableReference) ;
+PassStatement:          'pass' -> channel(HIDDEN);
+Command:                ScriptingAPIFunction | ChameleonCommand | GotoLabelCommand |
+                        PassStatement ;

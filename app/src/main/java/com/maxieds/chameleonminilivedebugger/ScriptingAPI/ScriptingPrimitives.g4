@@ -36,13 +36,6 @@ tokens {
      HAVE_WARNING
 }
 
-WhiteSpaceText:        ( WhiteSpace | NewLineBreak )+ -> channel(HIDDEN) ;
-WhiteSpace:            [ \t]* -> channel(HIDDEN) ;
-NewLineBreak:          ( '\r''\n'? | '\n' ) -> channel(HIDDEN) ;
-Commentary:            CStyleBlockComment | CStyleLineComment ;
-CStyleBlockComment:    '/*'.*?'*/' -> channel(HIDDEN) ;
-CStyleLineComment:     '//'~[\r\n]* -> channel(HIDDEN) ;
-
 /* GCC-like constants as macros for printing status: */
 ScriptLineMacro:     '__LINE__'     { $exprEval = _scriptLineNumber = ctx.start.getLine(); _scriptLineNumber; } ;
 ScriptLineCharMacro: '__LINECHAR__' { _scriptLineCharPos = _input.index(); $exprEval = _scriptLineCharPos; } ;
@@ -52,6 +45,13 @@ ScriptErrorMacro:    '__ERROR__'    { $exprEval = _scriptErrorCode; } ;
 ScriptErrorMsgMacro: '__ERRORMSG__' { $exprEval = _scriptErrorMsg; } ;
 MacroConstant: ScriptLineMacro | ScriptLineCharMacro | ScriptFileMacro |
                ScriptErrorMacro | ScriptErrorMsgMacro ;
+
+WhiteSpaceText:        ( WhiteSpace | NewLineBreak )+ -> channel(HIDDEN) ;
+WhiteSpace:            [ \t]* -> channel(HIDDEN) ;
+NewLineBreak:          ( '\r''\n'? | '\n' ) -> channel(HIDDEN) ;
+Commentary:            CStyleBlockComment | CStyleLineComment ;
+CStyleBlockComment:    '/*'.*?'*/' -> channel(HIDDEN) ;
+CStyleLineComment:     '//'~[\r\n]* -> channel(HIDDEN) ;
 
 HexDigit: [0-9a-fA-F] -> type(TYPE_INT);
 HexString: (HexDigit)+ -> type(TYPE_BYTES);

@@ -321,15 +321,13 @@ public class TabFragment extends Fragment {
                 TAB_SCRIPTING_MITEM_COLUMNS,
                 new String[] {
                         "Main",
-                        "Output",
-                        "Register View"
+                        "Console",
+                        "Inspect Registers"
                 },
                 new int[] {
-                        R.layout.tab_under_construction, // R.layout.scripting_tab_load_import,
-                        R.layout.tab_under_construction,
-                        R.layout.tab_under_construction
-
-
+                        BuildConfig.DEBUG ? R.layout.scripting_tab_load_import : R.layout.tab_under_construction,
+                        BuildConfig.DEBUG ? R.layout.tab_under_construction : R.layout.tab_under_construction,
+                        BuildConfig.DEBUG ? R.layout.tab_under_construction : R.layout.tab_under_construction,
                 });
         UITAB_DATA[TAB_CONFIG] = new UITab(
                 TAB_CONFIG,

@@ -37,7 +37,356 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:orientation="vertical"
             android:padding="2dp">
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
 
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="?colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/run_script_icon24"
+                android:drawablePadding="5dp"
+                android:paddingLeft="10dp"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:text="Load script instance: "
+                android:textAllCaps="true"
+                android:textSize="18sp"
+                android:textStyle="bold|italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="2"
+                android:padding="0dp"
+                android:rowCount="10">
+
+                <EditText
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="0.92"
+                    android:hint="chameleon-batch-script.sh"
+                    android:inputType="none"
+                    android:paddingLeft="4dp"
+                    android:singleLine="true"
+                    android:textColor="?colorPrimaryDarkLog"
+                    android:textSize="12sp" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:layout_columnWeight="0.08"
+                    android:drawableLeft="@drawable/open_folder_icon24"
+                    android:paddingLeft="15dp"
+                    android:text="Open" />
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="3"
+                android:padding="0dp"
+                android:rowCount="10">
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right|center_vertical|start"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginEnd="15dp"
+                    android:button="@null"
+                    android:checked="false"
+                    android:drawableLeft="?android:attr/listChoiceIndicatorMultiple"
+                    android:enabled="true"
+                    android:text="Limit execution time to "
+                    android:textSize="14sp"
+                    android:theme="@style/CheckBoxTheme" />
+
+                <EditText
+                    android:id="@+id/scriptingRuntimeLimitExecSecondsText"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="0.25"
+                    android:layout_gravity="left|center_vertical"
+                    android:inputType="numberDecimal"
+                    android:paddingLeft="4dp"
+                    android:singleLine="true"
+                    android:text="90"
+                    android:textColor="?colorPrimaryDarkLog"
+                    android:textSize="16sp"
+                    android:textStyle="normal|bold|italic" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="0.1"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:singleLine="true"
+                    android:text="sec"
+                    android:textColor="?android:colorPrimaryDark"
+                    android:textSize="14sp"
+                    android:textStyle="bold|italic" />
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="2"
+                android:padding="0dp"
+                android:rowCount="10">
+
+                <Button
+                    style="@style/GridButtons"
+                    android:layout_columnWeight="0.5"
+                    android:drawableLeft="@drawable/run_script_button_icon24"
+                    android:paddingLeft="10dp"
+                    android:text="Run from start" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:layout_columnWeight="0.5"
+                    android:drawableLeft="@drawable/kill_script_icon24"
+                    android:paddingLeft="10dp"
+                    android:text="Kill running script" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:layout_columnWeight="0.5"
+                    android:drawableLeft="@drawable/pause_script_icon24"
+                    android:paddingLeft="10dp"
+                    android:text="Pause script" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:layout_columnWeight="0.5"
+                    android:drawableLeft="@drawable/step_script_icon24"
+                    android:paddingLeft="10dp"
+                    android:text="Step" />
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="2"
+                android:padding="0dp"
+                android:rowCount="10">
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="?colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/set_breakpoint_icon24"
+                android:drawablePadding="5dp"
+                android:paddingLeft="10dp"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:text="Set breakpoints: "
+                android:textAllCaps="true"
+                android:textSize="18sp"
+                android:textStyle="bold|italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="2"
+                android:padding="0dp"
+                android:rowCount="10">
+
+                <!-- +[@line] ; +[@label] -->
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="7"
+                android:padding="0dp">
+
+                <View
+                    android:layout_width="25dp"
+                    android:layout_height="20dp"
+                    android:background="@android:color/transparent" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/plus_append_icon24"
+                    android:background="@android:color/transparent"
+                    />
+
+                <EditText
+                    android:id="@+id/scriptingBPAddLineText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="0.32"
+                    android:inputType="numberDecimal"
+                    android:paddingLeft="4dp"
+                    android:singleLine="true"
+                    android:hint="\@line"
+                    android:textColor="?colorPrimaryDarkLog"
+                    android:textSize="16sp"
+                    android:textStyle="normal|bold|italic" />
+
+                <View
+                    android:layout_width="45dp"
+                    android:layout_height="20dp"
+                    android:background="@android:color/transparent" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/plus_append_icon24"
+                    android:background="@android:color/transparent"
+                    />
+
+                <EditText
+                    android:id="@+id/scriptingBPAddLabelText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="0.32"
+                    android:inputType="numberDecimal"
+                    android:paddingLeft="4dp"
+                    android:singleLine="true"
+                    android:hint="\@label"
+                    android:textColor="?colorPrimaryDarkLog"
+                    android:textSize="16sp"
+                    android:textStyle="normal|bold|italic" />
+
+                <View
+                    android:layout_width="25dp"
+                    android:layout_height="20dp"
+                    android:background="@android:color/transparent" />
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <!--
+                 Each entry has a Preserve icon (dim when disabled), minus/delete icon,
+                 enabled icon,
+                 marker for @line/@label, and a text (bg changes on enabled vs disabled) ;
+            -->
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="2"
+                android:padding="0dp">
+
+                <Button
+                    style="@style/GridButtons"
+                    android:layout_columnWeight="0.5"
+                    android:drawableLeft="@drawable/clear_all_icon24"
+                    android:paddingLeft="10dp"
+                    android:text="Clear all" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:layout_columnWeight="0.5"
+                    android:drawableLeft="@drawable/preserve_all_icon24"
+                    android:paddingLeft="10dp"
+                    android:text="Preserve all" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:layout_columnWeight="0.5"
+                    android:drawableLeft="@drawable/disable_all_toggle_icon24"
+                    android:paddingLeft="10dp"
+                    android:text="Disable all" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:layout_columnWeight="0.5"
+                    android:drawableLeft="@drawable/enable_all_toggle_icon24"
+                    android:paddingLeft="10dp"
+                    android:text="Enable all" />
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:background="@android:color/transparent" />
 
         </LinearLayout>
 
