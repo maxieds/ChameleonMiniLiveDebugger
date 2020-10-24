@@ -39,6 +39,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -101,26 +102,20 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
                                    if (mainContentView == null) {
                                         mainContentView = LiveLoggerActivity.getLiveLoggerInstance().findViewById(android.R.id.content);;
                                         if (mainContentView != null) {
-                                             Log.i(TAG, "findViewById(android.R.id.content)");
                                              return mainContentView.findViewById(viewResId);
                                         } else {
                                              return null;
                                         }
                                    }
-                                   Log.i(TAG, "NONE -> findViewById(viewResId)");
                                    return mainContentView;
                               }
-                              Log.i(TAG, "getWindow().getDecorView()");
                               return mainContentView.findViewById(viewResId);
                          }
-                         Log.i(TAG, "findViewById(android.R.id.content).getRootView()");
                          return mainContentView.findViewById(viewResId);
                     }
-                    Log.i(TAG, "getWindow().getDecorView().findViewById(android.R.id.content)");
                     return mainContentView.findViewById(viewResId);
                }
           }
-          Log.i(TAG, "liveLoggerActivityMainContentView");
           return mainContentView.findViewById(viewResId);
      }
 
@@ -171,6 +166,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
           Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
                @Override
                public void uncaughtException(Thread paramThread, Throwable paramExcpt) {
+                    ChameleonIO.DeviceStatusSettings.stopPostingStats();
                     Intent startCrashRptIntent = new Intent(liveLoggerActivityContext, CrashReportActivity.class);
                     startCrashRptIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startCrashRptIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -304,7 +300,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
           boolean completeRestart = (getLiveLoggerInstance() == null);
           serialUSBDeviceSettingsNeedUpdate = true;
 
-          AndroidSettingsStorage.loadPreviousSettings(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE);
+          AndroidSettingsStorage.loadPreviousSettings();
           if(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT) {
                MainActivityLogUtils.clearAllLogs();
           }
@@ -329,13 +325,11 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
                        "android.permission.INTERNET",
                        "android.permission.USB_PERMISSION",
                        "android.permission.BLUETOOTH",
-                       "android.permission.BLUETOOTH_ADMIN",
                        "android.permission.ACCESS_COARSE_LOCATION",
                        "android.permission.VIBRATE",
-                       "android.permission.WAKE_LOCK"
                };
                if (android.os.Build.VERSION.SDK_INT >= 23) {
-                    requestPermissions(permissions, 200);
+                    requestPermissions(permissions, 0);
                }
                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR); // keep app from crashing when the screen rotates
@@ -473,11 +467,11 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
      @Override
      public void onNewIntent(Intent intent) {
           super.onNewIntent(intent);
-          Log.i(TAG, "NEW INTENT: " + intent.getAction());
-          if(intent == null) {
+          if(intent == null || intent.getAction() == null) {
                return;
           }
-          else if(intent.getAction().equals(SerialUSBInterface.ACTION_USB_PERMISSION)) {
+          Log.i(TAG, "NEW INTENT: " + intent.getAction());
+          if(intent.getAction().equals(SerialUSBInterface.ACTION_USB_PERMISSION)) {
                SerialUSBInterface.usbPermissionsGranted = true;
           }
           else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
@@ -623,7 +617,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
       */
      @Override
      public void onResume() {
-          //reconfigureSerialIODevices();
+          AndroidSettingsStorage.loadPreviousSettings();
           if(ChameleonSettings.getActiveSerialIOPort() != null) {
                ChameleonIO.DeviceStatusSettings.startPostingStats(0);
           }
@@ -938,7 +932,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
           ChameleonIO.executeChameleonMiniCommand(cmdTag, ChameleonIO.TIMEOUT);
      }
 
-     public void actionButtonScriptGUIHandlePerformTaskClick(View view) {
+     public void actionButtonScriptingGUIHandlePerformTaskClick(View view) {
           ScriptingGUI.scriptGUIHandlePerformTaskClick((Button) view, view.getTag().toString());
      }
 

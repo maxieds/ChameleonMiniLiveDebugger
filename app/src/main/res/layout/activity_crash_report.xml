@@ -48,7 +48,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:singleLine="false"
         android:paddingTop="1dp"
         android:paddingBottom="1dp"
-        android:paddingLeft="20dp"
+        android:paddingLeft="2dp"
         android:paddingRight="0dp"
         android:drawableLeft="@drawable/crash_report_bug_icon24_green"
         android:drawablePadding="2dp"

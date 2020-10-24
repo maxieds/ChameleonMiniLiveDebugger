@@ -73,6 +73,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:rowCount="10">
 
                 <CheckBox
+                    android:id="@+id/scriptingConfigCBoxSaveConsoleOutputToFile"
                     android:theme="@style/CheckBoxTheme"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -81,12 +82,14 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:button="@null"
                     android:drawableLeft="?android:attr/listChoiceIndicatorMultiple"
                     android:layout_marginEnd="15dp"
-                    android:text="Save ascii output to file automatically"
+                    android:text="Save console output to file automatically"
+                    android:tag="SAVE_CONSOLE_OUTPUT_FILE"
                     android:enabled="true"
                     android:checked="true"
                     />
 
                 <CheckBox
+                    android:id="@+id/scriptingConfigCBoxAppendConsoleOutput"
                     android:theme="@style/CheckBoxTheme"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -95,12 +98,14 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:button="@null"
                     android:drawableLeft="?android:attr/listChoiceIndicatorMultiple"
                     android:layout_marginEnd="15dp"
-                    android:text="Append ascii output data to existing file"
+                    android:text="Append console output data to existing file"
+                    android:tag="APPEND_CONSOLE_OUTPUT_FILE"
                     android:enabled="true"
-                    android:checked="true"
+                    android:checked="false"
                     />
 
                 <CheckBox
+                    android:id="@+id/scriptingConfigCBoxDatestampOutputFiles"
                     android:theme="@style/CheckBoxTheme"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -109,12 +114,14 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:button="@null"
                     android:drawableLeft="?android:attr/listChoiceIndicatorMultiple"
                     android:layout_marginEnd="15dp"
-                    android:text="Datestamp ascii output files"
+                    android:text="Datestamp output files"
+                    android:tag="DATESTAMP_OUTPUT_FILES"
                     android:enabled="true"
                     android:checked="true"
                     />
 
                 <CheckBox
+                    android:id="@+id/scriptingConfigCBoxVerboseLogging"
                     android:theme="@style/CheckBoxTheme"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -124,11 +131,13 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:drawableLeft="?android:attr/listChoiceIndicatorMultiple"
                     android:layout_marginEnd="15dp"
                     android:text="Use verbose error logging"
+                    android:tag="VERBOSE_ERROR_LOGGING"
                     android:enabled="true"
                     android:checked="true"
                     />
 
                 <CheckBox
+                    android:id="@+id/scriptingConfigCBoxVibrateOnExit"
                     android:theme="@style/CheckBoxTheme"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -137,9 +146,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:button="@null"
                     android:drawableLeft="?android:attr/listChoiceIndicatorMultiple"
                     android:layout_marginEnd="15dp"
-                    android:text="Vibrate phone after exit"
+                    android:text="Vibrate phone on script exit"
+                    android:tag="VIBRATE_PHONE_ON_EXIT"
                     android:enabled="true"
-                    android:checked="true"
+                    android:checked="false"
                     />
 
             </GridLayout>
@@ -179,6 +189,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:rowCount="10">
 
                 <CheckBox
+                    android:id="@+id/scriptingConfigCBoxRestoreChamDeviceState"
                     android:theme="@style/CheckBoxTheme"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -188,11 +199,13 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:drawableLeft="?android:attr/listChoiceIndicatorMultiple"
                     android:layout_marginEnd="15dp"
                     android:text="Restore Chameleon state after instance"
+                    android:tag="SAVE_RESTORE_CHAMELEON_STATE"
                     android:enabled="true"
                     android:checked="true"
                     />
 
                 <CheckBox
+                    android:id="@+id/scriptingConfigCBoxTerminateOnException"
                     android:theme="@style/CheckBoxTheme"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -202,11 +215,13 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:drawableLeft="?android:attr/listChoiceIndicatorMultiple"
                     android:layout_marginEnd="15dp"
                     android:text="Terminate on exceptions"
+                    android:tag="TERMINATE_ON_EXCEPTION"
                     android:enabled="true"
                     android:checked="true"
                     />
 
                 <CheckBox
+                    android:id="@+id/scriptingConfigCBoxIgnoreLiveLogging"
                     android:theme="@style/CheckBoxTheme"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -215,51 +230,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:button="@null"
                     android:drawableLeft="?android:attr/listChoiceIndicatorMultiple"
                     android:layout_marginEnd="15dp"
-                    android:text="Duplicate console output to Android logs"
-                    android:enabled="false"
-                    android:checked="true"
-                    />
-
-                <CheckBox
-                    android:theme="@style/CheckBoxTheme"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left|center_vertical|end"
-                    android:layout_marginLeft="10dp"
-                    android:button="@null"
-                    android:drawableLeft="?android:attr/listChoiceIndicatorMultiple"
-                    android:layout_marginEnd="15dp"
-                    android:text="Print live logs to console"
+                    android:text="Ignore live logging output"
+                    android:tag="IGNORE_LIVE_LOGGING"
                     android:enabled="true"
-                    android:checked="true"
-                    />
-
-                <CheckBox
-                    android:theme="@style/CheckBoxTheme"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left|center_vertical|end"
-                    android:layout_marginLeft="10dp"
-                    android:button="@null"
-                    android:drawableLeft="?android:attr/listChoiceIndicatorMultiple"
-                    android:layout_marginEnd="15dp"
-                    android:text="Disable toolbar status updates while running"
-                    android:enabled="false"
-                    android:checked="true"
-                    />
-
-                <CheckBox
-                    android:theme="@style/CheckBoxTheme"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left|center_vertical|end"
-                    android:layout_marginLeft="10dp"
-                    android:button="@null"
-                    android:drawableLeft="?android:attr/listChoiceIndicatorMultiple"
-                    android:layout_marginEnd="15dp"
-                    android:text="Vibrate phone on exception"
-                    android:enabled="true"
-                    android:checked="true"
+                    android:checked="false"
                     />
 
             </GridLayout>
@@ -316,6 +290,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_height="wrap_content"
                     android:paddingLeft="4dp"
                     android:hint="0675f7b102"
+                    android:inputType="textNoSuggestions"
                     android:textSize="11sp"
                     android:singleLine="true"
                     android:textColor="?colorPrimaryDarkLog" />
@@ -337,6 +312,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
                     android:hint="&lt;secret passphrase&gt;"
+                    android:inputType="textNoSuggestions"
                     android:paddingLeft="4dp"
                     android:singleLine="true"
                     android:textColor="?colorPrimaryDarkLog"
@@ -361,6 +337,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:paddingLeft="4dp"
                     android:textSize="11sp"
                     android:hint="FFFFFFF7D3F7"
+                    android:inputType="textCapCharacters|textNoSuggestions"
                     android:singleLine="true"
                     android:textColor="?colorPrimaryDarkLog" />
 
@@ -383,6 +360,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:textSize="11sp"
                     android:paddingLeft="4dp"
                     android:hint="A0A1A2A3A4A5"
+                    android:inputType="textCapCharacters|textNoSuggestions"
                     android:singleLine="true"
                     android:textColor="?colorPrimaryDarkLog" />
 
@@ -447,8 +425,9 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
                     android:paddingLeft="4dp"
-                    android:hint="chameleon-script"
+                    android:hint="&lt;blank for script name&gt;"
                     android:singleLine="true"
+                    android:inputType="textNoSuggestions"
                     android:textSize="11sp"
                     android:textColor="?colorPrimaryDarkLog" />
 
@@ -478,8 +457,9 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_columnWeight="1"
                     android:paddingLeft="4dp"
                     android:textSize="11sp"
-                    android:hint="chameleon-logs"
+                    android:hint="&lt;blank for script name&gt;"
                     android:singleLine="true"
+                    android:inputType="textNoSuggestions"
                     android:textColor="?colorPrimaryDarkLog" />
 
                 <TextView
@@ -509,6 +489,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:hint="%Y-%m-%d-%H%M%S"
                     android:paddingLeft="4dp"
                     android:singleLine="true"
+                    android:inputType="textNoSuggestions"
                     android:textColor="?colorPrimaryDarkLog"
                     android:textSize="11sp" />
 
@@ -519,11 +500,12 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:drawablePadding="3dp"
                     android:textSize="11sp"
                     android:singleLine="true"
-                    android:text="Script path: "
+                    android:text="Script folder: "
                     android:textStyle="bold|italic"
                     android:textColor="?android:colorPrimaryDark" />
 
-                <ImageView
+                <ImageButton
+                    android:id="@+id/scriptingConfigDefaultScriptLocPathSetBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left|center_vertical"
@@ -532,7 +514,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     />
 
                 <EditText
-                    android:id="@+id/scriptingConfigDefaultScriptLocPath"
+                    android:id="@+id/scriptingConfigDefaultScriptLocPathText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
@@ -540,6 +522,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:textSize="11sp"
                     android:hint="/path/to/Downloads/ChameleonScripts"
                     android:singleLine="true"
+                    android:inputType="none|textNoSuggestions"
+                    android:editable="false"
                     android:textColor="?colorPrimaryDarkLog" />
 
                 <TextView
@@ -549,11 +533,12 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:drawablePadding="3dp"
                     android:textSize="11sp"
                     android:singleLine="true"
-                    android:text="File output path: "
+                    android:text="Output folder: "
                     android:textStyle="bold|italic"
                     android:textColor="?android:colorPrimaryDark" />
 
-                <ImageView
+                <ImageButton
+                    android:id="@+id/scriptingConfigDefaultOutputFilePathSetBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left|center_vertical"
@@ -562,7 +547,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     />
 
                 <EditText
-                    android:id="@+id/scriptingConfigDefaultOutFilePath"
+                    android:id="@+id/scriptingConfigDefaultOutputFilePathText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
@@ -570,6 +555,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:textSize="11sp"
                     android:hint="/path/to/ChameleonScriptOutput"
                     android:singleLine="true"
+                    android:inputType="none|textNoSuggestions"
+                    android:editable="false"
                     android:textColor="?colorPrimaryDarkLog" />
 
                 <TextView
@@ -579,11 +566,12 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:drawablePadding="3dp"
                     android:textSize="11sp"
                     android:singleLine="true"
-                    android:text="Script CWD: "
+                    android:text="Logging folder: "
                     android:textStyle="bold|italic"
                     android:textColor="?android:colorPrimaryDark" />
 
-                <ImageView
+                <ImageButton
+                    android:id="@+id/scriptingConfigDefaultLoggingFilePathSetBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left|center_vertical"
@@ -592,14 +580,49 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     />
 
                 <EditText
-                    android:id="@+id/scriptingConfigDefaultScriptCWD"
+                    android:id="@+id/scriptingConfigDefaultLoggingFilePathText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
                     android:paddingLeft="4dp"
                     android:textSize="11sp"
-                    android:hint="/path/to/user/home"
+                    android:hint="/path/to/ChameleonScriptLogging"
                     android:singleLine="true"
+                    android:inputType="none|textNoSuggestions"
+                    android:editable="false"
+                    android:textColor="?colorPrimaryDarkLog" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:textSize="11sp"
+                    android:singleLine="true"
+                    android:text="Runtime CWD: "
+                    android:textStyle="bold|italic"
+                    android:textColor="?android:colorPrimaryDark" />
+
+                <ImageButton
+                    android:id="@+id/scriptingConfigDefaultScriptCWDSetBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:src="@drawable/open_folder_icon24"
+                    android:background="@android:color/transparent"
+                    />
+
+                <EditText
+                    android:id="@+id/scriptingConfigDefaultScriptCWDText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:paddingLeft="4dp"
+                    android:textSize="11sp"
+                    android:hint="&lt;blank for script folder&gt;"
+                    android:singleLine="true"
+                    android:inputType="none|textNoSuggestions"
+                    android:editable="false"
                     android:textColor="?colorPrimaryDarkLog" />
 
                 <TextView
@@ -613,7 +636,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:textStyle="bold|italic"
                     android:textColor="?android:colorPrimaryDark" />
 
-                <ImageView
+                <ImageButton
+                    android:id="@+id/scriptingConfigExtraKeysFileSetBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left|center_vertical"
@@ -622,14 +646,16 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     />
 
                 <EditText
-                    android:id="@+id/scriptingConfigExtraKeysFile"
+                    android:id="@+id/scriptingConfigExtraKeysFileText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
                     android:paddingLeft="4dp"
                     android:textSize="11sp"
-                    android:hint="/path/to/mfc-keys-list.csv"
+                    android:hint="&lt;none&gt;"
                     android:singleLine="true"
+                    android:inputType="none|textNoSuggestions"
+                    android:editable="false"
                     android:textColor="?colorPrimaryDarkLog" />
 
             </GridLayout>

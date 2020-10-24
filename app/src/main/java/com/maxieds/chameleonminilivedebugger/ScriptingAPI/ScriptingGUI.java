@@ -17,16 +17,26 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.maxieds.chameleonminilivedebugger.AndroidSettingsStorage;
+import com.maxieds.chameleonminilivedebugger.BuildConfig;
+import com.maxieds.chameleonminilivedebugger.R;
+import com.maxieds.chameleonminilivedebugger.Utils;
+
+import java.io.File;
 
 public class ScriptingGUI {
 
     private static final String TAG = ScriptingGUI.class.getSimpleName();
-
-    public static void scriptGUIOpenFileButton(Button clickedBtn, String btnTag) {
-
-    }
 
     public static void scriptGUIHandlePerformTaskClick(Button clickedBtn, String btnTag) {
         switch(btnTag) {
@@ -38,14 +48,230 @@ public class ScriptingGUI {
                 break;
             case "SCRIPTING_BTN_STEP_SCRIPT":
                 break;
-            default:
+            default: /* TODO: Breakpoint actions */
                 break;
         }
     }
 
-    public static void scriptGUIHandleCheckboxClick(CheckBox clickedCbox, String cbTag) {
+    public static boolean initializeScriptingTabGUI(View cfgBaseLayout) {
+        ScriptingConfig.initializeScriptingConfig();
+        EditText selectedScriptText = cfgBaseLayout.findViewById(R.id.scriptingLoadImportTabScriptFileText);
+        ScriptingGUI.displayEditTextValue(ScriptingConfig.LAST_SCRIPT_LOADED_PATH, selectedScriptText);
+        Button setLoadedScriptBtn = cfgBaseLayout.findViewById(R.id.scriptingLoadImportTabScriptFileSetBtn);
+        setLoadedScriptBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View cbView) {
+                String nextPath = ScriptingFileIO.selectTextFileFromGUIList(ScriptingConfig.DEFAULT_SCRIPT_LOAD_FOLDER);
+                ScriptingConfig.LAST_SCRIPT_LOADED_PATH = nextPath;
+                AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.SCRIPTING_CONFIG_LAST_SCRIPT_LOADED_PATH);
+                ScriptingGUI.displayEditTextValue(nextPath, selectedScriptText);
+            }
+        });
+        CheckBox cbLimitExecTime = cfgBaseLayout.findViewById(R.id.scriptingLoadImportTabLimitExecTimeCbox);
+        cbLimitExecTime.setChecked(ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME);
+        EditText limitExecTimeSecsText = cfgBaseLayout.findViewById(R.id.scriptingRuntimeLimitExecSecondsText);
+        limitExecTimeSecsText.setText(String.format(BuildConfig.DEFAULT_LOCALE, "%d", ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME_SECONDS));
+        /* Setup breakpoints GUI displays: */
+        ScriptingBreakPoint.breakpointsGUIDisplayContainer = (LinearLayout) cfgBaseLayout.findViewById(R.id.scriptingMainTabBreakpointsListView);
+        ImageButton addBPLineBtn = cfgBaseLayout.findViewById(R.id.scriptingBPAddLineAppendBtn);
+        addBPLineBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View cbView) {
+                int lineNumber = -1;
+                try {
+                    lineNumber = Integer.parseInt(((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLineText)).getText().toString());
+                } catch(Exception nfe) {
+                    nfe.printStackTrace();
+                    return;
+                }
+                ScriptingBreakPoint.addBreakpoint(lineNumber);
+                Utils.dismissAndroidKeyboard(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT);
+                ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLineText)).setText("");
+                ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLineText)).setHint("@line");
+            }
+        });
+        ImageButton addBPLabelBtn = cfgBaseLayout.findViewById(R.id.scriptingBPAddLabelAppendBtn);
+        addBPLabelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View cbView) {
+                String lineLabel = "";
+                try {
+                    lineLabel = ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLabelText)).getText().toString();
+                } catch(Exception nfe) {
+                    nfe.printStackTrace();
+                    return;
+                }
+                ScriptingBreakPoint.addBreakpoint(lineLabel);
+                Utils.dismissAndroidKeyboard(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT);
+                ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLabelText)).setText("");
+                ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLabelText)).setHint("@label");
+            }
+        });
+        return true;
+    }
 
+    public static boolean initializeScriptingConfigGUI(View cfgBaseLayout) {
+        ScriptingConfig.initializeScriptingConfig();
+        int[] checkBoxResIds = new int[] {
+                R.id.scriptingConfigCBoxSaveConsoleOutputToFile,
+                R.id.scriptingConfigCBoxAppendConsoleOutput,
+                R.id.scriptingConfigCBoxDatestampOutputFiles,
+                R.id.scriptingConfigCBoxVerboseLogging,
+                R.id.scriptingConfigCBoxVibrateOnExit,
+                R.id.scriptingConfigCBoxRestoreChamDeviceState,
+                R.id.scriptingConfigCBoxTerminateOnException,
+                R.id.scriptingConfigCBoxIgnoreLiveLogging
+        };
+        boolean[] checkBoxValues = new boolean[] {
+                ScriptingConfig.SAVE_CONSOLE_OUTPUT_FILE,
+                ScriptingConfig.APPEND_CONSOLE_OUTPUT_FILE,
+                ScriptingConfig.DATESTAMP_OUTPUT_FILES,
+                ScriptingConfig.VERBOSE_ERROR_LOGGING,
+                ScriptingConfig.VIBRATE_PHONE_ON_EXIT,
+                ScriptingConfig.SAVE_RESTORE_CHAMELEON_STATE,
+                ScriptingConfig.TERMINATE_ON_EXCEPTION,
+                ScriptingConfig.IGNORE_LIVE_LOGGING
+        };
+        String[] androidSettingsKey = new String[] {
+                AndroidSettingsStorage.SCRIPTING_CONFIG_SAVE_CONSOLE_OUTPUT_FILE,
+                AndroidSettingsStorage.SCRIPTING_CONFIG_APPEND_CONSOLE_OUTPUT_FILE,
+                AndroidSettingsStorage.SCRIPTING_CONFIG_DATESTAMP_OUTPUT_FILES,
+                AndroidSettingsStorage.SCRIPTING_CONFIG_VERBOSE_ERROR_LOGGING,
+                AndroidSettingsStorage.SCRIPTING_CONFIG_VIBRATE_PHONE_ON_EXIT,
+                AndroidSettingsStorage.SCRIPTING_CONFIG_SAVE_RESTORE_CHAMELEON_STATE,
+                AndroidSettingsStorage.SCRIPTING_CONFIG_TERMINATE_ON_EXCEPTION,
+                AndroidSettingsStorage.SCRIPTING_CONFIG_IGNORE_LIVE_LOGGING
+        };
+        for(int cbIdx = 0; cbIdx < checkBoxResIds.length; cbIdx++) {
+            CheckBox cbView = cfgBaseLayout.findViewById(checkBoxResIds[cbIdx]);
+            cbView.setChecked(checkBoxValues[cbIdx]);
+            final int cbIdxConstValue = cbIdx;
+            cbView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View cbView) {
+                    CheckBox cb = (CheckBox) cbView;
+                    AndroidSettingsStorage.updateValueByKey(androidSettingsKey[cbIdxConstValue]);
+                    AndroidSettingsStorage.restorePreviousSettings(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE,
+                                                                   AndroidSettingsStorage.AndroidSettingsType.SCRIPTING_CONFIG);
+                }
+            });
+        }
+        int[] envVarResIds = new int[] {
+                R.id.scriptingConfigEnvVarEV0,
+                R.id.scriptingConfigEnvVarEV1,
+                R.id.scriptingConfigEnvVarEVK0,
+                R.id.scriptingConfigEnvVarEVK1,
+                R.id.scriptingConfigDefaultOutFileBaseName,
+                R.id.scriptingConfigDefaultLogFileBaseName,
+                R.id.scriptingConfigDatestampFormat
+        };
+        String[] envVarDefaults = new String[] {
+                ScriptingConfig.ENV0_VALUE,
+                ScriptingConfig.ENV1_VALUE,
+                ScriptingConfig.ENVKEY0_VALUE,
+                ScriptingConfig.ENVKEY1_VALUE,
+                ScriptingConfig.OUTPUT_FILE_BASENAME,
+                ScriptingConfig.OUTPUT_LOGFILE_BASENAME,
+                ScriptingConfig.DATESTAMP_FORMAT
+        };
+        String[] androidSettingsKeyEnvVars = new String[] {
+                AndroidSettingsStorage.SCRIPTING_CONFIG_ENV0_VALUE,
+                AndroidSettingsStorage.SCRIPTING_CONFIG_ENV1_VALUE,
+                AndroidSettingsStorage.SCRIPTING_CONFIG_ENVKEY0_VALUE,
+                AndroidSettingsStorage.SCRIPTING_CONFIG_ENVKEY1_VALUE,
+                AndroidSettingsStorage.SCRIPTING_CONFIG_OUTPUT_FILE_BASENAME,
+                AndroidSettingsStorage.SCRIPTING_CONFIG_OUTPUT_LOGFILE_BASENAME,
+                AndroidSettingsStorage.SCRIPTING_CONFIG_DATESTAMP_FORMAT
+        };
+        for(int evIdx = 0; evIdx < envVarResIds.length; evIdx++) {
+            EditText etEnvVarInput = cfgBaseLayout.findViewById(envVarResIds[evIdx]);
+            etEnvVarInput.setText(envVarDefaults[evIdx]);
+            final int evIdxConstValue = evIdx;
+            etEnvVarInput.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void onTextChanged(final CharSequence s, int start, final int before, int count) {}
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+                @Override
+                public void afterTextChanged(final Editable s) {
+                    AndroidSettingsStorage.updateValueByKey(androidSettingsKeyEnvVars[evIdxConstValue]);
+                    AndroidSettingsStorage.restorePreviousSettings(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE,
+                                                                   AndroidSettingsStorage.AndroidSettingsType.SCRIPTING_CONFIG);
+                }
+            });
+        }
+        int[][] getFileFromPickerResIds = new int[][] {
+                { R.id.scriptingConfigDefaultScriptLocPathText,      R.id.scriptingConfigDefaultScriptLocPathSetBtn },
+                { R.id.scriptingConfigDefaultOutputFilePathText,     R.id.scriptingConfigDefaultOutputFilePathSetBtn },
+                { R.id.scriptingConfigDefaultLoggingFilePathText,    R.id.scriptingConfigDefaultLoggingFilePathSetBtn },
+                { R.id.scriptingConfigDefaultScriptCWDText,          R.id.scriptingConfigDefaultScriptCWDSetBtn },
+                { R.id.scriptingConfigExtraKeysFileText,             R.id.scriptingConfigExtraKeysFileSetBtn }
+        };
+        String[] defaultFilePathValues = new String[] {
+                ScriptingConfig.DEFAULT_SCRIPT_LOAD_FOLDER,
+                ScriptingConfig.DEFAULT_FILE_OUTPUT_FOLDER,
+                ScriptingConfig.DEFAULT_LOGGING_OUTPUT_FOLDER,
+                ScriptingConfig.DEFAULT_SCRIPT_CWD,
+                ScriptingConfig.EXTRA_KEYS_FILE
+        };
+        boolean[] pickerTypeIsFolder = new boolean[] {
+                true,
+                true,
+                true,
+                true,
+                false
+        };
+        String[] androidSettingsFileUpdateKeys = new String[] {
+                AndroidSettingsStorage.SCRIPTING_CONFIG_DEFAULT_SCRIPT_LOAD_FOLDER,
+                AndroidSettingsStorage.SCRIPTING_CONFIG_DEFAULT_FILE_OUTPUT_FOLDER,
+                AndroidSettingsStorage.SCRIPTING_CONFIG_DEFAULT_LOGGING_OUTPUT_FOLDER,
+                AndroidSettingsStorage.SCRIPTING_CONFIG_DEFAULT_SCRIPT_CWD,
+                AndroidSettingsStorage.SCRIPTING_CONFIG_EXTRA_KEYS_FILE
+        };
+        for(int pidx = 0; pidx < getFileFromPickerResIds.length; pidx++) {
+            EditText etFilePickerValueDisplay = cfgBaseLayout.findViewById(getFileFromPickerResIds[pidx][0]);
+            etFilePickerValueDisplay.setText(defaultFilePathValues[pidx]);
+            ImageButton choosePathBtn = cfgBaseLayout.findViewById(getFileFromPickerResIds[pidx][1]);
+            final int pidxConstValue = pidx;
+            choosePathBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View btnView) {
+                    String nextPath = "";
+                    String baseDirPath = AndroidSettingsStorage.getStringValueByKey(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE, androidSettingsFileUpdateKeys[pidxConstValue]);
+                    File baseDirFile = ScriptingFileIO.getStoragePathFromRelative(baseDirPath, false, true);
+                    if(baseDirFile != null) {
+                        baseDirPath = baseDirFile.getPath();
+                    }
+                    else {
+                        baseDirPath = "";
+                    }
+                    if(pickerTypeIsFolder[pidxConstValue]) {
+                        nextPath = ScriptingFileIO.selectDirectoryFromGUIList(baseDirPath);
+                    }
+                    else {
+                        nextPath = ScriptingFileIO.selectTextFileFromGUIList(baseDirPath);
+                    }
+                    ScriptingGUI.displayEditTextValue(nextPath, btnView.getRootView().findViewById(getFileFromPickerResIds[pidxConstValue][0]));
+                    AndroidSettingsStorage.updateValueByKey(androidSettingsFileUpdateKeys[pidxConstValue]);
+                    AndroidSettingsStorage.restorePreviousSettings(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE,
+                                                                   AndroidSettingsStorage.AndroidSettingsType.SCRIPTING_CONFIG);
+                }
+            });
+        }
+        return true;
+    }
 
+    public static boolean displayEditTextValue(String fullValue, EditText etView) {
+        try {
+            String[] textValues = ScriptingFileIO.shortenStoragePath(fullValue, ScriptingFileIO.DISPLAY_TEXT_MAX_LENGTH);
+            etView.setText(textValues[ScriptingFileIO.SHORTENED_PATH_INDEX]);
+            etView.setTag(textValues[ScriptingFileIO.COMPLETE_PATH_INDEX]);
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     /* Console output tab message types: */

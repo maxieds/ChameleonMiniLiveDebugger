@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+This program (The Chameleon Mini Live Debugger) is free software written by
+Maxie Dion Schmidt: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+The complete license provided with source distributions of this library is
+available at the following link:
+https://github.com/maxieds/ChameleonMiniLiveDebugger
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/LogDataUITheme"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="0.5dp"
+    android:layout_marginRight="0.5dp"
+    android:orientation="vertical"
+    >
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/transparent" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?colorPrimaryDark" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1.0"
+        android:layout_marginBottom="0dp"
+        android:paddingBottom="0dp"
+        android:padding="0dp"
+        android:background="?colorAccent"
+        >
+
+        <ImageView
+            android:id="@+id/scriptingGUIBreakpointActiveIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:gravity="center_horizontal|center_vertical|center"
+            android:layout_gravity="center_horizontal|center_vertical|center"
+            android:src="@drawable/breakpoint_active_icon24"
+            android:background="@android:color/transparent"
+            android:visibility="invisible"
+            />
+
+        <ImageButton
+            android:id="@+id/scriptingGUIBreakpointRemoveBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="2dp"
+            android:paddingRight="4dp"
+            android:gravity="center_horizontal|center_vertical|center"
+            android:layout_gravity="center_horizontal|center_vertical|center"
+            android:src="@drawable/breakpoint_gui_minus_remove16"
+            android:background="@android:color/transparent"
+            />
+
+        <ImageButton
+            android:id="@+id/scriptingGUIBreakpointPreserveIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="2dp"
+            android:paddingRight="4dp"
+            android:gravity="center_horizontal|center_vertical|center"
+            android:layout_gravity="center_horizontal|center_vertical|center"
+            android:src="@drawable/preserve_breakpoint_icon24"
+            android:background="@android:color/transparent"
+            />
+
+        <ImageButton
+            android:id="@+id/scriptingGUIBreakpointEnableIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="2dp"
+            android:paddingRight="14dp"
+            android:gravity="center_horizontal|center_vertical|center"
+            android:layout_gravity="center_horizontal|center_vertical|center"
+            android:src="@drawable/breakpoint_enabled_icon24"
+            android:background="@android:color/transparent"
+            />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="1.0"
+            android:layout_marginBottom="0dp"
+            android:paddingBottom="0dp"
+            android:padding="0dp"
+            android:layout_marginLeft="4dp"
+            android:background="?colorAccent"
+            >
+
+            <TextView
+                android:id="@+id/scriptingGUIBreakpointTypeDesc"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:gravity="left|center_vertical"
+                android:layout_gravity="left|center_vertical"
+                android:layout_weight="0.25"
+                android:drawablePadding="3dp"
+                android:textSize="12sp"
+                android:singleLine="true"
+                android:textAllCaps="true"
+                android:textStyle="normal|italic"
+                android:textColor="?android:colorPrimaryDark"
+                android:background="@android:color/transparent"
+                />
+
+            <TextView
+                android:id="@+id/scriptingGUIBreakpointLabelValue"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:paddingRight="2dp"
+                android:gravity="left|center_vertical"
+                android:layout_gravity="left|center_vertical"
+                android:layout_weight="0.7"
+                android:drawablePadding="3dp"
+                android:textSize="12sp"
+                android:singleLine="true"
+                android:textAllCaps="true"
+                android:textStyle="normal|bold"
+                android:textColor="?android:colorPrimaryDark"
+                android:typeface="monospace"
+                android:background="@android:color/transparent"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?colorPrimaryDark" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/transparent" />
+
+</LinearLayout>

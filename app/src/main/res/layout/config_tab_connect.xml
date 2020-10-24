@@ -47,6 +47,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:layout_gravity="center_vertical"
                 android:background="?colorPrimaryDarkLog"
                 android:drawableLeft="@drawable/android_phone_logo24"
                 android:drawablePadding="5dp"
@@ -92,7 +94,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_gravity="left|center_vertical"
                     android:drawablePadding="3dp"
                     android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
+                    android:paddingRight="18dp"
                     android:singleLine="true"
                     android:text="Disabled"
                     android:textStyle="normal"
@@ -106,44 +108,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:drawablePadding="3dp"
                     android:text="BT Settings" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center|center_vertical"
-                    android:src="@drawable/nfc_icon24"
-                    android:paddingRight="5dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left|center_vertical"
-                    android:drawablePadding="3dp"
-                    android:singleLine="true"
-                    android:text="Android NFC: "
-                    android:textStyle="bold|italic"
-                    android:textColor="?android:colorPrimaryDark" />
-
-                <TextView
-                    android:id="@+id/androidNFCStatusText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left|center_vertical"
-                    android:drawablePadding="3dp"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:singleLine="true"
-                    android:text="Disabled"
-                    android:textStyle="normal"
-                    android:textColor="?android:colorPrimaryDark" />
-
-                <Button
-                    style="@style/GridButtonsNoWidth"
-                    android:layout_columnWeight="1"
-                    android:id="@+id/androidNFCSettingsButton"
-                    android:drawableLeft="@drawable/info_icon24"
-                    android:drawablePadding="3dp"
-                    android:text="NFC Settings" />
-
             </GridLayout>
 
             <View
@@ -155,6 +119,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:layout_gravity="center_vertical"
                 android:background="?colorPrimaryDarkLog"
                 android:drawableLeft="@drawable/chameleon_device_logo24"
                 android:drawablePadding="5dp"
@@ -201,6 +167,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_height="wrap_content"
                     android:paddingLeft="4dp"
                     android:hint="Chameleon Mini Nickname"
+                    android:textSize="11sp"
                     android:singleLine="true"
                     android:textColor="?colorPrimaryDarkLog" />
 
@@ -290,6 +257,11 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
             </GridLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
             <GridLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -312,6 +284,11 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:text="Disconnect Device" />
 
             </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
 
         </LinearLayout>
 

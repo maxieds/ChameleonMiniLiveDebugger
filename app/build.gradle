@@ -107,9 +107,9 @@ android {
             resConfigs       "en", "en_US", "en_UK", "de", "fr", "ru"
             dimension "mode"
             manifestPlaceholders = [
-                    appLabelDesc       : "@string/app_display_short_name",
-                    appIcon            : "@drawable/chameleonicon64_paid",
-                    appRoundIcon       : "@drawable/chameleonicon64_paid",
+                    appLabelDesc       : "@string/app_display_short_name_paid",
+                    appIcon            : "@mipmap/chameleon_app_icon_round_paid",
+                    appRoundIcon       : "@mipmap/chameleon_app_icon_round_paid",
                     appTheme           : "@style/AppThemeGreenPaid",
                     appDebug           : "false",
                     installLocation    : "auto"
@@ -139,10 +139,11 @@ android {
         implementation 'androidx.legacy:legacy-support-v4:1.0.0'
         implementation 'androidx.appcompat:appcompat:1.2.0'
         implementation 'com.google.android.material:material:1.3.0-alpha03'
-        implementation 'com.github.felHR85:UsbSerial:4.5.2'
-        implementation 'com.shawnlin:number-picker:2.4.9'
         implementation 'org.apache.commons:commons-text:1.7'
         implementation 'org.antlr:antlr4-runtime:4.7'
+        implementation 'com.github.felHR85:UsbSerial:4.5.2'
+        implementation 'com.shawnlin:number-picker:2.4.9'
+        implementation 'com.nononsenseapps:filepicker:4.2.1'
     }
 
     repositories {

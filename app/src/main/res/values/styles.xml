@@ -43,7 +43,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item name="deviceMemoryLogHighlight">#EF2929</item>
         <item name="colorAccentHighlight">#98fb98</item>
         <item name="colorAboutLinkColor">#6eb703</item>
-        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_rainbow</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_rainbow2</item>
     </style>
 
     <style name="AppThemeGreenPaid" parent="@style/AppTheme">
@@ -202,18 +202,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_red</item>
     </style>
 
-    <style name="AppThemeCrashReport" parent="AppTheme">
-        <item name="colorPrimary">#F44336</item>
-        <item name="colorPrimaryDark">#B71C1C</item>
-        <item name="colorAccent">#FFCDD2</item>
-        <item name="colorPrimaryDarkLog">#E53935</item>
-        <item name="colorAccentLog">#FF8A80</item>
-        <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#FF1744</item>
-        <item name="colorAboutLinkColor">#BEBBBB</item>
-        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_red</item>
-    </style>
-
     <style name="SpinnerTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="android:background">?colorAccentHighlight</item>
         <item name="buttonStyle">@style/AboutButtonTheme</item>
@@ -248,7 +236,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item name="android:titleTextStyle">@style/Actionbar.TitleText</item>
         <item name="android:actionOverflowMenuStyle">@style/Actionbar.PopupTheme</item>
         <item name="android:subtitleTextStyle">@style/Actionbar.TitleText</item>
-        <!-- Overflow menu ... icon color: -->
         <item name="android:textColorSecondary">#ffffff</item>
     </style>
 

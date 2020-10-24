@@ -21,8 +21,6 @@ import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.LiveLoggerActivity;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
-import java.util.Locale;
-
 public class ScriptingTypes {
 
     private static final String TAG = ScriptingTypes.class.getSimpleName();
@@ -32,15 +30,20 @@ public class ScriptingTypes {
     /*
      * Definitions for storage of variable types:
      */
-    public enum ScriptVariable {
-        VariableTypeInteger,
-        VariableTypeBoolean,
-        VariableTypeBytes,
-        VariableTypeHexString,
-        VariableTypeAsciiString,
-        VariableTypeRawFileFilePath,
-        VariableTypeStorageFilePath;
+    public static class ScriptVariable {
+        public enum VariableType {
+            VariableTypeNone,
+            VariableTypeInteger,
+            VariableTypeBoolean,
+            VariableTypeBytes,
+            VariableTypeHexString,
+            VariableTypeAsciiString,
+            VariableTypeRawFileFilePath,
+            VariableTypeStorageFilePath,
+            VariableTypeArray,
+        }
 
+        private VariableType varType;
         private String  varName;
         private boolean varIsInit;
         private int     varValueAsInt;
@@ -48,13 +51,37 @@ public class ScriptingTypes {
         private byte[]  varValueAsByteArray;
         private String  varValueAsString;
 
-        private ScriptVariable() {
+        private void setLocalVariableDefaults() {
             varName = "";
+            varType = VariableType.VariableTypeNone;
             varIsInit = false;
             varValueAsInt = 0;
             varValueAsBoolean = false;
             varValueAsByteArray = new byte[0];
             varValueAsString = "";
+        }
+        public ScriptVariable() {
+            setLocalVariableDefaults();
+        }
+
+        public ScriptVariable(int intLiteral) {
+            setLocalVariableDefaults();
+            set(intLiteral);
+        }
+
+        public ScriptVariable(boolean boolLiteral) {
+            setLocalVariableDefaults();
+            set(boolLiteral);
+        }
+
+        public ScriptVariable(byte[] byteArrayLiteral) {
+            setLocalVariableDefaults();
+            set(byteArrayLiteral);
+        }
+
+        public ScriptVariable(String strLiteral) {
+            setLocalVariableDefaults();
+            set(strLiteral);
         }
 
         public boolean setName(String nextVarName) {
@@ -70,20 +97,21 @@ public class ScriptingTypes {
             return varIsInit;
         }
 
-        public boolean setValueAsInt(int nextValue) {
+        public boolean set(int nextValue) {
             varValueAsInt = nextValue;
+            varType = VariableType.VariableTypeInteger;
             varIsInit = true;
             return true;
         }
 
         public int getValueAsInt() {
-            if(this == VariableTypeInteger) {
+            if(varType == VariableType.VariableTypeInteger) {
                 return varValueAsInt;
             }
-            else if(this == VariableTypeBoolean) {
+            else if(varType == VariableType.VariableTypeBoolean) {
                 return varValueAsBoolean ? 1 : 0;
             }
-            else if((this == VariableTypeBytes) && (varValueAsByteArray.length <= 8)) {
+            else if((varType == VariableType.VariableTypeBytes) && (varValueAsByteArray.length <= 8)) {
                 int varValue = 0, bytePosShiftLeftMost = 2 * varValueAsByteArray.length;
                 for(int bytePos = 1; bytePos <= varValueAsByteArray.length; bytePos++) {
                     varValue |= varValueAsByteArray[bytePos] << (bytePosShiftLeftMost - 2 * bytePos);
@@ -96,20 +124,23 @@ public class ScriptingTypes {
             return 0;
         }
 
-        public boolean setValueAsBoolean(boolean nextValue) {
+        public boolean set(boolean nextValue) {
             varValueAsBoolean = nextValue;
+            varType = VariableType.VariableTypeBoolean;
             varIsInit = true;
             return true;
         }
 
-        public boolean setValueAsBoolean(String nextValue) {
+        public boolean setAsBooleanLiteral(String nextValue) {
             try {
                 if (nextValue.equalsIgnoreCase("TRUE") || !nextValue.equals("0")) {
                     varValueAsBoolean = true;
+                    varType = VariableType.VariableTypeBoolean;
                     varIsInit = true;
                     return true;
                 } else if (nextValue.equalsIgnoreCase("FALSE") || Integer.parseInt(nextValue, 16) != 0) {
                     varValueAsBoolean = false;
+                    varType = VariableType.VariableTypeBoolean;
                     varIsInit = true;
                     return true;
                 }
@@ -121,10 +152,10 @@ public class ScriptingTypes {
         }
 
         public boolean getValueAsBoolean() {
-            if(this == VariableTypeBoolean) {
+            if(varType == VariableType.VariableTypeBoolean) {
                 return varValueAsBoolean;
             }
-            else if(this == VariableTypeInteger) {
+            else if(varType == VariableType.VariableTypeInteger) {
                 return varValueAsInt != 0;
             }
             else if(isBytesType()) {
@@ -135,8 +166,9 @@ public class ScriptingTypes {
             }
         }
 
-        public boolean setValueAsBytes(String nextValue) {
-            varValueAsByteArray = Utils.hexString2Bytes(nextValue);
+        public boolean set(byte[] nextValue) {
+            varValueAsByteArray = nextValue;
+            varType = VariableType.VariableTypeBytes;
             return varValueAsByteArray.length > 0;
         }
 
@@ -171,14 +203,15 @@ public class ScriptingTypes {
             }
         }
 
-        public boolean setValueAsString(String nextValue) {
+        public boolean set(String nextValue) {
             varValueAsString = nextValue;
+            varType = VariableType.VariableTypeAsciiString;
             varIsInit = true;
             return true;
         }
 
         public String getValueAsString() {
-            switch(this) {
+            switch(varType) {
                 case VariableTypeHexString:
                 case VariableTypeAsciiString:
                 case VariableTypeStorageFilePath:
@@ -197,7 +230,7 @@ public class ScriptingTypes {
         }
 
         public boolean isIntegerType() {
-            switch(this) {
+            switch(varType) {
                 case VariableTypeInteger:
                 case VariableTypeBoolean:
                 case VariableTypeRawFileFilePath:
@@ -216,7 +249,7 @@ public class ScriptingTypes {
         }
 
         public boolean isBooleanType() {
-            switch(this) {
+            switch(varType) {
                 case VariableTypeBoolean:
                 case VariableTypeInteger:
                     return true;
@@ -226,11 +259,11 @@ public class ScriptingTypes {
         }
 
         public boolean isBytesType() {
-            return this == VariableTypeBytes;
+            return varType == VariableType.VariableTypeBytes;
         }
 
         public boolean isStringType() {
-            switch(this) {
+            switch(varType) {
                 case VariableTypeHexString:
                 case VariableTypeAsciiString:
                 case VariableTypeStorageFilePath:
@@ -241,7 +274,7 @@ public class ScriptingTypes {
         }
 
         public boolean isFilePathType() {
-            switch(this) {
+            switch(varType) {
                 case VariableTypeRawFileFilePath:
                 case VariableTypeStorageFilePath:
                     return true;
@@ -250,7 +283,7 @@ public class ScriptingTypes {
             }
         }
 
-        public String getTypeName() {
+        public String getTypeName() { // Override: Array types ...
             if(isIntegerType()) {
                 return "Integer";
             }
@@ -263,13 +296,69 @@ public class ScriptingTypes {
             else if(isStringType()) {
                 return "String";
             }
-            return "NULL";
+            return "None";
         }
+
+        public boolean isArray() {
+            return false;
+        }
+
+        public VariableType getArrayType() {
+            return VariableType.VariableTypeNone;
+        }
+
+        public int length() {
+            if(isStringType()) {
+                return getValueAsString().length();
+            }
+            else if(varType != VariableType.VariableTypeNone) {
+                return 1;
+            }
+            return 0;
+        }
+
+        public ScriptVariable getValueAt(int index) throws ScriptingExecptions.ChameleonScriptingException {
+            return null; // TODO
+        }
+
+        public ScriptVariable getValueAt(String hashIndex) throws ScriptingExecptions.ChameleonScriptingException {
+            return null; // TODO
+        }
+
+        public void setValueAt(int index) throws ScriptingExecptions.ChameleonScriptingException {}
+
+        public void setValueAt(String hashIndex) throws ScriptingExecptions.ChameleonScriptingException {}
+
+        public String getBinaryString() {
+            return null; // TODO
+        }
+
+        public enum BinaryOperation {
+            BINOP_PLUS,
+            BINOP_MINUS,
+            BINOP_TIMES,
+            BINOP_BITWISE_AND,
+            BINOP_BITWISE_OR,
+            BINOP_BITWISE_XOR,
+            BINOP_LOGICAL_AND,
+            BINOP_LOGICAL_OR,
+            BINOP_SHIFT_LEFT,
+            BINOP_SHIFT_LEFT_LLL,
+            BINOP_SHIFT_RIGHT,
+            BINOP_SHIFT_RIGHT_RRR,
+        }
+
+        public ScriptVariable binaryOperator(ScriptVariable rhsVar, ScriptVariable lhsVar, BinaryOperation opType) { return null; }
+
+        public enum UnaryOperation {
+            UOP_BITWISE_NOT,
+            UOP_LOGICAL_NOT,
+        }
+
+        public ScriptVariable unaryOperator(ScriptVariable rhsVar, ScriptVariable lhsVar, UnaryOperation opType) { return null; }
 
     }
 
-    /* Include support for constants */
-    // Arrays["hash"]
-
+    // TODO: Need array type
 
 }

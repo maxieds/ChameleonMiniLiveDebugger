@@ -43,11 +43,12 @@ ScriptFileMacro:     '__FILE__'     { $exprEval = _scriptFileName; } ;
 ScriptFunctionMacro: '__FUNC__'     { $exprEval = _scriptFunc; } ;
 ScriptErrorMacro:    '__ERROR__'    { $exprEval = _scriptErrorCode; } ;
 ScriptErrorMsgMacro: '__ERRORMSG__' { $exprEval = _scriptErrorMsg; } ;
+
 MacroConstant: ScriptLineMacro | ScriptLineCharMacro | ScriptFileMacro |
                ScriptErrorMacro | ScriptErrorMsgMacro ;
 
 WhiteSpaceText:        ( WhiteSpace | NewLineBreak )+ -> channel(HIDDEN) ;
-WhiteSpace:            [ \t]* -> channel(HIDDEN) ;
+WhiteSpace:            [ \t\r\t]* -> channel(HIDDEN) ;
 NewLineBreak:          ( '\r''\n'? | '\n' ) -> channel(HIDDEN) ;
 Commentary:            CStyleBlockComment | CStyleLineComment ;
 CStyleBlockComment:    '/*'.*?'*/' -> channel(HIDDEN) ;
@@ -60,6 +61,7 @@ HexLiteral: HexByte | '0x'HexString | HexString ;
 BooleanLiteral: 'true' | 'True' | 'TRUE' | 'false' | 'False' | 'FALSE' -> type(TYPE_BOOL) ;
 AsciiChar: [\u0040-\u0046\u0050-\u0133\u0135-\u0176] ;
 StringLiteral: '"'(AsciiChar)*'"' -> type(TYPE_STRING);
+
 TypeLiteral: HexString | HexByte | HexLiteral | BooleanLiteral | StringLiteral ;
 
 VariableNameStartChar: '_' | [a-zA-Z] ;
@@ -99,4 +101,5 @@ BinaryOperation: AssignmentOperator | EqualsComparisonOperator | NotEqualsCompar
                  BitwiseAndOperator | BitwiseOrOperator | BitwiseXorOperator |
                  ArithmeticPlusEqualsOperator | ArithmeticMinusEqualsOperator |
                  ArithmeticAstEqualsOperator ;
+
 Operator:        UnaryOperation | BinaryOperation | TernaryOperator ;

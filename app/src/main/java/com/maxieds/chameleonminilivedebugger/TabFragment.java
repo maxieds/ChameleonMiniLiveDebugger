@@ -77,8 +77,8 @@ public class TabFragment extends Fragment {
 
     public static final int TAB_SCRIPTING_MITEM_COLUMNS = 3;
     public static final int TAB_SCRIPTING_MITEM_LOAD_IMPORT = 0;
-    public static final int TAB_SCRIPTING_MITEM_RUN_VIEW_SCRIPT_OUTPUT = 1;
-    public static final int TAB_SCRIPTING_MITEM_RUNTIME_REGISTER_VIEWS = 2;
+    public static final int TAB_SCRIPTING_MITEM_CONSOLE_VIEW = 1;
+    public static final int TAB_SCRIPTING_MITEM_REGISTER_VIEW = 2;
 
     public static final int TAB_CONFIG_MITEM_COLUMNS = 4;
     public static final int TAB_CONFIG_MITEM_SETTINGS = 0;
@@ -307,7 +307,7 @@ public class TabFragment extends Fragment {
                 "Device I/O",
                 TAB_EXPORT_MITEM_COLUMNS,
                 new String[] {
-                        "Up|Download Tags",
+                        "XModem",
                         "Clone Tags",
                 },
                 new int[]{
@@ -326,8 +326,8 @@ public class TabFragment extends Fragment {
                 },
                 new int[] {
                         BuildConfig.DEBUG ? R.layout.scripting_tab_load_import : R.layout.tab_under_construction,
-                        BuildConfig.DEBUG ? R.layout.tab_under_construction : R.layout.tab_under_construction,
-                        BuildConfig.DEBUG ? R.layout.tab_under_construction : R.layout.tab_under_construction,
+                        BuildConfig.DEBUG ? R.layout.scripting_tab_console_view : R.layout.tab_under_construction,
+                        BuildConfig.DEBUG ? R.layout.scripting_tab_register_view : R.layout.tab_under_construction,
                 });
         UITAB_DATA[TAB_CONFIG] = new UITab(
                 TAB_CONFIG,

@@ -17,8 +17,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
+import android.text.format.Time;
 import android.view.View;
 
+import com.maxieds.chameleonminilivedebugger.AndroidSettingsStorage;
 import com.maxieds.chameleonminilivedebugger.ChameleonMiniLiveDebuggerActivity;
 import com.maxieds.chameleonminilivedebugger.LiveLoggerActivity;
 
@@ -28,12 +30,37 @@ public class ScriptingConfig {
 
     public static ChameleonMiniLiveDebuggerActivity SCRIPTING_CONFIG_ACTIVITY_CONTEXT = null;
 
+    public static boolean SAVE_CONSOLE_OUTPUT_FILE = true;
+    public static boolean APPEND_CONSOLE_OUTPUT_FILE = false;
+    public static boolean DATESTAMP_OUTPUT_FILES = true;
+    public static boolean VERBOSE_ERROR_LOGGING = true;
+    public static boolean VIBRATE_PHONE_ON_EXIT = false;
+    public static boolean SAVE_RESTORE_CHAMELEON_STATE = true;
+    public static boolean TERMINATE_ON_EXCEPTION = true;
+    public static boolean IGNORE_LIVE_LOGGING = false;
+
+    public static String LAST_SCRIPT_LOADED_PATH = "";
+    public static boolean DEFAULT_LIMIT_SCRIPT_EXEC_TIME = false;
+    public static int DEFAULT_LIMIT_SCRIPT_EXEC_TIME_SECONDS = 90;
+
+    public static String ENV0_VALUE = "";
+    public static String ENV1_VALUE = "";
+    public static String ENVKEY0_VALUE = "";
+    public static String ENVKEY1_VALUE = "";
+
+    public static String OUTPUT_FILE_BASENAME = "";
+    public static String OUTPUT_LOGFILE_BASENAME = "";
+    public static String DATESTAMP_FORMAT = "%Y-%m-%d-%H%M%S";
+    public static String DEFAULT_SCRIPT_LOAD_FOLDER = ScriptingFileIO.DEFAULT_CMLD_SCRIPTS_FOLDER;
+    public static String DEFAULT_FILE_OUTPUT_FOLDER = ScriptingFileIO.DEFAULT_CMLD_SCRIPT_OUTPUT_FOLDER;
+    public static String DEFAULT_LOGGING_OUTPUT_FOLDER = ScriptingFileIO.DEFAULT_CMLD_SCRIPT_LOGGING_FOLDER;
+    public static String DEFAULT_SCRIPT_CWD = ScriptingFileIO.DEFAULT_CMLD_SCRIPTS_FOLDER;
+    public static String EXTRA_KEYS_FILE = "";
+
     public static void initializeScriptingConfig() {
         SCRIPTING_CONFIG_ACTIVITY_CONTEXT = LiveLoggerActivity.getInstance();
-    }
-
-    public static boolean initializeScriptingConfigGUI(View cfgBaseLayout) {
-        return true;
+        AndroidSettingsStorage.restorePreviousSettings(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE, AndroidSettingsStorage.AndroidSettingsType.SCRIPTING_CONFIG);
+        ScriptingFileIO.createDefaultFilePaths();
     }
 
 }

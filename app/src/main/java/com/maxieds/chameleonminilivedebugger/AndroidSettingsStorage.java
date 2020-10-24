@@ -20,6 +20,8 @@ package com.maxieds.chameleonminilivedebugger;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingConfig;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
@@ -38,7 +40,6 @@ public class AndroidSettingsStorage {
     public static final String SERIAL_BAUDRATE_PREFERENCE = "serialBaudRate";
     public static final String ALLOW_USB_PREFERENCE = "allowWiredUSB";
     public static final String ALLOW_BLUETOOTH_PREFERENCE = "allowBluetooth";
-    public static final String ALLOW_ANDROID_NFC_PREFERENCE = "allowAndroidNFC";
     public static final String SNIFFING_MODE_PREFERENCE = "sniffingModeDirection";
     public static final String KEY_CONFIG_PREFERENCE = "keyConfigurations";
     public static final String CWD_PREFERENCE = "currentWorkingDirectory";
@@ -51,58 +52,161 @@ public class AndroidSettingsStorage {
     public static final String LOGGING_CONFIG_LOGMODE_NOTIFY_CODECRX_EVENTS = "loggingConfigLogModeNotifyCodecRXEvents";
     public static final String LOGGING_CONFIG_LOGMODE_NOTIFY_RDRFLDDETECT_EVENTS = "loggingConfigLogModeNotifyRdrFldDetectEvents";
     public static final String LOGGING_CONFIG_LOGMODE_NOTIFY_STATE = "loggingConfigLogModeNotifyState";
+    public static final String SCRIPTING_CONFIG_SAVE_CONSOLE_OUTPUT_FILE = "scriptingConfigSaveConsoleOutputFile";
+    public static final String SCRIPTING_CONFIG_APPEND_CONSOLE_OUTPUT_FILE = "scriptingConfigAppendConsoleOutputFile";
+    public static final String SCRIPTING_CONFIG_DATESTAMP_OUTPUT_FILES = "scriptingConfigDatestampOutputFiles";
+    public static final String SCRIPTING_CONFIG_VERBOSE_ERROR_LOGGING = "scriptingConfigVerboseErrorLogging";
+    public static final String SCRIPTING_CONFIG_VIBRATE_PHONE_ON_EXIT = "scriptingConfigVibrateOnExit";
+    public static final String SCRIPTING_CONFIG_SAVE_RESTORE_CHAMELEON_STATE = "scriptingConfigRestoreChameleonState";
+    public static final String SCRIPTING_CONFIG_TERMINATE_ON_EXCEPTION = "scriptingConfigTerminateOnException";
+    public static final String SCRIPTING_CONFIG_IGNORE_LIVE_LOGGING = "scriptingConfigIgnoreLiveLogging";
+    public static final String SCRIPTING_CONFIG_ENV0_VALUE = "scriptingConfigEnv0";
+    public static final String SCRIPTING_CONFIG_ENV1_VALUE = "scriptingConfigEnv1";
+    public static final String SCRIPTING_CONFIG_ENVKEY0_VALUE = "scriptingConfigEnvKey0";
+    public static final String SCRIPTING_CONFIG_ENVKEY1_VALUE = "scriptingConfigEnvKey1";
+    public static final String SCRIPTING_CONFIG_OUTPUT_FILE_BASENAME = "scriptingConfigOutputFileBaseName";
+    public static final String SCRIPTING_CONFIG_OUTPUT_LOGFILE_BASENAME = "scriptingConfigLoggingFileBaseName";
+    public static final String SCRIPTING_CONFIG_DATESTAMP_FORMAT = "scriptingConfigDatestampFormat";
+    public static final String SCRIPTING_CONFIG_DEFAULT_SCRIPT_LOAD_FOLDER = "scriptingConfigDefaultScriptLoadFolder";
+    public static final String SCRIPTING_CONFIG_DEFAULT_FILE_OUTPUT_FOLDER = "scriptingConfigDefaultFileOutputFolder";
+    public static final String SCRIPTING_CONFIG_DEFAULT_LOGGING_OUTPUT_FOLDER = "scriptingConfigDefaultLoggingOutputFolder";
+    public static final String SCRIPTING_CONFIG_DEFAULT_SCRIPT_CWD = "scriptingConfigDefaultScriptCWD";
+    public static final String SCRIPTING_CONFIG_EXTRA_KEYS_FILE = "scriptingConfigExtraKeysFile";
+    public static final String SCRIPTING_CONFIG_LIMIT_SCRIPT_EXEC_TIME = "scriptingConfigLimitExecTime";
+    public static final String SCRIPTING_CONFIG_LIMIT_SCRIPT_EXEC_TIME_SECONDS = "scriptingConfigLimitExecTimeValue";
+    public static final String SCRIPTING_CONFIG_LAST_SCRIPT_LOADED_PATH = "scriptingConfigLastLoadedScriptPath";
 
-    public static boolean loadDefaultSettings(String profileID) {
-        updateValueByKey(profileID, THEMEID_PREFERENCE);
-        updateValueByKey(profileID, PROFILE_SERIALID_PREFERENCE);
-        updateValueByKey(profileID, PROFILE_NAME_PREFERENCE);
-        updateValueByKey(profileID, SERIAL_BAUDRATE_PREFERENCE);
-        updateValueByKey(profileID, ALLOW_USB_PREFERENCE);
-        updateValueByKey(profileID, ALLOW_BLUETOOTH_PREFERENCE);
-        updateValueByKey(profileID, ALLOW_ANDROID_NFC_PREFERENCE);
-        updateValueByKey(profileID, SNIFFING_MODE_PREFERENCE);
-        updateValueByKey(profileID, CWD_PREFERENCE);
-        updateValueByKey(profileID, LAST_TAB_INDEX_PREFERENCE);
-        updateValueByKey(profileID, LAST_TAB_SUBMENU_INDEX_PREFERENCE);
-        updateValueByKey(profileID, LOGGING_MIN_DATA_BYTES);
-        updateValueByKey(profileID, LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE);
-        updateValueByKey(profileID, LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES);
-        updateValueByKey(profileID, LOGGING_CONFIG_ENABLE_LIVE_STATUS_UPDATES);
-        updateValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_CODECRX_EVENTS);
-        updateValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_RDRFLDDETECT_EVENTS);
-        updateValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_STATE);
-        return true;
+    public enum AndroidSettingsType {
+        ALL,
+        APP_STATE,
+        GENERAL_SETTINGS_CONFIG,
+        LOGGING_CONFIG,
+        SCRIPTING_CONFIG,
     }
 
-    public static boolean loadPreviousSettings(String profileID) {
+    public static boolean saveSettings(String profileID, AndroidSettingsType settingsMask) {
+        if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.APP_STATE) {
+            updateValueByKey(profileID, THEMEID_PREFERENCE);
+            updateValueByKey(profileID, CWD_PREFERENCE);
+            updateValueByKey(profileID, LAST_TAB_INDEX_PREFERENCE);
+            updateValueByKey(profileID, LAST_TAB_SUBMENU_INDEX_PREFERENCE);
+            return true;
+        }
+        else if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.GENERAL_SETTINGS_CONFIG) {
+            updateValueByKey(profileID, PROFILE_SERIALID_PREFERENCE);
+            updateValueByKey(profileID, PROFILE_NAME_PREFERENCE);
+            updateValueByKey(profileID, SERIAL_BAUDRATE_PREFERENCE);
+            updateValueByKey(profileID, ALLOW_USB_PREFERENCE);
+            updateValueByKey(profileID, ALLOW_BLUETOOTH_PREFERENCE);
+            updateValueByKey(profileID, SNIFFING_MODE_PREFERENCE);
+            return true;
+        }
+        else if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.LOGGING_CONFIG) {
+            updateValueByKey(profileID, LOGGING_MIN_DATA_BYTES);
+            updateValueByKey(profileID, LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE);
+            updateValueByKey(profileID, LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES);
+            updateValueByKey(profileID, LOGGING_CONFIG_ENABLE_LIVE_STATUS_UPDATES);
+            updateValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_CODECRX_EVENTS);
+            updateValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_RDRFLDDETECT_EVENTS);
+            updateValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_STATE);
+            return true;
+        }
+        else if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.SCRIPTING_CONFIG) {
+            updateValueByKey(profileID, SCRIPTING_CONFIG_SAVE_CONSOLE_OUTPUT_FILE);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_APPEND_CONSOLE_OUTPUT_FILE);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_DATESTAMP_OUTPUT_FILES);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_VERBOSE_ERROR_LOGGING);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_VIBRATE_PHONE_ON_EXIT);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_SAVE_RESTORE_CHAMELEON_STATE);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_TERMINATE_ON_EXCEPTION);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_IGNORE_LIVE_LOGGING);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_ENV0_VALUE);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_ENV1_VALUE);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_ENVKEY0_VALUE);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_ENVKEY1_VALUE);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_OUTPUT_FILE_BASENAME);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_OUTPUT_LOGFILE_BASENAME);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_DATESTAMP_FORMAT);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_DEFAULT_SCRIPT_LOAD_FOLDER);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_DEFAULT_FILE_OUTPUT_FOLDER);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_DEFAULT_LOGGING_OUTPUT_FOLDER);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_DEFAULT_SCRIPT_CWD);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_EXTRA_KEYS_FILE);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_LIMIT_SCRIPT_EXEC_TIME);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_LIMIT_SCRIPT_EXEC_TIME_SECONDS);
+            updateValueByKey(profileID, SCRIPTING_CONFIG_LAST_SCRIPT_LOADED_PATH);
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean restorePreviousSettings(String profileID, AndroidSettingsType settingsMask) {
         try {
-            ThemesConfiguration.storedAppTheme = getStringValueByKey(profileID, THEMEID_PREFERENCE);
-            ChameleonSettings.chameleonDeviceSerialNumber = getStringValueByKey(profileID, PROFILE_SERIALID_PREFERENCE);
-            ChameleonSettings.chameleonDeviceNickname = getStringValueByKey(profileID, PROFILE_NAME_PREFERENCE);
-            ChameleonSettings.serialBaudRate = Integer.parseInt(getStringValueByKey(profileID, SERIAL_BAUDRATE_PREFERENCE));
-            ChameleonSettings.allowWiredUSB = Boolean.valueOf(getStringValueByKey(profileID, ALLOW_USB_PREFERENCE));
-            ChameleonSettings.allowBluetooth = Boolean.valueOf(getStringValueByKey(profileID, ALLOW_BLUETOOTH_PREFERENCE));
-            ChameleonSettings.allowAndroidNFC = Boolean.valueOf(getStringValueByKey(profileID, ALLOW_ANDROID_NFC_PREFERENCE));
-            ChameleonSettings.sniffingMode = Integer.parseInt(getStringValueByKey(profileID, SNIFFING_MODE_PREFERENCE));
-            ExternalFileIO.CURRENT_WORKING_DIRECTORY = getStringValueByKey(profileID, CWD_PREFERENCE);
-            LiveLoggerActivity.setSelectedTab(Integer.parseInt(getStringValueByKey(profileID, LAST_TAB_INDEX_PREFERENCE)));
-            TabFragment.UITAB_DATA[LiveLoggerActivity.getSelectedTab()].lastMenuIndex = Integer.parseInt(getStringValueByKey(profileID, LAST_TAB_SUBMENU_INDEX_PREFERENCE));
-            ChameleonLogUtils.LOGGING_MIN_DATA_BYTES = Integer.parseInt(getStringValueByKey(profileID, LOGGING_MIN_DATA_BYTES));
-            ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE));
-            ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES));
-            ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_ENABLE_LIVE_STATUS_UPDATES));
-            ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_CODECRX_STATUS_INDICATOR = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_CODECRX_EVENTS));
-            ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_RDRFLDDETECT_STATUS_INDICATOR = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_RDRFLDDETECT_EVENTS));
-            ChameleonLogUtils.LOGMODE_NOTIFY_STATE = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_STATE));
+            if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.APP_STATE) {
+                ThemesConfiguration.storedAppTheme = getStringValueByKey(profileID, THEMEID_PREFERENCE);
+                ExternalFileIO.CURRENT_WORKING_DIRECTORY = getStringValueByKey(profileID, CWD_PREFERENCE);
+                LiveLoggerActivity.setSelectedTab(Integer.parseInt(getStringValueByKey(profileID, LAST_TAB_INDEX_PREFERENCE)));
+                TabFragment.UITAB_DATA[LiveLoggerActivity.getSelectedTab()].lastMenuIndex = Integer.parseInt(getStringValueByKey(profileID, LAST_TAB_SUBMENU_INDEX_PREFERENCE));
+                return true;
+            }
+            else if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.GENERAL_SETTINGS_CONFIG) {
+                ChameleonSettings.chameleonDeviceSerialNumber = getStringValueByKey(profileID, PROFILE_SERIALID_PREFERENCE);
+                ChameleonSettings.chameleonDeviceNickname = getStringValueByKey(profileID, PROFILE_NAME_PREFERENCE);
+                ChameleonSettings.serialBaudRate = Integer.parseInt(getStringValueByKey(profileID, SERIAL_BAUDRATE_PREFERENCE));
+                ChameleonSettings.allowWiredUSB = Boolean.valueOf(getStringValueByKey(profileID, ALLOW_USB_PREFERENCE));
+                ChameleonSettings.allowBluetooth = Boolean.valueOf(getStringValueByKey(profileID, ALLOW_BLUETOOTH_PREFERENCE));
+                ChameleonSettings.sniffingMode = Integer.parseInt(getStringValueByKey(profileID, SNIFFING_MODE_PREFERENCE));
+                return true;
+            }
+            else if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.LOGGING_CONFIG) {
+                ChameleonLogUtils.LOGGING_MIN_DATA_BYTES = Integer.parseInt(getStringValueByKey(profileID, LOGGING_MIN_DATA_BYTES));
+                ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE));
+                ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES));
+                ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_ENABLE_LIVE_STATUS_UPDATES));
+                ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_CODECRX_STATUS_INDICATOR = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_CODECRX_EVENTS));
+                ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_RDRFLDDETECT_STATUS_INDICATOR = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_RDRFLDDETECT_EVENTS));
+                ChameleonLogUtils.LOGMODE_NOTIFY_STATE = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_STATE));
+                return true;
+            }
+            else if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.SCRIPTING_CONFIG) {
+                ScriptingConfig.SAVE_CONSOLE_OUTPUT_FILE = Boolean.valueOf(getStringValueByKey(profileID, SCRIPTING_CONFIG_SAVE_CONSOLE_OUTPUT_FILE));
+                ScriptingConfig.APPEND_CONSOLE_OUTPUT_FILE = Boolean.valueOf(getStringValueByKey(profileID, SCRIPTING_CONFIG_APPEND_CONSOLE_OUTPUT_FILE));
+                ScriptingConfig.DATESTAMP_OUTPUT_FILES = Boolean.valueOf(getStringValueByKey(profileID, SCRIPTING_CONFIG_DATESTAMP_OUTPUT_FILES));
+                ScriptingConfig.VERBOSE_ERROR_LOGGING = Boolean.valueOf(getStringValueByKey(profileID, SCRIPTING_CONFIG_VERBOSE_ERROR_LOGGING));
+                ScriptingConfig.VIBRATE_PHONE_ON_EXIT = Boolean.valueOf(getStringValueByKey(profileID, SCRIPTING_CONFIG_VIBRATE_PHONE_ON_EXIT));
+                ScriptingConfig.SAVE_RESTORE_CHAMELEON_STATE = Boolean.valueOf(getStringValueByKey(profileID, SCRIPTING_CONFIG_SAVE_RESTORE_CHAMELEON_STATE));
+                ScriptingConfig.TERMINATE_ON_EXCEPTION = Boolean.valueOf(getStringValueByKey(profileID, SCRIPTING_CONFIG_TERMINATE_ON_EXCEPTION));
+                ScriptingConfig.IGNORE_LIVE_LOGGING = Boolean.valueOf(getStringValueByKey(profileID, SCRIPTING_CONFIG_IGNORE_LIVE_LOGGING));
+                ScriptingConfig.ENV0_VALUE = getStringValueByKey(profileID, SCRIPTING_CONFIG_ENV0_VALUE);
+                ScriptingConfig.ENV1_VALUE = getStringValueByKey(profileID, SCRIPTING_CONFIG_ENV1_VALUE);
+                ScriptingConfig.ENVKEY0_VALUE = getStringValueByKey(profileID, SCRIPTING_CONFIG_ENVKEY0_VALUE);
+                ScriptingConfig.ENVKEY1_VALUE = getStringValueByKey(profileID, SCRIPTING_CONFIG_ENVKEY1_VALUE);
+                ScriptingConfig.OUTPUT_FILE_BASENAME = getStringValueByKey(profileID, SCRIPTING_CONFIG_OUTPUT_FILE_BASENAME);
+                ScriptingConfig.OUTPUT_LOGFILE_BASENAME = getStringValueByKey(profileID, SCRIPTING_CONFIG_OUTPUT_LOGFILE_BASENAME);
+                ScriptingConfig.DATESTAMP_FORMAT = getStringValueByKey(profileID, SCRIPTING_CONFIG_DATESTAMP_FORMAT);
+                ScriptingConfig.DEFAULT_SCRIPT_LOAD_FOLDER = getStringValueByKey(profileID, SCRIPTING_CONFIG_DEFAULT_SCRIPT_LOAD_FOLDER);
+                ScriptingConfig.DEFAULT_FILE_OUTPUT_FOLDER = getStringValueByKey(profileID, SCRIPTING_CONFIG_DEFAULT_FILE_OUTPUT_FOLDER);
+                ScriptingConfig.DEFAULT_LOGGING_OUTPUT_FOLDER = getStringValueByKey(profileID, SCRIPTING_CONFIG_DEFAULT_LOGGING_OUTPUT_FOLDER);
+                ScriptingConfig.DEFAULT_SCRIPT_CWD = getStringValueByKey(profileID, SCRIPTING_CONFIG_DEFAULT_SCRIPT_CWD);
+                ScriptingConfig.EXTRA_KEYS_FILE = getStringValueByKey(profileID, SCRIPTING_CONFIG_EXTRA_KEYS_FILE);
+                ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME = Boolean.valueOf(getStringValueByKey(profileID, SCRIPTING_CONFIG_LIMIT_SCRIPT_EXEC_TIME));
+                ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME_SECONDS = Integer.parseInt(getStringValueByKey(profileID, SCRIPTING_CONFIG_LIMIT_SCRIPT_EXEC_TIME_SECONDS));
+                ScriptingConfig.LAST_SCRIPT_LOADED_PATH = getStringValueByKey(profileID, SCRIPTING_CONFIG_LAST_SCRIPT_LOADED_PATH);
+                return true;
+            }
         } catch(Exception ex) {
             ex.printStackTrace();
             return false;
         }
-        return true;
+        return false;
     }
 
     public static boolean saveAllSettings() {
-        return loadPreviousSettings(DEFAULT_CMLDAPP_PROFILE);
+        return saveSettings(DEFAULT_CMLDAPP_PROFILE, AndroidSettingsType.ALL);
+    }
+
+    public static boolean loadPreviousSettings() {
+        return restorePreviousSettings(DEFAULT_CMLDAPP_PROFILE, AndroidSettingsType.ALL);
     }
 
     public static boolean updateValueByKey(String profileTag, String prefsKey) {
@@ -128,9 +232,6 @@ public class AndroidSettingsStorage {
         }
         else if(prefsKey.equals(ALLOW_BLUETOOTH_PREFERENCE)) {
             spEditor.putBoolean(prefsKey, ChameleonSettings.allowBluetooth);
-        }
-        else if(prefsKey.equals(ALLOW_ANDROID_NFC_PREFERENCE)) {
-            spEditor.putBoolean(prefsKey, ChameleonSettings.allowAndroidNFC);
         }
         else if(prefsKey.equals(SNIFFING_MODE_PREFERENCE)) {
             spEditor.putInt(prefsKey, ChameleonSettings.sniffingMode);
@@ -169,6 +270,75 @@ public class AndroidSettingsStorage {
         else if(prefsKey.equals(LOGGING_CONFIG_LOGMODE_NOTIFY_STATE)) {
             spEditor.putBoolean(prefsKey, ChameleonLogUtils.LOGMODE_NOTIFY_STATE);
         }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_SAVE_CONSOLE_OUTPUT_FILE)) {
+            spEditor.putBoolean(prefsKey, ScriptingConfig.SAVE_CONSOLE_OUTPUT_FILE);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_APPEND_CONSOLE_OUTPUT_FILE)) {
+            spEditor.putBoolean(prefsKey, ScriptingConfig.APPEND_CONSOLE_OUTPUT_FILE);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_DATESTAMP_OUTPUT_FILES)) {
+            spEditor.putBoolean(prefsKey, ScriptingConfig.DATESTAMP_OUTPUT_FILES);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_VERBOSE_ERROR_LOGGING)) {
+            spEditor.putBoolean(prefsKey, ScriptingConfig.VERBOSE_ERROR_LOGGING);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_VIBRATE_PHONE_ON_EXIT)) {
+            spEditor.putBoolean(prefsKey, ScriptingConfig.VIBRATE_PHONE_ON_EXIT);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_SAVE_RESTORE_CHAMELEON_STATE)) {
+            spEditor.putBoolean(prefsKey, ScriptingConfig.SAVE_RESTORE_CHAMELEON_STATE);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_TERMINATE_ON_EXCEPTION)) {
+            spEditor.putBoolean(prefsKey, ScriptingConfig.TERMINATE_ON_EXCEPTION);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_IGNORE_LIVE_LOGGING)) {
+            spEditor.putBoolean(prefsKey, ScriptingConfig.IGNORE_LIVE_LOGGING);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_ENV0_VALUE)) {
+            spEditor.putString(prefsKey, ScriptingConfig.ENV0_VALUE);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_ENV1_VALUE)) {
+            spEditor.putString(prefsKey, ScriptingConfig.ENV1_VALUE);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_ENVKEY0_VALUE)) {
+            spEditor.putString(prefsKey, ScriptingConfig.ENVKEY0_VALUE);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_ENVKEY1_VALUE)) {
+            spEditor.putString(prefsKey, ScriptingConfig.ENVKEY1_VALUE);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_OUTPUT_FILE_BASENAME)) {
+            spEditor.putString(prefsKey, ScriptingConfig.OUTPUT_FILE_BASENAME);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_OUTPUT_LOGFILE_BASENAME)) {
+            spEditor.putString(prefsKey, ScriptingConfig.OUTPUT_LOGFILE_BASENAME);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_DATESTAMP_FORMAT)) {
+            spEditor.putString(prefsKey, ScriptingConfig.DATESTAMP_FORMAT);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_DEFAULT_SCRIPT_LOAD_FOLDER)) {
+            spEditor.putString(prefsKey, ScriptingConfig.DEFAULT_SCRIPT_LOAD_FOLDER);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_DEFAULT_FILE_OUTPUT_FOLDER)) {
+            spEditor.putString(prefsKey, ScriptingConfig.DEFAULT_FILE_OUTPUT_FOLDER);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_DEFAULT_LOGGING_OUTPUT_FOLDER)) {
+            spEditor.putString(prefsKey, ScriptingConfig.DEFAULT_LOGGING_OUTPUT_FOLDER);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_DEFAULT_SCRIPT_CWD)) {
+            spEditor.putString(prefsKey, ScriptingConfig.DEFAULT_SCRIPT_CWD);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_EXTRA_KEYS_FILE)) {
+            spEditor.putString(prefsKey, ScriptingConfig.EXTRA_KEYS_FILE);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_LIMIT_SCRIPT_EXEC_TIME)) {
+            spEditor.putBoolean(prefsKey, ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_LIMIT_SCRIPT_EXEC_TIME_SECONDS)) {
+            spEditor.putInt(prefsKey, ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME_SECONDS);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_LAST_SCRIPT_LOADED_PATH)) {
+            spEditor.putString(prefsKey, ScriptingConfig.LAST_SCRIPT_LOADED_PATH);
+        }
         else {
             return false;
         }
@@ -199,9 +369,6 @@ public class AndroidSettingsStorage {
         }
         else if(prefsKey.equals(ALLOW_BLUETOOTH_PREFERENCE)) {
             return sharedPrefs.getBoolean(prefsKey, ChameleonSettings.allowBluetooth) ? "true" : "false";
-        }
-        else if(prefsKey.equals(ALLOW_ANDROID_NFC_PREFERENCE)) {
-            return sharedPrefs.getBoolean(prefsKey, ChameleonSettings.allowAndroidNFC) ? "true" : "false";
         }
         else if(prefsKey.equals(SNIFFING_MODE_PREFERENCE)) {
             return String.format(BuildConfig.DEFAULT_LOCALE, "%d", sharedPrefs.getInt(prefsKey, ChameleonSettings.sniffingMode));
@@ -236,6 +403,75 @@ public class AndroidSettingsStorage {
         }
         else if(prefsKey.equals(LOGGING_CONFIG_LOGMODE_NOTIFY_STATE)) {
             return sharedPrefs.getBoolean(prefsKey, ChameleonLogUtils.LOGMODE_NOTIFY_STATE) ? "true" : "false";
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_SAVE_CONSOLE_OUTPUT_FILE)) {
+            return sharedPrefs.getBoolean(prefsKey, ScriptingConfig.SAVE_CONSOLE_OUTPUT_FILE) ? "true" : "false";
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_APPEND_CONSOLE_OUTPUT_FILE)) {
+            return sharedPrefs.getBoolean(prefsKey, ScriptingConfig.APPEND_CONSOLE_OUTPUT_FILE) ? "true" : "false";
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_DATESTAMP_OUTPUT_FILES)) {
+            return sharedPrefs.getBoolean(prefsKey, ScriptingConfig.DATESTAMP_OUTPUT_FILES) ? "true" : "false";
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_VERBOSE_ERROR_LOGGING)) {
+            return sharedPrefs.getBoolean(prefsKey, ScriptingConfig.VERBOSE_ERROR_LOGGING) ? "true" : "false";
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_VIBRATE_PHONE_ON_EXIT)) {
+            return sharedPrefs.getBoolean(prefsKey, ScriptingConfig.VIBRATE_PHONE_ON_EXIT) ? "true" : "false";
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_SAVE_RESTORE_CHAMELEON_STATE)) {
+            return sharedPrefs.getBoolean(prefsKey, ScriptingConfig.SAVE_RESTORE_CHAMELEON_STATE) ? "true" : "false";
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_TERMINATE_ON_EXCEPTION)) {
+            return sharedPrefs.getBoolean(prefsKey, ScriptingConfig.TERMINATE_ON_EXCEPTION) ? "true" : "false";
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_IGNORE_LIVE_LOGGING)) {
+            return sharedPrefs.getBoolean(prefsKey, ScriptingConfig.IGNORE_LIVE_LOGGING) ? "true" : "false";
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_ENV0_VALUE)) {
+            return sharedPrefs.getString(prefsKey, ScriptingConfig.ENV0_VALUE);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_ENV1_VALUE)) {
+            return sharedPrefs.getString(prefsKey, ScriptingConfig.ENV1_VALUE);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_ENVKEY0_VALUE)) {
+            return sharedPrefs.getString(prefsKey, ScriptingConfig.ENVKEY0_VALUE);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_ENVKEY1_VALUE)) {
+            return sharedPrefs.getString(prefsKey, ScriptingConfig.ENVKEY1_VALUE);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_OUTPUT_FILE_BASENAME)) {
+            return sharedPrefs.getString(prefsKey, ScriptingConfig.OUTPUT_FILE_BASENAME);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_OUTPUT_LOGFILE_BASENAME)) {
+            return sharedPrefs.getString(prefsKey, ScriptingConfig.OUTPUT_LOGFILE_BASENAME);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_DATESTAMP_FORMAT)) {
+            return sharedPrefs.getString(prefsKey, ScriptingConfig.DATESTAMP_FORMAT);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_DEFAULT_SCRIPT_LOAD_FOLDER)) {
+            return sharedPrefs.getString(prefsKey, ScriptingConfig.DEFAULT_SCRIPT_LOAD_FOLDER);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_DEFAULT_FILE_OUTPUT_FOLDER)) {
+            return sharedPrefs.getString(prefsKey, ScriptingConfig.DEFAULT_FILE_OUTPUT_FOLDER);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_DEFAULT_LOGGING_OUTPUT_FOLDER)) {
+            return sharedPrefs.getString(prefsKey, ScriptingConfig.DEFAULT_LOGGING_OUTPUT_FOLDER);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_DEFAULT_SCRIPT_CWD)) {
+            return sharedPrefs.getString(prefsKey, ScriptingConfig.DEFAULT_SCRIPT_CWD);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_EXTRA_KEYS_FILE)) {
+            return sharedPrefs.getString(prefsKey, ScriptingConfig.EXTRA_KEYS_FILE);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_LAST_SCRIPT_LOADED_PATH)) {
+            return sharedPrefs.getString(prefsKey, ScriptingConfig.LAST_SCRIPT_LOADED_PATH);
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_LIMIT_SCRIPT_EXEC_TIME)) {
+            return sharedPrefs.getBoolean(prefsKey, ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME) ? "true" : "false";
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_LIMIT_SCRIPT_EXEC_TIME_SECONDS)) {
+            return String.format(BuildConfig.DEFAULT_LOCALE, "%d", sharedPrefs.getInt(prefsKey, ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME_SECONDS));
         }
         return null;
     }

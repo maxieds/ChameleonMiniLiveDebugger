@@ -80,9 +80,6 @@ public class ThemesConfiguration {
             case "Chicky":
                 themeID = R.style.AppThemeChicky;
                 break;
-            case "Crash Report":
-                themeID = R.style.AppThemeCrashReport;
-                break;
             case "Frosty":
                 themeID = R.style.AppThemeFrosty;
                 break;

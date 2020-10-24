@@ -26,6 +26,7 @@ import android.text.format.Time;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -515,6 +516,13 @@ public class Utils {
         }
         stackTraceText += String.join("\n", stackTraceElts);
         return stackTraceText;
+    }
+
+    public static void dismissAndroidKeyboard(ChameleonMiniLiveDebuggerActivity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if(imm.isAcceptingText()) {
+            imm.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+        }
     }
 
 }

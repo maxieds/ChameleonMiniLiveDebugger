@@ -22,11 +22,14 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.widget.RadioButton;
 
 import androidx.annotation.NonNull;
+
+import com.nononsenseapps.filepicker.FilePickerActivity;
 
 import java.io.File;
 
@@ -86,41 +89,47 @@ public class ExternalFileIO {
         }
         DownloadManager downloadManager = (DownloadManager) LiveLoggerActivity.getLiveLoggerInstance().defaultContext.getSystemService(DOWNLOAD_SERVICE);
         downloadManager.addCompletedDownload(outfile.getName(), outfile.getName(), true, "text/plain",
-                outfile.getAbsolutePath(), outfile.length(),true);
+                                             outfile.getAbsolutePath(), outfile.length(),true);
 
         boolean saveFileChecked = ((RadioButton) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.radio_save_storage)).isChecked();
         boolean emailFileChecked = ((RadioButton) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.radio_save_email)).isChecked();
         boolean shareFileChecked = ((RadioButton) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.radio_save_share)).isChecked();
         if(emailFileChecked || shareFileChecked) {
-            Intent i = new Intent(Intent.ACTION_SEND);
-            i.setType(mimeType);
-            i.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(outfile));
-            i.putExtra(Intent.EXTRA_SUBJECT, "Chameleon Mini Log Data Output (Log Attached)");
-            i.putExtra(Intent.EXTRA_TEXT, "See subject.");
-            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            LiveLoggerActivity.getLiveLoggerInstance().startActivity(Intent.createChooser(i, "Share the file ... "));
+            Intent sendIntent = new Intent(Intent.ACTION_SEND);
+            sendIntent.setType(mimeType);
+            sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(outfile));
+            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Chameleon Mini Log Data Output (Log Attached)");
+            sendIntent.putExtra(Intent.EXTRA_TEXT, "See the subject.");
+            sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            LiveLoggerActivity.getLiveLoggerInstance().startActivity(Intent.createChooser(sendIntent, "Share the file ... "));
         }
         MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("EXPORT", "Saved log file to \"" + outfilePath + "\"."));
     }
 
     public static String selectFolderFromGUIList(@NonNull ChameleonMiniLiveDebuggerActivity activity, @NonNull String baseDirectory) {
-        Intent selectDirIntent = new Intent(Intent.ACTION_PICK);
-        selectDirIntent.setType("vnd.android.document/directory");
-        selectDirIntent.putExtra(Intent.EXTRA_MIME_TYPES, "vnd.android.cursor.dir/*");
-        selectDirIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
-        selectDirIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-        Uri baseDirUri = Uri.parse(baseDirectory);
-        selectDirIntent.setData(baseDirUri);
+        Intent selectDirIntent = new Intent(activity, FilePickerActivity.class);
+        selectDirIntent.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
+        selectDirIntent.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, true);
+        selectDirIntent.putExtra(FilePickerActivity.EXTRA_ALLOW_EXISTING_FILE, false);
+        selectDirIntent.putExtra(FilePickerActivity.EXTRA_SINGLE_CLICK, false);
+        selectDirIntent.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_FILE);
+        selectDirIntent.putExtra(FilePickerActivity.EXTRA_START_PATH, baseDirectory);
+        //selectDirIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         activity.startActivityForResult(
-                Intent.createChooser(selectDirIntent, "Select directory ..."),
+                selectDirIntent,
                 CHOOSER_ACTIVITY_PICK_DIRECTORY_RESULT_CODE
         );
         try {
             Looper.loop();
         } catch(RuntimeException rte) {
             try {
-                String selectedDirPath = rte.getMessage().split("java.lang.RuntimeException: ")[1];
-                Log.i(TAG, "Selected Text File: " + selectedDirPath);
+                String selectedDirPath = rte.getMessage().replace("java.lang.RuntimeException: ", "");
+                // this is necessary because for some reason the app otherwise
+                // freezes without bringing the original Activity context back to the front:
+                activity.moveTaskToBack(false);
+                Intent bringToFrontIntent = new Intent(activity, activity.getClass());
+                bringToFrontIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                activity.startActivity(bringToFrontIntent);
                 return selectedDirPath;
             } catch(Exception ex) {
                 ex.printStackTrace();
@@ -131,22 +140,29 @@ public class ExternalFileIO {
     }
 
     public static String selectTextFileFromGUIList(@NonNull ChameleonMiniLiveDebuggerActivity activity, @NonNull String baseDirectory) {
-        Intent selectTextFileIntent = new Intent(Intent.ACTION_PICK);
+        Intent selectTextFileIntent = new Intent(activity, FilePickerActivity.class);
+        selectTextFileIntent.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
+        selectTextFileIntent.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, true);
+        selectTextFileIntent.putExtra(FilePickerActivity.EXTRA_ALLOW_EXISTING_FILE, true);
+        selectTextFileIntent.putExtra(FilePickerActivity.EXTRA_SINGLE_CLICK, false);
+        selectTextFileIntent.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_FILE);
+        selectTextFileIntent.putExtra(FilePickerActivity.EXTRA_START_PATH, baseDirectory);
         selectTextFileIntent.setType("text/*");
-        selectTextFileIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
-        selectTextFileIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-        Uri baseDirUri = Uri.parse(baseDirectory);
-        selectTextFileIntent.setData(baseDirUri);
         activity.startActivityForResult(
-                Intent.createChooser(selectTextFileIntent, "Select text file ..."),
+                selectTextFileIntent,
                 CHOOSER_ACTIVITY_PICK_FILE_RESULT_CODE
         );
         try {
             Looper.loop();
         } catch(RuntimeException rte) {
             try {
-                String selectedFilePath = rte.getMessage().split("java.lang.RuntimeException: ")[1];
-                Log.i(TAG, "Selected Text File: " + selectedFilePath);
+                String selectedFilePath = rte.getMessage().replace("java.lang.RuntimeException: ", "");
+                // this is necessary because for some reason the app otherwise
+                // freezes without bringing the original Activity context back to the front:
+                activity.moveTaskToBack(false);
+                Intent bringToFrontIntent = new Intent(activity, activity.getClass());
+                bringToFrontIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                activity.startActivity(bringToFrontIntent);
                 return selectedFilePath;
             } catch(Exception ex) {
                 ex.printStackTrace();
@@ -157,25 +173,30 @@ public class ExternalFileIO {
     }
 
     public static String selectFileFromGUIList(@NonNull ChameleonMiniLiveDebuggerActivity activity, @NonNull String baseDirectory) {
-        Intent selectFileIntent = new Intent(Intent.ACTION_PICK);
+        Intent selectFileIntent = new Intent(activity, FilePickerActivity.class);
+        selectFileIntent.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
+        selectFileIntent.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, true);
+        selectFileIntent.putExtra(FilePickerActivity.EXTRA_ALLOW_EXISTING_FILE, true);
+        selectFileIntent.putExtra(FilePickerActivity.EXTRA_SINGLE_CLICK, false);
+        selectFileIntent.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_FILE);
+        selectFileIntent.putExtra(FilePickerActivity.EXTRA_START_PATH, baseDirectory);
         selectFileIntent.setType("text/*");
         selectFileIntent.putExtra(Intent.EXTRA_MIME_TYPES, "application/octet-stream");
-        selectFileIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
-        selectFileIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-        Uri baseDirUri = Uri.parse(baseDirectory);
-        selectFileIntent.setData(baseDirUri);
-        //selectFileIntent.putExtra(Intent.EXTRA_TEXT, "<Text>");
-        //selectFileIntent.putExtra(Intent.EXTRA_STREAM, "<URI>");
         activity.startActivityForResult(
-                Intent.createChooser(selectFileIntent, "Select file ..."),
+                selectFileIntent,
                 CHOOSER_ACTIVITY_PICK_FILE_RESULT_CODE
         );
         try {
             Looper.loop();
         } catch(RuntimeException rte) {
             try {
-                String selectedFilePath = rte.getMessage().split("java.lang.RuntimeException: ")[1];
-                Log.i(TAG, "Selected File: " + selectedFilePath);
+                String selectedFilePath = rte.getMessage().replace("java.lang.RuntimeException: ", "");
+                // this is necessary because for some reason the app otherwise
+                // freezes without bringing the original Activity context back to the front:
+                activity.moveTaskToBack(false);
+                Intent bringToFrontIntent = new Intent(activity, activity.getClass());
+                bringToFrontIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                activity.startActivity(bringToFrontIntent);
                 return selectedFilePath;
             } catch(Exception ex) {
                 ex.printStackTrace();
@@ -193,8 +214,9 @@ public class ExternalFileIO {
     public static final int CHOOSER_ACTIVITY_PICK_FILE_RESULT_CODE = 3 + 8080;
 
     public static void handleActivityResult(ChameleonMiniLiveDebuggerActivity activity, int requestCode, int resultCode, Intent data) {
+        Log.i(TAG, "---- URI Path: " + data.getData().getPath());
         if(activity == null || data == null) {
-            return;
+            throw new RuntimeException("");
         }
         switch (requestCode) {
             case FILE_SELECT_CODE:
@@ -210,28 +232,15 @@ public class ExternalFileIO {
                 break;
             case CHOOSER_ACTIVITY_PICK_DIRECTORY_RESULT_CODE:
                 if (resultCode == RESULT_OK) {
-                    String selectedDirectoryPath = "";
-                    File selectedDirectory = new File(data.getData().getPath());
-                    if (selectedDirectory.exists()) {
-                        if (!selectedDirectory.isDirectory()) {
-                            selectedDirectoryPath = selectedDirectory.getParentFile().getAbsolutePath();
-                        }
-                        else {
-                            selectedDirectoryPath = selectedDirectory.getAbsolutePath();
-                        }
-                    }
+                    String selectedDirectoryPath = data.getData().getPath();
+                    Log.i(TAG, "Dir PATH: " + selectedDirectoryPath);
                     throw new RuntimeException(selectedDirectoryPath);
                 }
                 break;
             case CHOOSER_ACTIVITY_PICK_FILE_RESULT_CODE:
                 if (resultCode == RESULT_OK) {
-                    String selectedFilePath = "";
-                    File selectedFile = new File(data.getData().getPath());
-                    if (selectedFile.exists()) {
-                        if (!selectedFile.isDirectory()) {
-                            selectedFilePath = selectedFile.getAbsolutePath();
-                        }
-                    }
+                    String selectedFilePath = data.getData().getPath();
+                    Log.i(TAG, "File PATH: " + selectedFilePath);
                     throw new RuntimeException(selectedFilePath);
                 }
                 break;

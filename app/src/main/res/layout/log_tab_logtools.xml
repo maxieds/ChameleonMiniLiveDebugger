@@ -333,7 +333,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/chameleon_device_profile_annotation24"
                     android:onClick="actionButtonCreateNewEvent"
-                    android:text="DEVICE PROFILE" />
+                    android:text="LOG PROFILE" />
 
                 <Button
                     style="@style/GridButtons"

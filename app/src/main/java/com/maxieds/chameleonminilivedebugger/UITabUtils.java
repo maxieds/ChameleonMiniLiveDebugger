@@ -39,6 +39,9 @@ import android.widget.TextView;
 
 import androidx.core.widget.CompoundButtonCompat;
 
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingConfig;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingFileIO;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingGUI;
 import com.shawnlin.numberpicker.NumberPicker;
 
 import java.util.Locale;
@@ -54,6 +57,9 @@ import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_MITEM_LO
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_MITEM_LOGTOOLS;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_MITEM_SEARCH;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_SCRIPTING;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_SCRIPTING_MITEM_CONSOLE_VIEW;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_SCRIPTING_MITEM_LOAD_IMPORT;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_SCRIPTING_MITEM_REGISTER_VIEW;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_APDU;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_CMDS;
@@ -77,7 +83,7 @@ public class UITabUtils {
             case TAB_EXPORT:
                 return UITabUtils.initializeExportTab(menuItemIdx, tabMainLayoutView);
             case TAB_SCRIPTING:
-                return false;
+                return UITabUtils.initializeScriptingTab(menuItemIdx, tabMainLayoutView);
             case TAB_CONFIG:
                 return UITabUtils.initializeConfigTab(menuItemIdx, tabMainLayoutView);
             default:
@@ -299,6 +305,18 @@ public class UITabUtils {
         return true;
     }
 
+    public static boolean initializeScriptingTab(int menuItemIdx, View tabMainLayoutView) {
+        if(menuItemIdx == TAB_SCRIPTING_MITEM_LOAD_IMPORT) {
+            ScriptingGUI.initializeScriptingTabGUI(tabMainLayoutView);
+        }
+        else if(menuItemIdx == TAB_SCRIPTING_MITEM_CONSOLE_VIEW) {}
+        else if(menuItemIdx == TAB_SCRIPTING_MITEM_REGISTER_VIEW) {}
+        else {
+            return false;
+        }
+        return true;
+    }
+
     public static boolean initializeConfigTab(int menuItemIdx, View tabMainLayoutView) {
         if(menuItemIdx == TAB_CONFIG_MITEM_SETTINGS) {
              // allow USB checkbox setup:
@@ -327,16 +345,6 @@ public class UITabUtils {
                          ChameleonSettings.stopSerialIOConnectionDiscovery();
                          ChameleonSettings.initializeSerialIOConnections();
                      }
-                 }
-             });
-             // allow NFC checkbox setup:
-             CheckBox cbAllowNFC = tabMainLayoutView.findViewById(R.id.settingsAllowAndroidNFC);
-             cbAllowNFC.setChecked(ChameleonSettings.allowAndroidNFC);
-             cbAllowNFC.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
-                 @Override
-                 public void onCheckedChanged(CompoundButton cb, boolean checked) {
-                     ChameleonSettings.allowAndroidNFC = checked;
-                     // TODO: init NFC in library for MFC cloning ...
                  }
              });
              // bi/unidirectional sniffing checkbox setup:
@@ -389,17 +397,6 @@ public class UITabUtils {
                 @Override
                 public void onClick(View btn) {
                     BluetoothSerialInterface.displayAndroidBluetoothSettings();
-                }
-            });
-            // Android NFC settings config:
-            TextView nfcStatusText = tabMainLayoutView.findViewById(R.id.androidNFCStatusText);
-            String nfcStatus = AndroidNFCExchange.isNFCEnabled() ? "Enabled" : "Disabled";
-            nfcStatusText.setText(nfcStatus);
-            Button nfcSettingsBtn = tabMainLayoutView.findViewById(R.id.androidNFCSettingsButton);
-            nfcSettingsBtn.setOnClickListener(new Button.OnClickListener() {
-                @Override
-                public void onClick(View btn) {
-                    AndroidNFCExchange.displayAndroidNFCSettings();
                 }
             });
             // Chameleon device connection information:
@@ -533,7 +530,9 @@ public class UITabUtils {
                 }
             });
         }
-        else if(menuItemIdx == TAB_CONFIG_MITEM_SCRIPTING) {}
+        else if(menuItemIdx == TAB_CONFIG_MITEM_SCRIPTING) {
+            ScriptingGUI.initializeScriptingConfigGUI(tabMainLayoutView);
+        }
         return true;
     }
 

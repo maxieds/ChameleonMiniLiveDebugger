@@ -150,7 +150,7 @@ public class LogEntryMetadataRecord extends LogEntryBase {
         prefixIconMap.put("ON FOOT", R.drawable.onfoot_annotation24);
         prefixIconMap.put("HOME", R.drawable.home_annotation24);
         prefixIconMap.put("WORK", R.drawable.work_annotation24);
-        prefixIconMap.put("DEVICE PROFILE", R.drawable.chameleon_device_profile_annotation24);
+        prefixIconMap.put("LOG PROFILE", R.drawable.chameleon_device_profile_annotation24);
         prefixIconMap.put("TODO LIST", R.drawable.todo26);
     }
 
@@ -198,7 +198,7 @@ public class LogEntryMetadataRecord extends LogEntryBase {
                 eventMsg = locationDetails + "\n\n" + eventMsg;
             }
         }
-        else if(eventID.equals("TODO LIST")) {
+        else if(eventID.equals("TODO LIST")) { // TODO: SpannableString has a mode for this ...
             String[] listLines = eventMsg.split("\n");
             eventMsg = "";
             for(int lineNo = 0; lineNo < listLines.length; lineNo++) {

@@ -17,7 +17,9 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 <resources>
     <string name="app_name">Chameleon Mini Live Debugger</string>
-    <string name="app_display_short_name">Chameleon Logger</string>
+    <string name="app_display_short_name">CMLD</string>
+    <string name="app_display_short_name_paid">CMLD (Paid)</string>
+    <string name="app_name_file_picker">Chameleon Mini Live Debugger (File Chooser Activity)</string>
     <string name="app_desc">GUI and portable logging interface for the Chameleon Mini NFC pentesting boards</string>
     <string name="appInitialUserGreetingMsg">
                Thank you for using and testing this Android application!

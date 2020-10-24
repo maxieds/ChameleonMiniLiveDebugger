@@ -78,21 +78,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/nfc_icon24"
-                    android:paddingRight="3dp" />
-
-                <CheckBox
-                    android:theme="@style/CheckBoxTheme"
-                    android:id="@+id/settingsAllowAndroidNFC"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left|center_vertical"
-                    android:enabled="false"
-                    android:text="Allow Android NFC exchanges" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:src="@drawable/bidirectional_sniffing_icon24"
                     android:paddingRight="3dp" />
 

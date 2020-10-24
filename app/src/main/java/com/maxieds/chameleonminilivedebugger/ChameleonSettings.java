@@ -25,7 +25,6 @@ public class ChameleonSettings {
 
     public static boolean allowWiredUSB = true;
     public static boolean allowBluetooth = false;
-    public static boolean allowAndroidNFC = false;
     public static int serialBaudRate = 115200;
 
     public static String chameleonDeviceSerialNumber = "<UNKNOWN>";

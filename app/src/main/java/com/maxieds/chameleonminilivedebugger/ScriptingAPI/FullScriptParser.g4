@@ -46,12 +46,12 @@ ConditionalElseBlock:    (WhiteSpace)* 'else if' (WhiteSpace)* '(' (WhiteSpace)*
 ConditionalBlock:        ConditionalIfBlock (ConditionalElifBlock)* ConditionalElseBlock |
                          ConditionalIfBlock (ConditionalElifBlock)* ;
 
-LabelSyntax:             StringLiteral ':' ;
+LabelSyntax:             (AsciiChar)+ ':' ;
 SetBreakpointSyntax:    'set' (WhiteSpace)* 'breakpoint' ;
 MiscSyntax:              LabelSyntax | SetBreakpointSyntax ;
 
 ChameleonCommand:       '$$(' (WhiteSpace)* ExpressionEvalTerm (WhiteSpace)* ')' ;
-GotoLabelCommand:       'goto' (WhiteSpace)* (StringLiteral | VariableReference) ;
+GotoLabelCommand:       'goto' (WhiteSpace)* (StringLiteral | VariableReference) ; /* TODO: List of labels ??? */
 PassStatement:          'pass' -> channel(HIDDEN);
 Command:                ScriptingAPIFunction | ChameleonCommand | GotoLabelCommand |
                         PassStatement ;

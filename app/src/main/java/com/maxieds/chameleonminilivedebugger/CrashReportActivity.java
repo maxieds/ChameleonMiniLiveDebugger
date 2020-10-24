@@ -77,7 +77,7 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        AndroidSettingsStorage.loadPreviousSettings(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE);
+        AndroidSettingsStorage.loadPreviousSettings();
 
         ThemesConfiguration.setLocalTheme(CRASH_REPORT_THEME_NAME, true, this);
         setContentView(R.layout.activity_crash_report);

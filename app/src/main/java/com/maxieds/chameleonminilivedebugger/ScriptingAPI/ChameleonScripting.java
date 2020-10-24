@@ -17,11 +17,21 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
-import android.view.View;
+import android.widget.LinearLayout;
+
+import com.maxieds.chameleonminilivedebugger.R;
+import com.maxieds.chameleonminilivedebugger.TabFragment;
+
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -42,14 +52,15 @@ public class ChameleonScripting {
         public int THRESHOLD;
         public int TIMEOUT;
 
-        public void saveState() {}
-        public void restoreState() {}
+        public void saveState(boolean push) {} // TODO
+        public void restoreState(boolean pop) {} // TODO
 
     }
 
     public static class ChameleonScriptInstance {
 
         public enum ScriptRuntimeState {
+            INITIALIZED,
             RUNNING,
             EXCEPTION,
             PAUSED,
@@ -59,27 +70,102 @@ public class ChameleonScripting {
             TERMINATED_ERROR,
         }
 
-        // TODO: ANTLR4 types ...
+        private boolean initialized;
         private String scriptFilePath;
         private FileInputStream scriptFileStream;
         private String outputFilePath;
         private FileOutputStream outputFileStream;
         private String loggingFilePath;
         private FileOutputStream loggingFileStream;
+        private String debuggingFilePath;
+        private FileOutputStream debuggingFileStream;
         private long lastStartTime;
         private long runningTime;
+        private long limitScriptExecTime;
         private int scriptExecLine;
         private StringBuilder consoleOutput;
-        private View registerViewMainLayout;
-        private View consoleViewMainLayout;
-        private ArrayList<String> breakpointLabels;
-        private ArrayList<Integer> breakpointLines;
+        private LinearLayout registerViewMainLayout;
+        private LinearLayout consoleViewMainLayout;
+        private List<String> breakpointLabels;
+        private List<Integer> breakpointLines;
         private boolean atBreakpoint;
         private Map<String, ScriptingTypes.ScriptVariable> scriptVariables;
         private ScriptRuntimeState scriptState;
         private ChameleonDeviceState chameleonDeviceState;
+        private Thread scriptRunnerThread;
 
-        public boolean runScriptFromStart(String scriptPath) throws ScriptingExecptions.ChameleonScriptingException {
+        /* ANTLR4 types: https://www.antlr.org/api/Java/ */
+        ANTLRInputStream scriptInputStream;
+        //JavaLexer scriptLexer; // TODO
+        CommonTokenStream scriptTokenStream;
+        //JavaParser scriptParser; // TODO
+        ParseTree scriptParseTree;
+
+        public ChameleonScriptInstance(String scriptFile) {
+            initialized = true;
+            scriptFilePath = scriptFile;
+            outputFilePath = ScriptingFileIO.getScriptOutputFilePath(scriptFilePath);
+            loggingFilePath = ScriptingFileIO.getScriptLoggingFilePath(scriptFilePath);
+            debuggingFilePath = ScriptingFileIO.getScriptDebuggingFilePath(scriptFilePath);
+            try {
+                scriptFileStream = new FileInputStream(scriptFilePath);
+                outputFileStream = new FileOutputStream(outputFilePath);
+                loggingFileStream = new FileOutputStream(loggingFilePath);
+                debuggingFileStream = debuggingFilePath.equals(ScriptingTypes.NULL) ? null : new FileOutputStream(debuggingFilePath);
+            } catch(FileNotFoundException ioe) {
+                ioe.printStackTrace();
+                scriptFileStream = null;
+                outputFileStream = loggingFileStream = debuggingFileStream = null;
+                initialized = false;
+            }
+            runningTime = lastStartTime = 0;
+            limitScriptExecTime = -1;
+            scriptExecLine = 0;
+            consoleOutput = new StringBuilder();
+            try {
+                registerViewMainLayout = TabFragment.UITAB_DATA[TabFragment.TAB_SCRIPTING].tabMenuItemLayouts[TabFragment.TAB_SCRIPTING_MITEM_REGISTER_VIEW].findViewById(R.id.scriptingTabRegisterViewMainLayoutContainer);
+                consoleViewMainLayout = TabFragment.UITAB_DATA[TabFragment.TAB_SCRIPTING].tabMenuItemLayouts[TabFragment.TAB_SCRIPTING_MITEM_CONSOLE_VIEW].findViewById(R.id.scriptingTabConsoleViewMainLayoutContainer);
+            } catch(Exception ex) {
+                ex.printStackTrace();
+                registerViewMainLayout = consoleViewMainLayout = null;
+                initialized = false;
+            }
+            breakpointLabels = new ArrayList<String>();
+            breakpointLines = new ArrayList<Integer>();
+            atBreakpoint = false;
+            scriptVariables = new HashMap<String, ScriptingTypes.ScriptVariable>();
+            scriptState = ScriptRuntimeState.INITIALIZED;
+            chameleonDeviceState = new ChameleonDeviceState();
+            scriptRunnerThread = null;
+            scriptInputStream = null;
+            scriptTokenStream = null;
+            scriptParseTree = null;
+        }
+
+        public boolean isInitialized() {
+            return initialized;
+        }
+
+        private boolean runScriptPreambleActions() {
+            // save Chameleon device state and push onto stack ...
+            // change to CWD ...
+            // set the script paused icon in toolbar to true ...
+            // temporarily disable status bar updates ...
+            // disable adding breakpoints
+            return true;
+        }
+
+        public boolean runScriptFromStart() throws ScriptingExecptions.ChameleonScriptingException {
+            if(!runScriptPreambleActions()) {
+                return false;
+            }
+            try {
+                scriptInputStream = new ANTLRInputStream(activeChameleonScript.scriptFileStream);
+            } catch(Exception ioe) {
+                ioe.printStackTrace();
+                initialized = false;
+                return false;
+            }
             return false;
         }
 
@@ -100,13 +186,50 @@ public class ChameleonScripting {
         }
 
         public boolean writeConsoleOutput(String consoleOutputLine) {
+            if(consoleOutput != null) {
+                consoleOutput.append(consoleOutputLine);
+                return true;
+            }
             return false;
         }
 
         public String getConsoleOutput() {
+            if(consoleOutput != null) {
+                return consoleOutput.toString();
+            }
             return null;
         }
 
+        public void clearConsoleViewGUI() {
+            if(consoleViewMainLayout != null) {
+                consoleViewMainLayout.removeAllViews();
+            }
+        }
+
+        public void clearRegisterViewGUI() {
+            if(registerViewMainLayout != null) {
+                registerViewMainLayout.removeAllViews();
+            }
+        }
+
+    }
+
+    private static ChameleonScriptInstance activeChameleonScript = null;
+
+    public boolean runScriptFromStart(String scriptPath) throws ScriptingExecptions.ChameleonScriptingException {
+        return false;
+    }
+
+    public boolean pauseRunningScript() throws ScriptingExecptions.ChameleonScriptingException {
+        return false;
+    }
+
+    public boolean killRunningScript() throws ScriptingExecptions.ChameleonScriptingException {
+        return false;
+    }
+
+    public boolean stepRunningScript() throws ScriptingExecptions.ChameleonScriptingException {
+        return false;
     }
 
 }
