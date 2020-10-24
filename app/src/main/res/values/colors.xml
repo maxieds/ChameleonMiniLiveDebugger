@@ -19,12 +19,4 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 <resources>
     <color name="colorBigVeryBadError">#ff0000</color>
-    <color name="transparent">#00ff0000</color>
-    <color name="appIconBGGreen">#28b91f</color>
-    <color name="toastBGColor">#565c55</color>
-    <color name="StackTraceFileNameColor">#d5ac42</color>
-    <color name="StackTraceExecptionColor">#12a4e0</color>
-    <color name="StackTraceLineNumberColor">#af35a2</color>
-    <color name="StackTraceFunctionNameColor">#c8c710</color>
-    <color name="StackTraceMiscSyntaxColor">#697672</color>
 </resources>

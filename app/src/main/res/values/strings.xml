@@ -148,15 +148,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     </string>
 
     <!-- Fields for the default application file provider: -->
-    <string name="fileProviderRootSummaryDesc">
-        Chameleon Mini Live Debugger Documents Provider
-    </string>
-    <string name="fileProviderRootTitle">
-        Chameleon Mini Live Debugger
-    </string>
-    <string name="fileProviderRootDocumentId">
-        CMLDDocument
-    </string>
 
     <string-array name="RButtonOptions">
         <item>RBUTTON</item>
@@ -265,20 +256,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item>MEMORY</item>
         <item>OFF</item>
         <item>OFF-NOTIFY</item>
-    </string-array>
-
-    <string-array name="FullCommandList">
-        <item>--Advanced Chameleon Shell (RevG)--</item>
-        <item>CLEAR</item>
-        <item>RANDOM UID</item>
-        <item>RECALL</item>
-        <item>SETTING=</item>
-        <item>STORE</item>
-        <item>THRESHOLD=?</item>
-        <item>TIMEOUT=</item>
-        <item>TIMEOUT=?</item>
-        <item>UID=</item>
-        <item>UID?</item>
     </string-array>
 
     <string-array name="FullTagConfigModes">

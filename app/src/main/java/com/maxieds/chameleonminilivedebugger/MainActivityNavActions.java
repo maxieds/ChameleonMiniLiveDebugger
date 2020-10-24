@@ -56,8 +56,8 @@ public class MainActivityNavActions {
         wv.setInitialScale(10);
 
         adBuilder.setCancelable(true);
-        adBuilder.setTitle("  ");
-        adBuilder.setIcon(R.drawable.chameleonicon_about64_roundicon);
+        adBuilder.setTitle("");
+        //adBuilder.setIcon(R.drawable.chameleonicon_about64_roundicon);
         adBuilder.setPositiveButton(
                 "Back to Previous",
                 new DialogInterface.OnClickListener() {

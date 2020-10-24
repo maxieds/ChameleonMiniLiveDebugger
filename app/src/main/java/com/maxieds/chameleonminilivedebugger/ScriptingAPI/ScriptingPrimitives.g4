@@ -57,7 +57,7 @@ HexDigit: [0-9a-fA-F] -> type(TYPE_INT);
 HexString: (HexDigit)+ -> type(TYPE_BYTES);
 HexByte: '0x' HexDigit HexDigit | '0x' HexDigit | HexDigit HexDigit -> type(TYPE_INT);
 HexLiteral: HexByte | '0x'HexString | HexString ;
-BooleanLiteral: 'True' | 'False' -> type(TYPE_BOOL) ;
+BooleanLiteral: 'true' | 'True' | 'TRUE' | 'false' | 'False' | 'FALSE' -> type(TYPE_BOOL) ;
 AsciiChar: [\u0040-\u0046\u0050-\u0133\u0135-\u0176] ;
 StringLiteral: '"'(AsciiChar)*'"' -> type(TYPE_STRING);
 TypeLiteral: HexString | HexByte | HexLiteral | BooleanLiteral | StringLiteral ;
@@ -66,7 +66,7 @@ VariableNameStartChar: '_' | [a-zA-Z] ;
 VariableNameMiddleChar: VariableNameStartChar | [0-9] ;
 VariableStartSymbol: '$' ;
 VariableName: VariableNameStartChar (VariableNameMiddleChar)* ;
-VariableDeclaration: 'define var' VariableStartSymbol VariableName NewLineBreak;
+VariableDeclaration: VariableStartSymbol VariableName (WhiteSpace)* '=' (WhiteSpace)* TypeLiteral (WhiteSpace)* ;
 VariableReference: VariableStartSymbol VariableName {}; // TODO
 
 ExpressionEvalTerm: VariableReference | Operator |
