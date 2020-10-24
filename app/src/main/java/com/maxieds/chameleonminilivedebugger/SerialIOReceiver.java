@@ -172,7 +172,7 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface {
             }
             int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData);
             if (loggingRespSize > 0) {
-                Log.i(TAG, "Received new LogEntry @ " + String.format(Locale.ENGLISH, "0x%02x", liveLogData[0]));
+                Log.i(TAG, "Received new LogEntry @ " + String.format(BuildConfig.DEFAULT_LOCALE, "0x%02x", liveLogData[0]));
                 if(ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS) {
                     notifyLogDataReceived(liveLogData);
                 }
@@ -181,10 +181,6 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface {
                         (ChameleonLogUtils.LogCode.LOG_CODE_MAP.get(logCode) == LOG_INFO_CODEC_RX_DATA ||
                                 ChameleonLogUtils.LogCode.LOG_CODE_MAP.get(logCode) == LOG_INFO_CODEC_RX_DATA_W_PARITY)) {
                     LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusCodecRXDataEvent, R.drawable.toolbar_icon16_codec_rx);
-                }
-                else if(ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_RDRFLDDETECT_STATUS_INDICATOR &&
-                        ChameleonLogUtils.LogCode.LOG_CODE_MAP.get(logCode) == LOG_INFO_CODEC_READER_FIELD_DETECTED) {
-                    LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusReaderFieldDetectedEvent, R.drawable.toolbar_icon16_reader_field_detected);
                 }
                 continue;
             }

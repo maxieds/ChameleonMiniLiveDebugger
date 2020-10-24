@@ -169,6 +169,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_columnWeight="0.5"
                     android:drawableLeft="@drawable/run_script_button_icon24"
                     android:paddingLeft="10dp"
+                    android:onClick="actionButtonScriptGUIHandlePerformTaskClick"
+                    android:tag="SCRIPTING_BTN_RUN_FROM_START"
                     android:text="Run from start" />
 
                 <Button
@@ -176,6 +178,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_columnWeight="0.5"
                     android:drawableLeft="@drawable/kill_script_icon24"
                     android:paddingLeft="10dp"
+                    android:onClick="actionButtonScriptGUIHandlePerformTaskClick"
+                    android:tag="SCRIPTING_BTN_KILL_SCRIPT"
                     android:text="Kill running script" />
 
                 <Button
@@ -183,6 +187,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_columnWeight="0.5"
                     android:drawableLeft="@drawable/pause_script_icon24"
                     android:paddingLeft="10dp"
+                    android:onClick="actionButtonScriptGUIHandlePerformTaskClick"
+                    android:tag="SCRIPTING_BTN_PAUSE_SCRIPT"
                     android:text="Pause script" />
 
                 <Button
@@ -190,6 +196,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_columnWeight="0.5"
                     android:drawableLeft="@drawable/step_script_icon24"
                     android:paddingLeft="10dp"
+                    android:onClick="actionButtonScriptGUIHandlePerformTaskClick"
+                    android:tag="SCRIPTING_BTN_STEP_SCRIPT"
                     android:text="Step" />
 
             </GridLayout>
@@ -226,7 +234,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:paddingLeft="10dp"
                 android:gravity="center_vertical"
                 android:singleLine="true"
-                android:text="Set breakpoints: "
+                android:text="Set breakpoints: (TODO)"
                 android:textAllCaps="true"
                 android:textSize="18sp"
                 android:textStyle="bold|italic" />

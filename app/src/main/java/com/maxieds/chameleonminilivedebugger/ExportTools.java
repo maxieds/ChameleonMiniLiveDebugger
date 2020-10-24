@@ -487,11 +487,11 @@ public class ExportTools {
         FileOutputStream fout = new FileOutputStream(fd);
         String htmlHeader = "<html><head><title>Chameleon Mini Live Debugger -- Logging Output</title></head><body>\n\n";
         fout.write(htmlHeader.getBytes(StandardCharsets.US_ASCII));
-        String defaultBgColor = String.format(Locale.ENGLISH, "#%06X", (0xFFFFFF & ThemesConfiguration.getThemeColorVariant(R.attr.colorPrimaryDarkLog)));
+        String defaultBgColor = String.format(BuildConfig.DEFAULT_LOCALE, "#%06X", (0xFFFFFF & ThemesConfiguration.getThemeColorVariant(R.attr.colorPrimaryDarkLog)));
         for (int vi = 0; vi < MainActivityLogUtils.logDataFeed.getChildCount(); vi++) {
             View logEntryView = MainActivityLogUtils.logDataFeed.getChildAt(vi);
             if (MainActivityLogUtils.logDataEntries.get(vi) instanceof LogEntryUI) {
-                String bgColor = String.format(Locale.ENGLISH, "#%06X", (0xFFFFFF & logEntryView.getDrawingCacheBackgroundColor()));
+                String bgColor = String.format(BuildConfig.DEFAULT_LOCALE, "#%06X", (0xFFFFFF & logEntryView.getDrawingCacheBackgroundColor()));
                 if(bgColor.equals(defaultBgColor))
                     bgColor = "#ffffff";
                 String lineData = "<code bgcolor='" + bgColor + "'>" + ((LogEntryUI) MainActivityLogUtils.logDataEntries.get(vi)).toString() + "</code><br/>\n";

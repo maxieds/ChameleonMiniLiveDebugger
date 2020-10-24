@@ -52,6 +52,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingGUI;
 
 import java.util.Locale;
 
@@ -345,13 +346,17 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
           clearStatusIcon(R.id.signalStrength);
           clearStatusIcon(R.id.statusIconBT);
           clearStatusIcon(R.id.statusCodecRXDataEvent);
-          clearStatusIcon(R.id.statusReaderFieldDetectedEvent);
+          clearStatusIcon(R.id.statusScriptingIsExec);
 
-          String userGreeting = getString(R.string.appInitialUserGreetingMsg);
-          MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("WELCOME", userGreeting));
           if(BuildConfig.FLAVOR.equals("paid")) {
+               String userGreeting = getString(R.string.appInitialUserGreetingMsgPaid);
+               MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("WELCOME", userGreeting));
                String disclaimerStmt = getString(R.string.appPaidFlavorDisclaimerEULA);
                MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("DISCLAIMER", disclaimerStmt));
+          }
+          else {
+               String userGreeting = getString(R.string.appInitialUserGreetingMsg);
+               MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("WELCOME", userGreeting));
           }
 
           if(getIntent() != null && getIntent().getBooleanExtra(CrashReportActivity.INTENT_CMLD_RECOVERED_FROM_CRASH, false)) {
@@ -445,10 +450,15 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
 
           // the view pager hides the tab icons by default, so we reset them:
           tabLayout.getTabAt(TAB_LOG).setIcon(tfPagerAdapter.getTabIcon(TAB_LOG));
+          tabLayout.getTabAt(TAB_LOG).setContentDescription(R.string.appGuiTabLogContentDesc);
           tabLayout.getTabAt(TAB_TOOLS).setIcon(tfPagerAdapter.getTabIcon(TAB_TOOLS));
+          tabLayout.getTabAt(TAB_TOOLS).setContentDescription(R.string.appGuiTabToolsContentDesc);
           tabLayout.getTabAt(TAB_EXPORT).setIcon(tfPagerAdapter.getTabIcon(TAB_EXPORT));
+          tabLayout.getTabAt(TAB_EXPORT).setContentDescription(R.string.appGuiTabExportContentDesc);
           tabLayout.getTabAt(TAB_SCRIPTING).setIcon(tfPagerAdapter.getTabIcon(TAB_SCRIPTING));
+          tabLayout.getTabAt(TAB_SCRIPTING).setContentDescription(R.string.appGuiTabScriptingContentDesc);
           tabLayout.getTabAt(TAB_CONFIG).setIcon(tfPagerAdapter.getTabIcon(TAB_CONFIG));
+          tabLayout.getTabAt(TAB_CONFIG).setContentDescription(R.string.appGuiTabConfigContentDesc);
 
      }
 
@@ -566,7 +576,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
           }
           else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED)) {
                byte[] serialByteData = intent.getByteArrayExtra("DATA");
-               String dataMsg = String.format(Locale.ENGLISH, "Unexpected serial I/O data received:\n%s\n%s",
+               String dataMsg = String.format(BuildConfig.DEFAULT_LOCALE, "Unexpected serial I/O data received:\n%s\n%s",
                        Utils.bytes2Hex(serialByteData), Utils.bytes2Ascii(serialByteData));
                MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", dataMsg));
           }
@@ -812,11 +822,6 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
      }
 
      /**
-      * Constant for the file chooser dialog in the upload card data process.
-      */
-     public static final int FILE_SELECT_CODE = 0;
-
-     /**
       * Called after the user chooses a file in the upload card dialog.
       * @param requestCode
       * @param resultCode
@@ -824,19 +829,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
       */
      @Override
      protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-          switch (requestCode) {
-               case FILE_SELECT_CODE:
-                    if (resultCode == RESULT_OK) {
-                         String filePath = "<FileNotFound>";
-                         Cursor cursor = getContentResolver().query(data.getData(), null, null, null, null, null);
-                         if (cursor != null && cursor.moveToFirst()) {
-                              filePath = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                              filePath = "//sdcard//Download//" + filePath;
-                         }
-                         throw new RuntimeException(filePath);
-                    }
-                    break;
-          }
+          ExternalFileIO.handleActivityResult(this, requestCode, resultCode, data);
           super.onActivityResult(requestCode, resultCode, data);
      }
 
@@ -906,11 +899,6 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
           MainActivityNavActions.setSignalStrengthIndicator(threshold);
      }
 
-     public void actionButtonDisplayHelp(View view) {
-          AlertDialog alertDialog = MainActivityNavActions.getHelpTopicsDialog();
-          alertDialog.show();
-     }
-
      public void actionButtonSetMinimumLogDataLength(View view) {
           EditText logMinDataLengthField = (EditText) findViewById(R.id.loggingLogDataMinBytesField);
           if(logMinDataLengthField == null) {
@@ -945,9 +933,13 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
           EditText piccSetBytesText = (EditText) findViewById(R.id.mfDESFireTagSetPICCDataBytes);
           String piccSetBytes = "";
           if(piccSetBytesText != null) {
-               cmdTag = String.format(Locale.ENGLISH, cmdTag, piccSetBytesText.getText().toString());
+               cmdTag = String.format(BuildConfig.DEFAULT_LOCALE, cmdTag, piccSetBytesText.getText().toString());
           }
           ChameleonIO.executeChameleonMiniCommand(cmdTag, ChameleonIO.TIMEOUT);
+     }
+
+     public void actionButtonScriptGUIHandlePerformTaskClick(View view) {
+          ScriptingGUI.scriptGUIHandlePerformTaskClick((Button) view, view.getTag().toString());
      }
 
 }

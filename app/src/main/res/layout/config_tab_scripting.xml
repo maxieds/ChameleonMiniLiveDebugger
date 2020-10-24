@@ -123,20 +123,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:button="@null"
                     android:drawableLeft="?android:attr/listChoiceIndicatorMultiple"
                     android:layout_marginEnd="15dp"
-                    android:text="Set global R|W permissions on output files"
-                    android:enabled="true"
-                    android:checked="true"
-                    />
-
-                <CheckBox
-                    android:theme="@style/CheckBoxTheme"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left|center_vertical|end"
-                    android:layout_marginLeft="10dp"
-                    android:button="@null"
-                    android:drawableLeft="?android:attr/listChoiceIndicatorMultiple"
-                    android:layout_marginEnd="15dp"
                     android:text="Use verbose error logging"
                     android:enabled="true"
                     android:checked="true"
@@ -230,7 +216,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:drawableLeft="?android:attr/listChoiceIndicatorMultiple"
                     android:layout_marginEnd="15dp"
                     android:text="Duplicate console output to Android logs"
-                    android:enabled="true"
+                    android:enabled="false"
                     android:checked="true"
                     />
 
@@ -318,7 +304,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_gravity="left|center_vertical"
                     android:drawablePadding="3dp"
                     android:singleLine="true"
-                    android:text="Set $ev0: "
+                    android:text="Set $env0: "
                     android:textSize="11sp"
                     android:textStyle="bold|italic"
                     android:textColor="?android:colorPrimaryDark" />
@@ -340,7 +326,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_gravity="left|center_vertical"
                     android:drawablePadding="3dp"
                     android:singleLine="true"
-                    android:text="Set $ev1: "
+                    android:text="Set $env1: "
                     android:textSize="11sp"
                     android:textStyle="bold|italic"
                     android:textColor="?android:colorPrimaryDark" />
@@ -348,13 +334,13 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 <EditText
                     android:id="@+id/scriptingConfigEnvVarEV1"
                     android:layout_width="150dp"
-                    android:layout_columnWeight="1"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="4dp"
-                    android:textSize="11sp"
+                    android:layout_columnWeight="1"
                     android:hint="&lt;secret passphrase&gt;"
+                    android:paddingLeft="4dp"
                     android:singleLine="true"
-                    android:textColor="?colorPrimaryDarkLog" />
+                    android:textColor="?colorPrimaryDarkLog"
+                    android:textSize="11sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -362,7 +348,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_gravity="left|center_vertical"
                     android:drawablePadding="3dp"
                     android:singleLine="true"
-                    android:text="Set $ek0 (key data): "
+                    android:text="Set $envKey0 (key data): "
                     android:textSize="11sp"
                     android:textStyle="bold|italic"
                     android:textColor="?android:colorPrimaryDark" />
@@ -384,7 +370,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_gravity="left|center_vertical"
                     android:drawablePadding="3dp"
                     android:singleLine="true"
-                    android:text="Set $ek1 (key data): "
+                    android:text="Set $envKey1 (key data): "
                     android:textSize="11sp"
                     android:textStyle="bold|italic"
                     android:textColor="?android:colorPrimaryDark" />
@@ -410,17 +396,18 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center_vertical"
-                android:gravity="center_vertical"
+                android:layout_weight="1"
                 android:background="?colorPrimaryDarkLog"
                 android:drawableLeft="@drawable/scripting_folder_icon"
                 android:drawablePadding="5dp"
+                android:gravity="center_vertical"
                 android:singleLine="true"
                 android:text="File I/O defaults: "
-                android:textSize="18sp"
                 android:textAllCaps="true"
+                android:textSize="18sp"
                 android:textStyle="bold|italic" />
+
 
             <View
                 android:layout_width="match_parent"
@@ -519,11 +506,11 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
-                    android:paddingLeft="4dp"
                     android:hint="%Y-%m-%d-%H%M%S"
+                    android:paddingLeft="4dp"
                     android:singleLine="true"
-                    android:textSize="11sp"
-                    android:textColor="?colorPrimaryDarkLog" />
+                    android:textColor="?colorPrimaryDarkLog"
+                    android:textSize="11sp" />
 
                 <TextView
                     android:layout_width="wrap_content"

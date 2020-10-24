@@ -17,23 +17,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
-import android.view.View;
+public class ScriptingFunctions {
 
-import com.maxieds.chameleonminilivedebugger.ChameleonMiniLiveDebuggerActivity;
-import com.maxieds.chameleonminilivedebugger.LiveLoggerActivity;
-
-public class ScriptingConfig {
-
-    private static final String TAG = ScriptingConfig.class.getSimpleName();
-
-    public static ChameleonMiniLiveDebuggerActivity SCRIPTING_CONFIG_ACTIVITY_CONTEXT = null;
-
-    public static void initializeScriptingConfig() {
-        SCRIPTING_CONFIG_ACTIVITY_CONTEXT = LiveLoggerActivity.getInstance();
-    }
-
-    public static boolean initializeScriptingConfigGUI(View cfgBaseLayout) {
-        return true;
-    }
+    private static final String TAG = ScriptingFunctions.class.getSimpleName();
 
 }

@@ -19,11 +19,14 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationManager;
 import android.text.format.Time;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -137,9 +140,9 @@ public class Utils {
         else if (bytes.length == 0)
             return "";
         StringBuilder hstr = new StringBuilder();
-        hstr.append(String.format(Locale.ENGLISH, "%02x", bytes[0]));
+        hstr.append(String.format(BuildConfig.DEFAULT_LOCALE, "%02x", bytes[0]));
         for (int b = 1; b < bytes.length; b++)
-            hstr.append(" " + String.format(Locale.ENGLISH, "%02x", bytes[b]));
+            hstr.append(" " + String.format(BuildConfig.DEFAULT_LOCALE, "%02x", bytes[b]));
         return hstr.toString();
     }
 
@@ -288,7 +291,7 @@ public class Utils {
             cmprByteCount += cmpr.deflate(new byte[1024]);
         }
         double entropyRatio = (double) cmprByteCount / inputBytes.length;
-        Log.i(TAG, String.format(Locale.ENGLISH, "Compressed #%d bytes to #%d bytes ... Entropy ratio = %1.4g", inputBytes.length, cmprByteCount, entropyRatio));
+        Log.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "Compressed #%d bytes to #%d bytes ... Entropy ratio = %1.4g", inputBytes.length, cmprByteCount, entropyRatio));
         return entropyRatio;
     }
 
@@ -385,8 +388,8 @@ public class Utils {
             }
             Location bestLocProvider = (gpsProviderLocTime - netProviderLocTime > 0) ? locGPSProvider : locGPSProvider;
             String[] gpsAttrsArray = new String[]{
-                    String.format(Locale.ENGLISH, "%g", bestLocProvider.getLatitude()),
-                    String.format(Locale.ENGLISH, "%g", bestLocProvider.getLongitude())
+                    String.format(BuildConfig.DEFAULT_LOCALE, "%g", bestLocProvider.getLatitude()),
+                    String.format(BuildConfig.DEFAULT_LOCALE, "%g", bestLocProvider.getLongitude())
             };
             return gpsAttrsArray;
         } catch(SecurityException secExcpt) {
@@ -401,18 +404,29 @@ public class Utils {
 
     public static String getGPSLocationString() {
         String[] gpsCoords = Utils.getGPSLocationCoordinates();
-        String gpsLocStr = String.format(Locale.ENGLISH, " -- Location at %s LONG, %s LAT -- ",
+        String gpsLocStr = String.format(BuildConfig.DEFAULT_LOCALE, " -- Location at %s LONG, %s LAT -- ",
                 gpsCoords[Utils.GPS_LONGITUDE_CINDEX], gpsCoords[Utils.GPS_LATITUDE_CINDEX]);
         return gpsLocStr;
     }
 
-    public static void displayToastMessage(String toastMsg, int msgDuration) {
+    private static void displayToastMessage(String toastMsg, int msgDuration) {
         Toast toastDisplay = Toast.makeText(
-                LiveLoggerActivity.getLiveLoggerInstance(), toastMsg, msgDuration);
-        toastDisplay.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 0, 0);
-        int toastBackgroundColor = Utils.getColorFromTheme(R.attr.colorPrimaryDark);
+                LiveLoggerActivity.getLiveLoggerInstance(),
+                toastMsg,
+                msgDuration
+        );
+        toastDisplay.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 0, 25);
+        toastDisplay.getView().setPadding(10, 10, 10, 10);
+        int toastBackgroundColor = Utils.getColorFromTheme(R.attr.colorAccent);
+        int toastTextColor = Utils.getColorFromTheme(R.attr.colorPrimaryDark);
         toastDisplay.getView().getBackground().setColorFilter(toastBackgroundColor, PorterDuff.Mode.SRC_IN);
-        toastDisplay.getView().setAlpha(0.70f);
+        TextView toastTextMsg = toastDisplay.getView().findViewById(android.R.id.message);
+        if(toastTextMsg != null) {
+            toastTextMsg.setTextColor(toastTextColor);
+            toastTextMsg.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+            toastTextMsg.setTypeface(toastTextMsg.getTypeface(), Typeface.BOLD_ITALIC);
+        }
+        toastDisplay.getView().setAlpha(0.75f);
         toastDisplay.show();
         Log.i(TAG, "TOAST MSG DISPLAYED: " + toastMsg);
     }
@@ -497,7 +511,7 @@ public class Utils {
         StackTraceElement[] stackTraceEltsInit = ex.getStackTrace();
         String[] stackTraceElts = new String[stackTraceEltsInit.length];
         for(int stidx = 0; stidx < stackTraceElts.length; stidx++) {
-            stackTraceElts[stidx] = String.format(Locale.ENGLISH, "L%02d| %s", stidx + 1, stackTraceEltsInit[stidx].toString());
+            stackTraceElts[stidx] = String.format(BuildConfig.DEFAULT_LOCALE, "L%02d| %s", stidx + 1, stackTraceEltsInit[stidx].toString());
         }
         stackTraceText += String.join("\n", stackTraceElts);
         return stackTraceText;

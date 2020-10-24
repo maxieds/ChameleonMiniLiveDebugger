@@ -23,7 +23,28 @@ FileContents: (ScriptLine)+ EOF;
 
 ScriptLine:              (WhiteSpace)* (VariableDeclaration | AssignmentOperator | Command | MiscSyntax)
                          (WhiteSpace)* NewLineBreak |
-                         NewLineBreak -> channel(HIDDEN) ;
+                         NewLineBreak -> channel(HIDDEN) |
+                         WhileBlock | ConditionalBlock ;
+
+WhileBlock:              (WhiteSpace)* 'while' (WhiteSpace)* '(' (WhiteSpace)* ExpressionEvalTerm (WhiteSpace)* ')' (WhiteSpace)*
+                         '{' (WhiteSpace)* (NewLineBreak)*
+                         (ScriptLine)+
+                         '}' (WhiteSpace)* (NewLineBreak)* ;
+
+ConditionalIfBlock:      (WhiteSpace)* 'if' (WhiteSpace)* '(' (WhiteSpace)* ExpressionEvalTerm (WhiteSpace)* ')' (WhiteSpace)*
+                         '{' (WhiteSpace)* (NewLineBreak)*
+                         (ScriptLine)+
+                         '}' (WhiteSpace)* (NewLineBreak)* ;
+ConditionalElifBlock:    (WhiteSpace)* 'else if' (WhiteSpace)* '(' (WhiteSpace)* ExpressionEvalTerm (WhiteSpace)* ')' (WhiteSpace)*
+                         '{' (WhiteSpace)* (NewLineBreak)*
+                         (ScriptLine)+
+                         '}' (WhiteSpace)* (NewLineBreak)* ;
+ConditionalElseBlock:    (WhiteSpace)* 'else if' (WhiteSpace)* '(' (WhiteSpace)* ExpressionEvalTerm (WhiteSpace)* ')' (WhiteSpace)*
+                         '{' (WhiteSpace)* (NewLineBreak)*
+                         (ScriptLine)+
+                         '}' (WhiteSpace)* (NewLineBreak)* ;
+ConditionalBlock:        ConditionalIfBlock (ConditionalElifBlock)* ConditionalElseBlock |
+                         ConditionalIfBlock (ConditionalElifBlock)* ;
 
 LabelSyntax:             StringLiteral ':' ;
 SetBreakpointSyntax:    'set' (WhiteSpace)* 'breakpoint' ;

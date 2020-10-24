@@ -209,7 +209,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
         if(activeDevice == null) {
             return "<null-device>: No information available.";
         }
-        String devInfo = String.format(Locale.ENGLISH, "BT Class: %s\nBond State: %s\nProduct Name: %s\nType: %s\nDevice Address: %s",
+        String devInfo = String.format(BuildConfig.DEFAULT_LOCALE, "BT Class: %s\nBond State: %s\nProduct Name: %s\nType: %s\nDevice Address: %s",
                 activeDevice.getBluetoothClass(), activeDevice.getBondState(),
                 activeDevice.getName(), activeDevice.getType(),
                 activeDevice.getAddress());;

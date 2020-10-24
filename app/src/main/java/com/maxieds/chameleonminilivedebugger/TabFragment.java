@@ -136,7 +136,7 @@ public class TabFragment extends Fragment {
             deselectMenuItem(lastMenuIndex);
             lastMenuIndex = midx;
             GridLayout menuItemsNav = (GridLayout) tabInflatedView.findViewById(R.id.tabMenuItemsNav);
-            String indexRefTag = String.format(Locale.ENGLISH, "%d:%d", tabIndex, midx);
+            String indexRefTag = String.format(BuildConfig.DEFAULT_LOCALE, "%d:%d", tabIndex, midx);
             Button menuItem = (Button) menuItemsNav.findViewWithTag(indexRefTag);
             menuItem.setTypeface(Typeface.DEFAULT, Typeface.BOLD_ITALIC);
             final Button menuItemFinal = menuItem;
@@ -168,7 +168,7 @@ public class TabFragment extends Fragment {
                 return false;
             }
             GridLayout menuItemsNav = (GridLayout) tabInflatedView.findViewById(R.id.tabMenuItemsNav);
-            String indexRefTag = String.format(Locale.ENGLISH, "%d:%d", tabIndex, midx);
+            String indexRefTag = String.format(BuildConfig.DEFAULT_LOCALE, "%d:%d", tabIndex, midx);
             Button menuItem = (Button) menuItemsNav.findViewWithTag(indexRefTag);
             menuItem.setBackgroundColor(tabInflatedView.getContext().getResources().getColor(android.R.color.transparent));
             menuItem.setTextColor(Utils.getColorFromTheme(R.attr.colorPrimaryDark));
@@ -202,7 +202,7 @@ public class TabFragment extends Fragment {
                 menuItemClick.setPadding(20, 8, 20, 8);
                 menuItemClick.setMaxHeight(100);
                 menuItemClick.setMinWidth(menuItemsNav.getMeasuredWidth() / tabNumColumns);
-                String indexRefTag = String.format(Locale.ENGLISH, "%d:%d", tabIndex, totalItems);
+                String indexRefTag = String.format(BuildConfig.DEFAULT_LOCALE, "%d:%d", tabIndex, totalItems);
                 menuItemClick.setTag(indexRefTag);
                 menuItemClick.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -266,7 +266,7 @@ public class TabFragment extends Fragment {
     static {
         UITAB_DATA[TAB_LOG] = new UITab(
                 TAB_LOG,
-                R.drawable.logtab_icon24,
+                R.drawable.tab_logging_icon48,
                 "Logs",
                 TAB_LOG_MITEM_COLUMNS,
                 new String[] {
@@ -283,7 +283,7 @@ public class TabFragment extends Fragment {
                 });
         UITAB_DATA[TAB_TOOLS] = new UITab(
                 TAB_TOOLS,
-                R.drawable.tools24,
+                R.drawable.tab_tools_icon48,
                 "Tools",
                 TAB_TOOLS_MITEM_COLUMNS,
                 new String[] {
@@ -303,7 +303,7 @@ public class TabFragment extends Fragment {
                 });
         UITAB_DATA[TAB_EXPORT] = new UITab(
                 TAB_EXPORT,
-                R.drawable.device_io_icon24,
+                R.drawable.tab_export_icon48,
                 "Device I/O",
                 TAB_EXPORT_MITEM_COLUMNS,
                 new String[] {
@@ -316,7 +316,7 @@ public class TabFragment extends Fragment {
                 });
         UITAB_DATA[TAB_SCRIPTING] = new UITab(
                 TAB_SCRIPTING,
-                R.drawable.scriptingtab24_icon_v3,
+                R.drawable.tab_scripting_icon48,
                 "Scripts",
                 TAB_SCRIPTING_MITEM_COLUMNS,
                 new String[] {
@@ -331,7 +331,7 @@ public class TabFragment extends Fragment {
                 });
         UITAB_DATA[TAB_CONFIG] = new UITab(
                 TAB_CONFIG,
-                R.drawable.configtab24,
+                R.drawable.tab_settings_icon48,
                 "Settings",
                 TAB_CONFIG_MITEM_COLUMNS,
                 new String[] {

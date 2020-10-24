@@ -157,7 +157,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
         if(activeDevice == null) {
             return "";
         }
-        String devInfo = String.format(Locale.ENGLISH, "Manufacturer:  %s\nProduct Name:  %s\nVersion:       %s\nDevice Serial: %s\nUSB Dev:       %s",
+        String devInfo = String.format(BuildConfig.DEFAULT_LOCALE, "Manufacturer:  %s\nProduct Name:  %s\nVersion:       %s\nDevice Serial: %s\nUSB Dev:       %s",
                                        activeDevice.getManufacturerName(), activeDevice.getProductName(),
                                        activeDevice.getVersion(), activeDevice.getSerialNumber(),
                                        activeDevice.getDeviceName());
@@ -219,7 +219,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
             return STATUS_ERROR;
         }
         activeDevice = device;
-        ChameleonSettings.chameleonDeviceSerialNumber = String.format(Locale.ENGLISH, "%s-%s", activeDevice.getProductName(), activeDevice.getVersion());
+        ChameleonSettings.chameleonDeviceSerialNumber = String.format(BuildConfig.DEFAULT_LOCALE, "%s-%s", activeDevice.getProductName(), activeDevice.getVersion());
         ChameleonIO.PAUSED = false;
         serialConfigured = true;
         receiversRegistered = true;

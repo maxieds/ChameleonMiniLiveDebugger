@@ -20,7 +20,8 @@ import LexerMembers, ScriptingPrimitives;
 
 FunctionParameterArgType: ExpressionEvalTerm ;
 FunctionParameterArgsList: FunctionParameterArgType | (FunctionParameterArgType ', ' FunctionParameterArgType) ;
-ScriptingAPIFunctionName:  ScriptControlFlowFunctions | PrintingAndLoggingFunctions | VariableTypeFunctions |
+ScriptingAPIFunctionName:  ScriptControlFlowFunctions | PrintingAndLoggingFunctions |
+                           ChameleonConnectionTypeFunctions | VariableTypeFunctions |
                            DebuggingFunctions | EnvironmentFunctions | ChameleonCommandAndLogFunctions |
                            StringFunctions | FileIOFunctions | APDUHandlingFunctions |
                            CryptoAndHashFunctions | UtilityFunctions ;
@@ -41,6 +42,14 @@ DisplayToastFuncName:       'DisplayToast' ;
 
 PrintingAndLoggingFunctions: PrintFuncName | PrintfFuncName | PrintLogFuncName |
                              PrintfLogFuncName | DisplayToastFuncName ;
+
+/* Chameleon connection types: */
+IsChameleonConnectedFuncName:     'IsChameleonConnected' ;
+IsChameleonRevGFuncName:          'IsChameleonRevG' ;
+IsChameleonRevEFuncName:          'IsChameleonRevE' ;
+
+ChameleonConnectionTypeFunctions: IsChameleonConnectedFuncName |
+                                  IsChameleonRevGFuncName | IsChameleonRevEFuncName ;
 
 /* Type conversion and checking functions: */
 AsInteger32FuncName:      'AsInt32' ;
@@ -132,12 +141,13 @@ FileIOFunctions:          FscanfFuncName | ReadXMLFileFuncName | ReadXMLFileFunc
 StringSearchFuncName:              'Find' ;
 StringContainsFuncName:            'Contains' ;
 StringReplaceFuncName:             'Replace' ;
+StringSplitFuncName:               'Split' ;
 StringStripFuncName:               'Strip' ;
 StringCompressWhitepaceFuncName:   'CompressWhitespace' ;
 SubstrFuncName:                    'Substr' ;
 
 StringFunctions:                   StringSearchFuncName | StringContainsFuncName | StringReplaceFuncName |
-                                   StringStripFuncName | StringCompressWhitepaceFuncName |
+                                   StringStripFuncName | StringSplitFuncName | StringCompressWhitepaceFuncName |
                                    SubstrFuncName ;
 
 /* APDU handling functions: */

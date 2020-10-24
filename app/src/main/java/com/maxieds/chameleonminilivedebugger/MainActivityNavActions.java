@@ -44,7 +44,7 @@ public class MainActivityNavActions {
         rawAboutStr = rawAboutStr.replace("%%GIT_COMMIT_DATE%%", String.valueOf(BuildConfig.GIT_COMMIT_DATE));
         int aboutLinkColor = LiveLoggerActivity.getLiveLoggerInstance().getTheme().obtainStyledAttributes(new int[] {R.attr.colorAboutLinkColor}).getColor(0,
                              LiveLoggerActivity.getLiveLoggerInstance().getResources().getColor(R.color.colorBigVeryBadError));
-        rawAboutStr = rawAboutStr.replace("%%ABOUTLINKCOLOR%%", String.format(Locale.ENGLISH, "#%06X", 0xFFFFFF & aboutLinkColor));
+        rawAboutStr = rawAboutStr.replace("%%ABOUTLINKCOLOR%%", String.format(BuildConfig.DEFAULT_LOCALE, "#%06X", 0xFFFFFF & aboutLinkColor));
 
         WebView wv = new WebView(LiveLoggerActivity.getLiveLoggerInstance());
         wv.getSettings().setJavaScriptEnabled(false);
@@ -85,98 +85,4 @@ public class MainActivityNavActions {
             LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.signalStrength, R.drawable.signalbars1);
     }
 
-    public static AlertDialog getHelpTopicsDialog() {
-        AlertDialog.Builder adBuilder = new AlertDialog.Builder(LiveLoggerActivity.getLiveLoggerInstance(), R.style.SpinnerTheme);
-        View adView = LiveLoggerActivity.getLiveLoggerInstance().getDefaultInflater().inflate(R.layout.help_dialog, null);
-        final View adViewFinal = adView;
-
-        Button cmdRespButton = (Button) adView.findViewById(R.id.cmdRespButton);
-        cmdRespButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                WebView wv = (WebView) adViewFinal.findViewById(R.id.wvDisplayHelpTopic);
-                String rawHTMLString = LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlheader) +
-                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.helpCmdResp) +
-                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlfooter);
-                wv.loadData(rawHTMLString, "text/html", "UTF-8");
-            }
-        });
-        Button revECmdsButton = (Button) adView.findViewById(R.id.revECmdsButton);
-        revECmdsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                WebView wv = (WebView) adViewFinal.findViewById(R.id.wvDisplayHelpTopic);
-                String rawHTMLString = LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlheader) +
-                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.helpRevECmds) +
-                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlfooter);
-                wv.loadDataWithBaseURL(null, rawHTMLString, "text/html", "UTF-8", "");
-            }
-        });
-        Button revGCmdsButton = (Button) adView.findViewById(R.id.revGCmdsButton);
-        revGCmdsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                WebView wv = (WebView) adViewFinal.findViewById(R.id.wvDisplayHelpTopic);
-                String rawHTMLString = LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlheader) +
-                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.helpRevGCmds) +
-                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlfooter);
-                wv.loadData(rawHTMLString, "text/html", "UTF-8");
-            }
-        });
-        Button buttonSettingsButton = (Button) adView.findViewById(R.id.buttonSettingsButton);
-        buttonSettingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                WebView wv = (WebView) adViewFinal.findViewById(R.id.wvDisplayHelpTopic);
-                String rawHTMLString = LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlheader) +
-                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.helpButtonSettings) +
-                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlfooter);
-                wv.loadData(rawHTMLString, "text/html", "UTF-8");
-            }
-        });
-        Button buttonLEDButton = (Button) adView.findViewById(R.id.ledSettingsButton);
-        buttonLEDButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                WebView wv = (WebView) adViewFinal.findViewById(R.id.wvDisplayHelpTopic);
-                String rawHTMLString = LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlheader) +
-                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.helpLEDSettings) +
-                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlfooter);
-                wv.loadData(rawHTMLString, "text/html", "UTF-8");
-            }
-        });
-        Button loggingButton = (Button) adView.findViewById(R.id.loggingButton);
-        loggingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                WebView wv = (WebView) adViewFinal.findViewById(R.id.wvDisplayHelpTopic);
-                String rawHTMLString = LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlheader) +
-                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.helpLogging) +
-                        LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlfooter);
-                wv.loadData(rawHTMLString, "text/html", "UTF-8");
-            }
-        });
-
-        WebView wv = (WebView) adView.findViewById(R.id.wvDisplayHelpTopic);
-        wv.getSettings().setJavaScriptEnabled(false);
-        wv.setBackgroundColor(ThemesConfiguration.getThemeColorVariant(R.attr.colorAccentHighlight));
-        wv.getSettings().setLoadWithOverviewMode(true);
-        wv.getSettings().setUseWideViewPort(true);
-        wv.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
-        wv.setInitialScale(10);
-
-        adBuilder.setCancelable(true);
-        adBuilder.setTitle("Application Help Topics:");
-        adBuilder.setMessage("This window displays help information for the following topics. Click on each button to display the respective help topic.");
-        adBuilder.setIcon(R.drawable.help64);
-        adBuilder.setPositiveButton(
-                "Done",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
-        adBuilder.setView(adView);
-        return adBuilder.create();
-    }
 }

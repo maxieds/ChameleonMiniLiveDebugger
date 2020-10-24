@@ -18,4 +18,29 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
 public class ScriptingExecptions {
+
+    private static final String TAG = ScriptingExecptions.class.getSimpleName();
+
+    public static class ChameleonScriptingException extends Exception {
+
+        // Invalid length
+        // generix
+        // operation not supported
+        // invalid type
+        // format error
+        // plain java error
+        // permissions error
+        // invalid data
+        // android permissions error
+        // arithmetic error
+        // illegal argument
+        // illegal state
+        // NFE
+        // file not found
+        // IOE
+        // directory not found
+        // Out of memory error
+
+    }
+
 }

@@ -23,6 +23,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="?deviceStatusBarBackgroundColor"
     tools:context="com.maxieds.chameleonminilivedebugger.LiveLoggerActivity">
 
     <Toolbar
@@ -44,17 +45,21 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="0dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginBottom="1dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp"
         android:background="?deviceStatusBarBackgroundColor"
         android:orientation="horizontal"
-        android:paddingLeft="5dp"
-        android:paddingRight="4dp">
+        >
         
         <GridLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="0dp"
             android:layout_weight="1"
+            android:layout_gravity="center_horizontal|center"
+            android:gravity="center_horizontal|center"
             android:background="?deviceStatusBarBackgroundColor"
             android:columnCount="2"
             android:padding="0dp"
@@ -168,11 +173,11 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:src="@drawable/statusdownload16" />
 
                 <ImageView
-                    android:id="@+id/statusReaderFieldDetectedEvent"
+                    android:id="@+id/statusScriptingIsExec"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:paddingRight="2dp"
-                    android:src="@drawable/toolbar_icon16_reader_field_detected" />
+                    android:src="@drawable/toolbar_paused_icon16" />
 
             </GridLayout>
 
@@ -193,7 +198,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="0dp"
-            android:layout_weight="1"
             android:background="?deviceStatusBarBackgroundColor"
             android:columnCount="2"
             android:padding="0dp"
@@ -209,8 +213,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:background="?deviceStatusBarBackgroundColor"
                 android:drawableLeft="@drawable/toolbar_theme_settings_icon16"
                 android:drawablePadding="10dp"
-                android:gravity="center_horizontal|center_vertical"
-                android:layout_gravity="center_horizontal|center_vertical"
+                android:gravity="right|center_vertical"
+                android:layout_gravity="right|center_vertical"
                 android:onClick="actionButtonAppSettings"
                 android:textColor="?deviceStatusBarTextColor" />
 
@@ -218,8 +222,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?deviceStatusBarBackgroundColor"
-                android:gravity="center_horizontal|center_vertical"
-                android:layout_gravity="center_horizontal|center_vertical"
+                android:gravity="right|center_vertical"
+                android:layout_gravity="right|center_vertical"
                 android:text="Themes"
                 android:textColor="?deviceStatusBarTextColor"
                 android:textSize="8sp"
@@ -231,48 +235,11 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="0dp"
-            android:layout_weight="1"
+            android:layout_marginRight="5dp"
             android:background="?deviceStatusBarBackgroundColor"
             android:columnCount="2"
             android:padding="0dp"
-            android:rowCount="2"
-            android:orientation="vertical"
-            android:layout_gravity="center_horizontal|top" >
-
-            <Button
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="25dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:background="?deviceStatusBarBackgroundColor"
-                android:drawableLeft="@drawable/toolbar_help_icon16"
-                android:drawablePadding="10dp"
-                android:gravity="center_horizontal|center_vertical"
-                android:layout_gravity="center_horizontal|center_vertical"
-                android:onClick="actionButtonDisplayHelp"
-                android:textColor="?deviceStatusBarTextColor" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?deviceStatusBarBackgroundColor"
-                android:gravity="center_horizontal|center_vertical"
-                android:layout_gravity="center_horizontal|center_vertical"
-                android:text="  Help"
-                android:textColor="?deviceStatusBarTextColor"
-                android:textSize="8sp"
-                android:textStyle="normal|bold" />
-
-        </GridLayout>
-
-        <GridLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="0dp"
-            android:layout_weight="1"
-            android:background="?deviceStatusBarBackgroundColor"
-            android:columnCount="2"
-            android:padding="0dp"
+            android:paddingRight="5dp"
             android:rowCount="2"
             android:orientation="vertical"
             android:layout_gravity="center_horizontal|top" >
@@ -285,8 +252,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:background="?deviceStatusBarBackgroundColor"
                 android:drawableLeft="@drawable/toolbar_info_icon16"
                 android:drawablePadding="10dp"
-                android:gravity="center_horizontal|center_vertical"
-                android:layout_gravity="center_horizontal|center_vertical"
+                android:gravity="right|center_vertical"
+                android:layout_gravity="right|center_vertical"
                 android:onClick="actionButtonAboutTheApp"
                 android:textColor="?deviceStatusBarTextColor" />
 
@@ -294,8 +261,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?deviceStatusBarBackgroundColor"
-                android:gravity="center_horizontal|center_vertical"
-                android:layout_gravity="center_horizontal|center_vertical"
+                android:gravity="right|center_vertical"
+                android:layout_gravity="right|center_vertical"
                 android:text="  About"
                 android:textColor="?deviceStatusBarTextColor"
                 android:textSize="8sp"
@@ -337,10 +304,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:layout_height="wrap_content"
                 android:background="?colorAccent"
                 android:visibility="visible"
-                app:tabBackground="?colorPrimaryDark"
+                app:tabBackground="?colorPrimary"
                 app:tabGravity="fill"
                 app:tabIndicatorColor="?colorPrimaryDark"
-                app:tabIndicatorHeight="5dp"
+                app:tabIndicatorHeight="4dp"
                 app:tabMaxWidth="0dp"
                 app:tabMinWidth="0dp"
                 app:tabMode="fixed"
@@ -365,6 +332,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:layout_weight="1.0"
             android:background="?colorPrimary"
             android:padding="0dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
             android:layout_margin="0dp"
             tools:context="net.voidynullness.android.tabitytabs.TabLayoutActivity">
 

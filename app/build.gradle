@@ -19,7 +19,6 @@ apply plugin: 'com.android.application'
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import com.android.build.OutputFile
 
 def getDateTimestamp() {
     DateFormat df = new SimpleDateFormat("YYYY-MM-dd-HHmmss");
@@ -49,8 +48,8 @@ android {
         minSdkVersion 26
         targetSdkVersion 29
         compileSdkVersion 29
-        versionCode 91 + 8080
-        versionName "1.2.9"
+        versionCode 92 + 8080
+        versionName "1.3.0"
         multiDexEnabled true
 
         buildConfigField "String", "GIT_COMMIT_HASH", "\"" + getGitCommitHash() + "\""
@@ -84,10 +83,11 @@ android {
         free {
             versionNameSuffix "-free"
             dimension "mode"
-            buildConfigField "boolean", "PAID_APP_VERSION", "false"
-            buildConfigField "boolean", "REPORT_CRASHES", "false"
-            buildConfigField "String", "BUILD_TIMESTAMP", "\"" + configBuildTimeStamp + "\""
-            resConfigs "en", "en_US", "en_UK", "de", "fr", "ru"
+            buildConfigField "boolean",            "PAID_APP_VERSION", "false"
+            buildConfigField "boolean",            "REPORT_CRASHES", "false"
+            buildConfigField "String",             "BUILD_TIMESTAMP", "\"" + configBuildTimeStamp + "\""
+            buildConfigField "java.util.Locale",   "DEFAULT_LOCALE",  "java.util.Locale.getDefault()"
+            resConfigs       "en", "en_US", "en_UK", "de", "fr", "ru"
             manifestPlaceholders = [
                     appLabelDesc       : "@string/app_display_short_name",
                     appIcon            : "@mipmap/chameleon_app_icon_round",
@@ -100,10 +100,11 @@ android {
         paid {
             applicationIdSuffix ".paid"
             versionNameSuffix "-paid"
-            buildConfigField "boolean", "PAID_APP_VERSION", "true"
-            buildConfigField "boolean", "REPORT_CRASHES", "false"
-            buildConfigField "String", "BUILD_TIMESTAMP", "\"" + configBuildTimeStamp + "\""
-            resConfigs "en", "en_US", "en_UK", "de"
+            buildConfigField "boolean",            "PAID_APP_VERSION", "true"
+            buildConfigField "boolean",            "REPORT_CRASHES", "false"
+            buildConfigField "String",             "BUILD_TIMESTAMP", "\"" + configBuildTimeStamp + "\""
+            buildConfigField "java.util.Locale",   "DEFAULT_LOCALE",  "Locale.default"
+            resConfigs       "en", "en_US", "en_UK", "de", "fr", "ru"
             dimension "mode"
             manifestPlaceholders = [
                     appLabelDesc       : "@string/app_display_short_name",

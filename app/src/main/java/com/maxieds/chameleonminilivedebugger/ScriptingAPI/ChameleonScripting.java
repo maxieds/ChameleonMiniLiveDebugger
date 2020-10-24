@@ -48,4 +48,35 @@ public class ChameleonScripting {
 
     // saveChameleonState() ; State = Cfg,Logmode,setting $,Readonly,Field,Threshold,Timeout,UID;
 
+    public static boolean runScriptFromStart() throws ScriptingExecptions.ChameleonScriptingException {
+        return false;
+    }
+
+    public static boolean runScriptFromStart(String scriptPath) throws ScriptingExecptions.ChameleonScriptingException {
+        return false;
+    }
+
+    public static boolean pauseRunningScript() throws ScriptingExecptions.ChameleonScriptingException {
+        return false;
+    }
+
+    public static boolean killRunningScript() throws ScriptingExecptions.ChameleonScriptingException {
+        return false;
+    }
+
+    public static boolean stepRunningScript() throws ScriptingExecptions.ChameleonScriptingException {
+        return false;
+    }
+
+    // TODO: Need scripting context:
+    // outfile + stream
+    // logfile + stream
+    // script file + stream
+    // ANTLR4 types ...
+    // break points (by line and label)
+    // state in (RUNNING, FINISHED_OK, FINISHED_ERROR, EXCEPTION, PAUSED, ... )
+    // current script line ...
+    // ANTLR4 errors / messages ...
+    // runningTime; startTime; stopTime; endTime;
+
 }

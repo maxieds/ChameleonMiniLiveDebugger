@@ -17,6 +17,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
+import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.LiveLoggerActivity;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
@@ -25,6 +26,8 @@ import java.util.Locale;
 public class ScriptingTypes {
 
     private static final String TAG = ScriptingTypes.class.getSimpleName();
+
+    public static final String NULL = "<NULL>";
 
     /*
      * Definitions for storage of variable types:
@@ -187,7 +190,7 @@ public class ScriptingTypes {
                 case VariableTypeBoolean:
                     return varValueAsBoolean ? "true" : "false";
                 case VariableTypeInteger:
-                    return String.format(Locale.ENGLISH, "%d", varValueAsInt);
+                    return String.format(BuildConfig.DEFAULT_LOCALE, "%d", varValueAsInt);
                 default:
                     return "";
             }
@@ -266,6 +269,7 @@ public class ScriptingTypes {
     }
 
     /* Include support for constants */
+    // Arrays["hash"]
 
 
 }
