@@ -62,6 +62,9 @@ public class ScriptingGUI {
             @Override
             public void onClick(View cbView) {
                 String nextPath = ScriptingFileIO.selectTextFileFromGUIList(ScriptingConfig.DEFAULT_SCRIPT_LOAD_FOLDER);
+                if(nextPath == null || nextPath.equals("")) {
+                    return;
+                }
                 ScriptingConfig.LAST_SCRIPT_LOADED_PATH = nextPath;
                 AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.SCRIPTING_CONFIG_LAST_SCRIPT_LOADED_PATH);
                 ScriptingGUI.displayEditTextValue(nextPath, selectedScriptText);
@@ -251,6 +254,9 @@ public class ScriptingGUI {
                     }
                     else {
                         nextPath = ScriptingFileIO.selectTextFileFromGUIList(baseDirPath);
+                    }
+                    if(nextPath == null || nextPath.equals("")) {
+                        return;
                     }
                     ScriptingGUI.displayEditTextValue(nextPath, btnView.getRootView().findViewById(getFileFromPickerResIds[pidxConstValue][0]));
                     AndroidSettingsStorage.updateValueByKey(androidSettingsFileUpdateKeys[pidxConstValue]);

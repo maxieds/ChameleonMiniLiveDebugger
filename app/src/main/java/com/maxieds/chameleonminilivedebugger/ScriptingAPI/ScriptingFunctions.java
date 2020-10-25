@@ -17,8 +17,60 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
+import com.maxieds.chameleonminilivedebugger.BuildConfig;
+
+import java.util.List;
+
 public class ScriptingFunctions {
 
     private static final String TAG = ScriptingFunctions.class.getSimpleName();
+
+    public static ScriptingTypes.ScriptVariable callFunction(String funcName, List<ScriptingTypes.ScriptVariable> funcArgs) throws
+                  ScriptingExecptions.ChameleonScriptingException {
+        return null;
+    }
+
+
+
+    public static String getEnvironmentVariableByName(String envVarName) {
+        switch(envVarName) {
+            case "Android.userHomePath":
+                break;
+            case "Android.externalStoragePath":
+                break;
+            case "Android.downloadsPath":
+            case "Android.documentsPath":
+            case "Android.picturesPath":
+            case "Android.dataPath":
+                break;
+            case "Chameleon.deviceType":
+                break;
+            case "Chameleon.deviceRevision":
+                break;
+            case "Chameleon.connectionType":
+                break;
+            case "Chameleon.serialNumber":
+                break;
+            case "Chameleon.deviceName":
+                break;
+            case "CMLD.versionName":
+                return BuildConfig.VERSION_NAME;
+            case "CMLD.versionCode":
+                return String.format(BuildConfig.DEFAULT_LOCALE, "%d", BuildConfig.VERSION_CODE);
+            case "CMLD.versionCodeNormalized":
+                return String.format(BuildConfig.DEFAULT_LOCALE, "%d", BuildConfig.VERSION_CODE - 8080);
+            case "$env0":
+                break;
+            case "$env1":
+                break;
+            case "$envKey0":
+                break;
+            case "$envKey1":
+                break;
+            default:
+                break;
+        }
+        return ScriptingTypes.NULL;
+    }
 
 }

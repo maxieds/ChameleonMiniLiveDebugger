@@ -16,90 +16,189 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 */
 
 grammar ScriptingPrimitives;
-import LexerMembers;
 
 tokens {
      TYPE_INT,
      TYPE_BOOL,
      TYPE_BYTES,
      TYPE_STRING,
-     CONTEXT_EXPR_EVAL,
-     CONTEXT_FUNCTION_DEF,
-     CONTEXT_VARIABLE_DEF,
-     CONTEXT_ASSIGNMENT_LINE,
-     CONTEXT_RUNCMD_LINE,
-     CONTEXT_CONDITIONAL_STMT,
-     CONTEXT_CONDITIONAL_BODY,
-     CONTEXT_LOOP_CONDITION,
-     CONTEXT_LOOP_BODY,
-     HAVE_FATAL_ERROR,
-     HAVE_WARNING
+     TYPE_HEX_STRING,
+     TYPE_RAW_STRING
 }
 
-/* GCC-like constants as macros for printing status: */
-ScriptLineMacro:     '__LINE__'     { $exprEval = _scriptLineNumber = ctx.start.getLine(); _scriptLineNumber; } ;
-ScriptLineCharMacro: '__LINECHAR__' { _scriptLineCharPos = _input.index(); $exprEval = _scriptLineCharPos; } ;
-ScriptFileMacro:     '__FILE__'     { $exprEval = _scriptFileName; } ;
-ScriptFunctionMacro: '__FUNC__'     { $exprEval = _scriptFunc; } ;
-ScriptErrorMacro:    '__ERROR__'    { $exprEval = _scriptErrorCode; } ;
-ScriptErrorMsgMacro: '__ERRORMSG__' { $exprEval = _scriptErrorMsg; } ;
+type_literal returns [ScriptVariable var]:
+     hs=HexString        { $var=ScriptVariable.parseHexString($hs.text); }
+     |
+     hb=HexByte          { $var=ScriptVariable.parseInt($hb.text); }
+     |
+     hl=HexLiteral       { if($hs.text.length() > 8) {
+                                $var=ScriptVariable.parseHexString($hs.text);
+                           }
+                           else if($hs.text.length() < 2 || !$hs.text.substring(0, 2).equals("0x")) {
+                                $var=ScriptVariable.parseInt("0x" + $hs.text);
+                           }
+                           else {
+                                $var=ScriptVariable.parseInt($hs.text);
+                           }
+                         }
+     |
+     bl=BooleanLiteral   { $var=ScriptVariable.parseBoolean($bl.text); }
+     |
+     sl=StringLiteral    { $var=ScriptVariable.newInstance().set($sl.text); }
+     |
+     hs=HexStringLiteral { $var=ScriptVariable.parseHexString($hs.text); }
+     |
+     rs=RawStringLiteral { $var=ScriptVariable.parseRawString($rs.text); }
+     ;
 
-MacroConstant: ScriptLineMacro | ScriptLineCharMacro | ScriptFileMacro |
-               ScriptErrorMacro | ScriptErrorMsgMacro ;
+variable_reference returns [ScriptVariable var]:
+     VariableStartSymbol vname=VariableName {
+           $var=ChameleonScripting.getRunningInstance().lookupVariableByName($vname.text);
+     }
+     ;
+
+operand_expression: variable_reference | type_literal ;
+
+expression_eval_term: variable_reference | type_literal |
+                      boolean_valued_operation | other_operation_result |
+                      assignment_operation | typecast_expression ;
+
+boolean_valued_operation returns [ScriptVariable  opResult]:
+     lhs=operand_expression EqualsComparisonOperator rhs=operand_expression {
+          $opResult=ScriptVariable.newInstance().set($lhs.getValueAsBoolean() == $lhs.getValueAsBoolean());
+     }
+     |
+     lhs=operand_expression NotEqualsComparisonOperator rhs=operand_expression {
+          $opResult=ScriptVariable.newInstance().set($lhs.getValueAsBoolean() != $lhs.getValueAsBoolean());
+     }
+     |
+     lhs=operand_expression LogicalAndOperator rhs=operand_expression {
+          $opResult=ScriptVariable.newInstance().set($lhs.getValueAsBoolean() && $lhs.getValueAsBoolean());
+     }
+     |
+     lhs=operand_expression LogicalOrOperator rhs=operand_expression {
+          $opResult=ScriptVariable.newInstance().set($lhs.getValueAsBoolean() || $lhs.getValueAsBoolean());
+     }
+     |
+     LogicalNotOperator rhs=operand_expression {
+          $opResult=ScriptVariable.newInstance().set(!$rhs.getValueAsBoolean());
+     }
+     ;
+
+other_operation_result returns [ScriptVariable var]:
+     lhs=operand_expression LeftShiftOperator rhs=operand_expression {
+          $var=$lhs.binaryOperation(ScriptVariable.BinaryOperation.BINOP_SHIFT_LEFT, $rhs);
+     }
+     |
+     lhs=operand_expression RightShiftOperator rhs=operand_expression {
+          $var=$lhs.binaryOperation(ScriptVariable.BinaryOperation.BINOP_SHIFT_RIGHT, $rhs);
+     }
+     |
+     lhs=operand_expression BitwiseAndOperator rhs=operand_expression {
+          $var=$lhs.binaryOperation(ScriptVariable.BinaryOperation.BINOP_BITWISE_AND, $rhs);
+     }
+     |
+     lhs=operand_expression BitwiseOrOperator rhs=operand_expression {
+          $var=$lhs.binaryOperation(ScriptVariable.BinaryOperation.BINOP_BITWISE_OR, $rhs);
+     }
+     |
+     lhs=operand_expression BitwiseXorOperator rhs=operand_expression {
+          $var=$lhs.binaryOperation(ScriptVariable.BinaryOperation.BINOP_BITWISE_XOR, $rhs);
+     }
+     |
+     BitwiseNotOperator rhs=operand_expression {
+          $var=$rhs.unaryOperation(ScriptVariable.UnaryOperation.UOP_BITWISE_NOT);
+     }
+     |
+     cond=operand_expression TernaryOperatorFirstSymbol vtrue=operand_expression
+     TernaryOperatorSecondSymbol vfalse=operand_expression {
+          boolean predicate = $cond.getAsBoolean();
+          if(predicate) {
+               $var=$vtrue;
+          }
+          else {
+               $var=$vfalse;
+          }
+     }
+     ;
+
+assignment_operation returns [ScriptVariable var]:
+     lhs=variable_reference DefEqualsOperator rhs=operand_expression {
+          $lhs=$rhs;
+          ChameleonScripting.getRunningInstance().setVariableByName($lhs.text);
+          $var=$lhs;
+     }
+     |
+     lhs=variable_reference PlusEqualsOperator rhs=operand_expression {
+          $lhs=$lhs+$rhs;
+          ChameleonScripting.getRunningInstance().setVariableByName($lhs.text);
+          $var=$lhs;
+     }
+     ;
+
+typecast_expression returns [ScriptVariable var]:
+     TypeCastByte initVar=operand_expression {
+          $var=$initVar.getAsByte();
+     }
+     |
+     TypeCastShort initVar=operand_expression {
+          $var=$initVar.getAsShort();
+     }
+     |
+     TypeCastInt32 initVar=operand_expression {
+          $var=$initVar.getAsInteger();
+     }
+     |
+     TypeCastBoolean initVar=operand_expression {
+          $var=$initVar.getAsBoolean();
+     }
+     |
+     TypeCastString initVar=operand_expression {
+          $var=$initVar.getAsString();
+     }
+     ;
 
 WhiteSpaceText:        ( WhiteSpace | NewLineBreak )+ -> channel(HIDDEN) ;
 WhiteSpace:            [ \t\r\t]* -> channel(HIDDEN) ;
 NewLineBreak:          ( '\r''\n'? | '\n' ) -> channel(HIDDEN) ;
-Commentary:            CStyleBlockComment | CStyleLineComment ;
 CStyleBlockComment:    '/*'.*?'*/' -> channel(HIDDEN) ;
-CStyleLineComment:     '//'~[\r\n]* -> channel(HIDDEN) ;
+CStyleLineComment:     '//'~[\n]* NewLineBreak -> channel(HIDDEN) ;
+HashStyleLineComment:  '#'~[\n]* NewLineBreak -> channel(HIDDEN) ;
+Commentary:            CStyleBlockComment | CStyleLineComment | HashStyleLineComment ;
 
-HexDigit: [0-9a-fA-F] -> type(TYPE_INT);
-HexString: (HexDigit)+ -> type(TYPE_BYTES);
-HexByte: '0x' HexDigit HexDigit | '0x' HexDigit | HexDigit HexDigit -> type(TYPE_INT);
+HexDigit: [0-9a-fA-F] -> type(TYPE_INT) ;
+HexString: (HexDigit)+ -> type(TYPE_BYTES) ;
+HexByte: '0x' HexDigit HexDigit | '0x' HexDigit | HexDigit HexDigit -> type(TYPE_INT) ;
 HexLiteral: HexByte | '0x'HexString | HexString ;
 BooleanLiteral: 'true' | 'True' | 'TRUE' | 'false' | 'False' | 'FALSE' -> type(TYPE_BOOL) ;
 AsciiChar: [\u0040-\u0046\u0050-\u0133\u0135-\u0176] ;
 StringLiteral: '"'(AsciiChar)*'"' -> type(TYPE_STRING);
-
-TypeLiteral: HexString | HexByte | HexLiteral | BooleanLiteral | StringLiteral ;
+HexStringLiteral: 'h\'' HexString '\'' -> type(TYPE_HEX_STRING) ;
+RawStringLiteral: 'r\'' (AsciiChar)* '\'' -> type(TYPE_RAW_STRING) ;
 
 VariableNameStartChar: '_' | [a-zA-Z] ;
 VariableNameMiddleChar: VariableNameStartChar | [0-9] ;
 VariableStartSymbol: '$' ;
 VariableName: VariableNameStartChar (VariableNameMiddleChar)* ;
-VariableDeclaration: VariableStartSymbol VariableName (WhiteSpace)* '=' (WhiteSpace)* TypeLiteral (WhiteSpace)* ;
-VariableReference: VariableStartSymbol VariableName {}; // TODO
 
-ExpressionEvalTerm: VariableReference | Operator |
-                    TypeLiteral | MacroConstant -> mode(CONTEXT_EXPR_EVAL);
+EqualsComparisonOperator: '==' ;
+NotEqualsComparisonOperator: '!=' ;
+LogicalAndOperator: ('&&' | 'and') ;
+LogicalOrOperator: ('||' | 'or') ;
+LogicalNotOperator: ('!' | 'not') ;
+RightShiftOperator: '>>' ;
+LeftShiftOperator: '<<' ;
+BitwiseAndOperator: '&' ;
+BitwiseOrOperator: '|' ;
+BitwiseXorOperator: '^' ;
+BitwiseNotOperator: '~' ;
+TernaryOperatorFirstSymbol: '?' ;
+TernaryOperatorSecondSymbol: ':' ;
+DefEqualsOperator: '=' | ':=' ;
+PlusEqualsOperator: '+=' ;
 
-EqualsComparisonOperator: ExpressionEvalTerm WhiteSpace '==' WhiteSpace ExpressionEvalTerm ;
-NotEqualsComparisonOperator: ExpressionEvalTerm WhiteSpace '!=' WhiteSpace ExpressionEvalTerm ;
-IdenticallyEqualComparisonOperator: ExpressionEvalTerm WhiteSpace '===' WhiteSpace ExpressionEvalTerm ;
-LogicalAndOperator: ExpressionEvalTerm WhiteSpace ('&&' | 'and') WhiteSpace ExpressionEvalTerm ;
-LogicalOrOperator: ExpressionEvalTerm WhiteSpace  ('||' | 'or') WhiteSpace ExpressionEvalTerm ;
-LogicalNotOperator: ('!' | 'not') WhiteSpace ExpressionEvalTerm WhiteSpace ;
-BitwiseAndOperator: ExpressionEvalTerm WhiteSpace '&' WhiteSpace ExpressionEvalTerm ;
-BitwiseOrOperator: ExpressionEvalTerm WhiteSpace '|' WhiteSpace ExpressionEvalTerm ;
-BitwiseXorOperator: ExpressionEvalTerm WhiteSpace '^' WhiteSpace ExpressionEvalTerm ;
-BitwiseNotOperator: ExpressionEvalTerm WhiteSpace '~' WhiteSpace ExpressionEvalTerm ;
-BitwiseRightShiftOperator: ExpressionEvalTerm WhiteSpace '>>' WhiteSpace ExpressionEvalTerm ;
-BitwiseLeftShiftOperator: ExpressionEvalTerm WhiteSpace '<<' WhiteSpace ExpressionEvalTerm ;
-DefEqualsOperator: ExpressionEvalTerm WhiteSpace ':=' WhiteSpace ExpressionEvalTerm ;
-ArithmeticPlusEqualsOperator: ExpressionEvalTerm WhiteSpace '+=' WhiteSpace ExpressionEvalTerm ;
-ArithmeticMinusEqualsOperator: ExpressionEvalTerm WhiteSpace '-=' WhiteSpace ExpressionEvalTerm ;
-ArithmeticAstEqualsOperator: ExpressionEvalTerm WhiteSpace '*=' WhiteSpace ExpressionEvalTerm ;
-AssignmentOperator: DefEqualsOperator | ArithmeticPlusEqualsOperator |
-                    ArithmeticMinusEqualsOperator | ArithmeticAstEqualsOperator ;
-TernaryOperator:    ExpressionEvalTerm (WhiteSpace)* '?' (WhiteSpace)* ExpressionEvalTerm
-                    (WhiteSpace)* ':' (WhiteSpace)* ExpressionEvalTerm (WhiteSpace)* ;
-
-UnaryOperation:  LogicalNotOperator | BitwiseNotOperator;
-BinaryOperation: AssignmentOperator | EqualsComparisonOperator | NotEqualsComparisonOperator |
-                 IdenticallyEqualComparisonOperator | LogicalAndOperator | LogicalOrOperator |
-                 BitwiseAndOperator | BitwiseOrOperator | BitwiseXorOperator |
-                 ArithmeticPlusEqualsOperator | ArithmeticMinusEqualsOperator |
-                 ArithmeticAstEqualsOperator ;
-
-Operator:        UnaryOperation | BinaryOperation | TernaryOperator ;
+TypeCastByte: '(Byte)' ;
+TypeCastShort: '(Short)' ;
+TypeCastInt32: '(Int32)' ;
+TypeCastBoolean: '(Boolean)' ;
+TypeCastString: '(String)' ;

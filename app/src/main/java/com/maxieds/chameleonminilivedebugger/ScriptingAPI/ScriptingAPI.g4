@@ -16,17 +16,41 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 */
 
 grammar ScriptingAPI;
-import LexerMembers, ScriptingPrimitives;
+import ScriptingPrimitives;
 
-FunctionParameterArgType: ExpressionEvalTerm ;
-FunctionParameterArgsList: FunctionParameterArgType | (FunctionParameterArgType ', ' FunctionParameterArgType) ;
+function_args_list returns [List<ScriptVariable> varsList]:
+     var=expression_eval_term FunctionArgInnerSeparator argsList=function_args_list {
+          $argsList.add($var);
+          $varsList=$argsList;
+     }
+     |
+     var=expression_eval_term {
+          $varsList=new ArrayList<ScriptVariable>();
+          $varsList.add($var);
+     }
+     |
+     {
+          $varsList=new ArrayList<ScriptVariable>();
+     }
+     ;
+
+scripting_api_function returns [ScriptVariable funcResult]:
+     funcName=ScriptingAPIFunctionName FunctionStartArgsDelimiter
+     funcArgs=function_args_list FunctionEndArgsDelimiter {
+          $funcResult=ScriptingFunctions.callFunction($funcName, $funcArgs);
+     }
+     ;
+
+FunctionArgInnerSeparator: ',' ;
+FunctionStartArgsDelimiter: '(' ;
+FunctionEndArgsDelimiter: ')' ;
+
 ScriptingAPIFunctionName:  ScriptControlFlowFunctions | PrintingAndLoggingFunctions |
                            ChameleonConnectionTypeFunctions | VariableTypeFunctions |
-                           DebuggingFunctions | EnvironmentFunctions | ChameleonCommandAndLogFunctions |
-                           StringFunctions | FileIOFunctions | APDUHandlingFunctions |
+                           DebuggingFunctions | EnvironmentFunctions |
+                           ChameleonCommandAndLogFunctions |
+                           StringFunctions | APDUHandlingFunctions |
                            CryptoAndHashFunctions | UtilityFunctions ;
-ScriptingAPIFunction:      ScriptingAPIFunctionName '(' FunctionParameterArgsList ')' |
-                           ScriptingAPIFunctionName '()' ;
 
 /* Script control flow functions: */
 ExitFuncName:               'Exit' ;
@@ -36,12 +60,8 @@ ScriptControlFlowFunctions: ExitFuncName ;
 /* Console printing and logging functions: */
 PrintFuncName:              'Print' ;
 PrintfFuncName:             'Printf' ;
-PrintLogFuncName:           'PrintLog' ;
-PrintfLogFuncName:          'PrintfLog' ;
-DisplayToastFuncName:       'DisplayToast' ;
 
-PrintingAndLoggingFunctions: PrintFuncName | PrintfFuncName | PrintLogFuncName |
-                             PrintfLogFuncName | DisplayToastFuncName ;
+PrintingAndLoggingFunctions: PrintFuncName | PrintfFuncName ;
 
 /* Chameleon connection types: */
 IsChameleonConnectedFuncName:     'IsChameleonConnected' ;
@@ -52,42 +72,22 @@ ChameleonConnectionTypeFunctions: IsChameleonConnectedFuncName |
                                   IsChameleonRevGFuncName | IsChameleonRevEFuncName ;
 
 /* Type conversion and checking functions: */
-AsInteger32FuncName:      'AsInt32' ;
-EvalAsBooleanFuncName:    'EvaluateAsBoolean' ;
-AsStringFuncName:         'AsString' ;
 AsHexStringFuncName:      'AsHexString' ;
 AsBinaryStringFuncName:   'AsBinaryString' ;
 AsByteArrayFuncName:      'AsByteArray' ;
 GetLengthFuncName:        'GetLength' ;
-IsConstantFuncName:       'IsConstant' ;
-IsFloatFuncName:          'IsFloat' ;
-IsHexFuncName:            'IsHex' ;
-IsDecimalFuncName:        'IsDecimal' ;
-IsNumericFuncName:        'IsNumeric' ;
-IsStringFuncName:         'IsString' ;
-IsArrayFuncName:          'IsArray' ;
-GetArrayDataTypeFuncName: 'GetArrayDataType' ;
 GetTypeFuncName:          'GetType' ;
-GetTypeSizeofFuncName:    'Sizeof' ;
 ToStringFuncName:         'ToString' ; // (int, base);
 
-VariableTypeFunctions:     AsInteger32FuncName | EvalAsBooleanFuncName | AsStringFuncName |
-                           AsHexStringFuncName | AsBinaryStringFuncName | AsByteArrayFuncName |
-                           GetLengthFuncName | IsConstantFuncName | IsFloatFuncName |
-                           IsHexFuncName | IsDecimalFuncName | IsNumericFuncName |
-                           IsStringFuncName | IsArrayFuncName | GetArrayDataTypeFuncName |
-                           GetTypeFuncName | GetTypeSizeofFuncName | ToStringFuncName ;
+VariableTypeFunctions:     AsHexStringFuncName | AsBinaryStringFuncName | AsByteArrayFuncName |
+                           GetLengthFuncName | ToStringFuncName ;
 
 /* Debugging and assertion commands */
 AssertFuncName:            'Assert' ;
-AssertEqualFuncName:       'AssertEqual' ;
-AssertNotEqualFuncName:    'AssertNotEqual' ;
-
-DebuggingFunctions:         AssertFuncName | AssertEqualFuncName | AssertNotEqualFuncName ;
+DebuggingFunctions:         AssertFuncName ;
 
 /* Environmental variables: */
 GetEnvFuncName:             'GetEnv' ;
-
 EnvironmentFunctions:        GetEnvFuncName ;
 
 /* Chameleon command and command output post processing functions: */
@@ -98,44 +98,17 @@ GetResponseDataFuncName:             'GetCommandResponseData' ;
 CmdIsSuccessFuncName:                'CommandIsSuccess' ;
 CmdIsErrorFuncName:                  'CommandIsError' ;
 CmdContainsDataFuncName:             'CommandContainsData' ;
-CmdGetIntermedLogsFuncName:          'GetIntermediateLogs' ;
 CmdSaveDeviceStateFuncName:          'SaveDeviceState' ;
 CmdRestoreDeviceStateFuncName:       'RestoreDeviceState' ;
 CmdDownloadTagFuncName:              'DownloadTagDump' ;
 CmdUploadTagFuncName:                'UploadTagDump' ;
 CmdDownloadLogsFuncName:             'DownloadLogs' ;
 
-GetLogTypeFuncName:                  'GetLogType' ;
-GetLogDataLengthFuncName:            'GetLogDataLength' ;
-GetLogSystickTimeFuncName:           'GetLogSystickTime' ;
-GetLogDataFuncName:                  'GetLogData' ;
-GetLogDirectionFuncName:             'GetLogDirection' ;
-GetLogByteCodeFuncName:              'GetLogByteCode' ;
-GetLogDescFuncName:                  'GetLogDesc' ;
-
 ChameleonCommandAndLogFunctions:     CmdGetResponseFuncName | CmdGetResponseCodeFuncName | CmdGetResponseDescFuncName |
                                      GetResponseDataFuncName | CmdIsSuccessFuncName | CmdIsErrorFuncName |
-                                     CmdContainsDataFuncName | CmdGetIntermedLogsFuncName | CmdSaveDeviceStateFuncName |
+                                     CmdContainsDataFuncName | CmdSaveDeviceStateFuncName |
                                      CmdRestoreDeviceStateFuncName | CmdDownloadTagFuncName | CmdUploadTagFuncName |
-                                     CmdDownloadLogsFuncName | GetLogTypeFuncName | GetLogDataLengthFuncName |
-                                     GetLogSystickTimeFuncName | GetLogDataFuncName | GetLogByteCodeFuncName |
-                                     GetLogDescFuncName ;
-
-/* File I/O functions: */
-FscanfFuncName:           'Fscanf' ;
-ReadXMLFileFuncName:      'ReadXMLFile' ;
-ReadCSVFileFuncName:      'ReadCSVFile' ;
-ReadTextFileName:         'ReadTextFile' ;
-ReadBinaryFileFuncName:   'ReadBinaryFile' ;
-WriteXMLFileFuncName:     'WriteXMLFile' ;
-WriteCSVFileFuncName:     'WriteCSVFile' ;
-WriteTextFileName:        'WriteTextFile' ;
-WriteBinaryFileFuncName:  'WriteBinaryFile' ;
-
-FileIOFunctions:          FscanfFuncName | ReadXMLFileFuncName | ReadXMLFileFuncName |
-                          ReadTextFileName | ReadBinaryFileFuncName |
-                          WriteXMLFileFuncName | WriteCSVFileFuncName |
-                          WriteTextFileName | WriteBinaryFileFuncName ;
+                                     CmdDownloadLogsFuncName ;
 
 /* String handling functions: */
 StringSearchFuncName:              'Find' ;
@@ -143,12 +116,10 @@ StringContainsFuncName:            'Contains' ;
 StringReplaceFuncName:             'Replace' ;
 StringSplitFuncName:               'Split' ;
 StringStripFuncName:               'Strip' ;
-StringCompressWhitepaceFuncName:   'CompressWhitespace' ;
-SubstrFuncName:                    'Substr' ;
+SubstrFuncName:                    'Substring' ;
 
 StringFunctions:                   StringSearchFuncName | StringContainsFuncName | StringReplaceFuncName |
-                                   StringStripFuncName | StringSplitFuncName | StringCompressWhitepaceFuncName |
-                                   SubstrFuncName ;
+                                   StringStripFuncName | StringSplitFuncName | SubstrFuncName ;
 
 /* APDU handling functions: */
 AsWrappedAPDUFuncName:                 'AsWrappedAPDU' ; // ($v -- assumes have prepended CLA,INS); -> ByteArray | ($v, CLA,INS,P1,P2)
@@ -157,65 +128,40 @@ ExtractDataFromNativeAPDUFuncName:     'ExtractDataFromNativeAPDU' ;
 SearchAPDUCStatusCodesFuncName:        'SearchAPDUStatusCodes' ;
 SearchAPDUInsCodesFuncName:            'SearchAPDUInsCodes' ;
 SearchAPDUClaCodesFuncName:            'SearchAPDUClaCodes' ;
-NFCAntiColFuncName:                    'NFCAntiCol' ; // returns arrays: (UID,ATQA,SAK,ATS)
 
 APDUHandlingFunctions:                 AsWrappedAPDUFuncName | ExtractDataFromWrappedAPDUFuncName |
                                        ExtractDataFromNativeAPDUFuncName |
                                        SearchAPDUCStatusCodesFuncName | SearchAPDUInsCodesFuncName |
-                                       SearchAPDUClaCodesFuncName | NFCAntiColFuncName;
+                                       SearchAPDUClaCodesFuncName ;
 
 /* Crypto and hash related functionality: */
 GetRandomBytesFuncName:       'RandomBytes' ;
 GetRandomIntFuncName:         'RandomInt32' ;
-EncodeBase64HashFuncName:     'EncodeBase64' ;
-DecodeBase64FuncName:         'DecodeBase64' ;
-GetMD5HashFuncName:           'GetMD5Hash' ;     // (java.security.MessageDigest)
-GetSHA1FuncName:              'GetSHA1Hash' ;
-GetSHA256FuncName:            'GetSHA256Hash' ;
-GetSHA512FuncName:            'GetSHA512Hash' ;
 GetCRC16FuncName:             'GetCRC16' ;
 AppendCRC16FuncName:          'AppendCRC16' ;
 CheckCRC16FuncName:           'CheckCRC16' ;
 GetCommonKeysFuncName:        'GetCommonKeys' ;
 GetUserKeysFuncName:          'GetUserKeys' ;
 
-EncryptionSchemeModes:         'AES128-CBC' | 'AES128-ECB' |
-                               'DES-CBC' | 'DES-ECB' | '3DES-CBC' | '3DES-ECB' ;
-CryptoEncryptFuncName:         'Encrypt' ;
-CryptoDescryptFuncName:        'Decrypt' ;
-
-CryptoAndHashFunctions:       GetRandomBytesFuncName | GetRandomIntFuncName | EncodeBase64HashFuncName |
-                              DecodeBase64FuncName | GetMD5HashFuncName | GetSHA1FuncName |
-                              GetSHA256FuncName | GetSHA512FuncName | GetCRC16FuncName |
-                              AppendCRC16FuncName | CheckCRC16FuncName |
-                              GetCommonKeysFuncName | GetUserKeysFuncName |
-                              CryptoEncryptFuncName | CryptoDescryptFuncName ;
+CryptoAndHashFunctions:       GetRandomBytesFuncName | GetRandomIntFuncName |
+                              GetCRC16FuncName | AppendCRC16FuncName | CheckCRC16FuncName |
+                              GetCommonKeysFuncName | GetUserKeysFuncName ;
 
 /* Misc utility functions: */
 GetTimestampFuncName:          'GetTimestamp' ;
-GetLocationFuncName:           'GetLocation'  ;  // (Short|Long|VVerbose|specially %f formatted string)
-SeedRandomFuncName:            'SeedRandom' ;    // (blank for time | $v)
-MemoryXORFuncName:             'MemoryXOR' ;     // ??? Add to default Utils ???
+MemoryXORFuncName:             'MemoryXOR' ;
 MaxFuncName:                   'Max' ;
 MinFuncName:                   'Min' ;
-ArrayAppendFuncName:           'Append' ;
 ArrayReverseFuncName:          'Reverse' ;
-ArrayShiftLeftFuncName:        'ShiftLeft' ;
-ArrayShiftRightFuncName:       'ShiftRight' ;
 ArrayPadLeftFuncName:          'PadLeft' ;
 ArrayPadRightFuncName:         'PadRight' ;
 GetSubarrayFuncName:           'GetSubarray' ;
 GetConstantStringFuncName:     'GetConstantString' ;
 GetConstantByteArrayFuncName:  'GetConstantArray' ;
-ReverseBitsFuncName:           'ReverseBits' ;
-ComputeEntropyFuncName:        'ComputeEntropy' ;
-GetBytesFromRangeFuncName:     'ByteRange' ;
 GetIntegersFromRangeFuncName:  'IntegerRange' ;
 
-UtilityFunctions:              GetTimestampFuncName | GetLocationFuncName | SeedRandomFuncName |
+UtilityFunctions:              GetTimestampFuncName |
                                MemoryXORFuncName | MaxFuncName | MinFuncName |
-                               ArrayAppendFuncName | ArrayReverseFuncName | ArrayShiftLeftFuncName |
-                               ArrayShiftRightFuncName | ArrayPadLeftFuncName | ArrayPadRightFuncName |
+                               ArrayReverseFuncName | ArrayPadLeftFuncName | ArrayPadRightFuncName |
                                GetSubarrayFuncName | GetConstantStringFuncName | GetConstantByteArrayFuncName |
-                               ReverseBitsFuncName | ComputeEntropyFuncName | GetBytesFromRangeFuncName |
                                GetIntegersFromRangeFuncName ;

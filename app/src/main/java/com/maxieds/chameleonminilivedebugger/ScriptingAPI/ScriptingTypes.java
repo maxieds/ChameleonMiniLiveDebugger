@@ -21,6 +21,8 @@ import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.LiveLoggerActivity;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
+import java.util.List;
+
 public class ScriptingTypes {
 
     private static final String TAG = ScriptingTypes.class.getSimpleName();
@@ -31,6 +33,7 @@ public class ScriptingTypes {
      * Definitions for storage of variable types:
      */
     public static class ScriptVariable {
+
         public enum VariableType {
             VariableTypeNone,
             VariableTypeInteger,
@@ -41,6 +44,7 @@ public class ScriptingTypes {
             VariableTypeRawFileFilePath,
             VariableTypeStorageFilePath,
             VariableTypeArray,
+            VariableTypeArrayComposite, /* TODO */
         }
 
         private VariableType varType;
@@ -104,7 +108,7 @@ public class ScriptingTypes {
             return true;
         }
 
-        public int getValueAsInt() {
+        public int getValueAsInt() throws ScriptingExecptions.ChameleonScriptingException {
             if(varType == VariableType.VariableTypeInteger) {
                 return varValueAsInt;
             }
@@ -121,7 +125,7 @@ public class ScriptingTypes {
             else if(isStringType()) {
                 return Integer.decode(varValueAsString).intValue();
             }
-            return 0;
+            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.InvalidTypeException);
         }
 
         public boolean set(boolean nextValue) {
@@ -151,7 +155,7 @@ public class ScriptingTypes {
             return false;
         }
 
-        public boolean getValueAsBoolean() {
+        public boolean getValueAsBoolean() throws ScriptingExecptions.ChameleonScriptingException {
             if(varType == VariableType.VariableTypeBoolean) {
                 return varValueAsBoolean;
             }
@@ -172,7 +176,7 @@ public class ScriptingTypes {
             return varValueAsByteArray.length > 0;
         }
 
-        public byte[] getValueAsBytes() {
+        public byte[] getValueAsBytes() throws ScriptingExecptions.ChameleonScriptingException {
             if(isBytesType()) {
                 return varValueAsByteArray;
             }
@@ -199,7 +203,7 @@ public class ScriptingTypes {
                 return varValueAsString.getBytes();
             }
             else {
-                return new byte[0];
+                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.InvalidTypeException);
             }
         }
 
@@ -210,7 +214,7 @@ public class ScriptingTypes {
             return true;
         }
 
-        public String getValueAsString() {
+        public String getValueAsString() throws ScriptingExecptions.ChameleonScriptingException {
             switch(varType) {
                 case VariableTypeHexString:
                 case VariableTypeAsciiString:
@@ -225,11 +229,11 @@ public class ScriptingTypes {
                 case VariableTypeInteger:
                     return String.format(BuildConfig.DEFAULT_LOCALE, "%d", varValueAsInt);
                 default:
-                    return "";
+                    throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.InvalidTypeException);
             }
         }
 
-        public boolean isIntegerType() {
+        public boolean isIntegerType() throws ScriptingExecptions.ChameleonScriptingException {
             switch(varType) {
                 case VariableTypeInteger:
                 case VariableTypeBoolean:
@@ -283,20 +287,68 @@ public class ScriptingTypes {
             }
         }
 
-        public String getTypeName() { // Override: Array types ...
+        public VariableType getType() throws ScriptingExecptions.ChameleonScriptingException {
             if(isIntegerType()) {
-                return "Integer";
+                return VariableType.VariableTypeInteger;
             }
             else if(isBooleanType()) {
-                return "Boolean";
+                return VariableType.VariableTypeBoolean;
             }
             else if(isBytesType()) {
-                return "Bytes";
+                return VariableType.VariableTypeBytes;
             }
             else if(isStringType()) {
-                return "String";
+                return VariableType.VariableTypeAsciiString;
             }
-            return "None";
+            return VariableType.VariableTypeNone;
+        }
+
+        public static ScriptVariable newInstance() {
+            return new ScriptVariable();
+        }
+
+        public static ScriptVariable parseHexString(String literalText) throws ScriptingExecptions.ChameleonScriptingException {
+            ScriptVariable nextVar = new ScriptVariable();
+            if(!Utils.stringIsHexadecimal(literalText)) {
+                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.FormatErrorException);
+            }
+            nextVar.set(literalText);
+            return nextVar;
+        }
+
+        public static ScriptVariable parseRawString(String literalText) throws ScriptingExecptions.ChameleonScriptingException {
+            literalText.replace("\\", "\\\\");
+            ScriptVariable nextVar = new ScriptVariable();
+            nextVar.set(literalText);
+            return nextVar;
+        }
+
+        public static ScriptVariable parseInt(String literalText) throws ScriptingExecptions.ChameleonScriptingException {
+            ScriptVariable nextVar = new ScriptVariable();
+            try {
+                int intVal = Integer.parseInt(literalText);
+                nextVar.set(intVal);
+                return nextVar;
+            } catch(NumberFormatException nfe) {
+                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NumberFormatException, nfe);
+            }
+        }
+
+        public static ScriptVariable parseBoolean(String literalText) throws ScriptingExecptions.ChameleonScriptingException {
+            ScriptVariable nextVar = new ScriptVariable();
+            try {
+                boolean logicalValue = Boolean.parseBoolean(literalText);
+                nextVar.set(logicalValue);
+                return nextVar;
+            } catch(Exception ex) {
+                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.FormatErrorException, ex);
+            }
+        }
+
+        public static ScriptVariable parseBytes(String literalText) {
+            ScriptVariable nextVar = new ScriptVariable();
+            nextVar.set(Utils.hexString2Bytes(literalText));
+            return nextVar;
         }
 
         public boolean isArray() {
@@ -307,7 +359,17 @@ public class ScriptingTypes {
             return VariableType.VariableTypeNone;
         }
 
-        public int length() {
+        public boolean arrayTypeEquals(ScriptVariable rhsVar) {
+            if(!isArray() || !rhsVar.isArray()) {
+                return false;
+            }
+            else if(getArrayType() == VariableType.VariableTypeArray) {
+                return false;
+            }
+            return getArrayType() == rhsVar.getArrayType();
+        }
+
+        public int length() throws ScriptingExecptions.ChameleonScriptingException {
             if(isStringType()) {
                 return getValueAsString().length();
             }
@@ -318,11 +380,11 @@ public class ScriptingTypes {
         }
 
         public ScriptVariable getValueAt(int index) throws ScriptingExecptions.ChameleonScriptingException {
-            return null; // TODO
+            return null;
         }
 
         public ScriptVariable getValueAt(String hashIndex) throws ScriptingExecptions.ChameleonScriptingException {
-            return null; // TODO
+            return null;
         }
 
         public void setValueAt(int index) throws ScriptingExecptions.ChameleonScriptingException {}
@@ -330,35 +392,80 @@ public class ScriptingTypes {
         public void setValueAt(String hashIndex) throws ScriptingExecptions.ChameleonScriptingException {}
 
         public String getBinaryString() {
-            return null; // TODO
+            return null;
         }
 
         public enum BinaryOperation {
             BINOP_PLUS,
-            BINOP_MINUS,
-            BINOP_TIMES,
             BINOP_BITWISE_AND,
             BINOP_BITWISE_OR,
             BINOP_BITWISE_XOR,
-            BINOP_LOGICAL_AND,
-            BINOP_LOGICAL_OR,
             BINOP_SHIFT_LEFT,
-            BINOP_SHIFT_LEFT_LLL,
-            BINOP_SHIFT_RIGHT,
-            BINOP_SHIFT_RIGHT_RRR,
+            BINOP_SHIFT_RIGHT
         }
 
-        public ScriptVariable binaryOperator(ScriptVariable rhsVar, ScriptVariable lhsVar, BinaryOperation opType) { return null; }
+        public ScriptVariable binaryOperation(BinaryOperation opType, ScriptVariable rhsVar)
+                                              throws ScriptingExecptions.ChameleonScriptingException { return null; }
 
         public enum UnaryOperation {
-            UOP_BITWISE_NOT,
-            UOP_LOGICAL_NOT,
+            UOP_BITWISE_NOT
         }
 
-        public ScriptVariable unaryOperator(ScriptVariable rhsVar, ScriptVariable lhsVar, UnaryOperation opType) { return null; }
+        public ScriptVariable unaryOperation(UnaryOperation opType)
+                                             throws ScriptingExecptions.ChameleonScriptingException { return null; }
 
     }
 
-    // TODO: Need array type
+    // TODO: need get as Byte and Short type casts ...
+
+    public static class ScriptVariableArray extends ScriptVariable {
+
+        private VariableType arrayElementType;
+        private int arrayLength;
+
+        ScriptVariableArray(VariableType vtype, int length) {}
+        ScriptVariableArray(List<ScriptVariable> varsInitList) {}
+
+        @Override
+        public int length() throws ScriptingExecptions.ChameleonScriptingException { return 0; }
+
+        @Override
+        public VariableType getType() throws ScriptingExecptions.ChameleonScriptingException { return null; }
+
+        @Override
+        public boolean isArray() {
+            return true;
+        }
+
+        @Override
+        public VariableType getArrayType() {
+            return arrayElementType;
+        }
+
+        @Override
+        public ScriptVariable getValueAt(int index) throws ScriptingExecptions.ChameleonScriptingException {
+            return null;
+        }
+
+        @Override
+        public ScriptVariable getValueAt(String hashIndex) throws ScriptingExecptions.ChameleonScriptingException {
+            return null;
+        }
+
+        @Override
+        public String getBinaryString() {
+            return null;
+        }
+
+        @Override
+        public ScriptVariable binaryOperation(BinaryOperation opType, ScriptVariable rhsVar)
+                                              throws ScriptingExecptions.ChameleonScriptingException { return null; }
+
+        @Override
+        public ScriptVariable unaryOperation(UnaryOperation opType) throws ScriptingExecptions.ChameleonScriptingException { return null; }
+
+    }
+
+    // Array needs to override getAsString(), getAsBoolean(), getAsBytes();
 
 }

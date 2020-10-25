@@ -21,25 +21,33 @@ public class ScriptingExecptions {
 
     private static final String TAG = ScriptingExecptions.class.getSimpleName();
 
+    public enum ExceptionType {
+        GenericException,
+        OperationNotSupportedException,
+        InvalidLengthException,
+        InvalidTypeException,
+        FormatErrorException,
+        JavaErrorException,
+        PermissionsErrorException,
+        InvalidDataException,
+        ArithmeticErrorException,
+        IllegalArgumentException,
+        IllegalStateException,
+        NumberFormatException,
+        IOException,
+        FileNotFoundException,
+        DirectoryNotFoundException,
+        OutOfMemoryException,
+        VariableNotFoundException,
+    }
+
     public static class ChameleonScriptingException extends Exception {
 
-        // Invalid length
-        // generix
-        // operation not supported
-        // invalid type
-        // format error
-        // plain java error
-        // permissions error
-        // invalid data
-        // android permissions error
-        // arithmetic error
-        // illegal argument
-        // illegal state
-        // NFE
-        // file not found
-        // IOE
-        // directory not found
-        // Out of memory error
+        public ChameleonScriptingException(ExceptionType exType) {}
+
+        public ChameleonScriptingException(ExceptionType exType, String msg) {}
+
+        public ChameleonScriptingException(ExceptionType exType, Exception ex) {}
 
     }
 

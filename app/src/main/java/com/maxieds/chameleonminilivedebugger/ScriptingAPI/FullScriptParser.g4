@@ -1,4 +1,3 @@
-
 /*
 This program (The Chameleon Mini Live Debugger) is free software written by
 Maxie Dion Schmidt: you can redistribute it and/or modify
@@ -17,41 +16,67 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 */
 
 grammar FullScriptParser;
-import LexerMembers, ScriptingPrimitives, ScriptingAPI;
+import ScriptingPrimitives, ScriptingAPI;
 
-FileContents: (ScriptLine)+ EOF;
+file_contents: (script_line)+ EOF;
 
-ScriptLine:              (WhiteSpace)* (VariableDeclaration | AssignmentOperator | Command | MiscSyntax)
-                         (WhiteSpace)* NewLineBreak |
-                         NewLineBreak -> channel(HIDDEN) |
-                         WhileBlock | ConditionalBlock ;
+label_statement: lblName=LabelText LabelEndDelimiter {
+          // TODO: no goto for now, so see if have encountered a breakpoint ...
+     }
+     ;
 
-WhileBlock:              (WhiteSpace)* 'while' (WhiteSpace)* '(' (WhiteSpace)* ExpressionEvalTerm (WhiteSpace)* ')' (WhiteSpace)*
-                         '{' (WhiteSpace)* (NewLineBreak)*
-                         (ScriptLine)+
-                         '}' (WhiteSpace)* (NewLineBreak)* ;
+exec_chameleon_command returns [String cmdResult]:
+     ExecChameleonCommandInit expression_eval_term ExecChameleonCommandEnd {
+          // TODO: Call chameleon command and assemble result string ...
+     }
+     ;
 
-ConditionalIfBlock:      (WhiteSpace)* 'if' (WhiteSpace)* '(' (WhiteSpace)* ExpressionEvalTerm (WhiteSpace)* ')' (WhiteSpace)*
-                         '{' (WhiteSpace)* (NewLineBreak)*
-                         (ScriptLine)+
-                         '}' (WhiteSpace)* (NewLineBreak)* ;
-ConditionalElifBlock:    (WhiteSpace)* 'else if' (WhiteSpace)* '(' (WhiteSpace)* ExpressionEvalTerm (WhiteSpace)* ')' (WhiteSpace)*
-                         '{' (WhiteSpace)* (NewLineBreak)*
-                         (ScriptLine)+
-                         '}' (WhiteSpace)* (NewLineBreak)* ;
-ConditionalElseBlock:    (WhiteSpace)* 'else if' (WhiteSpace)* '(' (WhiteSpace)* ExpressionEvalTerm (WhiteSpace)* ')' (WhiteSpace)*
-                         '{' (WhiteSpace)* (NewLineBreak)*
-                         (ScriptLine)+
-                         '}' (WhiteSpace)* (NewLineBreak)* ;
-ConditionalBlock:        ConditionalIfBlock (ConditionalElifBlock)* ConditionalElseBlock |
-                         ConditionalIfBlock (ConditionalElifBlock)* ;
+script_line: label_statement | exec_chameleon_command ;
 
-LabelSyntax:             (AsciiChar)+ ':' ;
-SetBreakpointSyntax:    'set' (WhiteSpace)* 'breakpoint' ;
-MiscSyntax:              LabelSyntax | SetBreakpointSyntax ;
+LabelText: (AsciiChar)+ ;
+LabelEndDelimiter: ':' ;
 
-ChameleonCommand:       '$$(' (WhiteSpace)* ExpressionEvalTerm (WhiteSpace)* ')' ;
-GotoLabelCommand:       'goto' (WhiteSpace)* (StringLiteral | VariableReference) ; /* TODO: List of labels ??? */
-PassStatement:          'pass' -> channel(HIDDEN);
-Command:                ScriptingAPIFunction | ChameleonCommand | GotoLabelCommand |
-                        PassStatement ;
+ExecChameleonCommandInit: '$$(' ;
+ExecChameleonCommandEnd: ')' ;
+
+/*
+
+conditional_if_block returns [boolean runBlock]:
+     IfBranchKeyword ConditionalOpen boolCond=expression_eval_term ConditionalClose
+     OpenBlockStart (script_line)* CloseBlockEnd {
+          $runBlock=$boolCond.getAsBoolean();
+     }
+     ;
+conditional_elif_block returns [boolean runBlock]:
+     ElifBranchKeyword ConditionalOpen boolCond=expression_eval_term ConditionalClose
+     OpenBlockStart (script_line)* CloseBlockEnd {
+          $runBlock=$boolCond.getAsBoolean();
+     }
+     ;
+conditional_else_block returns [boolean runBlock]:
+     ElseBranchKeyword ConditionalOpen boolCond=expression_eval_term ConditionalClose
+     OpenBlockStart (script_line)* CloseBlockEnd {
+          $runBlock=$boolCond.getAsBoolean();
+     }
+     ;
+
+conditional_block: conditional_if_block (conditional_elif_block)* |
+                   conditional_if_block (conditional_elif_block)* conditional_else_block ;
+
+loop_block returns [boolean runBlock]:
+     WhileLoopKeyword ConditionalOpen boolCond=expression_eval_term ConditionalClose
+     OpenBlockStart (script_line)* CloseBlockEnd {
+          $runBlock=$boolCond.getAsBoolean();
+     }
+     ;
+
+ConditionalOpen: '(' ;
+ConditionalClose: ')' ;
+OpenBlockStart: '{' ;
+CloseBlockEnd: '}' ;
+WhileLoopKeyword: 'while' ;
+IfBranchKeyword: 'if' ;
+ElifBranchKeyword: 'else if' ;
+ElseBranchKeyword: 'else' ;
+
+*/

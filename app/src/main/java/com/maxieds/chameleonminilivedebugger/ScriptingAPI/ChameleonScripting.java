@@ -89,7 +89,7 @@ public class ChameleonScripting {
         private List<String> breakpointLabels;
         private List<Integer> breakpointLines;
         private boolean atBreakpoint;
-        private Map<String, ScriptingTypes.ScriptVariable> scriptVariables;
+        private Map<String, ScriptingTypes.ScriptVariable> scriptVariablesHashMap;
         private ScriptRuntimeState scriptState;
         private ChameleonDeviceState chameleonDeviceState;
         private Thread scriptRunnerThread;
@@ -133,7 +133,7 @@ public class ChameleonScripting {
             breakpointLabels = new ArrayList<String>();
             breakpointLines = new ArrayList<Integer>();
             atBreakpoint = false;
-            scriptVariables = new HashMap<String, ScriptingTypes.ScriptVariable>();
+            scriptVariablesHashMap = new HashMap<String, ScriptingTypes.ScriptVariable>();
             scriptState = ScriptRuntimeState.INITIALIZED;
             chameleonDeviceState = new ChameleonDeviceState();
             scriptRunnerThread = null;
@@ -144,6 +144,22 @@ public class ChameleonScripting {
 
         public boolean isInitialized() {
             return initialized;
+        }
+
+        public boolean variableNameExists(String varName) {
+            return scriptVariablesHashMap.get(varName) != null;
+        }
+
+        public ScriptingTypes.ScriptVariable lookupVariableByName(String varName) throws ScriptingExecptions.ChameleonScriptingException {
+            ScriptingTypes.ScriptVariable svar = scriptVariablesHashMap.get(varName);
+            if(svar == null) {
+                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.VariableNotFoundException, "varName");
+            }
+            return svar;
+        }
+
+        public void setVariableByName(ScriptingTypes.ScriptVariable scriptVar) throws ScriptingExecptions.ChameleonScriptingException {
+            ScriptingTypes.ScriptVariable svar = scriptVariablesHashMap.put(scriptVar.getName(), scriptVar);
         }
 
         private boolean runScriptPreambleActions() {
@@ -215,6 +231,10 @@ public class ChameleonScripting {
     }
 
     private static ChameleonScriptInstance activeChameleonScript = null;
+
+    public static ChameleonScriptInstance getRunningInstance() {
+        return activeChameleonScript;
+    }
 
     public boolean runScriptFromStart(String scriptPath) throws ScriptingExecptions.ChameleonScriptingException {
         return false;

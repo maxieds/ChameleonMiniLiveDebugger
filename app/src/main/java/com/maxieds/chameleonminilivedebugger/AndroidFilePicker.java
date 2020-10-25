@@ -211,7 +211,7 @@ public class AndroidFilePicker {
         fpManager.from(activity);
         FilePickerConfig fpConfig = new FilePickerConfig(fpManager);
         if(filePickerAction == ACTION_SELECT_DIRECTORY) {
-            fpConfig.skipDirWhenSelect(false);
+            fpConfig.skipDirWhenSelect(false); // TODO
         }
         else {
             fpConfig.skipDirWhenSelect(true);
@@ -222,7 +222,7 @@ public class AndroidFilePicker {
         }
         else {
             fpConfig.enableSingleChoice();
-            fpConfig.maxSelectable(1);
+            //fpConfig.maxSelectable(1);
         }
         if(rootDirectoryPath != null) {
             fpConfig.setCustomRootPath(rootDirectoryPath);
@@ -310,5 +310,8 @@ public class AndroidFilePicker {
      *  Not filtering by the registered file types ...
      *  If select donw with nothing selected, then should not return any paths ...
      */
+
+    // LATER: Remove all references to Picasso / Image handling ...
+
 
 }
