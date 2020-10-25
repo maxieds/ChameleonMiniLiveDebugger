@@ -4,6 +4,8 @@ free
 free/*
 paid
 paid/*
+gen
+gen/*
 *.aab
 *.apk
 *.zip 
