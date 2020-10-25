@@ -23,6 +23,25 @@ import ScriptingPrimitives, ScriptingAPI;
         throw rtEx;
     }
 }
+
+@lexer::members {
+    @Override
+        public void displayRecognitionError(String[] tokenNames, RecognitionException re) {
+            String ehdr = getErrorHeader(re);
+            String emsg = getErrorMessage(re, tokenNames);
+            throw new RuntimeException(ehdr + " : " + emsg);
+        }
+}
+
+@parser::members {
+    @Override
+    public void displayRecognitionError(String[] tokenNames, RecognitionException re) {
+        String ehdr = getErrorHeader(re);
+        String emsg = getErrorMessage(re, tokenNames);
+        throw new RuntimeException(ehdr + " : " + emsg);
+    }
+}
+
 file_contents: (script_line)+ EOF;
 
 label_statement: lblName=LabelText LabelEndDelimiter {

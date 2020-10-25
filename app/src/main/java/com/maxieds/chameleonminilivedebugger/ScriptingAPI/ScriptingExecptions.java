@@ -40,6 +40,7 @@ public class ScriptingExecptions {
         OutOfMemoryException,
         VariableNotFoundException,
         NotImplementedException,
+        InvalidArgumentException,
     }
 
     public static class ChameleonScriptingException extends RuntimeException {

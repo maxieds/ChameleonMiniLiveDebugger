@@ -23,6 +23,9 @@ import android.widget.LinearLayout;
 import com.maxieds.chameleonminilivedebugger.R;
 import com.maxieds.chameleonminilivedebugger.TabFragment;
 
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParser;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptLexer;
+
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -101,6 +104,8 @@ public class ChameleonScripting {
         CommonTokenStream scriptTokenStream;
         ChameleonScriptParser scriptParser;
         ParseTree scriptParseTree;
+        //parser.removeErrorListeners()
+        //parser.addErrorListener(yourListenerInstance)
 
         public ChameleonScriptInstance(String scriptFile) {
             initialized = true;
@@ -252,18 +257,6 @@ public class ChameleonScripting {
     }
 
     public boolean runScriptFromStart(String scriptPath) throws ScriptingExecptions.ChameleonScriptingException {
-        return false;
-    }
-
-    public boolean pauseRunningScript() throws ScriptingExecptions.ChameleonScriptingException {
-        return false;
-    }
-
-    public boolean killRunningScript() throws ScriptingExecptions.ChameleonScriptingException {
-        return false;
-    }
-
-    public boolean stepRunningScript() throws ScriptingExecptions.ChameleonScriptingException {
         return false;
     }
 

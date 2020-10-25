@@ -19,11 +19,13 @@ package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
 import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingTypes.ScriptVariable;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExceptions;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExceptions.ChameleonScriptingException;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExceptions.ExceptionType;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExecptions;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExecptions.ChameleonScriptingException;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExecptions.ExceptionType;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ScriptingFunctions {
 
@@ -54,11 +56,38 @@ public class ScriptingFunctions {
                 consoleOutput.append(svar.getValueAsString());
             }
             ChameleonScripting.getRunningInstance().writeConsoleOutput(consoleOutput.toString());
-            return ScriptingTypes.newInstance().set(consoleOutput.toString());
+            return ScriptVariable.newInstance().set(consoleOutput.toString());
         }
 
         public static ScriptVariable Printf(List<ScriptVariable> argList) throws ChameleonScriptingException {
-            throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+            if(argList.size() == 0) {
+                throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException, "Requires a format string parameter");
+            }
+            String fmtMsg = argList.get(0).getValueAsString();
+            int varIndex = 1, strBaseIdx = 0;
+            StringBuilder consoleOutput = new StringBuilder();
+            Pattern fmtFlagPattern = Pattern.compile("%[^diuoxXcs]*[diuoxXcs]");
+            Matcher fmtMatcher = fmtFlagPattern.matcher(fmtMsg);
+            while(fmtMatcher.find()) {
+                String fmtFlag = fmtMatcher.group();
+                String fmtSpec = new String(new char[] { fmtFlag.charAt(fmtFlag.length() - 1) });
+                String fmtFragment = fmtMsg.substring(strBaseIdx, fmtMatcher.end() + 1);
+                if(fmtSpec.equalsIgnoreCase("s") || fmtSpec.equalsIgnoreCase("c")) {
+                    consoleOutput.append(String.format(BuildConfig.DEFAULT_LOCALE, fmtFragment, argList.get(varIndex).getValueAsString()));
+                }
+                else { // integer types:
+                    consoleOutput.append(String.format(BuildConfig.DEFAULT_LOCALE, fmtFragment, argList.get(varIndex).getValueAsInt()));
+                }
+                strBaseIdx += fmtMatcher.end() + 1;
+                if(++varIndex >= argList.size()) {
+                    break;
+                }
+            }
+            if(fmtMatcher.find()) {
+                throw new ChameleonScriptingException(ExceptionType.FormatErrorException);
+            }
+            ChameleonScripting.getRunningInstance().writeConsoleOutput(consoleOutput.toString());
+            return ScriptVariable.newInstance().set(consoleOutput.toString());
         }
 
     };
