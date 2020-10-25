@@ -18,7 +18,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 grammar ScriptingPrimitives;
 
 @header {
-     package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
+     import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingTypes.ScriptVariable;
 }
 
 tokens {
@@ -81,7 +81,7 @@ expression_eval_term returns [ScriptVariable svar]:
      }
      |
      bvOp=boolean_valued_operation {
-          $svar=ScriptVariable.newInstance().set($bvOp.opResult);
+          $svar=$bvOp.opResult;
      }
      |
      otherOp=other_operation_result {
@@ -146,7 +146,7 @@ other_operation_result returns [ScriptVariable svar]:
      |
      cond=operand_expression TernaryOperatorFirstSymbol vtrue=operand_expression
      TernaryOperatorSecondSymbol vfalse=operand_expression {
-          boolean predicate = $cond.svar.getAsBoolean();
+          boolean predicate = $cond.svar.getValueAsBoolean();
           if(predicate) {
                $svar=$vtrue.svar;
           }
@@ -159,34 +159,34 @@ other_operation_result returns [ScriptVariable svar]:
 assignment_operation returns [ScriptVariable svar]:
      lhs=variable_reference DefEqualsOperator rhs=operand_expression {
           $svar=$rhs.svar;
-          ChameleonScripting.getRunningInstance().setVariableByName($lhs.svar.getName());
+          ChameleonScripting.getRunningInstance().setVariableByName($lhs.svar);
      }
      |
      lhs=variable_reference PlusEqualsOperator rhs=operand_expression {
           $svar=$lhs.svar.binaryOperation(ScriptVariable.BinaryOperation.BINOP_PLUS, $rhs.svar);
-          ChameleonScripting.getRunningInstance().setVariableByName($lhs.svar.getName());
+          ChameleonScripting.getRunningInstance().setVariableByName($lhs.svar);
      }
      ;
 
 typecast_expression returns [ScriptVariable svar]:
      TypeCastByte initVar=operand_expression {
-          $svar=$initVar.svar.getAsByte();
+          $svar=ScriptVariable.newInstance().set(new byte[] { $initVar.svar.getValueAsByte() });
      }
      |
      TypeCastShort initVar=operand_expression {
-          $svar=$initVar.svar.getAsShort();
+          $svar=ScriptVariable.newInstance().set((int) $initVar.svar.getValueAsShort());
      }
      |
      TypeCastInt32 initVar=operand_expression {
-          $svar=$initVar.svar.getAsInteger();
+          $svar=ScriptVariable.newInstance().set((int) $initVar.svar.getValueAsInt());
      }
      |
      TypeCastBoolean initVar=operand_expression {
-          $svar=$initVar.svar.getAsBoolean();
+          $svar=ScriptVariable.newInstance().set((boolean) $initVar.svar.getValueAsBoolean());
      }
      |
      TypeCastString initVar=operand_expression {
-          $svar=$initVar.svar.getAsString();
+          $svar=ScriptVariable.newInstance().set($initVar.svar.getValueAsString());
      }
      ;
 

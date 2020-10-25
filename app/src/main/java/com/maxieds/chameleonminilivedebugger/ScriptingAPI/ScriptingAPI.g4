@@ -18,10 +18,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 grammar ScriptingAPI;
 import ScriptingPrimitives;
 
-@header {
-     package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
-}
-
 function_args_list returns [List<ScriptVariable> varsList]:
      var=expression_eval_term FunctionArgInnerSeparator argsList=function_args_list {
           $argsList.varsList.add($var.svar);

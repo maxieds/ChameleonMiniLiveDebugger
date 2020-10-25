@@ -39,32 +39,33 @@ def getGitCommitDate() {
     return getShellCommandOutput("git show | grep Date: | head -n 1 | sed -e \"s/Date:[ ]*//\"");
 }
 
-def generateAntlrJava() {
-    def antlrGeneratedSrc = "build/generated/antlr";
-    def scriptingAPIPkg = "com.maxieds.chameleonminilivedebugger.ScriptingAPI";
-    def scriptingAPISrc = "src/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI";
-    def antlrGrammarSources = [
-            "$scriptingAPISrc/ScriptingPrimitives.g4",
-            "$scriptingAPISrc/ScriptingAPI.g4",
-            "$scriptingAPISrc/ChameleonScript.g4"
+/*def generateAntlrJava() {
+    String scriptingAPIPkg = "com.maxieds.chameleonminilivedebugger.ScriptingAPI";
+    String scriptingAPISrc = file(new File("src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI"));
+    String antlrGeneratedSrc = scriptingAPISrc; // + "/gen";
+    List antlrGrammarSources = [
+            scriptingAPISrc + "/ScriptingPrimitives.g4",
+            scriptingAPISrc + "/ScriptingAPI.g4",
+            scriptingAPISrc + "/ChameleonScript.g4"
     ];
-    for (int gsIdx = 0; gsIdx < $antlrGrammarSources.length(); gsIdx++) {
-        def antlrCompileCmd = [
-                "antlr4",
-                "-o $antlrGeneratedSrc",
-                "-package $scriptingAPIPkg",
-                "-Dlanguage=Java",
-                "-listener",
-                "-visitor",
-                "-long-messages",
-                "-Xlog",
-                "-lib $scriptingAPISrc",
-                antlrGrammarSources.get(gsIdx)
+    for (int gsIdx = 0; gsIdx < antlrGrammarSources.size(); gsIdx++) {
+        List antlrCompileCmd = [
+                "bash -c 'echo x'",
+                //"antlr4",
+                //"-o " + antlrGeneratedSrc,
+                //"-package " + scriptingAPIPkg,
+                //"-Dlanguage=Java",
+                //"-listener",
+                //"-visitor",
+                //"-long-messages",
+                //"-lib " + scriptingAPISrc,
+                //antlrGrammarSources.get(gsIdx)
         ];
         antlrCompileCmd.execute();
         antlrCompileCmd.waitFor();
+        System.out.println(antlrCompileCmd.text[0..-2]);
     }
-}
+}*/
 
 android {
 
@@ -83,28 +84,29 @@ android {
         buildConfigField "String", "GIT_COMMIT_DATE", "\"" + getGitCommitDate() + "\""
 
         setProperty("archivesBaseName", "ChameleonMiniLiveDebugger-v$versionName-$configBuildTimeStamp")
-
-        build.doFirst {
-            file(new File("build/generated/antlr")).mkdirs()
-            generateAntlrJava()
-        }
-
-        clean.doLast {
-            file(new File(projectDir, "build/generated/antlr")).deleteDir()
-        }
+        //generateAntlrJava()
 
     }
+
+    /*beforeEvaluate {
+        //file(new File(projectDir, "src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI/gen")).deleteDir()
+        //file(new File(projectDir, "build/intermediates")).deleteDir()
+        //file(new File("build/intermediates")).mkdirs()
+    }*/
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    sourceSets {
+
+    /*sourceSets {
         main {
             java {
-                srcDirs = ['src/java', 'build/generated/antlr']
+                srcDirs = ['build/intermediates/com/maxieds/chameleonminilivedebugger/ScriptingAPI', 'src/main/java']
             }
         }
-    }
+    }*/
+
 
     buildTypes {
         release {
@@ -187,7 +189,7 @@ android {
         implementation 'org.antlr:antlr4-runtime:4.7'
         implementation 'com.github.felHR85:UsbSerial:4.5.2'
         implementation 'com.shawnlin:number-picker:2.4.9'
-        implementation 'com.github.maxieds:AndroidFilePicker:master-SNAPSHOT'
+        implementation 'com.github.maxieds:AndroidFilePicker:9f293453e7'
     }
 
     repositories {

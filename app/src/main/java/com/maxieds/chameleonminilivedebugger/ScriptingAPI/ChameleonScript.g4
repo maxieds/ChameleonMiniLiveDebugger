@@ -18,9 +18,9 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 grammar ChameleonScript;
 import ScriptingPrimitives, ScriptingAPI;
 
-@header {
-     package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
-}
+//@header {
+//     package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
+//}
 
 file_contents: (script_line)+ EOF;
 

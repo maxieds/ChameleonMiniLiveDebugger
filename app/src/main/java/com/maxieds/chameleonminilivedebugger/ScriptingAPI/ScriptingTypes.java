@@ -102,11 +102,11 @@ public class ScriptingTypes {
             return varIsInit;
         }
 
-        public boolean set(int nextValue) {
+        public ScriptVariable set(int nextValue) {
             varValueAsInt = nextValue;
             varType = VariableType.VariableTypeInteger;
             varIsInit = true;
-            return true;
+            return this;
         }
 
         public int getValueAsInt() throws ScriptingExecptions.ChameleonScriptingException {
@@ -129,11 +129,21 @@ public class ScriptingTypes {
             throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.InvalidTypeException);
         }
 
-        public boolean set(boolean nextValue) {
+        public short getValueAsShort() throws ScriptingExecptions.ChameleonScriptingException {
+            int int32Value = getValueAsInt();
+            return (short) (int32Value & 0x0000ffff);
+        }
+
+        public byte getValueAsByte() throws ScriptingExecptions.ChameleonScriptingException {
+            int int32Value = getValueAsInt();
+            return (byte) (int32Value & 0x000000ff);
+        }
+
+        public ScriptVariable set(boolean nextValue) {
             varValueAsBoolean = nextValue;
             varType = VariableType.VariableTypeBoolean;
             varIsInit = true;
-            return true;
+            return this;
         }
 
         public boolean setAsBooleanLiteral(String nextValue) {
@@ -171,10 +181,10 @@ public class ScriptingTypes {
             }
         }
 
-        public boolean set(byte[] nextValue) {
+        public ScriptVariable set(byte[] nextValue) {
             varValueAsByteArray = nextValue;
             varType = VariableType.VariableTypeBytes;
-            return varValueAsByteArray.length > 0;
+            return this;
         }
 
         public byte[] getValueAsBytes() throws ScriptingExecptions.ChameleonScriptingException {
@@ -208,11 +218,11 @@ public class ScriptingTypes {
             }
         }
 
-        public boolean set(String nextValue) {
+        public ScriptVariable set(String nextValue) {
             varValueAsString = nextValue;
             varType = VariableType.VariableTypeAsciiString;
             varIsInit = true;
-            return true;
+            return this;
         }
 
         public String getValueAsString() throws ScriptingExecptions.ChameleonScriptingException {
@@ -222,7 +232,7 @@ public class ScriptingTypes {
                 case VariableTypeStorageFilePath:
                     return varValueAsString;
                 case VariableTypeRawFileFilePath:
-                    return LiveLoggerActivity.getLiveLoggerInstance().getResources().getResourceName(varValueAsInt);
+                    return ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT.getInstance().getResources().getResourceName(varValueAsInt);
                 case VariableTypeBytes:
                     return Utils.bytes2Hex(varValueAsByteArray);
                 case VariableTypeBoolean:
@@ -416,8 +426,6 @@ public class ScriptingTypes {
                                              throws ScriptingExecptions.ChameleonScriptingException { return null; }
 
     }
-
-    // TODO: need get as Byte and Short type casts ...
 
     public static class ScriptVariableArray extends ScriptVariable {
 
