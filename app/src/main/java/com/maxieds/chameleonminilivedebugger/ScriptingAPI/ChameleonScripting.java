@@ -25,6 +25,7 @@ import com.maxieds.chameleonminilivedebugger.TabFragment;
 
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParser;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptLexer;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptVisitor;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -33,6 +34,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -104,8 +106,7 @@ public class ChameleonScripting {
         CommonTokenStream scriptTokenStream;
         ChameleonScriptParser scriptParser;
         ParseTree scriptParseTree;
-        //parser.removeErrorListeners()
-        //parser.addErrorListener(yourListenerInstance)
+        ChameleonScriptVisitor scriptVisitor;
 
         public ChameleonScriptInstance(String scriptFile) {
             initialized = true;
@@ -142,51 +143,40 @@ public class ChameleonScripting {
             scriptVariablesHashMap = new HashMap<String, ScriptingTypes.ScriptVariable>();
             scriptState = ScriptRuntimeState.INITIALIZED;
             chameleonDeviceState = new ChameleonDeviceState();
-            scriptRunnerThread = null;
-            scriptInputStream = null;
-            scriptTokenStream = null;
+            scriptRunnerThread = null; // TODO: handle this running mostly off of the main UI thread (except for GUI status updates) ...
+            try {
+                scriptInputStream = new ANTLRInputStream(scriptFileStream);
+                scriptLexer = new ChameleonScriptLexer(scriptInputStream);
+                scriptTokenStream = new CommonTokenStream(scriptLexer);
+                scriptParser = new ChameleonScriptParser(scriptTokenStream);
+                scriptParser.removeErrorListeners();
+                scriptParser.addErrorListener(new ChameleonScriptErrorListener());
+            } catch(IOException ioe) {
+                ioe.printStackTrace();
+                initialized = false;
+            }
             scriptParseTree = null;
+            scriptVisitor = null;
         }
 
         public boolean isInitialized() {
             return initialized;
         }
 
-        public boolean variableNameExists(String varName) {
-            return scriptVariablesHashMap.get(varName) != null;
-        }
-
-        public ScriptingTypes.ScriptVariable lookupVariableByName(String varName) throws ScriptingExecptions.ChameleonScriptingException {
-            ScriptingTypes.ScriptVariable svar = scriptVariablesHashMap.get(varName);
-            if(svar == null) {
-                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.VariableNotFoundException, "varName");
-            }
-            return svar;
-        }
-
-        public void setVariableByName(ScriptingTypes.ScriptVariable scriptVar) throws ScriptingExecptions.ChameleonScriptingException {
-            ScriptingTypes.ScriptVariable svar = scriptVariablesHashMap.put(scriptVar.getName(), scriptVar);
-        }
-
         public List<ChameleonScriptErrorListener.SyntaxError> listSyntaxErrors(String scriptFileText) {
-            //CodePointCharStream inputStream = fromString(sourceCode);
-            //CLexer lexer = new CLexer(inputStream);
-            //CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
-            //CParser parser = new CParser(commonTokenStream);
-            //SyntaxErrorListener listener = new SyntaxErrorListener();
-            //parser.addErrorListener(listener);
-            //parser.functionDefinition();
-            //return listener.getSyntaxErrors();
+            // report errors with: parser.getNumberOfSyntaxErrors();
+            // display them in a nice presentation / GUI fragment and vibrate for the user ...
             return null;
         }
 
         private boolean runScriptPreambleActions() {
+
             // save Chameleon device state and push onto stack ...
             // change to CWD ...
             // set the script paused icon in toolbar to true ...
             // temporarily disable status bar updates ...
             // disable adding breakpoints
-            // report errors with: parser.getNumberOfSyntaxErrors();
+
             return true;
         }
 
@@ -214,6 +204,22 @@ public class ChameleonScripting {
 
         public boolean stepRunningScript() throws ScriptingExecptions.ChameleonScriptingException {
             return false;
+        }
+
+        public boolean variableNameExists(String varName) {
+            return scriptVariablesHashMap.get(varName) != null;
+        }
+
+        public ScriptingTypes.ScriptVariable lookupVariableByName(String varName) throws ScriptingExecptions.ChameleonScriptingException {
+            ScriptingTypes.ScriptVariable svar = scriptVariablesHashMap.get(varName);
+            if(svar == null) {
+                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.VariableNotFoundException, "varName");
+            }
+            return svar;
+        }
+
+        public void setVariableByName(ScriptingTypes.ScriptVariable scriptVar) throws ScriptingExecptions.ChameleonScriptingException {
+            scriptVariablesHashMap.put(scriptVar.getName(), scriptVar);
         }
 
         public boolean writeLogFile(String logLine) {

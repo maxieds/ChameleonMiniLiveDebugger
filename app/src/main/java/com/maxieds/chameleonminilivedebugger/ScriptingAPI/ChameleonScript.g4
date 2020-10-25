@@ -29,7 +29,7 @@ import ScriptingPrimitives, ScriptingAPI;
         public void displayRecognitionError(String[] tokenNames, RecognitionException re) {
             String ehdr = getErrorHeader(re);
             String emsg = getErrorMessage(re, tokenNames);
-            throw new RuntimeException(ehdr + " : " + emsg);
+            throw new RuntimeException("LEXER: " + ehdr + " : " + emsg);
         }
 }
 
@@ -38,7 +38,7 @@ import ScriptingPrimitives, ScriptingAPI;
     public void displayRecognitionError(String[] tokenNames, RecognitionException re) {
         String ehdr = getErrorHeader(re);
         String emsg = getErrorMessage(re, tokenNames);
-        throw new RuntimeException(ehdr + " : " + emsg);
+        throw new RuntimeException("PARSER: " + ehdr + " : " + emsg);
     }
 }
 

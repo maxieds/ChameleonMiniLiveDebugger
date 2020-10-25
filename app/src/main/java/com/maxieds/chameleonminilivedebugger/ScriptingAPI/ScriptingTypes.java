@@ -18,7 +18,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
 import com.maxieds.chameleonminilivedebugger.BuildConfig;
-import com.maxieds.chameleonminilivedebugger.LiveLoggerActivity;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
 import java.util.List;

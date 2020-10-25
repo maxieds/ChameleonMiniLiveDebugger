@@ -41,73 +41,56 @@ scripting_api_function returns [ScriptVariable funcResult]:
      }
      ;
 
-FunctionArgInnerSeparator: CommaSeparator ;
+FunctionArgInnerSeparator:  CommaSeparator ;
 FunctionStartArgsDelimiter: OpenParens ;
-FunctionEndArgsDelimiter: ClosedParens ;
+FunctionEndArgsDelimiter:   ClosedParens ;
 
 ScriptingAPIFunctionName:  ScriptControlFlowFunctions | PrintingAndLoggingFunctions |
                            ChameleonConnectionTypeFunctions | VariableTypeFunctions |
-                           DebuggingFunctions | EnvironmentFunctions |
                            ChameleonCommandAndLogFunctions |
                            StringFunctions | APDUHandlingFunctions |
                            CryptoAndHashFunctions | UtilityFunctions ;
 
 /* Script control flow functions: */
+/* Debugging and assertion commands */
 ExitFuncName:               'Exit' ;
+AssertFuncName:             'Assert' ;
 
-ScriptControlFlowFunctions: ExitFuncName ;
+ScriptControlFlowFunctions: ExitFuncName | AssertFuncName;
 
 /* Console printing and logging functions: */
 PrintFuncName:              'Print' ;
 PrintfFuncName:             'Printf' ;
+SprintfFuncName:            'Sprintf' ;
 
-PrintingAndLoggingFunctions: PrintFuncName | PrintfFuncName ;
+PrintingAndLoggingFunctions: PrintFuncName | PrintfFuncName | SprintfFuncName;
+
+/* Type conversion and checking functions: */
+/* Environmental variables: */
+AsHexStringFuncName:      'AsHexString' ;
+AsBinaryStringFuncName:   'AsBinaryString' ;
+AsByteArrayFuncName:      'AsByteArray' ;
+GetLengthFuncName:        'GetLength' ;
+GetEnvFuncName:           'GetEnv' ;
+
+VariableTypeFunctions:     AsHexStringFuncName | AsBinaryStringFuncName | AsByteArrayFuncName |
+                           GetLengthFuncName | GetEnvFuncName;
 
 /* Chameleon connection types: */
 IsChameleonConnectedFuncName:     'IsChameleonConnected' ;
 IsChameleonRevGFuncName:          'IsChameleonRevG' ;
 IsChameleonRevEFuncName:          'IsChameleonRevE' ;
+GetChameleonDescFuncName:         'GetChameleonDesc' ;
 
 ChameleonConnectionTypeFunctions: IsChameleonConnectedFuncName |
                                   IsChameleonRevGFuncName | IsChameleonRevEFuncName ;
 
-/* Type conversion and checking functions: */
-AsHexStringFuncName:      'AsHexString' ;
-AsBinaryStringFuncName:   'AsBinaryString' ;
-AsByteArrayFuncName:      'AsByteArray' ;
-GetLengthFuncName:        'GetLength' ;
-GetTypeFuncName:          'GetType' ;
-ToStringFuncName:         'ToString' ; // (int, base);
-
-VariableTypeFunctions:     AsHexStringFuncName | AsBinaryStringFuncName | AsByteArrayFuncName |
-                           GetLengthFuncName | ToStringFuncName ;
-
-/* Debugging and assertion commands */
-AssertFuncName:            'Assert' ;
-DebuggingFunctions:         AssertFuncName ;
-
-/* Environmental variables: */
-GetEnvFuncName:             'GetEnv' ;
-EnvironmentFunctions:        GetEnvFuncName ;
-
 /* Chameleon command and command output post processing functions: */
-CmdGetResponseFuncName:              'GetCommandResponse' ;
-CmdGetResponseCodeFuncName:          'GetCommandResponseCode' ;
-CmdGetResponseDescFuncName:          'GetCommandResponseDesc' ;
-GetResponseDataFuncName:             'GetCommandResponseData' ;
-CmdIsSuccessFuncName:                'CommandIsSuccess' ;
-CmdIsErrorFuncName:                  'CommandIsError' ;
-CmdContainsDataFuncName:             'CommandContainsData' ;
-CmdSaveDeviceStateFuncName:          'SaveDeviceState' ;
-CmdRestoreDeviceStateFuncName:       'RestoreDeviceState' ;
 CmdDownloadTagFuncName:              'DownloadTagDump' ;
 CmdUploadTagFuncName:                'UploadTagDump' ;
 CmdDownloadLogsFuncName:             'DownloadLogs' ;
 
-ChameleonCommandAndLogFunctions:     CmdGetResponseFuncName | CmdGetResponseCodeFuncName | CmdGetResponseDescFuncName |
-                                     GetResponseDataFuncName | CmdIsSuccessFuncName | CmdIsErrorFuncName |
-                                     CmdContainsDataFuncName | CmdSaveDeviceStateFuncName |
-                                     CmdRestoreDeviceStateFuncName | CmdDownloadTagFuncName | CmdUploadTagFuncName |
+ChameleonCommandAndLogFunctions:     CmdDownloadTagFuncName | CmdUploadTagFuncName |
                                      CmdDownloadLogsFuncName ;
 
 /* String handling functions: */
@@ -125,12 +108,13 @@ StringFunctions:                   StringSearchFuncName | StringContainsFuncName
 AsWrappedAPDUFuncName:                 'AsWrappedAPDU' ; // ($v -- assumes have prepended CLA,INS); -> ByteArray | ($v, CLA,INS,P1,P2)
 ExtractDataFromWrappedAPDUFuncName:    'ExtractDataFromWrappedAPDU' ;
 ExtractDataFromNativeAPDUFuncName:     'ExtractDataFromNativeAPDU' ;
+SplitWrappedAPDUFuncName:              'SplitAPDUResponse' ;
 SearchAPDUCStatusCodesFuncName:        'SearchAPDUStatusCodes' ;
 SearchAPDUInsCodesFuncName:            'SearchAPDUInsCodes' ;
 SearchAPDUClaCodesFuncName:            'SearchAPDUClaCodes' ;
 
 APDUHandlingFunctions:                 AsWrappedAPDUFuncName | ExtractDataFromWrappedAPDUFuncName |
-                                       ExtractDataFromNativeAPDUFuncName |
+                                       ExtractDataFromNativeAPDUFuncName | SplitWrappedAPDUFuncName |
                                        SearchAPDUCStatusCodesFuncName | SearchAPDUInsCodesFuncName |
                                        SearchAPDUClaCodesFuncName ;
 

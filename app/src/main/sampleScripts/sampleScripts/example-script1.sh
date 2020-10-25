@@ -1,6 +1,17 @@
 /* example-script1.sh */
 
-$v0 = "My test string ... "
-$v2 = 0xff
-Printf("%s [%02x]\n", $v0, $v2)
+$cmdOutput = $$("CONFIG=MF_DESFIRE")
+Printf("CMD-RESP(%03d) [%s] ... \n", $cmdOutput->respCode, $cmdOutput->respText)
+
+$cmdOutput = $$("CONFIG?")
+Printf("CmdName=%s (%d) [%s] -> \"%s\" %s / %s\n", 
+       $cmdOutput->cmdName, $cmdOutput->respCode, $cmdOutput->respText,
+       $cmdOutput->data, $cmdOutput->isError ? "XX" : "OK", 
+       $cmdOutput->isTimeout ? "TMT" : "NO-TMT")
+
+$tagUID = $$("UID?")
+$tagUID = Replace("..(?!$)", "$0" + ":")
+Print("Tag UID = ", $tagUID)
+
+Exit(0)
 

@@ -39,6 +39,8 @@ public class ScriptingFunctions {
                 return ScriptingAPIFunctions.Print(funcArgs);
             case "Printf":
                 return ScriptingAPIFunctions.Printf(funcArgs);
+            case "Sprintf":
+                return ScriptingAPIFunctions.Sprintf(funcArgs);
         }
         throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
     }
@@ -60,6 +62,12 @@ public class ScriptingFunctions {
         }
 
         public static ScriptVariable Printf(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            ScriptVariable sprintfText = Sprintf(argList);
+            ChameleonScripting.getRunningInstance().writeConsoleOutput(sprintfText.getValueAsString());
+            return ScriptVariable.newInstance().set(sprintfText.getValueAsString().length());
+        }
+
+        public static ScriptVariable Sprintf(List<ScriptVariable> argList) throws ChameleonScriptingException {
             if(argList.size() == 0) {
                 throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException, "Requires a format string parameter");
             }
@@ -86,7 +94,6 @@ public class ScriptingFunctions {
             if(fmtMatcher.find()) {
                 throw new ChameleonScriptingException(ExceptionType.FormatErrorException);
             }
-            ChameleonScripting.getRunningInstance().writeConsoleOutput(consoleOutput.toString());
             return ScriptVariable.newInstance().set(consoleOutput.toString());
         }
 

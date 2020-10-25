@@ -188,6 +188,16 @@ typecast_expression returns [ScriptVariable svar]:
      TypeCastString initVar=operand_expression {
           $svar=ScriptVariable.newInstance().set($initVar.svar.getValueAsString());
      }
+     |
+     TypeCastBytes initVar=operand_expression {
+          $svar=ScriptVariable.newInstance().set($initVar.svar.getValueAsBytes());
+     }
+     ;
+
+variable_get_property returns [ScriptVariable svar]:
+     var=variable_reference HashedIndexAccessor propName=PropertyName {
+          $svar=$var.svar.getValueAt($propName.text);
+     }
      ;
 
 WhiteSpaceText:        ( WhiteSpace | NewLineBreak )+ ;
@@ -235,7 +245,11 @@ DefEqualsOperator: '=' | ':=' ;
 PlusEqualsOperator: '+=' ;
 
 TypeCastByte: '(Byte)' ;
+TypeCastBytes: '(Bytes)' ;
 TypeCastShort: '(Short)' ;
 TypeCastInt32: '(Int32)' ;
 TypeCastBoolean: '(Boolean)' ;
 TypeCastString: '(String)' ;
+
+HashedIndexAccessor: '->' ;
+PropertyName: VariableName ;
