@@ -18,10 +18,11 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 grammar ChameleonScript;
 import ScriptingPrimitives, ScriptingAPI;
 
-//@header {
-//     package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
-//}
-
+@rulecatch {
+    catch(ScriptingExecptions.ChameleonScriptingException rtEx) {
+        throw rtEx;
+    }
+}
 file_contents: (script_line)+ EOF;
 
 label_statement: lblName=LabelText LabelEndDelimiter {

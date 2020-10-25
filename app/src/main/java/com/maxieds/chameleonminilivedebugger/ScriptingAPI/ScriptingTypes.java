@@ -476,5 +476,6 @@ public class ScriptingTypes {
     }
 
     // Array needs to override getAsString(), getAsBoolean(), getAsBytes();
+    // Implement HashMap array type ...
 
 }

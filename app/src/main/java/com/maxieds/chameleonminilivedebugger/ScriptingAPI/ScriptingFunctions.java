@@ -18,6 +18,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
 import com.maxieds.chameleonminilivedebugger.BuildConfig;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingTypes.ScriptVariable;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExceptions;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExceptions.ChameleonScriptingException;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExceptions.ExceptionType;
 
 import java.util.List;
 
@@ -25,12 +29,39 @@ public class ScriptingFunctions {
 
     private static final String TAG = ScriptingFunctions.class.getSimpleName();
 
-    public static ScriptingTypes.ScriptVariable callFunction(String funcName, List<ScriptingTypes.ScriptVariable> funcArgs) throws
-                  ScriptingExecptions.ChameleonScriptingException {
-        return null;
+    public static ScriptVariable callFunction(String funcName, List<ScriptVariable> funcArgs) throws ChameleonScriptingException {
+        switch(funcName) {
+            case "Exit":
+                return ScriptingAPIFunctions.Exit(funcArgs);
+            case "Print":
+                return ScriptingAPIFunctions.Print(funcArgs);
+            case "Printf":
+                return ScriptingAPIFunctions.Printf(funcArgs);
+        }
+        throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
     }
 
+    public static class ScriptingAPIFunctions {
 
+        public static ScriptVariable Exit(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+        }
+
+        public static ScriptVariable Print(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            StringBuilder consoleOutput = new StringBuilder();
+            for(int argIdx = 0; argIdx < argList.size(); argIdx++) {
+                ScriptVariable svar = argList.get(argIdx);
+                consoleOutput.append(svar.getValueAsString());
+            }
+            ChameleonScripting.getRunningInstance().writeConsoleOutput(consoleOutput.toString());
+            return ScriptingTypes.newInstance().set(consoleOutput.toString());
+        }
+
+        public static ScriptVariable Printf(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+        }
+
+    };
 
     public static String getEnvironmentVariableByName(String envVarName) {
         switch(envVarName) {

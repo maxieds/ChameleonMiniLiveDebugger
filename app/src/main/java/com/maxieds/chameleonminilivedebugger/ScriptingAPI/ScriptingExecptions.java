@@ -39,9 +39,10 @@ public class ScriptingExecptions {
         DirectoryNotFoundException,
         OutOfMemoryException,
         VariableNotFoundException,
+        NotImplementedException,
     }
 
-    public static class ChameleonScriptingException extends Exception {
+    public static class ChameleonScriptingException extends RuntimeException {
 
         public ChameleonScriptingException(ExceptionType exType) {}
 

@@ -17,6 +17,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
+import android.util.Log;
 import android.widget.LinearLayout;
 
 import com.maxieds.chameleonminilivedebugger.R;
@@ -162,12 +163,25 @@ public class ChameleonScripting {
             ScriptingTypes.ScriptVariable svar = scriptVariablesHashMap.put(scriptVar.getName(), scriptVar);
         }
 
+        public List<ChameleonScriptErrorListener.SyntaxError> listSyntaxErrors(String scriptFileText) {
+            //CodePointCharStream inputStream = fromString(sourceCode);
+            //CLexer lexer = new CLexer(inputStream);
+            //CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
+            //CParser parser = new CParser(commonTokenStream);
+            //SyntaxErrorListener listener = new SyntaxErrorListener();
+            //parser.addErrorListener(listener);
+            //parser.functionDefinition();
+            //return listener.getSyntaxErrors();
+            return null;
+        }
+
         private boolean runScriptPreambleActions() {
             // save Chameleon device state and push onto stack ...
             // change to CWD ...
             // set the script paused icon in toolbar to true ...
             // temporarily disable status bar updates ...
             // disable adding breakpoints
+            // report errors with: parser.getNumberOfSyntaxErrors();
             return true;
         }
 
@@ -204,6 +218,7 @@ public class ChameleonScripting {
         public boolean writeConsoleOutput(String consoleOutputLine) {
             if(consoleOutput != null) {
                 consoleOutput.append(consoleOutputLine);
+                Log.i(TAG, " >>> " + consoleOutputLine);
                 return true;
             }
             return false;

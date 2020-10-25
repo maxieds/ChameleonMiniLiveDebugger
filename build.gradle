@@ -32,6 +32,14 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+dependencies {
+    apply plugin: 'antlr'
+    //compile name: 'antlr4-runtime-4.3'
+    generateGrammarSource {
+        outputDirectory = file("build/generated/java")
+    }
+}
+
+task clean2(type: Delete) {
+    delete rootProject.buildDir // ???
 }
