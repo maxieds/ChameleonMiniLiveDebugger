@@ -274,8 +274,7 @@ public class AndroidFilePicker {
 
     public String getFilePath(ChameleonMiniLiveDebuggerActivity activity, int forResultCode) {
         FilePickerManager fpManager = FilePickerManager.INSTANCE;
-        fpManager.from(activity);
-        FilePickerConfig fpConfig = new FilePickerConfig(fpManager);
+        FilePickerConfig fpConfig = fpManager.from(activity);
         if(filePickerAction == ACTION_SELECT_DIRECTORY) {
             fpConfig.skipDirWhenSelect(false);
             fpConfig.filter(new SelectDirectoryFilter());
@@ -304,9 +303,6 @@ public class AndroidFilePicker {
         else {
             fpConfig.storageType(CONFIG_DEFAULT_STORAGE_TYPE);
         }
-        if(themeId != -1) {
-            fpConfig.setTheme(themeId);
-        }
         if(displayFileTypes != null) {
             fpConfig.registerFileType(displayFileTypes, true);
         }
@@ -330,14 +326,14 @@ public class AndroidFilePicker {
                 if(selectedFilePath.equals("")) {
                     return "";
                 }
-                else if(filePickerAction == ACTION_SELECT_DIRECTORY && !selectedFile.isDirectory()) {
-                    Utils.displayToastMessageShort(String.format(BuildConfig.DEFAULT_LOCALE, "Selected file \"%s\" is not a directory.", selectedFilePath));
-                    return "";
-                }
-                if(filePickerAction == ACTION_SELECT_FILE && selectedFile.isDirectory()) {
-                    Utils.displayToastMessageShort(String.format(BuildConfig.DEFAULT_LOCALE, "Selected file \"%s\" is a directory.", selectedFilePath));
-                    return "";
-                }
+                //else if(filePickerAction == ACTION_SELECT_DIRECTORY && !selectedFile.isDirectory()) {
+                //    Utils.displayToastMessageShort(String.format(BuildConfig.DEFAULT_LOCALE, "Selected file \"%s\" is not a directory.", selectedFilePath));
+                //    return "";
+                //}
+                //if(filePickerAction == ACTION_SELECT_FILE && selectedFile.isDirectory()) {
+                //    Utils.displayToastMessageShort(String.format(BuildConfig.DEFAULT_LOCALE, "Selected file \"%s\" is a directory.", selectedFilePath));
+                //    return "";
+                //}
                 return selectedFilePath;
             } catch(Exception ex) {
                 ex.printStackTrace();

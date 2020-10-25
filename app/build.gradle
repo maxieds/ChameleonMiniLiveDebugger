@@ -189,7 +189,7 @@ android {
         implementation 'org.antlr:antlr4-runtime:4.7'
         implementation 'com.github.felHR85:UsbSerial:4.5.2'
         implementation 'com.shawnlin:number-picker:2.4.9'
-        implementation 'com.github.maxieds:AndroidFilePicker:9f293453e7'
+        implementation 'com.github.maxieds:AndroidFilePicker:c9879f96ec'
     }
 
     repositories {

@@ -111,7 +111,7 @@ public class ScriptingFileIO {
         return storageFile;
     }
 
-    public static final int DISPLAY_TEXT_MAX_LENGTH = 35;
+    public static final int DISPLAY_TEXT_MAX_LENGTH = 30;
     public static final int SHORTENED_PATH_INDEX = 0;
     public static final int COMPLETE_PATH_INDEX = 1;
 
