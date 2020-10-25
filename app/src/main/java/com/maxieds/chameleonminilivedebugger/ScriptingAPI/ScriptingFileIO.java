@@ -25,6 +25,7 @@ import android.text.format.Time;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
+import com.maxieds.chameleonminilivedebugger.AndroidFilePicker;
 import com.maxieds.chameleonminilivedebugger.ExternalFileIO;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
@@ -122,11 +123,28 @@ public class ScriptingFileIO {
         String shortenedPath = fullPath.replace("//", "/").replace(extStorageDir, STORAGE_HOME_PREFIX);
         if(fullPath.contains(STORAGE_HOME_PREFIX)) {
             int fullPathAfterIdx = fullPath.indexOf(STORAGE_HOME_PREFIX) + STORAGE_HOME_PREFIX.length();
-            shortenedPath = shortenedPath.substring(0, fullPathAfterIdx + 2) + "<...>" +
-                            shortenedPath.substring(fullPathAfterIdx + 2, Math.min(Math.max(0, maxLength - 5), shortenedPath.length() - fullPathAfterIdx - 2));
+            String prefixPath = shortenedPath.substring(0, fullPathAfterIdx + 2);
+            int suffixLength = Math.min(Math.max(0, maxLength - 5), shortenedPath.length() - fullPathAfterIdx - 2);
+            String suffixPath = "";
+            if(suffixLength < shortenedPath.length() - fullPathAfterIdx + 1) {
+                suffixPath = "<...>" + shortenedPath.substring(shortenedPath.length() - suffixLength - 1);
+            }
+            else {
+                suffixPath = shortenedPath.substring(fullPathAfterIdx + 2);
+            }
+            shortenedPath = prefixPath + suffixPath;
         }
         else {
-            shortenedPath = shortenedPath.substring(0, Math.min(Math.max(0, maxLength - 5), shortenedPath.length())) + "<...>";
+            String prefixPath = "";
+            int suffixLength = Math.min(Math.max(0, maxLength - 5), shortenedPath.length());
+            String suffixPath = "";
+            if(suffixLength < shortenedPath.length()) {
+                suffixPath = "<...>" + shortenedPath.substring(shortenedPath.length() - suffixLength - 1);
+            }
+            else {
+                suffixPath = shortenedPath;
+            }
+            shortenedPath = prefixPath + suffixPath;
         }
         return new String[] {
                 shortenedPath,
@@ -159,7 +177,7 @@ public class ScriptingFileIO {
     }
 
     public static String selectDirectoryFromGUIList(@NonNull String baseDirectory) {
-        String dirPath = ExternalFileIO.selectFolderFromGUIList(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT, baseDirectory);
+        String dirPath = AndroidFilePicker.selectFolderFromGUIList(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT, baseDirectory);
         if(dirPath.indexOf(STORAGE_HOME_DIRECTORY) > 0) {
             dirPath = dirPath.substring(dirPath.indexOf(STORAGE_HOME_DIRECTORY));
         }
@@ -167,7 +185,7 @@ public class ScriptingFileIO {
     }
 
     public static String selectTextFileFromGUIList(@NonNull String baseDirectory) {
-        String filePath = ExternalFileIO.selectTextFileFromGUIList(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT, baseDirectory);
+        String filePath = AndroidFilePicker.selectTextFileFromGUIList(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT, baseDirectory);
         if(filePath.indexOf(STORAGE_HOME_DIRECTORY) > 0) {
             filePath = filePath.substring(filePath.indexOf(STORAGE_HOME_DIRECTORY));
         }
@@ -175,7 +193,7 @@ public class ScriptingFileIO {
     }
 
     public static String selectFileFromGUIList(@NonNull String baseDirectory) {
-        String filePath = ExternalFileIO.selectFileFromGUIList(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT, baseDirectory);
+        String filePath = AndroidFilePicker.selectFileFromGUIList(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT, baseDirectory);
         if(filePath.indexOf(STORAGE_HOME_DIRECTORY) > 0) {
             filePath = filePath.substring(filePath.indexOf(STORAGE_HOME_DIRECTORY));
         }

@@ -61,16 +61,6 @@
 
         <uses-library android:name="com.android.future.usb.accessory" />
 
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_provider_paths" />
-        </provider>
-
         <activity
             android:name=".LiveLoggerActivity"
             android:screenOrientation="nosensor"
@@ -136,16 +126,6 @@
             android:stateNotNeeded="true"
             android:exported="true"
             >
-        </activity>
-
-        <activity
-            android:name="com.nononsenseapps.filepicker.FilePickerActivity"
-            android:label="@string/app_name_file_picker"
-            android:theme="@style/NNF_BaseTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.GET_CONTENT" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
         </activity>
 
     </application>

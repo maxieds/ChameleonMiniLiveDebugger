@@ -18,5 +18,112 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 -->
 
 <resources>
+
     <color name="colorBigVeryBadError">#ff0000</color>
+    <color name="deviceMemoryLogHighlight">#EF2929</color>
+
+    <color name="AppThemeGreen_colorPrimary">#75a72c</color>
+    <color name="AppThemeGreen_colorPrimaryDark">#3d5717</color>
+    <color name="AppThemeGreen_colorAccent">#91cb3b</color>
+    <color name="AppThemeGreen_colorPrimaryDarkLog">#6eb703</color>
+    <color name="AppThemeGreen_colorAccentLog">#cfe8a9</color>
+    <color name="AppThemeGreen_colorAccentHighlight">#98fb98</color>
+    <color name="AppThemeGreen_colorAboutLinkColor">#6eb703</color>
+
+    <color name="AppThemeChicky_colorPrimary">#F63FA9</color>
+    <color name="AppThemeChicky_colorPrimaryDark">#A30C5D</color>
+    <color name="AppThemeChicky_colorAccent">#FF74BF</color>
+    <color name="AppThemeChicky_colorPrimaryDarkLog">#FF44A9</color>
+    <color name="AppThemeChicky_colorAccentLog">#FFBCE0</color>
+    <color name="AppThemeChicky_colorAccentHighlight">#F146F1</color>
+    <color name="AppThemeChicky_colorAboutLinkColor">#720843</color>
+
+    <color name="AppThemeFrosty_colorPrimary">#EEE9E9</color>
+    <color name="AppThemeFrosty_colorPrimaryDark">#767676</color>
+    <color name="AppThemeFrosty_colorAccent">#F4EFEF</color>
+    <color name="AppThemeFrosty_colorPrimaryDarkLog">#F8F3F3</color>
+    <color name="AppThemeFrosty_colorAccentLog">#FFFBFB</color>
+    <color name="AppThemeFrosty_colorAccentHighlight">#fff8dc</color>
+    <color name="AppThemeFrosty_colorAboutLinkColor">#BEBBBB</color>
+
+    <color name="AppThemePurple_colorPrimary">#9C27B0</color>
+    <color name="AppThemePurple_colorPrimaryDark">#4A148C</color>
+    <color name="AppThemePurple_colorAccent">#E1BEE7</color>
+    <color name="AppThemePurple_colorPrimaryDarkLog">#8E24AA</color>
+    <color name="AppThemePurple_colorAccentLog">#EA80FC</color>
+    <color name="AppThemePurple_colorAccentHighlight">#D500F9</color>
+    <color name="AppThemePurple_colorAboutLinkColor">#4A148C</color>
+
+    <color name="AppThemeRedmond_colorPrimary">#4F5B67</color>
+    <color name="AppThemeRedmond_colorPrimaryDark">#343839</color>
+    <color name="AppThemeRedmond_colorAccent">#DADBD3</color>
+    <color name="AppThemeRedmond_colorPrimaryDarkLog">#A3B1B4</color>
+    <color name="AppThemeRedmond_colorAccentLog">#C8CDC7</color>
+    <color name="AppThemeRedmond_colorAccentHighlight">#CDC7B9</color>
+    <color name="AppThemeRedmond_colorAboutLinkColor">#777777</color>
+
+    <color name="AppThemeSunshine_colorPrimary">#FFC107</color>
+    <color name="AppThemeSunshine_colorPrimaryDark">#FF6F00</color>
+    <color name="AppThemeSunshine_colorAccent">#FFECB3</color>
+    <color name="AppThemeSunshine_colorPrimaryDarkLog">#FF8F00</color>
+    <color name="AppThemeSunshine_colorAccentLog">#FFE57F</color>
+    <color name="AppThemeSunshine_colorAccentHighlight">#FFD740</color>
+    <color name="AppThemeSunshine_colorAboutLinkColor">#FF6F00</color>
+
+    <color name="AppThemeBlack_colorPrimary">#424242</color>
+    <color name="AppThemeBlack_colorPrimaryDark">#212121</color>
+    <color name="AppThemeBlack_colorAccent">#F5F5F5</color>
+    <color name="AppThemeBlack_colorPrimaryDarkLog">#757575</color>
+    <color name="AppThemeBlack_colorAccentLog">#BDBDBD</color>
+    <color name="AppThemeBlack_colorAccentHighlight">#E0E0E0</color>
+    <color name="AppThemeBlack_colorAboutLinkColor">#9E9E9E</color>
+
+    <color name="AppThemeTeal_colorPrimary">#34D5BB</color>
+    <color name="AppThemeTeal_colorPrimaryDark">#004D40</color>
+    <color name="AppThemeTeal_colorAccent">#B2DFDB</color>
+    <color name="AppThemeTeal_colorPrimaryDarkLog">#00897B</color>
+    <color name="AppThemeTeal_colorAccentLog">#A7FFEB</color>
+    <color name="AppThemeTeal_colorAccentHighlight">#64FFDA</color>
+    <color name="AppThemeTeal_colorAboutLinkColor">#00897B</color>
+
+    <color name="AppThemeLinuxGreenOnBlack_colorPrimary">#2E3436</color>
+    <color name="AppThemeLinuxGreenOnBlack_colorPrimaryDark">#000000</color>
+    <color name="AppThemeLinuxGreenOnBlack_colorAccent">#888A85</color>
+    <color name="AppThemeLinuxGreenOnBlack_colorPrimaryDarkLog">#4E9A06</color>
+    <color name="AppThemeLinuxGreenOnBlack_colorAccentLog">#8EC201</color>
+    <color name="AppThemeLinuxGreenOnBlack_colorAccentHighlight">#00FF00</color>
+    <color name="AppThemeLinuxGreenOnBlack_colorAboutLinkColor">#555753</color>
+
+    <color name="AppThemeWinter_colorPrimary">#646956</color>
+    <color name="AppThemeWinter_colorPrimaryDark">#0081E7</color>
+    <color name="AppThemeWinter_colorAccent">#17C5FF</color>
+    <color name="AppThemeWinter_colorPrimaryDarkLog">#00B8FF</color>
+    <color name="AppThemeWinter_colorAccentLog">#9FBDC9</color>
+    <color name="AppThemeWinter_colorAccentHighlight">#AEEEEE</color>
+    <color name="AppThemeWinter_colorAboutLinkColor">#0040FF</color>
+
+    <color name="AppThemeUrbanaDesfire_colorPrimary">#13294b</color>
+    <color name="AppThemeUrbanaDesfire_colorPrimaryDark">#050D13</color>
+    <color name="AppThemeUrbanaDesfire_colorAccent">#E84A27</color>
+    <color name="AppThemeUrbanaDesfire_colorPrimaryDarkLog">#A3351B</color>
+    <color name="AppThemeUrbanaDesfire_colorAccentLog">#EE8069</color>
+    <color name="AppThemeUrbanaDesfire_colorAccentHighlight">#F0854E</color>
+    <color name="AppThemeUrbanaDesfire_colorAboutLinkColor">#1E4787</color>
+
+    <color name="AppThemeAtlanta_colorPrimary">#C59353</color>
+    <color name="AppThemeAtlanta_colorPrimaryDark">#634A2A</color>
+    <color name="AppThemeAtlanta_colorAccent">#C59353</color>
+    <color name="AppThemeAtlanta_colorPrimaryDarkLog">#765832</color>
+    <color name="AppThemeAtlanta_colorAccentLog">#F4CA59</color>
+    <color name="AppThemeAtlanta_colorAccentHighlight">#F4CA59</color>
+    <color name="AppThemeAtlanta_colorAboutLinkColor">#001934</color>
+
+    <color name="AppThemeRaspberryPI_colorPrimary">#C3566F</color>
+    <color name="AppThemeRaspberryPI_colorPrimaryDark">#893C4E</color>
+    <color name="AppThemeRaspberryPI_colorAccent">#DB9AA9</color>
+    <color name="AppThemeRaspberryPI_colorPrimaryDarkLog">#767470</color>
+    <color name="AppThemeRaspberryPI_colorAccentLog">#BBB7B0</color>
+    <color name="AppThemeRaspberryPI_colorAccentHighlight">#EDCCD4</color>
+    <color name="AppThemeRaspberryPI_colorAboutLinkColor">#622B38</color>
+
 </resources>

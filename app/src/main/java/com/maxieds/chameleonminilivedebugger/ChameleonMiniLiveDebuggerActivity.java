@@ -29,6 +29,7 @@ public class ChameleonMiniLiveDebuggerActivity extends AppCompatActivity {
      * We assume there is only one instance of the singleton activity running at a time.
      */
     protected static ChameleonMiniLiveDebuggerActivity runningActivity = null;
+    protected static int themeResId = ThemesConfiguration.appThemeResID;
     protected static Bundle localSavedInstanceState;
     protected static LayoutInflater defaultInflater;
     protected static Context defaultContext;
@@ -44,6 +45,10 @@ public class ChameleonMiniLiveDebuggerActivity extends AppCompatActivity {
 
     public static ChameleonMiniLiveDebuggerActivity getInstance() {
         return runningActivity;
+    }
+
+    public static int getThemeId() {
+        return themeResId;
     }
 
     public static LayoutInflater getDefaultInflater() { return defaultInflater; }

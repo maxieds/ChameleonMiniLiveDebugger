@@ -35,170 +35,156 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     </style>
 
     <style name="AppThemeGreen" parent="@style/AppTheme">
-        <item name="colorPrimary">#75a72c</item>
-        <item name="colorPrimaryDark">#3d5717</item>
-        <item name="colorAccent">#91cb3b</item>
-        <item name="colorPrimaryDarkLog">#6eb703</item>
-        <item name="colorAccentLog">#cfe8a9</item>
-        <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#98fb98</item>
-        <item name="colorAboutLinkColor">#6eb703</item>
+        <item name="colorPrimary">@color/AppThemeGreen_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/AppThemeGreen_colorPrimaryDark</item>
+        <item name="colorAccent">@color/AppThemeGreen_colorAccent</item>
+        <item name="colorPrimaryDarkLog">@color/AppThemeGreen_colorPrimaryDarkLog</item>
+        <item name="colorAccentLog">@color/AppThemeGreen_colorAccentLog</item>
+        <item name="colorAccentHighlight">@color/AppThemeGreen_colorAccentHighlight</item>
+        <item name="colorAboutLinkColor">@color/AppThemeGreen_colorAboutLinkColor</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_rainbow2</item>
     </style>
 
     <style name="AppThemeGreenPaid" parent="@style/AppTheme">
-        <item name="colorPrimary">#75a72c</item>
-        <item name="colorPrimaryDark">#3d5717</item>
-        <item name="colorAccent">#91cb3b</item>
-        <item name="colorPrimaryDarkLog">#6eb703</item>
-        <item name="colorAccentLog">#cfe8a9</item>
-        <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#98fb98</item>
-        <item name="colorAboutLinkColor">#6eb703</item>
+        <item name="colorPrimary">@color/AppThemeGreen_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/AppThemeGreen_colorPrimaryDark</item>
+        <item name="colorAccent">@color/AppThemeGreen_colorAccent</item>
+        <item name="colorPrimaryDarkLog">@color/AppThemeGreen_colorPrimaryDarkLog</item>
+        <item name="colorAccentLog">@color/AppThemeGreen_colorAccentLog</item>
+        <item name="colorAccentHighlight">@color/AppThemeGreen_colorAccentHighlight</item>
+        <item name="colorAboutLinkColor">@color/AppThemeGreen_colorAboutLinkColor</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_rainbow2</item>
     </style>
 
     <style name="AppThemeChicky" parent="AppTheme">
-        <item name="colorPrimary">#F63FA9</item>
-        <item name="colorPrimaryDark">#A30C5D</item>
-        <item name="colorAccent">#FF74BF</item>
-        <item name="colorPrimaryDarkLog">#FF44A9</item>
-        <item name="colorAccentLog">#FFBCE0</item>
-        <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#F146F1</item>
-        <item name="colorAboutLinkColor">#720843</item>
+        <item name="colorPrimary">@color/AppThemeChicky_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/AppThemeChicky_colorPrimaryDark</item>
+        <item name="colorAccent">@color/AppThemeChicky_colorAccent</item>
+        <item name="colorPrimaryDarkLog">@color/AppThemeChicky_colorPrimaryDarkLog</item>
+        <item name="colorAccentLog">@color/AppThemeChicky_colorAccentLog</item>
+        <item name="colorAccentHighlight">@color/AppThemeChicky_colorAccentHighlight</item>
+        <item name="colorAboutLinkColor">@color/AppThemeChicky_colorAboutLinkColor</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_chicky</item>
     </style>
 
     <style name="AppThemeFrosty" parent="AppTheme">
-        <item name="colorPrimary">#EEE9E9</item>
-        <item name="colorPrimaryDark">#767676</item>
-        <item name="colorAccent">#F4EFEF</item>
-        <item name="colorPrimaryDarkLog">#F8F3F3</item>
-        <item name="colorAccentLog">#FFFBFB</item>
-        <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#fff8dc</item>
-        <item name="colorAboutLinkColor">#BEBBBB</item>
+        <item name="colorPrimary">@color/AppThemeFrosty_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/AppThemeFrosty_colorPrimaryDark</item>
+        <item name="colorAccent">@color/AppThemeFrosty_colorAccent</item>
+        <item name="colorPrimaryDarkLog">@color/AppThemeFrosty_colorPrimaryDarkLog</item>
+        <item name="colorAccentLog">@color/AppThemeFrosty_colorAccentLog</item>
+        <item name="colorAccentHighlight">@color/AppThemeFrosty_colorAccentHighlight</item>
+        <item name="colorAboutLinkColor">@color/AppThemeFrosty_colorAboutLinkColor</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_frosty</item>
     </style>
 
     <style name="AppThemePurple" parent="AppTheme">
-        <item name="colorPrimary">#9C27B0</item>
-        <item name="colorPrimaryDark">#4A148C</item>
-        <item name="colorAccent">#E1BEE7</item>
-        <item name="colorPrimaryDarkLog">#8E24AA</item>
-        <item name="colorAccentLog">#EA80FC</item>
-        <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#D500F9</item>
-        <item name="colorAboutLinkColor">#4A148C</item>
+        <item name="colorPrimary">@color/AppThemePurple_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/AppThemePurple_colorPrimaryDark</item>
+        <item name="colorAccent">@color/AppThemePurple_colorAccent</item>
+        <item name="colorPrimaryDarkLog">@color/AppThemePurple_colorPrimaryDarkLog</item>
+        <item name="colorAccentLog">@color/AppThemePurple_colorAccentLog</item>
+        <item name="colorAccentHighlight">@color/AppThemePurple_colorAccentHighlight</item>
+        <item name="colorAboutLinkColor">@color/AppThemePurple_colorAboutLinkColor</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_purple</item>
     </style>
 
     <style name="AppThemeRedmond" parent="AppTheme">
-        <item name="colorPrimary">#4F5B67</item>
-        <item name="colorPrimaryDark">#343839</item>
-        <item name="colorAccent">#DADBD3</item>
-        <item name="colorPrimaryDarkLog">#A3B1B4</item>
-        <item name="colorAccentLog">#C8CDC7</item>
-        <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#CDC7B9</item>
-        <item name="colorAboutLinkColor">#777777</item>
+        <item name="colorPrimary">@color/AppThemeRedmond_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/AppThemeRedmond_colorPrimaryDark</item>
+        <item name="colorAccent">@color/AppThemeRedmond_colorAccent</item>
+        <item name="colorPrimaryDarkLog">@color/AppThemeRedmond_colorPrimaryDarkLog</item>
+        <item name="colorAccentLog">@color/AppThemeRedmond_colorAccentLog</item>
+        <item name="colorAccentHighlight">@color/AppThemeRedmond_colorAccentHighlight</item>
+        <item name="colorAboutLinkColor">@color/AppThemeRedmond_colorAboutLinkColor</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonicon32_redmond</item>
     </style>
 
     <style name="AppThemeSunshine" parent="AppTheme">
-        <item name="colorPrimary">#FFC107</item>
-        <item name="colorPrimaryDark">#FF6F00</item>
-        <item name="colorAccent">#FFECB3</item>
-        <item name="colorPrimaryDarkLog">#FF8F00</item>
-        <item name="colorAccentLog">#FFE57F</item>
-        <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#FFD740</item>
-        <item name="colorAboutLinkColor">#FF6F00</item>
+        <item name="colorPrimary">@color/AppThemeSunshine_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/AppThemeSunshine_colorPrimaryDark</item>
+        <item name="colorAccent">@color/AppThemeSunshine_colorAccent</item>
+        <item name="colorPrimaryDarkLog">@color/AppThemeSunshine_colorPrimaryDarkLog</item>
+        <item name="colorAccentLog">@color/AppThemeSunshine_colorAccentLog</item>
+        <item name="colorAccentHighlight">@color/AppThemeSunshine_colorAccentHighlight</item>
+        <item name="colorAboutLinkColor">@color/AppThemeSunshine_colorAboutLinkColor</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_sunshine</item>
     </style>
 
     <style name="AppThemeBlack" parent="AppTheme">
-        <item name="colorPrimary">#424242</item>
-        <item name="colorPrimaryDark">#212121</item>
-        <item name="colorAccent">#F5F5F5</item>
-        <item name="colorPrimaryDarkLog">#757575</item>
-        <item name="colorAccentLog">#BDBDBD</item>
-        <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#E0E0E0</item>
-        <item name="colorAboutLinkColor">#9E9E9E</item>
+        <item name="colorPrimary">@color/AppThemeBlack_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/AppThemeBlack_colorPrimaryDark</item>
+        <item name="colorAccent">@color/AppThemeBlack_colorAccent</item>
+        <item name="colorPrimaryDarkLog">@color/AppThemeBlack_colorPrimaryDarkLog</item>
+        <item name="colorAccentLog">@color/AppThemeBlack_colorAccentLog</item>
+        <item name="colorAccentHighlight">@color/AppThemeBlack_colorAccentHighlight</item>
+        <item name="colorAboutLinkColor">@color/AppThemeBlack_colorAboutLinkColor</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_black</item>
     </style>
 
     <style name="AppThemeTeal" parent="AppTheme">
-        <item name="colorPrimary">#34D5BB</item>
-        <item name="colorPrimaryDark">#004D40</item>
-        <item name="colorAccent">#B2DFDB</item>
-        <item name="colorPrimaryDarkLog">#00897B</item>
-        <item name="colorAccentLog">#A7FFEB</item>
-        <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#64FFDA</item>
-        <item name="colorAboutLinkColor">#00897B</item>
+        <item name="colorPrimary">@color/AppThemeTeal_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/AppThemeTeal_colorPrimaryDark</item>
+        <item name="colorAccent">@color/AppThemeTeal_colorAccent</item>
+        <item name="colorPrimaryDarkLog">@color/AppThemeTeal_colorPrimaryDarkLog</item>
+        <item name="colorAccentLog">@color/AppThemeTeal_colorAccentLog</item>
+        <item name="colorAccentHighlight">@color/AppThemeTeal_colorAccentHighlight</item>
+        <item name="colorAboutLinkColor">@color/AppThemeTeal_colorAboutLinkColor</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_teal</item>
     </style>
 
     <style name="AppThemeLinuxGreenOnBlack" parent="AppTheme">
-        <item name="colorPrimary">#2E3436</item>
-        <item name="colorPrimaryDark">#000000</item>
-        <item name="colorAccent">#888A85</item>
-        <item name="colorPrimaryDarkLog">#4E9A06</item>
-        <item name="colorAccentLog">#8EC201</item>
-        <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#00FF00</item>
-        <item name="colorAboutLinkColor">#555753</item>
+        <item name="colorPrimary">@color/AppThemeLinuxGreenOnBlack_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/AppThemeLinuxGreenOnBlack_colorPrimaryDark</item>
+        <item name="colorAccent">@color/AppThemeLinuxGreenOnBlack_colorAccent</item>
+        <item name="colorPrimaryDarkLog">@color/AppThemeLinuxGreenOnBlack_colorPrimaryDarkLog</item>
+        <item name="colorAccentLog">@color/AppThemeLinuxGreenOnBlack_colorAccentLog</item>
+        <item name="colorAccentHighlight">@color/AppThemeLinuxGreenOnBlack_colorAccentHighlight</item>
+        <item name="colorAboutLinkColor">@color/AppThemeLinuxGreenOnBlack_colorAboutLinkColor</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_linuxgob</item>
     </style>
 
     <style name="AppThemeWinter" parent="AppTheme">
-        <item name="colorPrimary">#646956</item>
-        <item name="colorPrimaryDark">#0081E7</item>
-        <item name="colorAccent">#17C5FF</item>
-        <item name="colorPrimaryDarkLog">#00B8FF</item>
-        <item name="colorAccentLog">#9FBDC9</item>
-        <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#AEEEEE</item>
-        <item name="colorAboutLinkColor">#0040FF</item>
+        <item name="colorPrimary">@color/AppThemeWinter_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/AppThemeWinter_colorPrimaryDark</item>
+        <item name="colorAccent">@color/AppThemeWinter_colorAccent</item>
+        <item name="colorPrimaryDarkLog">@color/AppThemeWinter_colorPrimaryDarkLog</item>
+        <item name="colorAccentLog">@color/AppThemeWinter_colorAccentLog</item>
+        <item name="colorAccentHighlight">@color/AppThemeWinter_colorAccentHighlight</item>
+        <item name="colorAboutLinkColor">@color/AppThemeWinter_colorAboutLinkColor</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonicon32_winter</item>
     </style>
 
     <style name="AppThemeUrbanaDesfire" parent="AppTheme">
-        <item name="colorPrimary">#13294b</item>
-        <item name="colorPrimaryDark">#050D13</item>
-        <item name="colorAccent">#E84A27</item>
-        <item name="colorPrimaryDarkLog">#A3351B</item>
-        <item name="colorAccentLog">#EE8069</item>
-        <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#F0854E</item>
-        <item name="colorAboutLinkColor">#1E4787</item>
+        <item name="colorPrimary">@color/AppThemeUrbanaDesfire_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/AppThemeUrbanaDesfire_colorPrimaryDark</item>
+        <item name="colorAccent">@color/AppThemeUrbanaDesfire_colorAccent</item>
+        <item name="colorPrimaryDarkLog">@color/AppThemeUrbanaDesfire_colorPrimaryDarkLog</item>
+        <item name="colorAccentLog">@color/AppThemeUrbanaDesfire_colorAccentLog</item>
+        <item name="colorAccentHighlight">@color/AppThemeUrbanaDesfire_colorAccentHighlight</item>
+        <item name="colorAboutLinkColor">@color/AppThemeUrbanaDesfire_colorAboutLinkColor</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonicon32_desfire</item>
     </style>
 
     <style name="AppThemeAtlanta" parent="AppTheme">
-        <item name="colorPrimary">#C59353</item>
-        <item name="colorPrimaryDark">#634A2A</item>
-        <item name="colorAccent">#C59353</item>
-        <item name="colorPrimaryDarkLog">#765832</item>
-        <item name="colorAccentLog">#F4CA59</item>
-        <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#F4CA59</item>
-        <item name="colorAboutLinkColor">#001934</item>
+        <item name="colorPrimary">@color/AppThemeAtlanta_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/AppThemeAtlanta_colorPrimaryDark</item>
+        <item name="colorAccent">@color/AppThemeAtlanta_colorAccent</item>
+        <item name="colorPrimaryDarkLog">@color/AppThemeAtlanta_colorPrimaryDarkLog</item>
+        <item name="colorAccentLog">@color/AppThemeAtlanta_colorAccentLog</item>
+        <item name="colorAccentHighlight">@color/AppThemeAtlanta_colorAccentHighlight</item>
+        <item name="colorAboutLinkColor">@color/AppThemeAtlanta_colorAboutLinkColor</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonicon32_atlanta</item>
     </style>
 
     <style name="AppThemeRaspberryPI" parent="AppTheme">
-        <item name="colorPrimary">#C3566F</item>
-        <item name="colorPrimaryDark">#893C4E</item>
-        <item name="colorAccent">#DB9AA9</item>
-        <item name="colorPrimaryDarkLog">#767470</item>
-        <item name="colorAccentLog">#BBB7B0</item>
-        <item name="deviceMemoryLogHighlight">#EF2929</item>
-        <item name="colorAccentHighlight">#EDCCD4</item>
-        <item name="colorAboutLinkColor">#622B38</item>
+        <item name="colorPrimary">@color/AppThemeRaspberryPI_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/AppThemeRaspberryPI_colorPrimaryDark</item>
+        <item name="colorAccent">@color/AppThemeRaspberryPI_colorAccent</item>
+        <item name="colorPrimaryDarkLog">@color/AppThemeRaspberryPI_colorPrimaryDarkLog</item>
+        <item name="colorAccentLog">@color/AppThemeRaspberryPI_colorAccentLog</item>
+        <item name="colorAccentHighlight">@color/AppThemeRaspberryPI_colorAccentHighlight</item>
+        <item name="colorAboutLinkColor">@color/AppThemeRaspberryPI_colorAboutLinkColor</item>
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_red</item>
     </style>
 

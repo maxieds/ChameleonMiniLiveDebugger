@@ -21,17 +21,13 @@ import android.app.DownloadManager;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Looper;
-import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.widget.RadioButton;
 
-import androidx.annotation.NonNull;
-
-import com.nononsenseapps.filepicker.FilePickerActivity;
-
 import java.io.File;
+
+import me.rosuh.filepicker.config.FilePickerManager;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.DOWNLOAD_SERVICE;
@@ -106,106 +102,6 @@ public class ExternalFileIO {
         MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("EXPORT", "Saved log file to \"" + outfilePath + "\"."));
     }
 
-    public static String selectFolderFromGUIList(@NonNull ChameleonMiniLiveDebuggerActivity activity, @NonNull String baseDirectory) {
-        Intent selectDirIntent = new Intent(activity, FilePickerActivity.class);
-        selectDirIntent.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
-        selectDirIntent.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, true);
-        selectDirIntent.putExtra(FilePickerActivity.EXTRA_ALLOW_EXISTING_FILE, false);
-        selectDirIntent.putExtra(FilePickerActivity.EXTRA_SINGLE_CLICK, false);
-        selectDirIntent.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_FILE);
-        selectDirIntent.putExtra(FilePickerActivity.EXTRA_START_PATH, baseDirectory);
-        //selectDirIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        activity.startActivityForResult(
-                selectDirIntent,
-                CHOOSER_ACTIVITY_PICK_DIRECTORY_RESULT_CODE
-        );
-        try {
-            Looper.loop();
-        } catch(RuntimeException rte) {
-            try {
-                String selectedDirPath = rte.getMessage().replace("java.lang.RuntimeException: ", "");
-                // this is necessary because for some reason the app otherwise
-                // freezes without bringing the original Activity context back to the front:
-                activity.moveTaskToBack(false);
-                Intent bringToFrontIntent = new Intent(activity, activity.getClass());
-                bringToFrontIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                activity.startActivity(bringToFrontIntent);
-                return selectedDirPath;
-            } catch(Exception ex) {
-                ex.printStackTrace();
-                return "";
-            }
-        }
-        return "";
-    }
-
-    public static String selectTextFileFromGUIList(@NonNull ChameleonMiniLiveDebuggerActivity activity, @NonNull String baseDirectory) {
-        Intent selectTextFileIntent = new Intent(activity, FilePickerActivity.class);
-        selectTextFileIntent.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
-        selectTextFileIntent.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, true);
-        selectTextFileIntent.putExtra(FilePickerActivity.EXTRA_ALLOW_EXISTING_FILE, true);
-        selectTextFileIntent.putExtra(FilePickerActivity.EXTRA_SINGLE_CLICK, false);
-        selectTextFileIntent.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_FILE);
-        selectTextFileIntent.putExtra(FilePickerActivity.EXTRA_START_PATH, baseDirectory);
-        selectTextFileIntent.setType("text/*");
-        activity.startActivityForResult(
-                selectTextFileIntent,
-                CHOOSER_ACTIVITY_PICK_FILE_RESULT_CODE
-        );
-        try {
-            Looper.loop();
-        } catch(RuntimeException rte) {
-            try {
-                String selectedFilePath = rte.getMessage().replace("java.lang.RuntimeException: ", "");
-                // this is necessary because for some reason the app otherwise
-                // freezes without bringing the original Activity context back to the front:
-                activity.moveTaskToBack(false);
-                Intent bringToFrontIntent = new Intent(activity, activity.getClass());
-                bringToFrontIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                activity.startActivity(bringToFrontIntent);
-                return selectedFilePath;
-            } catch(Exception ex) {
-                ex.printStackTrace();
-                return "";
-            }
-        }
-        return "";
-    }
-
-    public static String selectFileFromGUIList(@NonNull ChameleonMiniLiveDebuggerActivity activity, @NonNull String baseDirectory) {
-        Intent selectFileIntent = new Intent(activity, FilePickerActivity.class);
-        selectFileIntent.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
-        selectFileIntent.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, true);
-        selectFileIntent.putExtra(FilePickerActivity.EXTRA_ALLOW_EXISTING_FILE, true);
-        selectFileIntent.putExtra(FilePickerActivity.EXTRA_SINGLE_CLICK, false);
-        selectFileIntent.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_FILE);
-        selectFileIntent.putExtra(FilePickerActivity.EXTRA_START_PATH, baseDirectory);
-        selectFileIntent.setType("text/*");
-        selectFileIntent.putExtra(Intent.EXTRA_MIME_TYPES, "application/octet-stream");
-        activity.startActivityForResult(
-                selectFileIntent,
-                CHOOSER_ACTIVITY_PICK_FILE_RESULT_CODE
-        );
-        try {
-            Looper.loop();
-        } catch(RuntimeException rte) {
-            try {
-                String selectedFilePath = rte.getMessage().replace("java.lang.RuntimeException: ", "");
-                // this is necessary because for some reason the app otherwise
-                // freezes without bringing the original Activity context back to the front:
-                activity.moveTaskToBack(false);
-                Intent bringToFrontIntent = new Intent(activity, activity.getClass());
-                bringToFrontIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                activity.startActivity(bringToFrontIntent);
-                return selectedFilePath;
-            } catch(Exception ex) {
-                ex.printStackTrace();
-                return "";
-            }
-        }
-        return "";
-    }
-
     /**
      * Constant for the file chooser dialog in the upload card data process.
      */
@@ -214,7 +110,6 @@ public class ExternalFileIO {
     public static final int CHOOSER_ACTIVITY_PICK_FILE_RESULT_CODE = 3 + 8080;
 
     public static void handleActivityResult(ChameleonMiniLiveDebuggerActivity activity, int requestCode, int resultCode, Intent data) {
-        Log.i(TAG, "---- URI Path: " + data.getData().getPath());
         if(activity == null || data == null) {
             throw new RuntimeException("");
         }
@@ -232,14 +127,14 @@ public class ExternalFileIO {
                 break;
             case CHOOSER_ACTIVITY_PICK_DIRECTORY_RESULT_CODE:
                 if (resultCode == RESULT_OK) {
-                    String selectedDirectoryPath = data.getData().getPath();
+                    String selectedDirectoryPath = FilePickerManager.INSTANCE.obtainData().size() > 0 ? FilePickerManager.INSTANCE.obtainData().get(0) : "";
                     Log.i(TAG, "Dir PATH: " + selectedDirectoryPath);
                     throw new RuntimeException(selectedDirectoryPath);
                 }
                 break;
             case CHOOSER_ACTIVITY_PICK_FILE_RESULT_CODE:
                 if (resultCode == RESULT_OK) {
-                    String selectedFilePath = data.getData().getPath();
+                    String selectedFilePath = FilePickerManager.INSTANCE.obtainData().size() > 0 ? FilePickerManager.INSTANCE.obtainData().get(0) : "";
                     Log.i(TAG, "File PATH: " + selectedFilePath);
                     throw new RuntimeException(selectedFilePath);
                 }
