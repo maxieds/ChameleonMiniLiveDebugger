@@ -96,9 +96,9 @@ public class ChameleonScripting {
 
         /* ANTLR4 types: https://www.antlr.org/api/Java/ */
         ANTLRInputStream scriptInputStream;
-        //JavaLexer scriptLexer; // TODO
+        //ChameleonScriptLexer scriptLexer;
         CommonTokenStream scriptTokenStream;
-        //JavaParser scriptParser; // TODO
+        //ChameleonScriptParser scriptParser;
         ParseTree scriptParseTree;
 
         public ChameleonScriptInstance(String scriptFile) {

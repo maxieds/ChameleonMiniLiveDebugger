@@ -44,6 +44,7 @@ public class ScriptingTypes {
             VariableTypeRawFileFilePath,
             VariableTypeStorageFilePath,
             VariableTypeArray,
+            VariableTypeHashMap,
             VariableTypeArrayComposite, /* TODO */
         }
 

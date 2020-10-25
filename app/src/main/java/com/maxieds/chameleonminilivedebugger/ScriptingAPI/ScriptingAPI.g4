@@ -18,15 +18,19 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 grammar ScriptingAPI;
 import ScriptingPrimitives;
 
+@header {
+     package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
+}
+
 function_args_list returns [List<ScriptVariable> varsList]:
      var=expression_eval_term FunctionArgInnerSeparator argsList=function_args_list {
-          $argsList.add($var);
-          $varsList=$argsList;
+          $argsList.varsList.add($var.svar);
+          $varsList=$argsList.varsList;
      }
      |
      var=expression_eval_term {
           $varsList=new ArrayList<ScriptVariable>();
-          $varsList.add($var);
+          $varsList.add($var.svar);
      }
      |
      {
@@ -37,13 +41,13 @@ function_args_list returns [List<ScriptVariable> varsList]:
 scripting_api_function returns [ScriptVariable funcResult]:
      funcName=ScriptingAPIFunctionName FunctionStartArgsDelimiter
      funcArgs=function_args_list FunctionEndArgsDelimiter {
-          $funcResult=ScriptingFunctions.callFunction($funcName, $funcArgs);
+          $funcResult=ScriptingFunctions.callFunction($funcName.text, $funcArgs.varsList);
      }
      ;
 
-FunctionArgInnerSeparator: ',' ;
-FunctionStartArgsDelimiter: '(' ;
-FunctionEndArgsDelimiter: ')' ;
+FunctionArgInnerSeparator: CommaSeparator ;
+FunctionStartArgsDelimiter: OpenParens ;
+FunctionEndArgsDelimiter: ClosedParens ;
 
 ScriptingAPIFunctionName:  ScriptControlFlowFunctions | PrintingAndLoggingFunctions |
                            ChameleonConnectionTypeFunctions | VariableTypeFunctions |

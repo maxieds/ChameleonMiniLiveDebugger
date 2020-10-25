@@ -17,6 +17,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 grammar ScriptingPrimitives;
 
+@header {
+     package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
+}
+
 tokens {
      TYPE_INT,
      TYPE_BOOL,
@@ -26,155 +30,188 @@ tokens {
      TYPE_RAW_STRING
 }
 
-type_literal returns [ScriptVariable var]:
-     hs=HexString        { $var=ScriptVariable.parseHexString($hs.text); }
+type_literal returns [ScriptVariable svar]:
+     hs=HexString        { $svar=ScriptVariable.parseHexString($hs.text); }
      |
-     hb=HexByte          { $var=ScriptVariable.parseInt($hb.text); }
+     hb=HexByte          { $svar=ScriptVariable.parseInt($hb.text); }
      |
-     hl=HexLiteral       { if($hs.text.length() > 8) {
-                                $var=ScriptVariable.parseHexString($hs.text);
+     hl=HexLiteral       { if($hl.text.length() > 8) {
+                                $svar=ScriptVariable.parseHexString($hl.text);
                            }
-                           else if($hs.text.length() < 2 || !$hs.text.substring(0, 2).equals("0x")) {
-                                $var=ScriptVariable.parseInt("0x" + $hs.text);
+                           else if($hl.text.length() < 2 || !$hl.text.substring(0, 2).equals("0x")) {
+                                $svar=ScriptVariable.parseInt("0x" + $hl.text);
                            }
                            else {
-                                $var=ScriptVariable.parseInt($hs.text);
+                                $svar=ScriptVariable.parseInt($hl.text);
                            }
                          }
      |
-     bl=BooleanLiteral   { $var=ScriptVariable.parseBoolean($bl.text); }
+     bl=BooleanLiteral   { $svar=ScriptVariable.parseBoolean($bl.text); }
      |
-     sl=StringLiteral    { $var=ScriptVariable.newInstance().set($sl.text); }
+     sl=StringLiteral    { $svar=ScriptVariable.newInstance().set($sl.text); }
      |
-     hs=HexStringLiteral { $var=ScriptVariable.parseHexString($hs.text); }
+     hs=HexStringLiteral { $svar=ScriptVariable.parseHexString($hs.text); }
      |
-     rs=RawStringLiteral { $var=ScriptVariable.parseRawString($rs.text); }
+     rs=RawStringLiteral { $svar=ScriptVariable.parseRawString($rs.text); }
      ;
 
-variable_reference returns [ScriptVariable var]:
+variable_reference returns [ScriptVariable svar]:
      VariableStartSymbol vname=VariableName {
-           $var=ChameleonScripting.getRunningInstance().lookupVariableByName($vname.text);
+           $svar=ChameleonScripting.getRunningInstance().lookupVariableByName($vname.text);
      }
      ;
 
-operand_expression: variable_reference | type_literal ;
+operand_expression returns [ScriptVariable svar]:
+     vr=variable_reference {
+          $svar=$vr.svar;
+     }
+     |
+     tl=type_literal {
+          $svar=$tl.svar;
+     }
+     ;
 
-expression_eval_term: variable_reference | type_literal |
-                      boolean_valued_operation | other_operation_result |
-                      assignment_operation | typecast_expression ;
+expression_eval_term returns [ScriptVariable svar]:
+     vr=variable_reference {
+          $svar=$vr.svar;
+     }
+     |
+     tl=type_literal {
+          $svar=$tl.svar;
+     }
+     |
+     bvOp=boolean_valued_operation {
+          $svar=ScriptVariable.newInstance().set($bvOp.opResult);
+     }
+     |
+     otherOp=other_operation_result {
+          $svar=$otherOp.svar;
+     }
+     |
+     aOp=assignment_operation {
+          $svar=$aOp.svar;
+     }
+     |
+     tc=typecast_expression {
+          $svar=$tc.svar;
+     }
+     ;
 
 boolean_valued_operation returns [ScriptVariable  opResult]:
      lhs=operand_expression EqualsComparisonOperator rhs=operand_expression {
-          $opResult=ScriptVariable.newInstance().set($lhs.getValueAsBoolean() == $lhs.getValueAsBoolean());
+          $opResult=ScriptVariable.newInstance().set($lhs.svar.getValueAsBoolean() == $rhs.svar.getValueAsBoolean());
      }
      |
      lhs=operand_expression NotEqualsComparisonOperator rhs=operand_expression {
-          $opResult=ScriptVariable.newInstance().set($lhs.getValueAsBoolean() != $lhs.getValueAsBoolean());
+          $opResult=ScriptVariable.newInstance().set($lhs.svar.getValueAsBoolean() != $rhs.svar.getValueAsBoolean());
      }
      |
      lhs=operand_expression LogicalAndOperator rhs=operand_expression {
-          $opResult=ScriptVariable.newInstance().set($lhs.getValueAsBoolean() && $lhs.getValueAsBoolean());
+          $opResult=ScriptVariable.newInstance().set($lhs.svar.getValueAsBoolean() && $rhs.svar.getValueAsBoolean());
      }
      |
      lhs=operand_expression LogicalOrOperator rhs=operand_expression {
-          $opResult=ScriptVariable.newInstance().set($lhs.getValueAsBoolean() || $lhs.getValueAsBoolean());
+          $opResult=ScriptVariable.newInstance().set($lhs.svar.getValueAsBoolean() || $rhs.svar.getValueAsBoolean());
      }
      |
      LogicalNotOperator rhs=operand_expression {
-          $opResult=ScriptVariable.newInstance().set(!$rhs.getValueAsBoolean());
+          $opResult=ScriptVariable.newInstance().set(!$rhs.svar.getValueAsBoolean());
      }
      ;
 
-other_operation_result returns [ScriptVariable var]:
+other_operation_result returns [ScriptVariable svar]:
      lhs=operand_expression LeftShiftOperator rhs=operand_expression {
-          $var=$lhs.binaryOperation(ScriptVariable.BinaryOperation.BINOP_SHIFT_LEFT, $rhs);
+          $svar=$lhs.svar.binaryOperation(ScriptVariable.BinaryOperation.BINOP_SHIFT_LEFT, $rhs.svar);
      }
      |
      lhs=operand_expression RightShiftOperator rhs=operand_expression {
-          $var=$lhs.binaryOperation(ScriptVariable.BinaryOperation.BINOP_SHIFT_RIGHT, $rhs);
+          $svar=$lhs.svar.binaryOperation(ScriptVariable.BinaryOperation.BINOP_SHIFT_RIGHT, $rhs.svar);
      }
      |
      lhs=operand_expression BitwiseAndOperator rhs=operand_expression {
-          $var=$lhs.binaryOperation(ScriptVariable.BinaryOperation.BINOP_BITWISE_AND, $rhs);
+          $svar=$lhs.svar.binaryOperation(ScriptVariable.BinaryOperation.BINOP_BITWISE_AND, $rhs.svar);
      }
      |
      lhs=operand_expression BitwiseOrOperator rhs=operand_expression {
-          $var=$lhs.binaryOperation(ScriptVariable.BinaryOperation.BINOP_BITWISE_OR, $rhs);
+          $svar=$lhs.svar.binaryOperation(ScriptVariable.BinaryOperation.BINOP_BITWISE_OR, $rhs.svar);
      }
      |
      lhs=operand_expression BitwiseXorOperator rhs=operand_expression {
-          $var=$lhs.binaryOperation(ScriptVariable.BinaryOperation.BINOP_BITWISE_XOR, $rhs);
+          $svar=$lhs.svar.binaryOperation(ScriptVariable.BinaryOperation.BINOP_BITWISE_XOR, $rhs.svar);
      }
      |
      BitwiseNotOperator rhs=operand_expression {
-          $var=$rhs.unaryOperation(ScriptVariable.UnaryOperation.UOP_BITWISE_NOT);
+          $svar=$rhs.svar.unaryOperation(ScriptVariable.UnaryOperation.UOP_BITWISE_NOT);
      }
      |
      cond=operand_expression TernaryOperatorFirstSymbol vtrue=operand_expression
      TernaryOperatorSecondSymbol vfalse=operand_expression {
-          boolean predicate = $cond.getAsBoolean();
+          boolean predicate = $cond.svar.getAsBoolean();
           if(predicate) {
-               $var=$vtrue;
+               $svar=$vtrue.svar;
           }
           else {
-               $var=$vfalse;
+               $svar=$vfalse.svar;
           }
      }
      ;
 
-assignment_operation returns [ScriptVariable var]:
+assignment_operation returns [ScriptVariable svar]:
      lhs=variable_reference DefEqualsOperator rhs=operand_expression {
-          $lhs=$rhs;
-          ChameleonScripting.getRunningInstance().setVariableByName($lhs.text);
-          $var=$lhs;
+          $svar=$rhs.svar;
+          ChameleonScripting.getRunningInstance().setVariableByName($lhs.svar.getName());
      }
      |
      lhs=variable_reference PlusEqualsOperator rhs=operand_expression {
-          $lhs=$lhs+$rhs;
-          ChameleonScripting.getRunningInstance().setVariableByName($lhs.text);
-          $var=$lhs;
+          $svar=$lhs.svar.binaryOperation(ScriptVariable.BinaryOperation.BINOP_PLUS, $rhs.svar);
+          ChameleonScripting.getRunningInstance().setVariableByName($lhs.svar.getName());
      }
      ;
 
-typecast_expression returns [ScriptVariable var]:
+typecast_expression returns [ScriptVariable svar]:
      TypeCastByte initVar=operand_expression {
-          $var=$initVar.getAsByte();
+          $svar=$initVar.svar.getAsByte();
      }
      |
      TypeCastShort initVar=operand_expression {
-          $var=$initVar.getAsShort();
+          $svar=$initVar.svar.getAsShort();
      }
      |
      TypeCastInt32 initVar=operand_expression {
-          $var=$initVar.getAsInteger();
+          $svar=$initVar.svar.getAsInteger();
      }
      |
      TypeCastBoolean initVar=operand_expression {
-          $var=$initVar.getAsBoolean();
+          $svar=$initVar.svar.getAsBoolean();
      }
      |
      TypeCastString initVar=operand_expression {
-          $var=$initVar.getAsString();
+          $svar=$initVar.svar.getAsString();
      }
      ;
 
-WhiteSpaceText:        ( WhiteSpace | NewLineBreak )+ -> channel(HIDDEN) ;
-WhiteSpace:            [ \t\r\t]* -> channel(HIDDEN) ;
+WhiteSpaceText:        ( WhiteSpace | NewLineBreak )+ ;
+WhiteSpace:            [ \t\r\n]+ -> channel(HIDDEN) ;
 NewLineBreak:          ( '\r''\n'? | '\n' ) -> channel(HIDDEN) ;
 CStyleBlockComment:    '/*'.*?'*/' -> channel(HIDDEN) ;
 CStyleLineComment:     '//'~[\n]* NewLineBreak -> channel(HIDDEN) ;
 HashStyleLineComment:  '#'~[\n]* NewLineBreak -> channel(HIDDEN) ;
 Commentary:            CStyleBlockComment | CStyleLineComment | HashStyleLineComment ;
 
-HexDigit: [0-9a-fA-F] -> type(TYPE_INT) ;
-HexString: (HexDigit)+ -> type(TYPE_BYTES) ;
-HexByte: '0x' HexDigit HexDigit | '0x' HexDigit | HexDigit HexDigit -> type(TYPE_INT) ;
+HexDigit: [0-9a-fA-F] ;
+HexString: (HexDigit)+ ;
+HexByte: '0x' HexDigit HexDigit | '0x' HexDigit | HexDigit HexDigit ;
 HexLiteral: HexByte | '0x'HexString | HexString ;
-BooleanLiteral: 'true' | 'True' | 'TRUE' | 'false' | 'False' | 'FALSE' -> type(TYPE_BOOL) ;
+BooleanLiteral: 'true' | 'True' | 'TRUE' | 'false' | 'False' | 'FALSE' ;
 AsciiChar: [\u0040-\u0046\u0050-\u0133\u0135-\u0176] ;
-StringLiteral: '"'(AsciiChar)*'"' -> type(TYPE_STRING);
-HexStringLiteral: 'h\'' HexString '\'' -> type(TYPE_HEX_STRING) ;
-RawStringLiteral: 'r\'' (AsciiChar)* '\'' -> type(TYPE_RAW_STRING) ;
+StringLiteral: '"'(AsciiChar)*'"' ;
+HexStringLiteral: 'h\'' HexString '\'' ;
+RawStringLiteral: 'r\'' (AsciiChar)* '\'' ;
+
+CommaSeparator: ',' ;
+OpenParens: '(' ;
+ClosedParens: ')' ;
+ColonSeparator: ':' ;
 
 VariableNameStartChar: '_' | [a-zA-Z] ;
 VariableNameMiddleChar: VariableNameStartChar | [0-9] ;
@@ -193,7 +230,7 @@ BitwiseOrOperator: '|' ;
 BitwiseXorOperator: '^' ;
 BitwiseNotOperator: '~' ;
 TernaryOperatorFirstSymbol: '?' ;
-TernaryOperatorSecondSymbol: ':' ;
+TernaryOperatorSecondSymbol: ColonSeparator ;
 DefEqualsOperator: '=' | ':=' ;
 PlusEqualsOperator: '+=' ;
 

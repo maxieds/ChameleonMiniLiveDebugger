@@ -27,6 +27,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.rosuh.filepicker.bean.FileItemBeanImpl;
+import me.rosuh.filepicker.config.AbstractFileDetector;
+import me.rosuh.filepicker.config.AbstractFileFilter;
 import me.rosuh.filepicker.config.FilePickerConfig;
 import me.rosuh.filepicker.config.FilePickerManager;
 import me.rosuh.filepicker.filetype.FileType;
@@ -160,6 +163,69 @@ public class AndroidFilePicker {
         return typesList;
     }
 
+    public static class SelectDirectoryFilter extends AbstractFileFilter {
+        @Override
+        public ArrayList<FileItemBeanImpl> doFilter(ArrayList<FileItemBeanImpl> fileItemsList) {
+            ArrayList<FileItemBeanImpl> selectedDirFiles = new ArrayList<FileItemBeanImpl>();
+            for(int itemIdx = 0; itemIdx < fileItemsList.size(); itemIdx++) {
+                FileItemBeanImpl fileItem = fileItemsList.get(itemIdx);
+                if(fileItem.isDir()) {
+                    selectedDirFiles.add(fileItem);
+                }
+            }
+            return selectedDirFiles;
+        }
+    }
+
+    public static class RestrictFilesFilter extends AbstractFileFilter {
+
+        private List<FileType> allowedFileTypes;
+        public RestrictFilesFilter(List<FileType> inputFileTypeSpec) {
+            allowedFileTypes = inputFileTypeSpec;
+        }
+        private FileType getAssociatedFileType(FileItemBeanImpl fileItem) {
+            for(int typeIdx = 0; typeIdx < allowedFileTypes.size(); typeIdx++) {
+                if(allowedFileTypes.get(typeIdx).verify(fileItem.getFileName())) {
+                    return allowedFileTypes.get(typeIdx);
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public ArrayList<FileItemBeanImpl> doFilter(ArrayList<FileItemBeanImpl> fileItemsList) {
+            ArrayList<FileItemBeanImpl> selectedFilesByType = new ArrayList<FileItemBeanImpl>();
+            for(int itemIdx = 0; itemIdx < fileItemsList.size(); itemIdx++) {
+                FileItemBeanImpl fileItem = fileItemsList.get(itemIdx);
+                if(getAssociatedFileType(fileItem) != null) {
+                    selectedFilesByType.add(fileItem);
+                }
+            }
+            return selectedFilesByType;
+        }
+
+    }
+
+    public static class RestrictFilesDetector extends AbstractFileDetector {
+        private List<FileType> allowedFileTypes;
+        public RestrictFilesDetector(List<FileType> inputFileTypeSpec) {
+            allowedFileTypes = inputFileTypeSpec;
+        }
+        private FileType getAssociatedFileType(FileItemBeanImpl fileItem) {
+            for(int typeIdx = 0; typeIdx < allowedFileTypes.size(); typeIdx++) {
+                if(allowedFileTypes.get(typeIdx).verify(fileItem.getFileName())) {
+                    return allowedFileTypes.get(typeIdx);
+                }
+            }
+            return null;
+        }
+        @Override
+        public FileItemBeanImpl fillFileType(FileItemBeanImpl fileItem) {
+            fileItem.setFileType(getAssociatedFileType(fileItem));
+            return fileItem;
+        }
+    }
+
     public static final int ACTION_SELECT_DIRECTORY = 1;
     public static final int ACTION_SELECT_FILE = 2;
 
@@ -211,10 +277,18 @@ public class AndroidFilePicker {
         fpManager.from(activity);
         FilePickerConfig fpConfig = new FilePickerConfig(fpManager);
         if(filePickerAction == ACTION_SELECT_DIRECTORY) {
-            fpConfig.skipDirWhenSelect(false); // TODO
+            fpConfig.skipDirWhenSelect(false);
+            fpConfig.filter(new SelectDirectoryFilter());
+            fpConfig.setAutoFilter(true);
+            fpConfig.setPickDirectoryAction();
         }
         else {
             fpConfig.skipDirWhenSelect(true);
+            if(displayFileTypes != null) {
+                fpConfig.filter(new RestrictFilesFilter(displayFileTypes));
+                fpConfig.setCustomDetector(new RestrictFilesDetector(displayFileTypes));
+                fpConfig.setAutoFilter(true);
+            }
         }
         fpConfig.showHiddenFiles(showHidden);
         if(selectMultiple) {
@@ -222,7 +296,7 @@ public class AndroidFilePicker {
         }
         else {
             fpConfig.enableSingleChoice();
-            //fpConfig.maxSelectable(1);
+            fpConfig.maxSelectable(1);
         }
         if(rootDirectoryPath != null) {
             fpConfig.setCustomRootPath(rootDirectoryPath);
@@ -253,7 +327,10 @@ public class AndroidFilePicker {
                 bringToFrontIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 activity.startActivity(bringToFrontIntent);
                 /* Now resume to return the data we requested: */
-                if(filePickerAction == ACTION_SELECT_DIRECTORY && !selectedFile.isDirectory()) {
+                if(selectedFilePath.equals("")) {
+                    return "";
+                }
+                else if(filePickerAction == ACTION_SELECT_DIRECTORY && !selectedFile.isDirectory()) {
                     Utils.displayToastMessageShort(String.format(BuildConfig.DEFAULT_LOCALE, "Selected file \"%s\" is not a directory.", selectedFilePath));
                     return "";
                 }
@@ -302,16 +379,5 @@ public class AndroidFilePicker {
         filePicker.setFileTypes(0x1f);
         return filePicker.getFilePath(activity, CHOOSER_ACTIVITY_PICK_FILE_RESULT_CODE);
     }
-
-    /*
-     * TODO:
-     *  Set custom folder icons as part of the theme?
-     *  Need to be able to select just a directory!
-     *  Not filtering by the registered file types ...
-     *  If select donw with nothing selected, then should not return any paths ...
-     */
-
-    // LATER: Remove all references to Picasso / Image handling ...
-
 
 }

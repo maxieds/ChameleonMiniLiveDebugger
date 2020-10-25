@@ -39,6 +39,33 @@ def getGitCommitDate() {
     return getShellCommandOutput("git show | grep Date: | head -n 1 | sed -e \"s/Date:[ ]*//\"");
 }
 
+def generateAntlrJava() {
+    def antlrGeneratedSrc = "build/generated/antlr";
+    def scriptingAPIPkg = "com.maxieds.chameleonminilivedebugger.ScriptingAPI";
+    def scriptingAPISrc = "src/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI";
+    def antlrGrammarSources = [
+            "$scriptingAPISrc/ScriptingPrimitives.g4",
+            "$scriptingAPISrc/ScriptingAPI.g4",
+            "$scriptingAPISrc/ChameleonScript.g4"
+    ];
+    for (int gsIdx = 0; gsIdx < $antlrGrammarSources.length(); gsIdx++) {
+        def antlrCompileCmd = [
+                "antlr4",
+                "-o $antlrGeneratedSrc",
+                "-package $scriptingAPIPkg",
+                "-Dlanguage=Java",
+                "-listener",
+                "-visitor",
+                "-long-messages",
+                "-Xlog",
+                "-lib $scriptingAPISrc",
+                antlrGrammarSources.get(gsIdx)
+        ];
+        antlrCompileCmd.execute();
+        antlrCompileCmd.waitFor();
+    }
+}
+
 android {
 
     def configBuildTimeStamp = getDateTimestamp()
@@ -57,11 +84,28 @@ android {
 
         setProperty("archivesBaseName", "ChameleonMiniLiveDebugger-v$versionName-$configBuildTimeStamp")
 
+        build.doFirst {
+            file(new File("build/generated/antlr")).mkdirs()
+            generateAntlrJava()
+        }
+
+        clean.doLast {
+            file(new File(projectDir, "build/generated/antlr")).deleteDir()
+        }
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    sourceSets {
+        main {
+            java {
+                srcDirs = ['src/java', 'build/generated/antlr']
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
@@ -143,7 +187,7 @@ android {
         implementation 'org.antlr:antlr4-runtime:4.7'
         implementation 'com.github.felHR85:UsbSerial:4.5.2'
         implementation 'com.shawnlin:number-picker:2.4.9'
-        implementation 'com.github.rosuH:AndroidFilePicker:0.6.6'
+        implementation 'com.github.maxieds:AndroidFilePicker:master-SNAPSHOT'
     }
 
     repositories {
