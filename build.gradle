@@ -34,12 +34,8 @@ allprojects {
 
 dependencies {
     apply plugin: 'antlr'
-    //compile name: 'antlr4-runtime-4.3'
-    generateGrammarSource {
-        outputDirectory = file("build/generated/java")
-    }
 }
 
 task clean2(type: Delete) {
-    delete rootProject.buildDir // ???
+    delete rootProject.buildDir // ??? Removes old datestamped APKs ???
 }

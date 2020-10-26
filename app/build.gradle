@@ -40,18 +40,19 @@ def getGitCommitDate() {
 }
 
 /*def generateAntlrJava() {
+    file(new File(projectDir, "src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI/gen")).deleteDir()
+    file(new File(projectDir, "src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI/gen")).mkdirs()
     String scriptingAPIPkg = "com.maxieds.chameleonminilivedebugger.ScriptingAPI";
-    String scriptingAPISrc = file(new File("src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI"));
-    String antlrGeneratedSrc = scriptingAPISrc; // + "/gen";
+    String scriptingAPISrc = file(new File(projectDir, "src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI")).getPath();
+    String antlrGeneratedSrc = scriptingAPISrc + "/gen";
     List antlrGrammarSources = [
-            scriptingAPISrc + "/ScriptingPrimitives.g4",
-            scriptingAPISrc + "/ScriptingAPI.g4",
-            scriptingAPISrc + "/ChameleonScript.g4"
+            file(new File(projectDir, "src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI/ScriptingPrimitives.g4")),
+            //"src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI/ScriptingAPI.g4",
+            //"src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI/ChameleonScript.g4"
     ];
     for (int gsIdx = 0; gsIdx < antlrGrammarSources.size(); gsIdx++) {
-        List antlrCompileCmd = [
-                "bash -c 'echo x'",
-                //"antlr4",
+        def antlrCompileCmd = [
+                'antlr4',
                 //"-o " + antlrGeneratedSrc,
                 //"-package " + scriptingAPIPkg,
                 //"-Dlanguage=Java",
@@ -60,11 +61,11 @@ def getGitCommitDate() {
                 //"-long-messages",
                 //"-lib " + scriptingAPISrc,
                 //antlrGrammarSources.get(gsIdx)
-        ];
-        antlrCompileCmd.execute();
+        ].execute();
         antlrCompileCmd.waitFor();
         System.out.println(antlrCompileCmd.text[0..-2]);
     }
+    return true;
 }*/
 
 android {
@@ -88,25 +89,10 @@ android {
 
     }
 
-    /*beforeEvaluate {
-        //file(new File(projectDir, "src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI/gen")).deleteDir()
-        //file(new File(projectDir, "build/intermediates")).deleteDir()
-        //file(new File("build/intermediates")).mkdirs()
-    }*/
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
-    /*sourceSets {
-        main {
-            java {
-                srcDirs = ['build/intermediates/com/maxieds/chameleonminilivedebugger/ScriptingAPI', 'src/main/java']
-            }
-        }
-    }*/
-
 
     buildTypes {
         release {

@@ -42,6 +42,7 @@ public class ScriptingExecptions {
         VariableNotFoundException,
         NotImplementedException,
         InvalidArgumentException,
+        IndexOutOfBoundsException
     }
 
     public static class ChameleonScriptingException extends RuntimeException {

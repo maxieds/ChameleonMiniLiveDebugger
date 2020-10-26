@@ -53,6 +53,22 @@ type_literal returns [ScriptVariable svar]:
      hs=HexStringLiteral { $svar=ScriptVariable.parseHexString($hs.text); }
      |
      rs=RawStringLiteral { $svar=ScriptVariable.parseRawString($rs.text); }
+     |
+     OpenBrace bll=byte_literal_list CloseBrace { $svar=$bll.svar; }
+     ;
+
+byte_literal_list returns [ScriptVariable svar]:
+     hb=HexByte {
+          $svar=ScriptVariable.newInstance().set(new byte[] { (byte) Integer.parseInt($hb.text, 16) });
+     }
+     |
+     hb=HexByte CommaSeparator bll=byte_literal_list {
+          int bllLength = $bll.svar.getValueAsBytes().length;
+          byte[] bytesArr = new byte[bllLength + 1];
+          System.arraycopy($bll.svar.getValueAsBytes(), 0, bytesArr, 0, bllLength);
+          bytesArr[bllLength] = (byte) Integer.parseInt($hb.text, 16);
+          $svar=ScriptVariable.newInstance().set(bytesArr);
+     }
      ;
 
 variable_reference returns [ScriptVariable svar]:
@@ -222,6 +238,8 @@ CommaSeparator: ',' ;
 OpenParens: '(' ;
 ClosedParens: ')' ;
 ColonSeparator: ':' ;
+OpenBrace: '{' ;
+CloseBrace: '}' ;
 
 VariableNameStartChar: '_' | [a-zA-Z] ;
 VariableNameMiddleChar: VariableNameStartChar | [0-9] ;

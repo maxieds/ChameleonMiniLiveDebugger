@@ -19,7 +19,6 @@ package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
 import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingTypes.ScriptVariable;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExecptions;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExecptions.ChameleonScriptingException;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExecptions.ExceptionType;
 
@@ -41,6 +40,22 @@ public class ScriptingFunctions {
                 return ScriptingAPIFunctions.Printf(funcArgs);
             case "Sprintf":
                 return ScriptingAPIFunctions.Sprintf(funcArgs);
+                /* ... */
+            case "Find":
+                return ScriptingAPIFunctions.Find(funcArgs);
+            case "Contains":
+                return ScriptingAPIFunctions.Contains(funcArgs);
+            case "Replace":
+                return ScriptingAPIFunctions.Replace(funcArgs);
+            case "Split":
+                return ScriptingAPIFunctions.Split(funcArgs);
+            case "Strip":
+                return ScriptingAPIFunctions.Strip(funcArgs);
+            case "Substring":
+                return ScriptingAPIFunctions.Substring(funcArgs);
+            /* ... */
+            default:
+                break;
         }
         throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
     }
@@ -97,18 +112,35 @@ public class ScriptingFunctions {
             return ScriptVariable.newInstance().set(consoleOutput.toString());
         }
 
+        public static ScriptVariable Find(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+        }
+
+        public static ScriptVariable Contains(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+        }
+
+        public static ScriptVariable Replace(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+        }
+
+        public static ScriptVariable Split(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+        }
+
+        public static ScriptVariable Strip(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+        }
+
+        public static ScriptVariable Substring(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+        }
+
     };
 
     public static String getEnvironmentVariableByName(String envVarName) {
         switch(envVarName) {
-            case "Android.userHomePath":
-                break;
             case "Android.externalStoragePath":
-                break;
-            case "Android.downloadsPath":
-            case "Android.documentsPath":
-            case "Android.picturesPath":
-            case "Android.dataPath":
                 break;
             case "Chameleon.deviceType":
                 break;

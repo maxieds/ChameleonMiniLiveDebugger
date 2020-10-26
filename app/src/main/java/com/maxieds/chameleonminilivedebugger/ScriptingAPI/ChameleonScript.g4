@@ -24,24 +24,6 @@ import ScriptingPrimitives, ScriptingAPI;
     }
 }
 
-@lexer::members {
-    @Override
-        public void displayRecognitionError(String[] tokenNames, RecognitionException re) {
-            String ehdr = getErrorHeader(re);
-            String emsg = getErrorMessage(re, tokenNames);
-            throw new RuntimeException("LEXER: " + ehdr + " : " + emsg);
-        }
-}
-
-@parser::members {
-    @Override
-    public void displayRecognitionError(String[] tokenNames, RecognitionException re) {
-        String ehdr = getErrorHeader(re);
-        String emsg = getErrorMessage(re, tokenNames);
-        throw new RuntimeException("PARSER: " + ehdr + " : " + emsg);
-    }
-}
-
 file_contents: (script_line)+ EOF;
 
 label_statement: lblName=LabelText LabelEndDelimiter {

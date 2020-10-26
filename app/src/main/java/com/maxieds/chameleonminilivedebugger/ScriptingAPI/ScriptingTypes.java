@@ -21,6 +21,8 @@ import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -207,7 +209,7 @@ public class ScriptingTypes {
                     }
                 }
                 byte[] returnBytes = new byte[lastByteArrayPos];
-                System.arraycopy(returnBytes, 0, intBytes, 0, lastByteArrayPos);
+                System.arraycopy(intBytes, 0, returnBytes, 0, lastByteArrayPos);
                 return returnBytes;
             }
             else if(isStringType()) {
@@ -298,6 +300,16 @@ public class ScriptingTypes {
             }
         }
 
+        public boolean isArrayType() {
+            switch(varType) {
+                case VariableTypeBytes:
+                case VariableTypeArrayMap:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         public VariableType getType() throws ScriptingExecptions.ChameleonScriptingException {
             if(isIntegerType()) {
                 return VariableType.VariableTypeInteger;
@@ -310,6 +322,9 @@ public class ScriptingTypes {
             }
             else if(isStringType()) {
                 return VariableType.VariableTypeAsciiString;
+            }
+            else if(isArrayType()) {
+                return VariableType.VariableTypeArrayMap;
             }
             return VariableType.VariableTypeNone;
         }
@@ -411,6 +426,33 @@ public class ScriptingTypes {
 
         public ScriptVariable binaryOperation(Operation opType, ScriptVariable rhsVar)
                                               throws ScriptingExecptions.ChameleonScriptingException {
+            if(opType == Operation.BINOP_PLUS) {
+                // Handle three cases, if the remainder does not degrade nicely to one of these,
+                // then happily, sane mind intact, throw an exception at the non-standard use case:
+                // 1) numeric types; 2) arrays (concat); 3) string handling (append).
+                // Note that when the rhs is an array subclass, need to call the subclass handling
+                // function to store the result by swapping the order of the variables:
+                if(isArrayType() && rhsVar.isArrayType()) {
+                    if(varType != VariableType.VariableTypeArrayMap && rhsVar.getType() != VariableType.VariableTypeArrayMap) {
+                        byte[] lhsBytes = getValueAsBytes(), rhsBytes = rhsVar.getValueAsBytes();
+                        String byteStr = String.valueOf(lhsBytes) + String.valueOf(rhsBytes);
+                        set(byteStr.getBytes());
+                    }
+                    else {
+                        return rhsVar.binaryOperation(opType, this);
+                    }
+                }
+                else if(isIntegerType() && rhsVar.isIntegerType()) {
+                    set(getValueAsInt() + rhsVar.getValueAsInt());
+                }
+                else if(isStringType() && rhsVar.isStringType()) {
+                    set(getValueAsString() + rhsVar.getValueAsString());
+                }
+                else {
+                    throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.ArithmeticErrorException);
+                }
+                return this;
+            }
             throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
         }
 
@@ -422,8 +464,8 @@ public class ScriptingTypes {
 
     public static class ScriptVariableArrayMap extends ScriptVariable {
 
-        private List<ScriptVariable> arrayList;
-        private Map<String, ScriptVariable> hashMap;
+        private ArrayList<ScriptVariable> arrayList;
+        private HashMap<String, ScriptVariable> hashMap;
 
         public ScriptVariableArrayMap() {
             arrayList = new ArrayList<ScriptVariable>();
@@ -447,32 +489,67 @@ public class ScriptingTypes {
 
         @Override
         public ScriptVariable getValueAt(int index) throws ScriptingExecptions.ChameleonScriptingException {
-            return null;
+            if(index < 0 || index >= arrayList.size()) {
+                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IndexOutOfBoundsException);
+            }
+            return arrayList.get(index);
         }
 
         @Override
         public ScriptVariable getValueAt(String hashIndex) throws ScriptingExecptions.ChameleonScriptingException {
-            return null;
+            if(hashIndex == null || hashMap.get(hashIndex) == null) {
+                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IndexOutOfBoundsException);
+            }
+            return hashMap.get(hashIndex);
         }
 
         @Override
         public void setValueAt(int index, ScriptVariable varObj) throws ScriptingExecptions.ChameleonScriptingException {
-            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+            if(index < 0 || index >= arrayList.size()) {
+                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IndexOutOfBoundsException);
+            }
+            arrayList.set(index, varObj);
         }
 
         @Override
         public void setValueAt(String hashIndex, ScriptVariable varObj) throws ScriptingExecptions.ChameleonScriptingException {
-            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+            if(hashIndex == null) {
+                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IllegalArgumentException);
+            }
+            hashMap.put(hashIndex, varObj);
         }
 
         @Override
         public String getBinaryString() {
-            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+            StringBuilder binText = new StringBuilder();
+            for(int b = 0; b < arrayList.size(); b++) {
+                binText.append(arrayList.get(b).getBinaryString());
+            }
+            for(ScriptVariable svar : hashMap.values()) {
+                binText.append(svar.getBinaryString());
+            }
+            return binText.toString();
         }
 
         @Override
         public ScriptVariable binaryOperation(ScriptVariable.Operation opType, ScriptVariable rhsVar)
                                               throws ScriptingExecptions.ChameleonScriptingException {
+             if(opType == Operation.BINOP_PLUS) {
+                 if(rhsVar.getType() == VariableType.VariableTypeArrayMap) {
+                     Collections.addAll(Arrays.asList(arrayList), Arrays.asList(((ScriptVariableArrayMap) rhsVar).arrayList));
+                     hashMap.putAll(((ScriptVariableArrayMap) rhsVar).hashMap);
+                 }
+                 else if(rhsVar.getType() == VariableType.VariableTypeBytes) {
+                     byte[] bytesArr = rhsVar.getValueAsBytes();
+                     for(int b = 0; b < bytesArr.length; b++) {
+                         arrayList.add(ScriptVariable.newInstance().set(bytesArr[b]));
+                     }
+                 }
+                 else {
+                     arrayList.add(rhsVar);
+                 }
+                 return this;
+             }
              throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
         }
 

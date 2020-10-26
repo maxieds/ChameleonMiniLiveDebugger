@@ -14,4 +14,3 @@ $tagUID = Replace("..(?!$)", "$0" + ":")
 Print("Tag UID = ", $tagUID)
 
 Exit(0)
-
