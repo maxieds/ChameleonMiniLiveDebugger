@@ -47,8 +47,12 @@ public class ChameleonScripting {
 
     private static class ChameleonDeviceState {
 
+        /* A stack of the most relevant saved states: */
         private static Stack<ChameleonDeviceState> SAVED_DEVICE_STATES = new Stack<ChameleonDeviceState>();
 
+        /* The settings for the current Chameleon device and running
+         * slot configuration:
+         */
         public String CONFIG;
         public String UID;
         public String LOGMODE;
@@ -57,6 +61,14 @@ public class ChameleonScripting {
         public boolean FIELD;
         public int THRESHOLD;
         public int TIMEOUT;
+
+        /* For completeness, restore any disturbed values in the ChameleonIO class: */
+        public boolean CHAMIO_PAUSED;
+        public boolean CHAMIO_DOWNLOAD;
+        public boolean CHAMIO_UPLOAD;
+        public boolean CHAMIO_WAITING_FOR_XMODEM;
+
+        public ChameleonDeviceState() {}
 
         public void saveState(boolean push) {} // TODO
         public void restoreState(boolean pop) {} // TODO
@@ -143,7 +155,7 @@ public class ChameleonScripting {
             scriptVariablesHashMap = new HashMap<String, ScriptingTypes.ScriptVariable>();
             scriptState = ScriptRuntimeState.INITIALIZED;
             chameleonDeviceState = new ChameleonDeviceState();
-            scriptRunnerThread = null; // TODO: handle this running mostly off of the main UI thread (except for GUI status updates) ...
+            scriptRunnerThread = null;
             try {
                 scriptInputStream = new ANTLRInputStream(scriptFileStream);
                 scriptLexer = new ChameleonScriptLexer(scriptInputStream);
@@ -184,13 +196,7 @@ public class ChameleonScripting {
             if(!runScriptPreambleActions()) {
                 return false;
             }
-            try {
-                scriptInputStream = new ANTLRInputStream(activeChameleonScript.scriptFileStream);
-            } catch(Exception ioe) {
-                ioe.printStackTrace();
-                initialized = false;
-                return false;
-            }
+            /* TODO: handle the runner thread mostly off of the main UI thread (except for GUI status updates) ... */
             return false;
         }
 

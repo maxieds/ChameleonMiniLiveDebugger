@@ -60,7 +60,6 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface {
         return false;
     }
 
-
     public boolean isWiredUSB() {
         return false;
     }

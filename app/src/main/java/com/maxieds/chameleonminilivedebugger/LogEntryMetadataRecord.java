@@ -138,7 +138,7 @@ public class LogEntryMetadataRecord extends LogEntryBase {
         prefixIconMap.put("VENDING", R.drawable.vending24);
         prefixIconMap.put("PHONE", R.drawable.phone24);
         prefixIconMap.put("ONCLICK", R.drawable.powaction24);
-        prefixIconMap.put("IDENTIFY", R.drawable.find24);
+        prefixIconMap.put("IDENTIFY", R.drawable.fingerprintq24);
         prefixIconMap.put("PRINT", R.drawable.dotdotdotbubble24);
         prefixIconMap.put("EXPORT", R.drawable.export24);
         prefixIconMap.put("SEARCH", R.drawable.searchicon24);
@@ -195,7 +195,7 @@ public class LogEntryMetadataRecord extends LogEntryBase {
                 e.printStackTrace();
             }
             if(eventMsg.length() > 0) {
-                eventMsg = locationDetails + "\n\n" + eventMsg;
+                eventMsg = locationDetails + "\n" + eventMsg;
             }
         }
         else if(eventID.equals("TODO LIST")) { // TODO: SpannableString has a mode for this ...

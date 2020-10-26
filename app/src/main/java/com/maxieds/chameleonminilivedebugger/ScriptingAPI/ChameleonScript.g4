@@ -32,13 +32,13 @@ label_statement: lblName=LabelText LabelEndDelimiter {
      ;
 
 exec_chameleon_command returns [String cmdResult]:
-     ExecChameleonCommandInit expression_eval_term ExecChameleonCommandEnd {
-          // TODO: Call chameleon command and assemble result string ...
-          $cmdResult=null; // TODO
+     ExecChameleonCommandInit eet=expression_eval_term ExecChameleonCommandEnd {
+          $cmdResult=ChameleonIOHandler.executeChameleonCommandForResult($eet.svar.getValueAsString());
      }
      ;
 
-script_line: label_statement | exec_chameleon_command ;
+script_line: label_statement | exec_chameleon_command |
+             assignment_operation | scripting_api_function_result ;
 
 LabelText: (AsciiChar)+ ;
 LabelEndDelimiter: ColonSeparator ;

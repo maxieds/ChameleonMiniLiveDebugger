@@ -24,7 +24,6 @@ import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingConfig;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 
 public class AndroidSettingsStorage {
@@ -342,6 +341,7 @@ public class AndroidSettingsStorage {
         else {
             return false;
         }
+        spEditor.apply();
         spEditor.commit();
         return true;
     }

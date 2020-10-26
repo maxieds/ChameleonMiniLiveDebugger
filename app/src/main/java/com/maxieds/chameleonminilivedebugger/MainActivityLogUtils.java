@@ -63,8 +63,8 @@ public class MainActivityLogUtils {
                     LinearLayout lastLogElt = (LinearLayout) logDataFeed.getChildAt(logDataFeed.getChildCount() - 1);
                     lastLogElt.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
                     int bottomEltHeight = lastLogElt.getMeasuredHeight();
-                    if(logScroller.getBottom() <= lastLogElt.getBottom()) {
-                        logScroller.scrollTo(0, logScroller.getBottom() + bottomEltHeight);
+                    if(logScroller.getBottom() > lastLogElt.getBottom()) {
+                        logScroller.scrollTo(0, logScroller.getBottom());
                     }
                 }
             }, 75);
@@ -257,7 +257,11 @@ public class MainActivityLogUtils {
                 .setView(userInput)
                 .setPositiveButton("Submit Message", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        userInputStack = userInput.getText().toString() + "\n" + Utils.getGPSLocationString();
+                        userInputStack = userInput.getText().toString();
+                        if(!userInputStack.equals("")) {
+                            userInputStack += "\n";
+                        }
+                        userInputStack += Utils.getGPSLocationString();
                         throw new RuntimeException("The user input is ready.");
                     }
                 })

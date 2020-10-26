@@ -322,6 +322,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
                        "android.permission.USB_PERMISSION",
                        "android.permission.BLUETOOTH",
                        "android.permission.ACCESS_COARSE_LOCATION",
+                       "android.permission.ACCESS_FINE_LOCATION",
                        "android.permission.VIBRATE",
                };
                if (android.os.Build.VERSION.SDK_INT >= 23) {

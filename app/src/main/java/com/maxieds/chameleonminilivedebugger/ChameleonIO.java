@@ -430,7 +430,7 @@ public class ChameleonIO {
                                 SeekBar timeoutSeekbar = (SeekBar) LiveLoggerActivity.getContentView(R.id.cmdTimeoutSeekbar);
                                 if (thresholdSeekbar != null) {
                                     thresholdSeekbar.setProgress(THRESHOLD);
-                                    ((TextView) LiveLoggerActivity.getContentView(R.id.cmdTimeoutSeekbarValueText)).setText(String.format(BuildConfig.DEFAULT_LOCALE, "% 4d (x128) ms", TIMEOUT));
+                                    ((TextView) LiveLoggerActivity.getContentView(R.id.cmdTimeoutSeekbarValueText)).setText(String.format(BuildConfig.DEFAULT_LOCALE, "% 4s (x128) ms", TIMEOUT));
                                 }
                             } catch (Exception ex) {
                                 ex.printStackTrace();

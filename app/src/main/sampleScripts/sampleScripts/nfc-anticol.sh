@@ -36,143 +36,157 @@
 
 /**
  * @file nfc-anticol.c
- * @brief Generates one ISO14443-A anti-collision process "by-hand"
+ * @brief Generates one ISO14443-A anti-collision process -- by-hand --
  */
 
-/* nfc-anticol.sh */
+/*
+ * nfc-anticol.sh
+ *
+ * A demo of the Chameleon Mini Live Debugger mini terminal scripting
+ * language to show key features and syntax that it can accomplish in this
+ * application. The idea is that this platform makes it quick and simple to
+ * automate running reusable batches of Chameleon terminal commands
+ * on the go with the Droid device.
+ *
+ * https://github.com/maxieds/ChameleonMiniLiveDebugger
+ *
+ * Author: Maxie D. Schmidt (@maxieds)
+ * Created: 2020.10.26
+ */
 
 $SAK_FLAG_ATS_SUPPORTED=0x20
 $CASCADE_BIT=0x04
 
 // Note that the array initializer list syntax only
-// works with byte literals:
+// works with byte type literals:
 $abtReqa = { 0x26 }
 $abtSelectAll = { 0x93, 0x20 }
 $abtSelectTag = { 0x93, 0x70, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
 $abtRats = { 0xe0, 0x50, 0x00, 0x00 }
 $abtHalt = { 0x50, 0x00, 0x00, 0x00 }
 
-// memcpy(abtAtqa, abtRx, 2);
-// transmit_bytes(abtSelectAll, 2);
-// if ((abtRx[0] ^ abtRx[1] ^ abtRx[2] ^ abtRx[3] ^ abtRx[4]) != 0) {
-//   printf("WARNING: BCC check failed!\n");
-// }
+// Always start with Cascade Level 1 (CL1)
+$szCL = 1
+$szAts = 0
+
+// Send the 7 bits request command specified in ISO 14443A (0x26)
+$abtRx = $$(Sprintf("SEND %s", AsHexString($abtReqa)))
+if($abtRx->isError) {
+     Printf("Error: No tag available\n");
+     Exit(-1);
+}
+$abtAtqa = GetSubarray($abtRx, 0, 2)
+
+// Anti-collision
+$abtRx = $$(Sprintf("SEND %s", AsHexString($abtSelectAll)))
+
+// Check answer
+if (($abtRx[0] ^ $abtRx[1] ^ $abtRx[2] ^ $abtRx[3] ^ $abtRx[4]) != 0) {
+     Printf("WARNING: BCC check failed!\n");
+}
 
 // Save the UID CL1
 // memcpy(abtRawUid, abtRx, 4);
+$abtRawUid = GetSubarray($abtRx, 0, 4)
 
 // Prepare and send CL1 Select-Command
-// memcpy(abtSelectTag + 2, abtRx, 5);
-// iso14443a_crc_append(abtSelectTag, 7);
-// transmit_bytes(abtSelectTag, 9);
-// abtSak = abtRx[0];
+$abtSelectTag[2:] = $abtRx[0:5]
+$abtSelectTag = AppendCRC16($abtSelectTag, 7)
+$abtRx = $$(Sprintf("SEND %s", AsHexString($abtSelectTag)))
+$abtSak = $abtRx[0]
 
 // Test if we are dealing with a CL2
-// if (abtSak & CASCADE_BIT) {
-// szCL = 2; //or more
-// Check answer
-//   if (abtRawUid[0] != 0x88) {
-//     printf("WARNING: Cascade bit set but CT != 0x88!\n");
-//     }
-// }
+if($abtSak & $CASCADE_BIT) {
+     $szCL = 2
+     // Check answer
+     if($abtRawUid[0] != 0x88) {
+          Printf("WARNING: Cascade bit set but CT != 0x88!\n")
+     }
+}
 
-//// TODO: More later ...
-/*
-  if (szCL == 2) {
-    // We have to do the anti-collision for cascade level 2
+// We have to do the anti-collision for cascade level 2:
+if(szCL == 2) {
 
     // Prepare CL2 commands
-    abtSelectAll[0] = 0x95;
-
+    $abtSelectAll[0] = 0x95;
     // Anti-collision
-    transmit_bytes(abtSelectAll, 2);
-
+    $abtRx = $$(Sprintf("SEND %s", AsHexString($abtSelectAll)))
     // Check answer
-    if ((abtRx[0] ^ abtRx[1] ^ abtRx[2] ^ abtRx[3] ^ abtRx[4]) != 0) {
-      printf("WARNING: BCC check failed!\n");
+    if(($abtRx[0] ^ $abtRx[1] ^ $abtRx[2] ^ $abtRx[3] ^ $abtRx[4]) != 0) {
+         Printf("WARNING: BCC check failed!\n");
     }
-
     // Save UID CL2
-    memcpy(abtRawUid + 4, abtRx, 4);
-
+    $abtRawUid[4:4] = $abtRx[0:4]
     // Selection
-    abtSelectTag[0] = 0x95;
-    memcpy(abtSelectTag + 2, abtRx, 5);
-    iso14443a_crc_append(abtSelectTag, 7);
-    transmit_bytes(abtSelectTag, 9);
-    abtSak = abtRx[0];
-
+    $abtSelectTag[0] = 0x95;
+    $abtSelectTag[2:7] = $abtRx[0:5]
+    $abtSelectTag = AppendCRC16($abtSelectTag, 9)
+    $abtRx = $$(Sprintf("SEND %s", AsHexString($abtSelectTag)))
+    $abtSak = $abtRx[0];
     // Test if we are dealing with a CL3
-    if (abtSak & CASCADE_BIT) {
-      szCL = 3;
-      // Check answer
-      if (abtRawUid[0] != 0x88) {
-        printf("WARNING: Cascade bit set but CT != 0x88!\n");
-      }
+    if($abtSak & $CASCADE_BIT) {
+         $szCL = 3;
+         // Check answer
+         if($abtRawUid[0] != 0x88) {
+              Printf("WARNING: Cascade bit set but CT != 0x88!\n");
+         }
     }
 
-    if (szCL == 3) {
-      // We have to do the anti-collision for cascade level 3
+    // We have to do the anti-collision for cascade level 3
+    if($szCL == 3) {
 
-      // Prepare and send CL3 AC-Command
-      abtSelectAll[0] = 0x97;
-      transmit_bytes(abtSelectAll, 2);
-
-      // Check answer
-      if ((abtRx[0] ^ abtRx[1] ^ abtRx[2] ^ abtRx[3] ^ abtRx[4]) != 0) {
-        printf("WARNING: BCC check failed!\n");
-      }
-
-      // Save UID CL3
-      memcpy(abtRawUid + 8, abtRx, 4);
-
-      // Prepare and send final Select-Command
-      abtSelectTag[0] = 0x97;
-      memcpy(abtSelectTag + 2, abtRx, 5);
-      iso14443a_crc_append(abtSelectTag, 7);
-      transmit_bytes(abtSelectTag, 9);
-      abtSak = abtRx[0];
+         // Prepare and send CL3 AC-Command
+         $abtSelectAll[0] = 0x97;
+         $abtRx = $$(Sprintf("SEND %s", AsHexString($abtSelectAll)))
+         // Check answer
+         if(($abtRx[0] ^ $abtRx[1] ^ $abtRx[2] ^ $abtRx[3] ^ $abtRx[4]) != 0) {
+              Printf("WARNING: BCC check failed!\n");
+         }
+         // Save UID CL3
+         $abtRawUid[8:12] = $abtRx[0:4]
+         // Prepare and send final Select-Command
+         $abtSelectTag[0] = 0x97;
+         $abtSelectTag[2:7] = $abtRx[0:5]
+         $abtSelectTag = AppendCRC16($abtSelectTag, 7)
+         $abtRx = $$(Sprintf("SEND %s", AsHexString($abtSelectTag)))
+         $abtSak = $abtRx[0];
     }
-  }
 
-  // Request ATS, this only applies to tags that support ISO 14443A-4
-  if (abtRx[0] & SAK_FLAG_ATS_SUPPORTED) {
-    iso_ats_supported = true;
-  }
-  if ((abtRx[0] & SAK_FLAG_ATS_SUPPORTED) || force_rats) {
-    iso14443a_crc_append(abtRats, 2);
-    if (transmit_bytes(abtRats, 4)) {
-      memcpy(abtAts, abtRx, szRx);
-      szAts = szRx;
+}
+
+// Request ATS (this only applies to tags that support ISO 14443A-4)
+if(($abtRx[0] & $SAK_FLAG_ATS_SUPPORTED)) {
+    $abtRats = AppendCRC16($abtRats, 2)
+    $abtRx = $$(Sprintf("SEND %s", AsHexString($abtRats)))
+    if(not $abtRx->isError) {
+         $abtAts = $abtRx[0:$szRx]
+         $szAts = szRx;
     }
-  }
+}
 
-  // Done, halt the tag now
-  iso14443a_crc_append(abtHalt, 2);
-  transmit_bytes(abtHalt, 4);
+// Done, halt the tag now
+$abtHalt = AppendCRC16($abtHalt, 2)
+$$(Sprintf("SEND %s", AsHexString($abtHalt)))
 
-  printf("\nFound tag with\n UID: ");
-  switch (szCL) {
-    case 1:
-      printf("%02x%02x%02x%02x", abtRawUid[0], abtRawUid[1], abtRawUid[2], abtRawUid[3]);
-      break;
-    case 2:
-      printf("%02x%02x%02x", abtRawUid[1], abtRawUid[2], abtRawUid[3]);
-      printf("%02x%02x%02x%02x", abtRawUid[4], abtRawUid[5], abtRawUid[6], abtRawUid[7]);
-      break;
-    case 3:
-      printf("%02x%02x%02x", abtRawUid[1], abtRawUid[2], abtRawUid[3]);
-      printf("%02x%02x%02x", abtRawUid[5], abtRawUid[6], abtRawUid[7]);
-      printf("%02x%02x%02x%02x", abtRawUid[8], abtRawUid[9], abtRawUid[10], abtRawUid[11]);
-      break;
-  }
-  printf("\n");
-  printf("ATQA: %02x%02x\n SAK: %02x\n", abtAtqa[1], abtAtqa[0], abtSak);
-  if (szAts > 1) { // if = 1, it's not actual ATS but error code
-    if (force_rats && ! iso_ats_supported) {
-      printf(" RATS forced\n");
-    }
-    printf(" ATS: ");
-    print_hex(abtAts, szAts);
-  }
-*/
+Printf("| ********************************************************** |\n\n")
+Printf("Found tag with\n UID: ");
+if($szCL == 1) {
+   Printf("%02x%02x%02x%02x", $abtRawUid[0], $abtRawUid[1], $abtRawUid[2], $abtRawUid[3])
+}
+else if($szCL == 2)
+   Printf("%02x%02x%02x",     $abtRawUid[1], $abtRawUid[2], $abtRawUid[3])
+   Printf("%02x%02x%02x%02x", $abtRawUid[4], $abtRawUid[5], $abtRawUid[6], $abtRawUid[7])
+}
+else if($szCL == 3) {
+   Printf("%02x%02x%02x",      $abtRawUid[1], $abtRawUid[2], $abtRawUid[3]);
+   Printf("%02x%02x%02x",      $abtRawUid[5], $abtRawUid[6], $abtRawUid[7]);
+   Printf("%02x%02x%02x%02x",  $abtRawUid[8], $abtRawUid[9], $abtRawUid[10], $abtRawUid[11]);
+}
+Printf("\n");
+Printf("ATQA: %02x%02x\n SAK: %02x\n", $abtAtqa[1], $abtAtqa[0], $abtSak);
+if($szAts > 1) {
+     Printf("ATS: %s", AsHexString($abtAts, $szAts))
+}
+Printf("\n| ********************************************************** |\n")
+
+Exit(0)

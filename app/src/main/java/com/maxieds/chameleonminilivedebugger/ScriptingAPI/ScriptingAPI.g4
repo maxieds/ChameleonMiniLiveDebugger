@@ -34,7 +34,7 @@ function_args_list returns [List<ScriptVariable> varsList]:
      }
      ;
 
-scripting_api_function returns [ScriptVariable funcResult]:
+scripting_api_function_result returns [ScriptVariable funcResult]:
      funcName=ScriptingAPIFunctionName FunctionStartArgsDelimiter
      funcArgs=function_args_list FunctionEndArgsDelimiter {
           $funcResult=ScriptingFunctions.callFunction($funcName.text, $funcArgs.varsList);

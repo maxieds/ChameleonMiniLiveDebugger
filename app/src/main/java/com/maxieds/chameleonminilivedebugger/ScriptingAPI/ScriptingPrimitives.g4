@@ -111,6 +111,10 @@ expression_eval_term returns [ScriptVariable svar]:
      tc=typecast_expression {
           $svar=$tc.svar;
      }
+     |
+     vgp=variable_get_property {
+          $svar=$vgp.svar;
+     }
      ;
 
 boolean_valued_operation returns [ScriptVariable  opResult]:

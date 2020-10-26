@@ -304,7 +304,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:layout_height="wrap_content"
                 android:background="?colorAccent"
                 android:visibility="visible"
-                app:tabBackground="?colorPrimary"
                 app:tabGravity="fill"
                 app:tabIndicatorColor="?colorPrimaryDark"
                 app:tabIndicatorHeight="4dp"
