@@ -19,8 +19,8 @@ package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
 import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingTypes.ScriptVariable;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExecptions.ChameleonScriptingException;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExecptions.ExceptionType;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExceptions.ChameleonScriptingException;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExceptions.ExceptionType;
 
 import java.util.List;
 import java.util.regex.Matcher;

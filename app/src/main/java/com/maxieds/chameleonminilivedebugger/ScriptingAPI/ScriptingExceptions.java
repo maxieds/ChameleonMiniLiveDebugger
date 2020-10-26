@@ -17,9 +17,9 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
-public class ScriptingExecptions {
+public class ScriptingExceptions {
 
-    private static final String TAG = ScriptingExecptions.class.getSimpleName();
+    private static final String TAG = ScriptingExceptions.class.getSimpleName();
 
     public enum ExceptionType {
         GenericException,
@@ -42,7 +42,8 @@ public class ScriptingExecptions {
         VariableNotFoundException,
         NotImplementedException,
         InvalidArgumentException,
-        IndexOutOfBoundsException
+        IndexOutOfBoundsException,
+        ChameleonDisconnectedException,
     }
 
     public static class ChameleonScriptingException extends RuntimeException {

@@ -17,21 +17,24 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
-import android.os.Handler;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExceptions;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExceptions.ChameleonScriptingException;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExceptions.ExceptionType;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import android.os.Handler;
+import android.util.Log;
 
 import com.maxieds.chameleonminilivedebugger.ChameleonIO;
 import com.maxieds.chameleonminilivedebugger.ChameleonLogUtils;
+import com.maxieds.chameleonminilivedebugger.ChameleonSerialIOInterface;
+import com.maxieds.chameleonminilivedebugger.ChameleonSettings;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingTypes.ScriptVariable;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingTypes.ScriptVariableArrayMap;
+import com.maxieds.chameleonminilivedebugger.Utils;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Lock;
@@ -86,7 +89,7 @@ public class ChameleonIOHandler {
         int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(dataBytes);
         if(loggingRespSize > 0) {
             if(!ScriptingConfig.IGNORE_LIVE_LOGGING) {
-                // TODO: Handle writing live logging data to console GUI ...
+                Log.i(TAG, "Received LIVE logging data [" + ChameleonLogUtils.LogCode.lookupByLogCode(dataBytes[0]).toString() + "]");
             }
         }
         else if(PAUSED) {}
@@ -114,17 +117,47 @@ public class ChameleonIOHandler {
             statusConfigLock.unlock();
         }
         else {
-            // TODO: Log unexpected serial I/O data input (or ignore it ??? )
+            Log.i(TAG, "Received unexpected Serial I/O @ " + Utils.bytes2Hex(dataBytes));
         }
     }
 
+    private static int CHAMELEON_TIMEOUT = ChameleonIO.TIMEOUT;
+    private static final int sleepDeltaMs = 50;
 
     public static ScriptVariable executeChameleonCommandForResult(String cmdText) {
-        return null;
-        // return parseChameleonCommandResponse(cmdText, <RESP>, timeoutQ);
+        return executeChameleonCommandForResult(cmdText, CHAMELEON_TIMEOUT);
     }
 
-    // Named fields include:
+    public static ScriptVariable executeChameleonCommandForResult(String cmdText, int timeout) {
+        ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
+        if(serialIOPort == null) {
+            throw new ChameleonScriptingException(ExceptionType.ChameleonDisconnectedException, "Serial port is null");
+        }
+        if(!serialIOPort.tryAcquireSerialPort(ChameleonIO.LOCK_TIMEOUT)) {
+            return parseChameleonCommandResponse(cmdText, "", true);
+        }
+        String sendCmd = cmdText + (ChameleonIO.REVE_BOARD ? "\r\n" : "\n\r");
+        serialIOPort.sendDataBuffer(sendCmd.getBytes());
+        String cmdResp = "";
+        boolean isTimeout = true;
+        for(int i = 0; i < timeout / sleepDeltaMs; i++) {
+            if(!WAITING_FOR_RESPONSE) {
+                isTimeout = false;
+                break;
+            }
+            try {
+                Thread.sleep(sleepDeltaMs);
+            } catch(InterruptedException ie) {
+                WAITING_FOR_RESPONSE = false;
+                isTimeout = false;
+                cmdResp = ie.getMessage().replace("java.lang.RuntimeException: ", "");
+                break;
+            }
+        }
+        return parseChameleonCommandResponse(cmdText, cmdResp, isTimeout);
+    }
+
+    // Named fields in the hashed array variable returned include:
     // ->cmdName
     // ->respCode
     // ->respText
@@ -144,10 +177,17 @@ public class ChameleonIOHandler {
 
         try {
             String[] splitRespData = response.split("[\n\r\t][\n\r\t]+");
-            String[] cmdRespText = splitRespData[0].split(":");
-            int respCode = Integer.parseInt(cmdRespText[0], 10);
-            cmdRespVar.setValueAt("respCode", ScriptVariable.newInstance().set(respCode));
-            cmdRespVar.setValueAt("respText", ScriptVariable.newInstance().set(cmdRespText[1]));
+            int respCode = -1;
+            if(splitRespData.length > 0) {
+                String[] cmdRespText = splitRespData[0].split(":");
+                respCode = Integer.parseInt(cmdRespText[0], 10);
+                cmdRespVar.setValueAt("respCode", ScriptVariable.newInstance().set(respCode));
+                cmdRespVar.setValueAt("respText", ScriptVariable.newInstance().set(cmdRespText[1]));
+            }
+            else {
+                cmdRespVar.setValueAt("respCode", ScriptVariable.newInstance().set(""));
+                cmdRespVar.setValueAt("respText", ScriptVariable.newInstance().set(""));
+            }
             if (splitRespData.length > 1) {
                 String[] dataArr = new String[splitRespData.length - 1];
                 System.arraycopy(splitRespData, 1, dataArr, 0, splitRespData.length - 1);

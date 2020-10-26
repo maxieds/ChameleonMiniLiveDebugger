@@ -20,14 +20,10 @@ package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class ScriptingTypes {
 
@@ -113,7 +109,7 @@ public class ScriptingTypes {
             return this;
         }
 
-        public int getValueAsInt() throws ScriptingExecptions.ChameleonScriptingException {
+        public int getValueAsInt() throws ScriptingExceptions.ChameleonScriptingException {
             if(varType == VariableType.VariableTypeInteger) {
                 return varValueAsInt;
             }
@@ -130,15 +126,15 @@ public class ScriptingTypes {
             else if(isStringType()) {
                 return Integer.decode(varValueAsString).intValue();
             }
-            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.InvalidTypeException);
+            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.InvalidTypeException);
         }
 
-        public short getValueAsShort() throws ScriptingExecptions.ChameleonScriptingException {
+        public short getValueAsShort() throws ScriptingExceptions.ChameleonScriptingException {
             int int32Value = getValueAsInt();
             return (short) (int32Value & 0x0000ffff);
         }
 
-        public byte getValueAsByte() throws ScriptingExecptions.ChameleonScriptingException {
+        public byte getValueAsByte() throws ScriptingExceptions.ChameleonScriptingException {
             int int32Value = getValueAsInt();
             return (byte) (int32Value & 0x000000ff);
         }
@@ -170,7 +166,7 @@ public class ScriptingTypes {
             return false;
         }
 
-        public boolean getValueAsBoolean() throws ScriptingExecptions.ChameleonScriptingException {
+        public boolean getValueAsBoolean() throws ScriptingExceptions.ChameleonScriptingException {
             if(varType == VariableType.VariableTypeBoolean) {
                 return varValueAsBoolean;
             }
@@ -191,7 +187,7 @@ public class ScriptingTypes {
             return this;
         }
 
-        public byte[] getValueAsBytes() throws ScriptingExecptions.ChameleonScriptingException {
+        public byte[] getValueAsBytes() throws ScriptingExceptions.ChameleonScriptingException {
             if(isBytesType()) {
                 return varValueAsByteArray;
             }
@@ -218,7 +214,7 @@ public class ScriptingTypes {
                 return varValueAsString.getBytes();
             }
             else {
-                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.InvalidTypeException);
+                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.InvalidTypeException);
             }
         }
 
@@ -229,7 +225,7 @@ public class ScriptingTypes {
             return this;
         }
 
-        public String getValueAsString() throws ScriptingExecptions.ChameleonScriptingException {
+        public String getValueAsString() throws ScriptingExceptions.ChameleonScriptingException {
             switch(varType) {
                 case VariableTypeHexString:
                 case VariableTypeAsciiString:
@@ -244,11 +240,11 @@ public class ScriptingTypes {
                 case VariableTypeInteger:
                     return String.format(BuildConfig.DEFAULT_LOCALE, "%d", varValueAsInt);
                 default:
-                    throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.InvalidTypeException);
+                    throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.InvalidTypeException);
             }
         }
 
-        public boolean isIntegerType() throws ScriptingExecptions.ChameleonScriptingException {
+        public boolean isIntegerType() throws ScriptingExceptions.ChameleonScriptingException {
             switch(varType) {
                 case VariableTypeInteger:
                 case VariableTypeBoolean:
@@ -312,7 +308,7 @@ public class ScriptingTypes {
             }
         }
 
-        public VariableType getType() throws ScriptingExecptions.ChameleonScriptingException {
+        public VariableType getType() throws ScriptingExceptions.ChameleonScriptingException {
             if(isIntegerType()) {
                 return VariableType.VariableTypeInteger;
             }
@@ -335,41 +331,41 @@ public class ScriptingTypes {
             return new ScriptVariable();
         }
 
-        public static ScriptVariable parseHexString(String literalText) throws ScriptingExecptions.ChameleonScriptingException {
+        public static ScriptVariable parseHexString(String literalText) throws ScriptingExceptions.ChameleonScriptingException {
             ScriptVariable nextVar = new ScriptVariable();
             if(!Utils.stringIsHexadecimal(literalText)) {
-                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.FormatErrorException);
+                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.FormatErrorException);
             }
             nextVar.set(literalText);
             return nextVar;
         }
 
-        public static ScriptVariable parseRawString(String literalText) throws ScriptingExecptions.ChameleonScriptingException {
+        public static ScriptVariable parseRawString(String literalText) throws ScriptingExceptions.ChameleonScriptingException {
             literalText.replace("\\", "\\\\");
             ScriptVariable nextVar = new ScriptVariable();
             nextVar.set(literalText);
             return nextVar;
         }
 
-        public static ScriptVariable parseInt(String literalText) throws ScriptingExecptions.ChameleonScriptingException {
+        public static ScriptVariable parseInt(String literalText) throws ScriptingExceptions.ChameleonScriptingException {
             ScriptVariable nextVar = new ScriptVariable();
             try {
                 int intVal = Integer.parseInt(literalText);
                 nextVar.set(intVal);
                 return nextVar;
             } catch(NumberFormatException nfe) {
-                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NumberFormatException, nfe);
+                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NumberFormatException, nfe);
             }
         }
 
-        public static ScriptVariable parseBoolean(String literalText) throws ScriptingExecptions.ChameleonScriptingException {
+        public static ScriptVariable parseBoolean(String literalText) throws ScriptingExceptions.ChameleonScriptingException {
             ScriptVariable nextVar = new ScriptVariable();
             try {
                 boolean logicalValue = Boolean.parseBoolean(literalText);
                 nextVar.set(logicalValue);
                 return nextVar;
             } catch(Exception ex) {
-                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.FormatErrorException, ex);
+                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.FormatErrorException, ex);
             }
         }
 
@@ -383,7 +379,7 @@ public class ScriptingTypes {
             return varType == VariableType.VariableTypeArrayMap;
         }
 
-        public int length() throws ScriptingExecptions.ChameleonScriptingException {
+        public int length() throws ScriptingExceptions.ChameleonScriptingException {
             if(isStringType()) {
                 return getValueAsString().length();
             }
@@ -393,40 +389,40 @@ public class ScriptingTypes {
             return 0;
         }
 
-        public ScriptVariable getValueAt(int index) throws ScriptingExecptions.ChameleonScriptingException {
+        public ScriptVariable getValueAt(int index) throws ScriptingExceptions.ChameleonScriptingException {
             if(index == 0) {
                 return this;
             }
-            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IllegalOperationException);
+            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IllegalOperationException);
         }
 
-        public ScriptVariable getValueAt(String hashIndex) throws ScriptingExecptions.ChameleonScriptingException {
-            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IllegalOperationException);
+        public ScriptVariable getValueAt(String hashIndex) throws ScriptingExceptions.ChameleonScriptingException {
+            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IllegalOperationException);
         }
 
-        public void setValueAt(int index, ScriptVariable varObj) throws ScriptingExecptions.ChameleonScriptingException {
-            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IllegalOperationException);
+        public void setValueAt(int index, ScriptVariable varObj) throws ScriptingExceptions.ChameleonScriptingException {
+            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IllegalOperationException);
         }
 
-        public void setValueAt(String hashIndex, ScriptVariable varObj) throws ScriptingExecptions.ChameleonScriptingException {
-            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IllegalOperationException);
+        public void setValueAt(String hashIndex, ScriptVariable varObj) throws ScriptingExceptions.ChameleonScriptingException {
+            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IllegalOperationException);
         }
 
-        public ScriptVariable getSubArray(int startIdx) throws ScriptingExecptions.ChameleonScriptingException {
-            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+        public ScriptVariable getSubArray(int startIdx) throws ScriptingExceptions.ChameleonScriptingException {
+            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
         }
-        public ScriptVariable getSubArray(int startIdx, int endLength) throws ScriptingExecptions.ChameleonScriptingException {
-            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+        public ScriptVariable getSubArray(int startIdx, int endLength) throws ScriptingExceptions.ChameleonScriptingException {
+            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
         }
-        public void insertSubArray(int startIdx, ScriptVariable rhs) throws ScriptingExecptions.ChameleonScriptingException {
-            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+        public void insertSubArray(int startIdx, ScriptVariable rhs) throws ScriptingExceptions.ChameleonScriptingException {
+            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
         }
-        public void insertSubArray(int startIdx, int endLength, ScriptVariable rhs) throws ScriptingExecptions.ChameleonScriptingException {
-            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+        public void insertSubArray(int startIdx, int endLength, ScriptVariable rhs) throws ScriptingExceptions.ChameleonScriptingException {
+            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
         }
 
         public String getBinaryString() {
-            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
         }
 
         public enum Operation {
@@ -440,7 +436,7 @@ public class ScriptingTypes {
         }
 
         public ScriptVariable binaryOperation(Operation opType, ScriptVariable rhsVar)
-                                              throws ScriptingExecptions.ChameleonScriptingException {
+                                              throws ScriptingExceptions.ChameleonScriptingException {
             if(opType == Operation.BINOP_PLUS) {
                 // Handle three cases, if the remainder does not degrade nicely to one of these,
                 // then happily, sane mind intact, throw an exception at the non-standard use case:
@@ -464,15 +460,15 @@ public class ScriptingTypes {
                     set(getValueAsString() + rhsVar.getValueAsString());
                 }
                 else {
-                    throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.ArithmeticErrorException);
+                    throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.ArithmeticErrorException);
                 }
                 return this;
             }
-            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
         }
 
-        public ScriptVariable unaryOperation(Operation opType) throws ScriptingExecptions.ChameleonScriptingException {
-            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+        public ScriptVariable unaryOperation(Operation opType) throws ScriptingExceptions.ChameleonScriptingException {
+            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
         }
 
     }
@@ -489,55 +485,55 @@ public class ScriptingTypes {
 
         @Override
         public byte[] getValueAsBytes() {
-            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
         }
 
         @Override
         public String getValueAsString() {
-            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
         }
 
         @Override
-        public int length() throws ScriptingExecptions.ChameleonScriptingException {
+        public int length() throws ScriptingExceptions.ChameleonScriptingException {
             return arrayList.size() + hashMap.size();
         }
 
         @Override
-        public ScriptVariable getValueAt(int index) throws ScriptingExecptions.ChameleonScriptingException {
+        public ScriptVariable getValueAt(int index) throws ScriptingExceptions.ChameleonScriptingException {
             if(index < 0 || index >= arrayList.size()) {
-                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IndexOutOfBoundsException);
+                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IndexOutOfBoundsException);
             }
             return arrayList.get(index);
         }
 
         @Override
-        public ScriptVariable getValueAt(String hashIndex) throws ScriptingExecptions.ChameleonScriptingException {
+        public ScriptVariable getValueAt(String hashIndex) throws ScriptingExceptions.ChameleonScriptingException {
             if(hashIndex == null || hashMap.get(hashIndex) == null) {
-                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IndexOutOfBoundsException);
+                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IndexOutOfBoundsException);
             }
             return hashMap.get(hashIndex);
         }
 
         @Override
-        public void setValueAt(int index, ScriptVariable varObj) throws ScriptingExecptions.ChameleonScriptingException {
+        public void setValueAt(int index, ScriptVariable varObj) throws ScriptingExceptions.ChameleonScriptingException {
             if(index < 0 || index >= arrayList.size()) {
-                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IndexOutOfBoundsException);
+                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IndexOutOfBoundsException);
             }
             arrayList.set(index, varObj);
         }
 
         @Override
-        public void setValueAt(String hashIndex, ScriptVariable varObj) throws ScriptingExecptions.ChameleonScriptingException {
+        public void setValueAt(String hashIndex, ScriptVariable varObj) throws ScriptingExceptions.ChameleonScriptingException {
             if(hashIndex == null) {
-                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IllegalArgumentException);
+                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IllegalArgumentException);
             }
             hashMap.put(hashIndex, varObj);
         }
 
         @Override
-        public ScriptVariable getSubArray(int startIdx) throws ScriptingExecptions.ChameleonScriptingException {
+        public ScriptVariable getSubArray(int startIdx) throws ScriptingExceptions.ChameleonScriptingException {
             if(startIdx < 0 || startIdx >= arrayList.size()) {
-                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IndexOutOfBoundsException);
+                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IndexOutOfBoundsException);
             }
             ScriptVariableArrayMap svSubArr = new ScriptVariableArrayMap();
             svSubArr.arrayList = new ArrayList<ScriptVariable>(arrayList.subList(startIdx, arrayList.size()));
@@ -546,11 +542,11 @@ public class ScriptingTypes {
         }
 
         @Override
-        public ScriptVariable getSubArray(int startIdx, int endLength) throws ScriptingExecptions.ChameleonScriptingException {
+        public ScriptVariable getSubArray(int startIdx, int endLength) throws ScriptingExceptions.ChameleonScriptingException {
             if(startIdx < 0 || startIdx >= arrayList.size() ||
                     (endLength >= 0 && endLength + startIdx > arrayList.size()) ||
                     (endLength >= 0 && endLength <= startIdx) || (endLength < 0 && arrayList.size() + endLength <= 0)) {
-                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IndexOutOfBoundsException);
+                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IndexOutOfBoundsException);
             }
             ScriptVariableArrayMap svSubArr = new ScriptVariableArrayMap();
             int endArrIndex = endLength >= 0 ? startIdx + endLength : arrayList.size() + endLength;
@@ -560,13 +556,13 @@ public class ScriptingTypes {
         }
 
         @Override
-        public void insertSubArray(int startIdx, ScriptVariable rhs) throws ScriptingExecptions.ChameleonScriptingException {
-            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+        public void insertSubArray(int startIdx, ScriptVariable rhs) throws ScriptingExceptions.ChameleonScriptingException {
+            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
         }
 
         @Override
-        public void insertSubArray(int startIdx, int endLength, ScriptVariable rhs) throws ScriptingExecptions.ChameleonScriptingException {
-            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+        public void insertSubArray(int startIdx, int endLength, ScriptVariable rhs) throws ScriptingExceptions.ChameleonScriptingException {
+            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
         }
 
         @Override
@@ -583,7 +579,7 @@ public class ScriptingTypes {
 
         @Override
         public ScriptVariable binaryOperation(ScriptVariable.Operation opType, ScriptVariable rhsVar)
-                                              throws ScriptingExecptions.ChameleonScriptingException {
+                                              throws ScriptingExceptions.ChameleonScriptingException {
              if(opType == Operation.BINOP_PLUS) {
                  if(rhsVar.getType() == VariableType.VariableTypeArrayMap) {
                      Collections.addAll(Arrays.asList(arrayList), Arrays.asList(((ScriptVariableArrayMap) rhsVar).arrayList));
@@ -600,12 +596,12 @@ public class ScriptingTypes {
                  }
                  return this;
              }
-             throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+             throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
         }
 
         @Override
-        public ScriptVariable unaryOperation(ScriptVariable.Operation opType) throws ScriptingExecptions.ChameleonScriptingException {
-             throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+        public ScriptVariable unaryOperation(ScriptVariable.Operation opType) throws ScriptingExceptions.ChameleonScriptingException {
+             throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
         }
 
     }

@@ -39,35 +39,6 @@ def getGitCommitDate() {
     return getShellCommandOutput("git show | grep Date: | head -n 1 | sed -e \"s/Date:[ ]*//\"");
 }
 
-/*def generateAntlrJava() {
-    file(new File(projectDir, "src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI/gen")).deleteDir()
-    file(new File(projectDir, "src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI/gen")).mkdirs()
-    String scriptingAPIPkg = "com.maxieds.chameleonminilivedebugger.ScriptingAPI";
-    String scriptingAPISrc = file(new File(projectDir, "src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI")).getPath();
-    String antlrGeneratedSrc = scriptingAPISrc + "/gen";
-    List antlrGrammarSources = [
-            file(new File(projectDir, "src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI/ScriptingPrimitives.g4")),
-            //"src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI/ScriptingAPI.g4",
-            //"src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI/ChameleonScript.g4"
-    ];
-    for (int gsIdx = 0; gsIdx < antlrGrammarSources.size(); gsIdx++) {
-        def antlrCompileCmd = [
-                'antlr4',
-                //"-o " + antlrGeneratedSrc,
-                //"-package " + scriptingAPIPkg,
-                //"-Dlanguage=Java",
-                //"-listener",
-                //"-visitor",
-                //"-long-messages",
-                //"-lib " + scriptingAPISrc,
-                //antlrGrammarSources.get(gsIdx)
-        ].execute();
-        antlrCompileCmd.waitFor();
-        System.out.println(antlrCompileCmd.text[0..-2]);
-    }
-    return true;
-}*/
-
 android {
 
     def configBuildTimeStamp = getDateTimestamp()
@@ -85,7 +56,6 @@ android {
         buildConfigField "String", "GIT_COMMIT_DATE", "\"" + getGitCommitDate() + "\""
 
         setProperty("archivesBaseName", "ChameleonMiniLiveDebugger-v$versionName-$configBuildTimeStamp")
-        //generateAntlrJava()
 
     }
 

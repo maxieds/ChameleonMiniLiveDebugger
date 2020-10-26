@@ -20,11 +20,14 @@ package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 import android.util.Log;
 import android.widget.LinearLayout;
 
+import com.maxieds.chameleonminilivedebugger.BuildConfig;
+import com.maxieds.chameleonminilivedebugger.ChameleonIO;
+import com.maxieds.chameleonminilivedebugger.ChameleonSerialIOInterface;
+import com.maxieds.chameleonminilivedebugger.ChameleonSettings;
 import com.maxieds.chameleonminilivedebugger.R;
 import com.maxieds.chameleonminilivedebugger.TabFragment;
-
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParser;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptLexer;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParser;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptVisitor;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -56,11 +59,11 @@ public class ChameleonScripting {
         public String CONFIG;
         public String UID;
         public String LOGMODE;
-        public int SETTING;
-        public boolean READONLY;
-        public boolean FIELD;
-        public int THRESHOLD;
-        public int TIMEOUT;
+        public String SETTING;
+        public String READONLY;
+        public String FIELD;
+        public String THRESHOLD;
+        public String TIMEOUT;
 
         /* For completeness, restore any disturbed values in the ChameleonIO class: */
         public boolean CHAMIO_PAUSED;
@@ -70,8 +73,63 @@ public class ChameleonScripting {
 
         public ChameleonDeviceState() {}
 
-        public void saveState(boolean push) {} // TODO
-        public void restoreState(boolean pop) {} // TODO
+        public void saveState(boolean push) {
+            int shortTimeout = 750;
+            ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
+            if(serialIOPort != null) {
+                if (!ChameleonIO.REVE_BOARD) {
+                    CONFIG = ChameleonIOHandler.executeChameleonCommandForResult("CONFIG?", shortTimeout).getValueAt("data").getValueAsString();
+                    UID = ChameleonIOHandler.executeChameleonCommandForResult("UID?", shortTimeout).getValueAt("data").getValueAsString();
+                    LOGMODE = ChameleonIOHandler.executeChameleonCommandForResult("LOGMODE?", shortTimeout).getValueAt("data").getValueAsString();
+                    SETTING = ChameleonIOHandler.executeChameleonCommandForResult("SETTING?", shortTimeout).getValueAt("data").getValueAsString();
+                    READONLY = ChameleonIOHandler.executeChameleonCommandForResult("READONLY?", shortTimeout).getValueAt("data").getValueAsString();
+                    FIELD = ChameleonIOHandler.executeChameleonCommandForResult("FIELD?", shortTimeout).getValueAt("data").getValueAsString();
+                    THRESHOLD = ChameleonIOHandler.executeChameleonCommandForResult("THRESHOLD?", shortTimeout).getValueAt("data").getValueAsString();
+                    TIMEOUT = ChameleonIOHandler.executeChameleonCommandForResult("TIMEOUT?", shortTimeout).getValueAt("data").getValueAsString();
+                }
+                else {
+                    CONFIG = ChameleonIOHandler.executeChameleonCommandForResult("config?", shortTimeout).getValueAt("data").getValueAsString();
+                    UID = ChameleonIOHandler.executeChameleonCommandForResult("uid?", shortTimeout).getValueAt("data").getValueAsString();
+                    SETTING = ChameleonIOHandler.executeChameleonCommandForResult("setting?", shortTimeout).getValueAt("data").getValueAsString();
+                    READONLY = ChameleonIOHandler.executeChameleonCommandForResult("readonly?", shortTimeout).getValueAt("data").getValueAsString();
+                }
+            }
+            CHAMIO_PAUSED = ChameleonIO.PAUSED;
+            CHAMIO_DOWNLOAD = ChameleonIO.DOWNLOAD;
+            CHAMIO_UPLOAD = ChameleonIO.UPLOAD;
+            CHAMIO_WAITING_FOR_XMODEM = ChameleonIO.WAITING_FOR_XMODEM;
+            if(push) {
+                SAVED_DEVICE_STATES.push(this);
+            }
+        }
+
+        public void restoreState(boolean pop) {
+            ChameleonIO.PAUSED = CHAMIO_PAUSED;
+            ChameleonIO.DOWNLOAD = CHAMIO_DOWNLOAD;
+            ChameleonIO.UPLOAD = CHAMIO_UPLOAD;
+            ChameleonIO.WAITING_FOR_RESPONSE = CHAMIO_WAITING_FOR_XMODEM;
+            ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
+            if(serialIOPort != null) {
+                if (!ChameleonIO.REVE_BOARD) {
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "CONFIG=%s", CONFIG));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "UID=%s", UID));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "LOGMODE=%s", LOGMODE));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "SETTING=%s", SETTING));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "READONLY=%s", READONLY));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "FIELD=%s", FIELD));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "THRESHOLD=%s", THRESHOLD));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "TIMEOUT=%s", TIMEOUT));
+                } else {
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "config=%s", CONFIG));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "uid=%s", UID));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "setting=%s", SETTING));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "readonly=%s", READONLY));
+                }
+            }
+            if(pop) {
+                SAVED_DEVICE_STATES.pop();
+            }
+        }
 
     }
 
@@ -84,8 +142,7 @@ public class ChameleonScripting {
             PAUSED,
             BREAKPOINT,
             FINISHED_OK,
-            TERMINATED_OK,
-            TERMINATED_ERROR,
+            DONE,
         }
 
         private boolean initialized;
@@ -119,6 +176,25 @@ public class ChameleonScripting {
         ChameleonScriptParser scriptParser;
         ParseTree scriptParseTree;
         ChameleonScriptVisitor scriptVisitor;
+
+        public void cleanupRuntimeData(boolean restoreChameleonState) {
+            if(!isInitialized()) {
+                return;
+            }
+            initialized = false;
+            try {
+                scriptFileStream.close();
+                outputFileStream.close();
+                loggingFileStream.close();
+                debuggingFileStream.close();
+            } catch(IOException ioe) {
+                ioe.printStackTrace();
+            }
+            scriptState = ScriptRuntimeState.DONE;
+            if(restoreChameleonState) {
+                chameleonDeviceState.restoreState(true);
+            }
+        }
 
         public ChameleonScriptInstance(String scriptFile) {
             initialized = true;
@@ -176,6 +252,7 @@ public class ChameleonScripting {
         }
 
         public List<ChameleonScriptErrorListener.SyntaxError> listSyntaxErrors(String scriptFileText) {
+            // TODO:
             // report errors with: parser.getNumberOfSyntaxErrors();
             // display them in a nice presentation / GUI fragment and vibrate for the user ...
             return null;
@@ -188,43 +265,46 @@ public class ChameleonScripting {
             // set the script paused icon in toolbar to true ...
             // temporarily disable status bar updates ...
             // disable adding breakpoints
+            // parser.eval()
+            // set the start running time ...
 
             return true;
         }
 
-        public boolean runScriptFromStart() throws ScriptingExecptions.ChameleonScriptingException {
+        public boolean runScriptFromStart() throws ScriptingExceptions.ChameleonScriptingException {
             if(!runScriptPreambleActions()) {
                 return false;
             }
             /* TODO: handle the runner thread mostly off of the main UI thread (except for GUI status updates) ... */
+            // ??? limit exec time ???
             return false;
         }
 
-        public boolean pauseRunningScript() throws ScriptingExecptions.ChameleonScriptingException {
-            return false;
+        public boolean pauseRunningScript() throws ScriptingExceptions.ChameleonScriptingException {
+            return false; // TODO
         }
 
-        public boolean killRunningScript() throws ScriptingExecptions.ChameleonScriptingException {
-            return false;
+        public boolean killRunningScript() throws ScriptingExceptions.ChameleonScriptingException {
+            return false; // TODO
         }
 
-        public boolean stepRunningScript() throws ScriptingExecptions.ChameleonScriptingException {
-            return false;
+        public boolean stepRunningScript() throws ScriptingExceptions.ChameleonScriptingException {
+            return false; // TODO
         }
 
         public boolean variableNameExists(String varName) {
             return scriptVariablesHashMap.get(varName) != null;
         }
 
-        public ScriptingTypes.ScriptVariable lookupVariableByName(String varName) throws ScriptingExecptions.ChameleonScriptingException {
+        public ScriptingTypes.ScriptVariable lookupVariableByName(String varName) throws ScriptingExceptions.ChameleonScriptingException {
             ScriptingTypes.ScriptVariable svar = scriptVariablesHashMap.get(varName);
             if(svar == null) {
-                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.VariableNotFoundException, "varName");
+                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.VariableNotFoundException, "varName");
             }
             return svar;
         }
 
-        public void setVariableByName(ScriptingTypes.ScriptVariable scriptVar) throws ScriptingExecptions.ChameleonScriptingException {
+        public void setVariableByName(ScriptingTypes.ScriptVariable scriptVar) throws ScriptingExceptions.ChameleonScriptingException {
             scriptVariablesHashMap.put(scriptVar.getName(), scriptVar);
         }
 
@@ -245,7 +325,7 @@ public class ChameleonScripting {
             if(consoleOutput != null) {
                 return consoleOutput.toString();
             }
-            return null;
+            return "";
         }
 
         public void clearConsoleViewGUI() {
@@ -268,7 +348,10 @@ public class ChameleonScripting {
         return activeChameleonScript;
     }
 
-    public boolean runScriptFromStart(String scriptPath) throws ScriptingExecptions.ChameleonScriptingException {
+    public boolean runScriptFromStart(String scriptPath) throws ScriptingExceptions.ChameleonScriptingException {
+        // get the active file name from the text view ...
+        // check that it exists ...
+        // create the new script instance, and try to run it ...
         return false;
     }
 
