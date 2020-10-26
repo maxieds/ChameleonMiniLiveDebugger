@@ -24,6 +24,7 @@ import ScriptingPrimitives, ScriptingAPI;
     }
 }
 
+/* Start rule for the main grammar: */
 file_contents: (script_line)+ EOF;
 
 label_statement: lblName=LabelText LabelEndDelimiter {
@@ -31,14 +32,14 @@ label_statement: lblName=LabelText LabelEndDelimiter {
      }
      ;
 
-exec_chameleon_command returns [String cmdResult]:
+exec_chameleon_command returns [ScriptVariable cmdResult]:
      ExecChameleonCommandInit eet=expression_eval_term ExecChameleonCommandEnd {
           $cmdResult=ChameleonIOHandler.executeChameleonCommandForResult($eet.svar.getValueAsString());
      }
      ;
 
-script_line: label_statement | exec_chameleon_command |
-             assignment_operation | scripting_api_function_result ;
+script_line: label_statement | exec_chameleon_command | scripting_api_function_result |
+             assignment_operation | assignment_by_array_slice ;
 
 LabelText: (AsciiChar)+ ;
 LabelEndDelimiter: ColonSeparator ;

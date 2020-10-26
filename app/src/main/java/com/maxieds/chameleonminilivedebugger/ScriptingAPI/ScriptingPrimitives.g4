@@ -31,6 +31,8 @@ tokens {
 }
 
 type_literal returns [ScriptVariable svar]:
+     dl=DecimalLiteral   { $svar=ScriptVariable.parseInt($dl.text); }
+     |
      hs=HexString        { $svar=ScriptVariable.parseHexString($hs.text); }
      |
      hb=HexByte          { $svar=ScriptVariable.parseInt($hb.text); }
@@ -48,13 +50,35 @@ type_literal returns [ScriptVariable svar]:
      |
      bl=BooleanLiteral   { $svar=ScriptVariable.parseBoolean($bl.text); }
      |
-     sl=StringLiteral    { $svar=ScriptVariable.newInstance().set($sl.text); }
-     |
-     hs=HexStringLiteral { $svar=ScriptVariable.parseHexString($hs.text); }
-     |
-     rs=RawStringLiteral { $svar=ScriptVariable.parseRawString($rs.text); }
+     qsl=quoted_string_literal { $svar=$qsl.svar; }
      |
      OpenBrace bll=byte_literal_list CloseBrace { $svar=$bll.svar; }
+     ;
+
+quoted_string_literal returns [ScriptVariable svar]:
+     '""' {
+          $svar=ScriptVariable.newInstance().set("");
+     }
+     |
+     'h\'\'' {
+          $svar=ScriptVariable.newInstance().set("");
+     }
+     |
+     'r\'\'' {
+          $svar=ScriptVariable.newInstance().set("");
+     }
+     |
+     '"' sl=QuotedStringTextNonEmpty '"' {
+          $svar=ScriptVariable.newInstance().set($sl.text);
+     }
+     |
+     '"' sl=QuotedStringTextNonEmpty '"' {
+          $svar=ScriptVariable.parseHexString($sl.text);
+     }
+     |
+     'h\'' sl=QuotedStringTextNonEmpty '\'' {
+          $svar=ScriptVariable.parseRawString($sl.text);
+     }
      ;
 
 byte_literal_list returns [ScriptVariable svar]:
@@ -114,6 +138,14 @@ expression_eval_term returns [ScriptVariable svar]:
      |
      vgp=variable_get_property {
           $svar=$vgp.svar;
+     }
+     |
+     arrIdxProp=extract_expression_from_array_index {
+          $svar=$arrIdxProp.svar;
+     }
+     |
+     arrSliceProp=extract_expression_from_array_slice {
+          $svar=$arrSliceProp.svar;
      }
      ;
 
@@ -220,24 +252,74 @@ variable_get_property returns [ScriptVariable svar]:
      }
      ;
 
+extract_expression_from_array_index returns [ScriptVariable svar]:
+     varRef=variable_reference ArrayIndexOpenBracket oexpr=operand_expression ArrayIndexCloseBracket {
+          $svar=$varRef.svar.getValueAt($oexpr.svar.getValueAsInt());
+     }
+     ;
+
+extract_expression_from_array_slice returns [ScriptVariable svar]:
+     varRef=variable_reference ArrayIndexOpenBracket oexprStartIdx=operand_expression
+     ArraySliceSeparator oexprLengthIdx=operand_expression ArrayIndexCloseBracket {
+          $svar=$varRef.svar.getSubArray($oexprStartIdx.svar.getValueAsInt(), $oexprLengthIdx.svar.getValueAsInt());
+     }
+     |
+     varRef=variable_reference ArrayIndexOpenBracket oexprStartIdx=operand_expression
+     ArraySliceSeparator ArrayIndexCloseBracket {
+          $svar=$varRef.svar.getSubArray($oexprStartIdx.svar.getValueAsInt());
+     }
+     |
+     varRef=variable_reference ArrayIndexOpenBracket
+     ArraySliceSeparator oexprLengthIdx=operand_expression ArrayIndexCloseBracket {
+          $svar=$varRef.svar.getSubArray(0, $oexprLengthIdx.svar.getValueAsInt());
+     }
+     ;
+
+assignment_by_array_slice returns [ScriptVariable svar]:
+     varRef=variable_reference ArrayIndexOpenBracket oexprStartIdx=operand_expression
+     ArraySliceSeparator oexprLengthIdx=operand_expression ArrayIndexCloseBracket
+     DefEqualsOperator rhsExpr=operand_expression {
+          $varRef.svar.insertSubArray($oexprStartIdx.svar.getValueAsInt(), $oexprLengthIdx.svar.getValueAsInt(), $rhsExpr.svar);
+          $svar=$varRef.svar;
+          ChameleonScripting.getRunningInstance().setVariableByName($varRef.svar);
+     }
+     |
+     varRef=variable_reference ArrayIndexOpenBracket oexprStartIdx=operand_expression
+     ArraySliceSeparator ArrayIndexCloseBracket
+     DefEqualsOperator rhsExpr=operand_expression {
+          $varRef.svar.insertSubArray($oexprStartIdx.svar.getValueAsInt(), $rhsExpr.svar);
+          $svar=$varRef.svar;
+          ChameleonScripting.getRunningInstance().setVariableByName($varRef.svar);
+     }
+     |
+     varRef=variable_reference ArrayIndexOpenBracket
+     ArraySliceSeparator oexprLengthIdx=operand_expression ArrayIndexCloseBracket
+     DefEqualsOperator rhsExpr=operand_expression {
+          $varRef.svar.insertSubArray(0, $oexprLengthIdx.svar.getValueAsInt(), $rhsExpr.svar);
+          $svar=$varRef.svar;
+          ChameleonScripting.getRunningInstance().setVariableByName($varRef.svar);
+     }
+     ;
+
 WhiteSpaceText:        ( WhiteSpace | NewLineBreak )+ ;
-WhiteSpace:            [ \t\r\n]+ -> channel(HIDDEN) ;
+WhiteSpace:            [ \t\r\n\u000C]+ -> channel(HIDDEN) ;
 NewLineBreak:          ( '\r''\n'? | '\n' ) -> channel(HIDDEN) ;
 CStyleBlockComment:    '/*'.*?'*/' -> channel(HIDDEN) ;
 CStyleLineComment:     '//'~[\n]* NewLineBreak -> channel(HIDDEN) ;
 HashStyleLineComment:  '#'~[\n]* NewLineBreak -> channel(HIDDEN) ;
 Commentary:            CStyleBlockComment | CStyleLineComment | HashStyleLineComment ;
 
+DecimalDigit: [0-9] ;
+DecimalLiteral: MinusSign (DecimalDigit)+ | (DecimalDigit)+ ;
 HexDigit: [0-9a-fA-F] ;
 HexString: (HexDigit)+ ;
 HexByte: '0x' HexDigit HexDigit | '0x' HexDigit | HexDigit HexDigit ;
 HexLiteral: HexByte | '0x'HexString | HexString ;
 BooleanLiteral: 'true' | 'True' | 'TRUE' | 'false' | 'False' | 'FALSE' ;
 AsciiChar: [\u0040-\u0046\u0050-\u0133\u0135-\u0176] ;
-StringLiteral: '"'(AsciiChar)*'"' ;
-HexStringLiteral: 'h\'' HexString '\'' ;
-RawStringLiteral: 'r\'' (AsciiChar)* '\'' ;
+QuotedStringTextNonEmpty: (~["\\] | '\\' .)+ ;
 
+MinusSign: '-' ;
 CommaSeparator: ',' ;
 OpenParens: '(' ;
 ClosedParens: ')' ;
@@ -265,6 +347,8 @@ TernaryOperatorFirstSymbol: '?' ;
 TernaryOperatorSecondSymbol: ColonSeparator ;
 DefEqualsOperator: '=' | ':=' ;
 PlusEqualsOperator: '+=' ;
+UnaryIncrementOperator: '++' ; // TODO
+UnaryDecrementOperator: '--' ; // TODO
 
 TypeCastByte: '(Byte)' ;
 TypeCastBytes: '(Bytes)' ;
@@ -278,3 +362,7 @@ TypeCastString: '(String)' ;
  */
 HashedIndexAccessor: '->' ;
 PropertyName: VariableName ;
+
+ArrayIndexOpenBracket: '[' ;
+ArrayIndexCloseBracket: ']' ;
+ArraySliceSeparator: ColonSeparator ;

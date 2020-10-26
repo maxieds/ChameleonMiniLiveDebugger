@@ -20,6 +20,8 @@ package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -410,6 +412,19 @@ public class ScriptingTypes {
             throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IllegalOperationException);
         }
 
+        public ScriptVariable getSubArray(int startIdx) throws ScriptingExecptions.ChameleonScriptingException {
+            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+        }
+        public ScriptVariable getSubArray(int startIdx, int endLength) throws ScriptingExecptions.ChameleonScriptingException {
+            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+        }
+        public void insertSubArray(int startIdx, ScriptVariable rhs) throws ScriptingExecptions.ChameleonScriptingException {
+            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+        }
+        public void insertSubArray(int startIdx, int endLength, ScriptVariable rhs) throws ScriptingExecptions.ChameleonScriptingException {
+            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+        }
+
         public String getBinaryString() {
             throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
         }
@@ -517,6 +532,41 @@ public class ScriptingTypes {
                 throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IllegalArgumentException);
             }
             hashMap.put(hashIndex, varObj);
+        }
+
+        @Override
+        public ScriptVariable getSubArray(int startIdx) throws ScriptingExecptions.ChameleonScriptingException {
+            if(startIdx < 0 || startIdx >= arrayList.size()) {
+                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IndexOutOfBoundsException);
+            }
+            ScriptVariableArrayMap svSubArr = new ScriptVariableArrayMap();
+            svSubArr.arrayList = new ArrayList<ScriptVariable>(arrayList.subList(startIdx, arrayList.size()));
+            svSubArr.hashMap = hashMap;
+            return svSubArr;
+        }
+
+        @Override
+        public ScriptVariable getSubArray(int startIdx, int endLength) throws ScriptingExecptions.ChameleonScriptingException {
+            if(startIdx < 0 || startIdx >= arrayList.size() ||
+                    (endLength >= 0 && endLength + startIdx > arrayList.size()) ||
+                    (endLength >= 0 && endLength <= startIdx) || (endLength < 0 && arrayList.size() + endLength <= 0)) {
+                throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IndexOutOfBoundsException);
+            }
+            ScriptVariableArrayMap svSubArr = new ScriptVariableArrayMap();
+            int endArrIndex = endLength >= 0 ? startIdx + endLength : arrayList.size() + endLength;
+            svSubArr.arrayList = new ArrayList<ScriptVariable>(arrayList.subList(startIdx, endArrIndex));
+            svSubArr.hashMap = hashMap;
+            return svSubArr;
+        }
+
+        @Override
+        public void insertSubArray(int startIdx, ScriptVariable rhs) throws ScriptingExecptions.ChameleonScriptingException {
+            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+        }
+
+        @Override
+        public void insertSubArray(int startIdx, int endLength, ScriptVariable rhs) throws ScriptingExecptions.ChameleonScriptingException {
+            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
         }
 
         @Override
