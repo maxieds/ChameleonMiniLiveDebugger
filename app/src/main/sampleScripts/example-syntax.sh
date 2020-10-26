@@ -9,6 +9,8 @@ Printf("CmdName=%s (%d) [%s] -> \"%s\" %s / %s\n",
        $cmdOutput->data, $cmdOutput->isError ? "XX" : "OK", 
        $cmdOutput->isTimeout ? "TMT" : "NO-TMT")
 
+myBkptLabel:
+
 $tagUID = $$("UID?")
 $tagUID = Replace("..(?!$)", "$0" + ":")
 Print("Tag UID = ", $tagUID)
