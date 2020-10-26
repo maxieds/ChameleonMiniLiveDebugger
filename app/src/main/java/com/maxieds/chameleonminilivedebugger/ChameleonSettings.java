@@ -36,11 +36,11 @@ public class ChameleonSettings {
 
     public static final int USBIO_IFACE_INDEX = 0;
     public static final int BTIO_IFACE_INDEX = 1;
-    public static ChameleonSerialIOInterface[] serialIOPorts = null;
+    public static SerialIOReceiver[] serialIOPorts = null;
     public static int SERIALIO_IFACE_ACTIVE_INDEX = -1;
 
     public static synchronized void initSerialIOPortObjects() {
-        serialIOPorts = new ChameleonSerialIOInterface[2];
+        serialIOPorts = new SerialIOReceiver[2];
         serialIOPorts[USBIO_IFACE_INDEX] = new SerialUSBInterface(LiveLoggerActivity.getLiveLoggerInstance());
         serialIOPorts[BTIO_IFACE_INDEX] = new BluetoothSerialInterface(LiveLoggerActivity.getLiveLoggerInstance());
         SERIALIO_IFACE_ACTIVE_INDEX = -1;

@@ -17,6 +17,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
+import android.os.Handler;
 import android.util.Log;
 import android.widget.LinearLayout;
 
@@ -24,16 +25,20 @@ import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.ChameleonIO;
 import com.maxieds.chameleonminilivedebugger.ChameleonSerialIOInterface;
 import com.maxieds.chameleonminilivedebugger.ChameleonSettings;
+import com.maxieds.chameleonminilivedebugger.LiveLoggerActivity;
 import com.maxieds.chameleonminilivedebugger.R;
+import com.maxieds.chameleonminilivedebugger.SerialIOReceiver;
 import com.maxieds.chameleonminilivedebugger.TabFragment;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptLexer;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParser;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptVisitor;
+import com.maxieds.chameleonminilivedebugger.Utils;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -177,25 +182,6 @@ public class ChameleonScripting {
         ParseTree scriptParseTree;
         ChameleonScriptVisitor scriptVisitor;
 
-        public void cleanupRuntimeData(boolean restoreChameleonState) {
-            if(!isInitialized()) {
-                return;
-            }
-            initialized = false;
-            try {
-                scriptFileStream.close();
-                outputFileStream.close();
-                loggingFileStream.close();
-                debuggingFileStream.close();
-            } catch(IOException ioe) {
-                ioe.printStackTrace();
-            }
-            scriptState = ScriptRuntimeState.DONE;
-            if(restoreChameleonState) {
-                chameleonDeviceState.restoreState(true);
-            }
-        }
-
         public ChameleonScriptInstance(String scriptFile) {
             initialized = true;
             scriptFilePath = scriptFile;
@@ -247,48 +233,93 @@ public class ChameleonScripting {
             scriptVisitor = null;
         }
 
+        public void cleanupRuntimeData(boolean restoreChameleonState) {
+            if(!isInitialized()) {
+                return;
+            }
+            initialized = false;
+            try {
+                scriptFileStream.close();
+                outputFileStream.close();
+                loggingFileStream.close();
+                debuggingFileStream.close();
+            } catch(IOException ioe) {
+                ioe.printStackTrace();
+            }
+            scriptState = ScriptRuntimeState.DONE;
+            if(restoreChameleonState) {
+                chameleonDeviceState.restoreState(true);
+            }
+        }
+
         public boolean isInitialized() {
             return initialized;
         }
 
         public List<ChameleonScriptErrorListener.SyntaxError> listSyntaxErrors(String scriptFileText) {
-            // TODO:
             // report errors with: parser.getNumberOfSyntaxErrors();
             // display them in a nice presentation / GUI fragment and vibrate for the user ...
             return null;
         }
 
         private boolean runScriptPreambleActions() {
-
-            // save Chameleon device state and push onto stack ...
-            // change to CWD ...
-            // set the script paused icon in toolbar to true ...
-            // temporarily disable status bar updates ...
-            // disable adding breakpoints
-            // parser.eval()
-            // set the start running time ...
-
+            // TODO: Check the syntax errors ...
+            chameleonDeviceState.saveState(ScriptingConfig.SAVE_RESTORE_CHAMELEON_STATE);
+            LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusScriptingIsExec, R.drawable.toolbar_paused_icon16);
+            ScriptingBreakPoint.bpDisabled = true;
+            ChameleonIO.DeviceStatusSettings.stopPostingStats();
+            SerialIOReceiver.setRedirectInterface(new ChameleonIOHandler());
+            lastStartTime = System.currentTimeMillis();
             return true;
         }
 
-        public boolean runScriptFromStart() throws ScriptingExceptions.ChameleonScriptingException {
+        public boolean runScriptFromStart() {
             if(!runScriptPreambleActions()) {
                 return false;
             }
-            /* TODO: handle the runner thread mostly off of the main UI thread (except for GUI status updates) ... */
-            // ??? limit exec time ???
-            return false;
+            long execTimeLimit = ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME ?  ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME_SECONDS : 0;
+            scriptRunnerThread = new Thread() {
+                @Override
+                public void run() {
+
+                    // TODO: scriptParser -> run through all of its actions ???
+
+                    // post UI updates on the GUI thread ...
+                    // post console output (either in realtime, or at the conclusion of the run, or on RT error)
+                    // restore state (Chameleon, app, phone), reset the serial I/O redirect handler,
+                    // start posting stats again ...
+                    // re-enable editing / modifying / adding breakpoints ...
+                    // clear out all of the buffered serial I/O data ...
+                    // notify user and/or vibrate on exit ...
+                }
+            };
+            scriptRunnerThread.start();
+            if(execTimeLimit > 0) {
+                Handler setTimeLimitHandler = new Handler();
+                Runnable enforceTimeLimitRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        if (scriptRunnerThread.isAlive()) {
+                            scriptRunnerThread.interrupt();
+                            killRunningScript();
+                        }
+                    }
+                };
+                setTimeLimitHandler.postDelayed(enforceTimeLimitRunnable, execTimeLimit * 1000);
+            }
+            return true;
         }
 
         public boolean pauseRunningScript() throws ScriptingExceptions.ChameleonScriptingException {
             return false; // TODO
         }
 
-        public boolean killRunningScript() throws ScriptingExceptions.ChameleonScriptingException {
+        public boolean stepRunningScript() throws ScriptingExceptions.ChameleonScriptingException {
             return false; // TODO
         }
 
-        public boolean stepRunningScript() throws ScriptingExceptions.ChameleonScriptingException {
+        public boolean killRunningScript() throws ScriptingExceptions.ChameleonScriptingException {
+            // cleanup, notify user of termination, restore the previous app state ...
             return false; // TODO
         }
 
@@ -348,11 +379,14 @@ public class ChameleonScripting {
         return activeChameleonScript;
     }
 
-    public boolean runScriptFromStart(String scriptPath) throws ScriptingExceptions.ChameleonScriptingException {
-        // get the active file name from the text view ...
-        // check that it exists ...
-        // create the new script instance, and try to run it ...
-        return false;
+    public boolean runScriptFromStart() {
+        String scriptPath = ScriptingConfig.LAST_SCRIPT_LOADED_PATH;
+        if(ScriptingFileIO.getStoragePathFromRelative(scriptPath, false, false) == null) {
+            Utils.displayToastMessageShort(String.format(BuildConfig.DEFAULT_LOCALE, "Invalid script file path \"%s\".", scriptPath));
+            return false;
+        }
+        activeChameleonScript = new ChameleonScriptInstance(scriptPath);
+        return getRunningInstance().runScriptFromStart();
     }
 
 }

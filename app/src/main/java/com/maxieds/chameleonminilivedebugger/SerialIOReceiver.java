@@ -30,7 +30,7 @@ import static com.maxieds.chameleonminilivedebugger.ChameleonLogUtils.LogCode.LO
 import static com.maxieds.chameleonminilivedebugger.ChameleonLogUtils.LogCode.LOG_INFO_CODEC_RX_DATA;
 import static com.maxieds.chameleonminilivedebugger.ChameleonLogUtils.LogCode.LOG_INFO_CODEC_RX_DATA_W_PARITY;
 
-public class SerialIOReceiver implements ChameleonSerialIOInterface {
+public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSerialIOInterface.SerialDataReceiverInterface {
 
     private static final String TAG = SerialIOReceiver.class.getSimpleName();
 
@@ -153,8 +153,17 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface {
         return splitLogData;
     }
 
+    public static ChameleonSerialIOInterface.SerialDataReceiverInterface redirectSerialDataInterface = null;
+    public static void setRedirectInterface(ChameleonSerialIOInterface.SerialDataReceiverInterface iface) {
+        redirectSerialDataInterface = iface;
+    }
+
     public void onReceivedData(byte[] liveLogData) {
 
+        if(redirectSerialDataInterface != null) {
+            redirectSerialDataInterface.onReceivedData(liveLogData);
+            return;
+        }
         if(liveLogData == null || liveLogData.length == 0) {
             return;
         }

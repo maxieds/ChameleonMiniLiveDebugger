@@ -173,7 +173,7 @@ Printf("Found tag with\n UID: ");
 if($szCL == 1) {
    Printf("%02x%02x%02x%02x", $abtRawUid[0], $abtRawUid[1], $abtRawUid[2], $abtRawUid[3])
 }
-else if($szCL == 2)
+else if($szCL == 2) {
    Printf("%02x%02x%02x",     $abtRawUid[1], $abtRawUid[2], $abtRawUid[3])
    Printf("%02x%02x%02x%02x", $abtRawUid[4], $abtRawUid[5], $abtRawUid[6], $abtRawUid[7])
 }

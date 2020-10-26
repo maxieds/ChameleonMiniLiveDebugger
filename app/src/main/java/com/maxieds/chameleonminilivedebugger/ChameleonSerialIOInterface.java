@@ -26,34 +26,34 @@ import java.util.Arrays;
 
 public interface ChameleonSerialIOInterface {
 
-    public void setListenerContext(Context context);
+    void setListenerContext(Context context);
 
-    public final String SERIALIO_DEVICE_FOUND = "ChameleonSerialIOInterface.SERIALIO_DEVICE_FOUND";
-    public final String SERIALIO_DEVICE_CONNECTION_LOST = "ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST";
-    public final String SERIALIO_DATA_RECEIVED = "ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED";
-    public final String SERIALIO_LOGDATA_RECEIVED = "ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED";
-    public final String SERIALIO_NOTIFY_STATUS = "ChameleonSerialIOInterface.SERIALIO_NOTIFY_STATUS";
-    public final String SERIALIO_NOTIFY_BTDEV_CONNECTED = "ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED";
+    String SERIALIO_DEVICE_FOUND = "ChameleonSerialIOInterface.SERIALIO_DEVICE_FOUND";
+    String SERIALIO_DEVICE_CONNECTION_LOST = "ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST";
+    String SERIALIO_DATA_RECEIVED = "ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED";
+    String SERIALIO_LOGDATA_RECEIVED = "ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED";
+    String SERIALIO_NOTIFY_STATUS = "ChameleonSerialIOInterface.SERIALIO_NOTIFY_STATUS";
+    String SERIALIO_NOTIFY_BTDEV_CONNECTED = "ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED";
 
-    public static final int STATUS_ERROR = -1;
-    public static final int STATUS_OK = 0;
-    public static final int STATUS_TRUE = 1;
-    public static final int STATUS_FALSE = 0;
+    int STATUS_ERROR = -1;
+    int STATUS_OK = 0;
+    int STATUS_TRUE = 1;
+    int STATUS_FALSE = 0;
 
-    public String getInterfaceLoggingTag();
+    String getInterfaceLoggingTag();
 
-    public boolean notifySerialDataReceived(byte[] serialData);
-    public boolean notifyLogDataReceived(byte[] serialData);
-    public boolean notifyDeviceFound();
-    public boolean notifyDeviceConnectionTerminated();
-    public boolean notifyStatus(String msgType, String statusMsg);
+    boolean notifySerialDataReceived(byte[] serialData);
+    boolean notifyLogDataReceived(byte[] serialData);
+    boolean notifyDeviceFound();
+    boolean notifyDeviceConnectionTerminated();
+    boolean notifyStatus(String msgType, String statusMsg);
 
-    public boolean isWiredUSB();
-    public boolean isBluetooth();
+    boolean isWiredUSB();
+    boolean isBluetooth();
 
-    public final int HIGH_SPEED_BAUD_RATE = 256000;
-    public final int LIMITED_SPEED_BAUD_RATE = 115200;
-    public final Integer[] UART_BAUD_RATES = {
+    int HIGH_SPEED_BAUD_RATE = 256000;
+    int LIMITED_SPEED_BAUD_RATE = 115200;
+    Integer[] UART_BAUD_RATES = {
             50,
             75,
             110,
@@ -76,26 +76,28 @@ public interface ChameleonSerialIOInterface {
             921600
     };
 
-    public int setSerialBaudRate(int baudRate);
-    public int setSerialBaudRateHigh();
-    public int setSerialBaudRateLimited();
+    int setSerialBaudRate(int baudRate);
+    int setSerialBaudRateHigh();
+    int setSerialBaudRateLimited();
 
-    public boolean startScanningDevices();
-    public boolean stopScanningDevices();
-    public String getActiveDeviceInfo();
+    boolean startScanningDevices();
+    boolean stopScanningDevices();
+    String getActiveDeviceInfo();
 
-    public int configureSerial();
-    public int shutdownSerial();
-    public boolean serialConfigured();
-    public boolean serialReceiversRegistered();
+    int configureSerial();
+    int shutdownSerial();
+    boolean serialConfigured();
+    boolean serialReceiversRegistered();
 
-    public boolean acquireSerialPort();
-    public boolean acquireSerialPortNoInterrupt();
-    public boolean tryAcquireSerialPort(int timeout);
-    public boolean releaseSerialPortLock();
+    boolean acquireSerialPort();
+    boolean acquireSerialPortNoInterrupt();
+    boolean tryAcquireSerialPort(int timeout);
+    boolean releaseSerialPortLock();
 
-    public void onReceivedData(byte[] liveLogData);
+    interface SerialDataReceiverInterface {
+        void onReceivedData(byte[] liveLogData);
+    }
 
-    public int sendDataBuffer(byte[] dataWriteBuffer);
+    int sendDataBuffer(byte[] dataWriteBuffer);
 
 }

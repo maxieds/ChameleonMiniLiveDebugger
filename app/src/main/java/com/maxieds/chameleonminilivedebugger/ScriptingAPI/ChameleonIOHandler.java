@@ -42,7 +42,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ChameleonIOHandler {
+public class ChameleonIOHandler implements ChameleonSerialIOInterface.SerialDataReceiverInterface {
 
     private static final String TAG = ChameleonIOHandler.class.getSimpleName();
 
@@ -76,14 +76,21 @@ public class ChameleonIOHandler {
 
     public static void registerNewSerialIODataBuffer(byte[] incomingDataBytes) {
         incomingIOBufferAccessLock.lock(); // TODO: Watch for hangs ...
-        incomingSerialIOBufferQueue.add(ArrayUtils.toObject(incomingDataBytes));
         if(processIncomingSerialIODataThread.isAlive()) {
+            incomingSerialIOBufferQueue.add(ArrayUtils.toObject(incomingDataBytes));
+        }
+        else {
+            handleChameleonSerialResults(incomingDataBytes);
             processIncomingSerialIODataThread.start();
         }
         incomingIOBufferAccessLock.unlock();
     }
 
     private static Lock statusConfigLock = new ReentrantLock();
+
+    public void onReceivedData(byte[] dataBytes) {
+        registerNewSerialIODataBuffer(dataBytes);
+    }
 
     public static void handleChameleonSerialResults(byte[] dataBytes) {
         int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(dataBytes);
