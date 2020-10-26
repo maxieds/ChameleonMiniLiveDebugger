@@ -32,6 +32,7 @@ public class ScriptingExecptions {
         InvalidDataException,
         ArithmeticErrorException,
         IllegalArgumentException,
+        IllegalOperationException,
         IllegalStateException,
         NumberFormatException,
         IOException,

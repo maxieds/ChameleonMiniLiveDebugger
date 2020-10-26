@@ -20,7 +20,10 @@ package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ScriptingTypes {
 
@@ -42,9 +45,7 @@ public class ScriptingTypes {
             VariableTypeAsciiString,
             VariableTypeRawFileFilePath,
             VariableTypeStorageFilePath,
-            VariableTypeArray,
-            VariableTypeHashMap,
-            VariableTypeArrayComposite, /* TODO */
+            VariableTypeArrayMap
         }
 
         private VariableType varType;
@@ -362,21 +363,7 @@ public class ScriptingTypes {
         }
 
         public boolean isArray() {
-            return false;
-        }
-
-        public VariableType getArrayType() {
-            return VariableType.VariableTypeNone;
-        }
-
-        public boolean arrayTypeEquals(ScriptVariable rhsVar) {
-            if(!isArray() || !rhsVar.isArray()) {
-                return false;
-            }
-            else if(getArrayType() == VariableType.VariableTypeArray) {
-                return false;
-            }
-            return getArrayType() == rhsVar.getArrayType();
+            return varType == VariableType.VariableTypeArrayMap;
         }
 
         public int length() throws ScriptingExecptions.ChameleonScriptingException {
@@ -390,64 +377,72 @@ public class ScriptingTypes {
         }
 
         public ScriptVariable getValueAt(int index) throws ScriptingExecptions.ChameleonScriptingException {
-            return null;
+            if(index == 0) {
+                return this;
+            }
+            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IllegalOperationException);
         }
 
         public ScriptVariable getValueAt(String hashIndex) throws ScriptingExecptions.ChameleonScriptingException {
-            return null;
+            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IllegalOperationException);
         }
 
-        public void setValueAt(int index) throws ScriptingExecptions.ChameleonScriptingException {}
+        public void setValueAt(int index, ScriptVariable varObj) throws ScriptingExecptions.ChameleonScriptingException {
+            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IllegalOperationException);
+        }
 
-        public void setValueAt(String hashIndex) throws ScriptingExecptions.ChameleonScriptingException {}
+        public void setValueAt(String hashIndex, ScriptVariable varObj) throws ScriptingExecptions.ChameleonScriptingException {
+            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.IllegalOperationException);
+        }
 
         public String getBinaryString() {
-            return null;
+            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
         }
 
-        public enum BinaryOperation {
+        public enum Operation {
             BINOP_PLUS,
             BINOP_BITWISE_AND,
             BINOP_BITWISE_OR,
             BINOP_BITWISE_XOR,
             BINOP_SHIFT_LEFT,
-            BINOP_SHIFT_RIGHT
-        }
-
-        public ScriptVariable binaryOperation(BinaryOperation opType, ScriptVariable rhsVar)
-                                              throws ScriptingExecptions.ChameleonScriptingException { return null; }
-
-        public enum UnaryOperation {
+            BINOP_SHIFT_RIGHT,
             UOP_BITWISE_NOT
         }
 
-        public ScriptVariable unaryOperation(UnaryOperation opType)
-                                             throws ScriptingExecptions.ChameleonScriptingException { return null; }
+        public ScriptVariable binaryOperation(Operation opType, ScriptVariable rhsVar)
+                                              throws ScriptingExecptions.ChameleonScriptingException {
+            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+        }
+
+        public ScriptVariable unaryOperation(Operation opType) throws ScriptingExecptions.ChameleonScriptingException {
+            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+        }
 
     }
 
-    public static class ScriptVariableArray extends ScriptVariable {
+    public static class ScriptVariableArrayMap extends ScriptVariable {
 
-        private VariableType arrayElementType;
-        private int arrayLength;
+        private List<ScriptVariable> arrayList;
+        private Map<String, ScriptVariable> hashMap;
 
-        ScriptVariableArray(VariableType vtype, int length) {}
-        ScriptVariableArray(List<ScriptVariable> varsInitList) {}
-
-        @Override
-        public int length() throws ScriptingExecptions.ChameleonScriptingException { return 0; }
-
-        @Override
-        public VariableType getType() throws ScriptingExecptions.ChameleonScriptingException { return null; }
-
-        @Override
-        public boolean isArray() {
-            return true;
+        public ScriptVariableArrayMap() {
+            arrayList = new ArrayList<ScriptVariable>();
+            hashMap = new HashMap<String, ScriptVariable>();
         }
 
         @Override
-        public VariableType getArrayType() {
-            return arrayElementType;
+        public byte[] getValueAsBytes() {
+            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+        }
+
+        @Override
+        public String getValueAsString() {
+            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+        }
+
+        @Override
+        public int length() throws ScriptingExecptions.ChameleonScriptingException {
+            return arrayList.size() + hashMap.size();
         }
 
         @Override
@@ -461,20 +456,31 @@ public class ScriptingTypes {
         }
 
         @Override
-        public String getBinaryString() {
-            return null;
+        public void setValueAt(int index, ScriptVariable varObj) throws ScriptingExecptions.ChameleonScriptingException {
+            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
         }
 
         @Override
-        public ScriptVariable binaryOperation(BinaryOperation opType, ScriptVariable rhsVar)
-                                              throws ScriptingExecptions.ChameleonScriptingException { return null; }
+        public void setValueAt(String hashIndex, ScriptVariable varObj) throws ScriptingExecptions.ChameleonScriptingException {
+            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+        }
 
         @Override
-        public ScriptVariable unaryOperation(UnaryOperation opType) throws ScriptingExecptions.ChameleonScriptingException { return null; }
+        public String getBinaryString() {
+            throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+        }
+
+        @Override
+        public ScriptVariable binaryOperation(ScriptVariable.Operation opType, ScriptVariable rhsVar)
+                                              throws ScriptingExecptions.ChameleonScriptingException {
+             throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+        }
+
+        @Override
+        public ScriptVariable unaryOperation(ScriptVariable.Operation opType) throws ScriptingExecptions.ChameleonScriptingException {
+             throw new ScriptingExecptions.ChameleonScriptingException(ScriptingExecptions.ExceptionType.NotImplementedException);
+        }
 
     }
-
-    // Array needs to override getAsString(), getAsBoolean(), getAsBytes();
-    // Implement HashMap array type ...
 
 }

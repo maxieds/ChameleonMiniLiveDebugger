@@ -121,27 +121,27 @@ boolean_valued_operation returns [ScriptVariable  opResult]:
 
 other_operation_result returns [ScriptVariable svar]:
      lhs=operand_expression LeftShiftOperator rhs=operand_expression {
-          $svar=$lhs.svar.binaryOperation(ScriptVariable.BinaryOperation.BINOP_SHIFT_LEFT, $rhs.svar);
+          $svar=$lhs.svar.binaryOperation(ScriptVariable.Operation.BINOP_SHIFT_LEFT, $rhs.svar);
      }
      |
      lhs=operand_expression RightShiftOperator rhs=operand_expression {
-          $svar=$lhs.svar.binaryOperation(ScriptVariable.BinaryOperation.BINOP_SHIFT_RIGHT, $rhs.svar);
+          $svar=$lhs.svar.binaryOperation(ScriptVariable.Operation.BINOP_SHIFT_RIGHT, $rhs.svar);
      }
      |
      lhs=operand_expression BitwiseAndOperator rhs=operand_expression {
-          $svar=$lhs.svar.binaryOperation(ScriptVariable.BinaryOperation.BINOP_BITWISE_AND, $rhs.svar);
+          $svar=$lhs.svar.binaryOperation(ScriptVariable.Operation.BINOP_BITWISE_AND, $rhs.svar);
      }
      |
      lhs=operand_expression BitwiseOrOperator rhs=operand_expression {
-          $svar=$lhs.svar.binaryOperation(ScriptVariable.BinaryOperation.BINOP_BITWISE_OR, $rhs.svar);
+          $svar=$lhs.svar.binaryOperation(ScriptVariable.Operation.BINOP_BITWISE_OR, $rhs.svar);
      }
      |
      lhs=operand_expression BitwiseXorOperator rhs=operand_expression {
-          $svar=$lhs.svar.binaryOperation(ScriptVariable.BinaryOperation.BINOP_BITWISE_XOR, $rhs.svar);
+          $svar=$lhs.svar.binaryOperation(ScriptVariable.Operation.BINOP_BITWISE_XOR, $rhs.svar);
      }
      |
      BitwiseNotOperator rhs=operand_expression {
-          $svar=$rhs.svar.unaryOperation(ScriptVariable.UnaryOperation.UOP_BITWISE_NOT);
+          $svar=$rhs.svar.unaryOperation(ScriptVariable.Operation.UOP_BITWISE_NOT);
      }
      |
      cond=operand_expression TernaryOperatorFirstSymbol vtrue=operand_expression
@@ -163,7 +163,7 @@ assignment_operation returns [ScriptVariable svar]:
      }
      |
      lhs=variable_reference PlusEqualsOperator rhs=operand_expression {
-          $svar=$lhs.svar.binaryOperation(ScriptVariable.BinaryOperation.BINOP_PLUS, $rhs.svar);
+          $svar=$lhs.svar.binaryOperation(ScriptVariable.Operation.BINOP_PLUS, $rhs.svar);
           ChameleonScripting.getRunningInstance().setVariableByName($lhs.svar);
      }
      ;
@@ -251,5 +251,8 @@ TypeCastInt32: '(Int32)' ;
 TypeCastBoolean: '(Boolean)' ;
 TypeCastString: '(String)' ;
 
+/* TODO: No current support for hash indexed assignments:
+ *       $v->propName = $q // does NOT work!
+ */
 HashedIndexAccessor: '->' ;
 PropertyName: VariableName ;
