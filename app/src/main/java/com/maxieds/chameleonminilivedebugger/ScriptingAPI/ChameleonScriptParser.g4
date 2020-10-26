@@ -32,7 +32,23 @@ file_contents: (script_line)+ EOF | EOF ;
 script_line: label_statement |
              assignment_operation | assignment_by_array_slice |
              scripting_api_function_result |
-             exec_chameleon_command ;
+             exec_chameleon_command |
+             conditional_block | while_loop ;
+
+script_line_block: (script_line)* ;
+
+while_loop: While OpenParens operand_expression ClosedParens
+            OpenBrace script_line_block ClosedBrace ;
+
+if_block:   IfCond OpenParens operand_expression ClosedParens
+            OpenBrace script_line_block ClosedBrace ;
+elif_block: ElifCond OpenParens operand_expression ClosedParens
+            OpenBrace script_line_block ClosedBrace ;
+else_block: ElseCond OpenParens operand_expression ClosedParens
+            OpenBrace script_line_block ClosedBrace ;
+
+conditional_block: if_block (elif_block)+ else_block |
+                   if_block (elif_block)* ;
 
 variable_reference_v1 returns [ScriptVariable svar]:
      VariableStartSymbol vname=VariableName {

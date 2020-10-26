@@ -124,6 +124,13 @@ UtilityFunctions:              GetTimestampFuncName |
                                GetSubarrayFuncName | GetConstantStringFuncName | GetConstantByteArrayFuncName |
                                GetIntegersFromRangeFuncName ;
 
+/**** Loops and conditional blocks: ****/
+
+While: 'while' ;
+IfCond: 'if' ;
+ElifCond: 'else if' ;
+ElseCond: 'else' ;
+
 /**** Other syntax constants and regex matchers to define non-constant ids: ****/
 
 WhiteSpace:            [ \t\r\u000C]+ -> channel(HIDDEN) ;

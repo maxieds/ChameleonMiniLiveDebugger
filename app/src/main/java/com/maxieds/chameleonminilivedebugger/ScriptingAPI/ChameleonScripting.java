@@ -36,11 +36,8 @@ import com.maxieds.chameleonminilivedebugger.Utils;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -148,7 +145,7 @@ public class ChameleonScripting {
             EXCEPTION,
             PAUSED,
             BREAKPOINT,
-            FINISHED_OK,
+            FINISHED,
             DONE,
         }
 
@@ -172,6 +169,7 @@ public class ChameleonScripting {
         private List<Integer> breakpointLines;
         private boolean atBreakpoint;
         private Map<String, ScriptingTypes.ScriptVariable> scriptVariablesHashMap;
+        private Stack< Map<String, ScriptingTypes.ScriptVariable> > nestedBlocksContextStack;
         private ScriptRuntimeState scriptState;
         private ChameleonDeviceState chameleonDeviceState;
         private Thread scriptRunnerThread;
@@ -217,6 +215,7 @@ public class ChameleonScripting {
             breakpointLines = new ArrayList<Integer>();
             atBreakpoint = false;
             scriptVariablesHashMap = new HashMap<String, ScriptingTypes.ScriptVariable>();
+            nestedBlocksContextStack = new Stack<>();
             scriptState = ScriptRuntimeState.INITIALIZED;
             chameleonDeviceState = new ChameleonDeviceState();
             scriptRunnerThread = null;
@@ -289,6 +288,7 @@ public class ChameleonScripting {
                     //scriptParseTree = ;
                     //scriptParseTree.inspect(scriptParser);
                     //ParseTreeWalker.DEFAULT.walk(new VarListener(), scriptParseTree);
+
 
                     // post UI updates on the GUI thread ...
                     // post console output (either in realtime, or at the conclusion of the run, or on RT error)
