@@ -36,7 +36,9 @@ import com.maxieds.chameleonminilivedebugger.Utils;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -283,6 +285,10 @@ public class ChameleonScripting {
                 public void run() {
 
                     // TODO: scriptParser -> run through all of its actions ???
+                    //scriptParser.setBuildParseTree(true);
+                    //scriptParseTree = ;
+                    //scriptParseTree.inspect(scriptParser);
+                    //ParseTreeWalker.DEFAULT.walk(new VarListener(), scriptParseTree);
 
                     // post UI updates on the GUI thread ...
                     // post console output (either in realtime, or at the conclusion of the run, or on RT error)
@@ -379,7 +385,7 @@ public class ChameleonScripting {
         return activeChameleonScript;
     }
 
-    public boolean runScriptFromStart() {
+    public static boolean runScriptFromStart() {
         String scriptPath = ScriptingConfig.LAST_SCRIPT_LOADED_PATH;
         if(ScriptingFileIO.getStoragePathFromRelative(scriptPath, false, false) == null) {
             Utils.displayToastMessageShort(String.format(BuildConfig.DEFAULT_LOCALE, "Invalid script file path \"%s\".", scriptPath));

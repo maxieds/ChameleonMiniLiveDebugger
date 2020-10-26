@@ -41,6 +41,7 @@ public class ScriptingGUI {
     public static void scriptGUIHandlePerformTaskClick(Button clickedBtn, String btnTag) {
         switch(btnTag) {
             case "SCRIPTING_BTN_RUN_FROM_START":
+                ChameleonScripting.runScriptFromStart();
                 break;
             case "SCRIPTING_BTN_KILL_SCRIPT":
                 break;

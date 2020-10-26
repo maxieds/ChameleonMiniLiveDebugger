@@ -54,8 +54,8 @@
  * Created: 2020.10.26
  */
 
-$SAK_FLAG_ATS_SUPPORTED=0x20
-$CASCADE_BIT=0x04
+$_SAK_FLAG_ATS_SUPPORTED=0x20
+$_CASCADE_BIT=0x04
 
 // Note that the array initializer list syntax only
 // works with byte type literals:
@@ -96,7 +96,7 @@ $abtRx = $$(Sprintf("SEND %s", AsHexString($abtSelectTag)))
 $abtSak = $abtRx[0]
 
 // Test if we are dealing with a CL2
-if($abtSak & $CASCADE_BIT) {
+if($abtSak & $_CASCADE_BIT) {
      $szCL = 2
      // Check answer
      if($abtRawUid[0] != 0x88) {
