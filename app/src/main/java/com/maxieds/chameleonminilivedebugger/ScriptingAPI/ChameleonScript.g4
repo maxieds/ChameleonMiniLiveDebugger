@@ -27,7 +27,8 @@ import ScriptingPrimitives, ScriptingAPI;
 /* Start rule for the main grammar: */
 file_contents: (script_line)+ EOF;
 
-label_statement: lblName=LabelText LabelEndDelimiter {
+label_statement: lblNameWithSep=LabelText {
+          String labelName = $lblNameWithSep.text.substring(0, $lblNameWithSep.text.length() - 1);
           // TODO: no goto for now, so see if have encountered a breakpoint ...
      }
      ;
@@ -41,8 +42,8 @@ exec_chameleon_command returns [ScriptVariable cmdResult]:
 script_line: label_statement | exec_chameleon_command | scripting_api_function_result |
              assignment_operation | assignment_by_array_slice ;
 
-LabelText: (AsciiChar)+ ;
-LabelEndDelimiter: ColonSeparator ;
+LabelText: (AsciiChar)+ ColonSeparator ;
 
-ExecChameleonCommandInit: '$$' OpenParens;
+ExecCommandStartSymbol: VariableStartSymbol VariableStartSymbol ;
+ExecChameleonCommandInit: ExecCommandStartSymbol OpenParens;
 ExecChameleonCommandEnd: ClosedParens ;

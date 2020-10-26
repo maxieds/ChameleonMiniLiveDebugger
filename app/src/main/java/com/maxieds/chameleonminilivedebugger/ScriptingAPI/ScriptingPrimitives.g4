@@ -56,28 +56,16 @@ type_literal returns [ScriptVariable svar]:
      ;
 
 quoted_string_literal returns [ScriptVariable svar]:
-     '""' {
-          $svar=ScriptVariable.newInstance().set("");
+     qsl=QuotedStringLiteral {
+          $svar=ScriptVariable.newInstance().set($qsl.text.substring(1, $qsl.text.length() - 1));
      }
      |
-     'h\'\'' {
-          $svar=ScriptVariable.newInstance().set("");
+     qhsl=QuotedHexStringLiteral {
+          $svar=ScriptVariable.newInstance().set($qhsl.text.substring(2, $qhsl.text.length() - 2));
      }
      |
-     'r\'\'' {
-          $svar=ScriptVariable.newInstance().set("");
-     }
-     |
-     '"' sl=QuotedStringTextNonEmpty '"' {
-          $svar=ScriptVariable.newInstance().set($sl.text);
-     }
-     |
-     '"' sl=QuotedStringTextNonEmpty '"' {
-          $svar=ScriptVariable.parseHexString($sl.text);
-     }
-     |
-     'h\'' sl=QuotedStringTextNonEmpty '\'' {
-          $svar=ScriptVariable.parseRawString($sl.text);
+     qrsl=QuotedHexStringLiteral {
+          $svar=ScriptVariable.newInstance().set($qrsl.text.substring(2, $qrsl.text.length() - 2));
      }
      ;
 
@@ -301,9 +289,8 @@ assignment_by_array_slice returns [ScriptVariable svar]:
      }
      ;
 
-WhiteSpaceText:        ( WhiteSpace | NewLineBreak )+ ;
-WhiteSpace:            [ \t\r\n\u000C]+ -> channel(HIDDEN) ;
-NewLineBreak:          ( '\r''\n'? | '\n' ) -> channel(HIDDEN) ;
+WhiteSpace:            [ \t\r\u000C][ \t\r\n\u000C]* -> channel(HIDDEN) ;
+NewLineBreak:          '\n' -> channel(HIDDEN) ;
 CStyleBlockComment:    '/*'.*?'*/' -> channel(HIDDEN) ;
 CStyleLineComment:     '//'~[\n]* NewLineBreak -> channel(HIDDEN) ;
 HashStyleLineComment:  '#'~[\n]* NewLineBreak -> channel(HIDDEN) ;
@@ -317,7 +304,9 @@ HexByte: '0x' HexDigit HexDigit | '0x' HexDigit | HexDigit HexDigit ;
 HexLiteral: HexByte | '0x'HexString | HexString ;
 BooleanLiteral: 'true' | 'True' | 'TRUE' | 'false' | 'False' | 'FALSE' ;
 AsciiChar: [\u0040-\u0046\u0050-\u0133\u0135-\u0176] ;
-QuotedStringTextNonEmpty: (~["\\] | '\\' .)+ ;
+QuotedStringLiteral: '"' (~["\\] | '\\' .)* '"' ;
+QuotedHexStringLiteral: 'h\'' (~["\\] | '\\' .)* '\'' ;
+QuotedRawStringLiteral: 'r\'' (~["\\] | '\\' .)* '\'' ;
 
 MinusSign: '-' ;
 CommaSeparator: ',' ;
