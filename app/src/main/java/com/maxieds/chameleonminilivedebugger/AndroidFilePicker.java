@@ -236,7 +236,6 @@ public class AndroidFilePicker {
     private boolean showHidden;
     private boolean selectMultiple;
     private String rootDirectoryPath;
-    private int themeId;
     private List<FileType> displayFileTypes;
 
     public AndroidFilePicker() {
@@ -244,7 +243,6 @@ public class AndroidFilePicker {
         showHidden = false;
         selectMultiple = false;
         rootDirectoryPath = null;
-        themeId = -1;
         displayFileTypes = null;
     }
 
@@ -262,10 +260,6 @@ public class AndroidFilePicker {
 
     public void setRootPath(String rootFilePath) {
         rootDirectoryPath = rootFilePath;
-    }
-
-    public void setTheme(@IdRes int themeResId) {
-        themeId = themeResId;
     }
 
     public void setFileTypes(int typesMask) {
@@ -349,7 +343,6 @@ public class AndroidFilePicker {
         filePicker.selectMultiple(false);
         filePicker.showHidden(true);
         filePicker.setRootPath(baseDirectory);
-        filePicker.setTheme(activity.getThemeId());
         filePicker.setFileTypes(0x1f);
         return filePicker.getFilePath(activity, CHOOSER_ACTIVITY_PICK_DIRECTORY_RESULT_CODE);
     }
@@ -360,7 +353,6 @@ public class AndroidFilePicker {
         filePicker.selectMultiple(false);
         filePicker.showHidden(true);
         filePicker.setRootPath(baseDirectory);
-        filePicker.setTheme(activity.getThemeId());
         filePicker.setFileTypes(0x1f & (~FILE_TYPE_BINARY));
         return filePicker.getFilePath(activity, CHOOSER_ACTIVITY_PICK_FILE_RESULT_CODE);
     }
@@ -371,7 +363,6 @@ public class AndroidFilePicker {
         filePicker.selectMultiple(false);
         filePicker.showHidden(true);
         filePicker.setRootPath(baseDirectory);
-        filePicker.setTheme(activity.getThemeId());
         filePicker.setFileTypes(0x1f);
         return filePicker.getFilePath(activity, CHOOSER_ACTIVITY_PICK_FILE_RESULT_CODE);
     }

@@ -37,15 +37,23 @@ script_line: label_statement |
 
 script_line_block: (script_line)* ;
 
-while_loop: While OpenParens operand_expression ClosedParens
-            OpenBrace script_line_block ClosedBrace ;
+while_loop: While OpenParens oe=operand_expression ClosedParens
+            OpenBrace slb=script_line_block ClosedBrace {
+            }
+            ;
 
-if_block:   IfCond OpenParens operand_expression ClosedParens
-            OpenBrace script_line_block ClosedBrace ;
-elif_block: ElifCond OpenParens operand_expression ClosedParens
-            OpenBrace script_line_block ClosedBrace ;
-else_block: ElseCond OpenParens operand_expression ClosedParens
-            OpenBrace script_line_block ClosedBrace ;
+if_block:   IfCond OpenParens oe=operand_expression ClosedParens
+            OpenBrace slb=script_line_block ClosedBrace {
+            }
+            ;
+elif_block: ElifCond OpenParens oe=operand_expression ClosedParens
+            OpenBrace slb=script_line_block ClosedBrace {
+            }
+            ;
+else_block: ElseCond OpenParens oe=operand_expression ClosedParens
+            OpenBrace slb=script_line_block ClosedBrace {
+            }
+            ;
 
 conditional_block: if_block (elif_block)+ else_block |
                    if_block (elif_block)* ;
