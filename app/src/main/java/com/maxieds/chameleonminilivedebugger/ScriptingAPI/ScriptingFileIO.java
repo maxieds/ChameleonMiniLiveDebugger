@@ -25,8 +25,7 @@ import android.text.format.Time;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
-import com.maxieds.chameleonminilivedebugger.AndroidFilePicker;
-import com.maxieds.chameleonminilivedebugger.ExternalFileIO;
+import com.maxieds.chameleonminilivedebugger.AndroidFileChooser;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
 import java.io.File;
@@ -177,7 +176,7 @@ public class ScriptingFileIO {
     }
 
     public static String selectDirectoryFromGUIList(@NonNull String baseDirectory) {
-        String dirPath = AndroidFilePicker.selectFolderFromGUIList(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT, baseDirectory);
+        String dirPath = AndroidFileChooser.selectFolderFromGUIList(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT, baseDirectory);
         if(dirPath.indexOf(STORAGE_HOME_DIRECTORY) > 0) {
             dirPath = dirPath.substring(dirPath.indexOf(STORAGE_HOME_DIRECTORY));
         }
@@ -185,7 +184,7 @@ public class ScriptingFileIO {
     }
 
     public static String selectTextFileFromGUIList(@NonNull String baseDirectory) {
-        String filePath = AndroidFilePicker.selectTextFileFromGUIList(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT, baseDirectory);
+        String filePath = AndroidFileChooser.selectTextFileFromGUIList(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT, baseDirectory);
         if(filePath.indexOf(STORAGE_HOME_DIRECTORY) > 0) {
             filePath = filePath.substring(filePath.indexOf(STORAGE_HOME_DIRECTORY));
         }
@@ -193,7 +192,7 @@ public class ScriptingFileIO {
     }
 
     public static String selectFileFromGUIList(@NonNull String baseDirectory) {
-        String filePath = AndroidFilePicker.selectFileFromGUIList(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT, baseDirectory);
+        String filePath = AndroidFileChooser.selectFileFromGUIList(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT, baseDirectory);
         if(filePath.indexOf(STORAGE_HOME_DIRECTORY) > 0) {
             filePath = filePath.substring(filePath.indexOf(STORAGE_HOME_DIRECTORY));
         }

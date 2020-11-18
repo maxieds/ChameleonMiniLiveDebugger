@@ -25,9 +25,11 @@ import android.provider.OpenableColumns;
 import android.util.Log;
 import android.widget.RadioButton;
 
-import java.io.File;
+import com.maxieds.androidfilepickerlightlibrary.FileChooserBuilder;
 
-import me.rosuh.filepicker.config.FilePickerManager;
+import java.io.File;
+import java.util.List;
+import java.util.Locale;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.DOWNLOAD_SERVICE;
@@ -106,13 +108,13 @@ public class ExternalFileIO {
      * Constant for the file chooser dialog in the upload card data process.
      */
     public static final int FILE_SELECT_CODE = 0;
-    public static final int CHOOSER_ACTIVITY_PICK_DIRECTORY_RESULT_CODE = 1 + 8080;
-    public static final int CHOOSER_ACTIVITY_PICK_FILE_RESULT_CODE = 3 + 8080;
 
     public static void handleActivityResult(ChameleonMiniLiveDebuggerActivity activity, int requestCode, int resultCode, Intent data) {
         if(activity == null || data == null) {
             throw new RuntimeException("");
         }
+        boolean handleChooserResult = false;
+        int chooserRequestCodeAction = requestCode;
         switch (requestCode) {
             case FILE_SELECT_CODE:
                 if (resultCode == RESULT_OK) {
@@ -125,22 +127,26 @@ public class ExternalFileIO {
                     throw new RuntimeException(filePath);
                 }
                 break;
-            case CHOOSER_ACTIVITY_PICK_DIRECTORY_RESULT_CODE:
-                if (resultCode == RESULT_OK) {
-                    String selectedDirectoryPath = FilePickerManager.INSTANCE.obtainData().size() > 0 ? FilePickerManager.INSTANCE.obtainData().get(0) : "";
-                    Log.i(TAG, "Dir PATH: " + selectedDirectoryPath);
-                    throw new RuntimeException(selectedDirectoryPath);
-                }
+            case AndroidFileChooser.ACTION_SELECT_DIRECTORY_ONLY:
+                handleChooserResult = true;
+                chooserRequestCodeAction = FileChooserBuilder.ACTIVITY_CODE_SELECT_DIRECTORY_ONLY;
                 break;
-            case CHOOSER_ACTIVITY_PICK_FILE_RESULT_CODE:
-                if (resultCode == RESULT_OK) {
-                    String selectedFilePath = FilePickerManager.INSTANCE.obtainData().size() > 0 ? FilePickerManager.INSTANCE.obtainData().get(0) : "";
-                    Log.i(TAG, "File PATH: " + selectedFilePath);
-                    throw new RuntimeException(selectedFilePath);
-                }
+            case AndroidFileChooser.ACTION_SELECT_FILE_ONLY:
+                handleChooserResult = true;
+                chooserRequestCodeAction = FileChooserBuilder.ACTIVITY_CODE_SELECT_FILE_ONLY;
                 break;
             default:
                 break;
+        }
+        if (handleChooserResult && resultCode == RESULT_OK) {
+            String selectedChooserPath = "";
+            try {
+                List<String> selectedFilePathsList = FileChooserBuilder.handleActivityResult(activity, chooserRequestCodeAction, resultCode, data);
+                selectedChooserPath = String.format(Locale.getDefault(), AndroidFileChooser.getFileNotifySelectExceptionFormat(), selectedFilePathsList.get(0));
+            } catch(Exception ex) {
+                ex.printStackTrace();
+            }
+            throw new RuntimeException(selectedChooserPath);
         }
         throw new RuntimeException("");
     }

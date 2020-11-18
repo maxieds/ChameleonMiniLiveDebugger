@@ -50,6 +50,12 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         Please submit a new issue report to let the developer know there is a problem.
     </string>
 
+    <string name="filePickerTitleTextSelectFolder">Select next folder path</string>
+    <string name="filePickerTitleTextSelectFile">Select next file</string>
+    <string name="filePickerNavbarPrefixText">Goto Nav:</string>
+    <string name="filePickerDoneActionText">Select</string>
+    <string name="filePickerCancelActionText">Go Back</string>
+
     <string name="appGuiTabLogContentDesc">
                Display, edit and search live logging messages and Chameleon terminal command output.
     </string>
