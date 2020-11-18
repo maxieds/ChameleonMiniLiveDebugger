@@ -176,23 +176,15 @@ public class ScriptingFileIO {
     }
 
     public static String selectDirectoryFromGUIList(@NonNull String baseDirectory) {
-        String dirPath = AndroidFileChooser.selectFolderFromGUIList(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT, baseDirectory);
+        String dirPath = AndroidFileChooser.selectFolderFromGUIList(baseDirectory, true);
         if(dirPath.indexOf(STORAGE_HOME_DIRECTORY) > 0) {
             dirPath = dirPath.substring(dirPath.indexOf(STORAGE_HOME_DIRECTORY));
         }
         return dirPath;
     }
 
-    public static String selectTextFileFromGUIList(@NonNull String baseDirectory) {
-        String filePath = AndroidFileChooser.selectTextFileFromGUIList(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT, baseDirectory);
-        if(filePath.indexOf(STORAGE_HOME_DIRECTORY) > 0) {
-            filePath = filePath.substring(filePath.indexOf(STORAGE_HOME_DIRECTORY));
-        }
-        return filePath;
-    }
-
     public static String selectFileFromGUIList(@NonNull String baseDirectory) {
-        String filePath = AndroidFileChooser.selectFileFromGUIList(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT, baseDirectory);
+        String filePath = AndroidFileChooser.selectFileFromGUIList(baseDirectory, true);
         if(filePath.indexOf(STORAGE_HOME_DIRECTORY) > 0) {
             filePath = filePath.substring(filePath.indexOf(STORAGE_HOME_DIRECTORY));
         }

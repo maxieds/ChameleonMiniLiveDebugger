@@ -62,7 +62,7 @@ public class ScriptingGUI {
         setLoadedScriptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View cbView) {
-                String nextPath = ScriptingFileIO.selectTextFileFromGUIList(ScriptingConfig.DEFAULT_SCRIPT_LOAD_FOLDER);
+                String nextPath = ScriptingFileIO.selectFileFromGUIList(ScriptingConfig.DEFAULT_SCRIPT_LOAD_FOLDER);
                 if(nextPath == null || nextPath.equals("")) {
                     return;
                 }
@@ -254,7 +254,7 @@ public class ScriptingGUI {
                         nextPath = ScriptingFileIO.selectDirectoryFromGUIList(baseDirPath);
                     }
                     else {
-                        nextPath = ScriptingFileIO.selectTextFileFromGUIList(baseDirPath);
+                        nextPath = ScriptingFileIO.selectFileFromGUIList(baseDirPath);
                     }
                     if(nextPath == null || nextPath.equals("")) {
                         return;
