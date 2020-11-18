@@ -17,9 +17,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
-import android.text.format.Time;
-import android.view.View;
-
 import com.maxieds.chameleonminilivedebugger.AndroidSettingsStorage;
 import com.maxieds.chameleonminilivedebugger.ChameleonMiniLiveDebuggerActivity;
 import com.maxieds.chameleonminilivedebugger.LiveLoggerActivity;

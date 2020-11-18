@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import com.maxieds.androidfilepickerlightlibrary.BasicFileProvider;
 import com.maxieds.androidfilepickerlightlibrary.CustomThemeBuilder;
 import com.maxieds.androidfilepickerlightlibrary.FileChooserBuilder;
+import com.maxieds.androidfilepickerlightlibrary.FileUtils;
 
 import java.util.Locale;
 
@@ -36,9 +37,6 @@ public class AndroidFileChooser {
     private static final int CMLD_PICKER_ACTION_SWIZZLE_CODE = (42691 >> 1) + 3;
     public static final int ACTION_SELECT_DIRECTORY_ONLY = 1 + CMLD_PICKER_ACTION_SWIZZLE_CODE;
     public static final int ACTION_SELECT_FILE_ONLY = 2 + CMLD_PICKER_ACTION_SWIZZLE_CODE;
-
-    private static final long PICKER_SLEEP_DELAY_MILLIS = 75;
-    private static final long PICKER_MAX_ALIVE_RUNTIME = 60000L; /* After 60 seconds, kill the picker if the user has not made a selection */
 
     public static final FileChooserBuilder.BaseFolderPathType CONFIG_DEFAULT_STORAGE_TYPE = FileChooserBuilder.BaseFolderPathType.BASE_PATH_DEFAULT;
 
@@ -131,7 +129,6 @@ public class AndroidFileChooser {
             try {
                 Looper.loop();
             } catch(RuntimeException ie) {
-                ie.printStackTrace();
                 String excptMsg = ie.getMessage();
                 String replaceRegex = String.format(Locale.getDefault(), getFileNotifySelectExceptionFormat(), "");
                 String[] excptMsgComponents = excptMsg.split(replaceRegex);
@@ -160,6 +157,43 @@ public class AndroidFileChooser {
 
     public static String selectFileFromGUIList(@NonNull String baseDirectory, boolean basePathIsRelative) {
         return runFileChooserForResult(FileChooserBuilder.SelectionModeType.SELECT_FILE_ONLY, baseDirectory, basePathIsRelative);
+    }
+
+    public static boolean isFileContentsTextBased(String filePath) {
+        filePath = filePath.replaceFirst(STORAGE_HOME_PREFIX_SUBST, "");
+        try {
+            BasicFileProvider.DocumentPointer docRef = new BasicFileProvider.DocumentPointer(CONFIG_DEFAULT_STORAGE_TYPE, FileUtils.getFileBasePath(filePath));
+            if (!docRef.isValid()) {
+                return false;
+            } else if (!docRef.locateDocument(filePath)) {
+                return false;
+            }
+            String fileMimeType = docRef.getDocumentType();
+            Log.i(TAG, "MIME TYPE: " + fileMimeType);
+            return fileMimeType.toLowerCase(Locale.getDefault()).startsWith("text");
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    public static String getFileContentsAsString(String filePath) {
+        if(!isFileContentsTextBased(filePath)) {
+            return null;
+        }
+        filePath = filePath.replaceFirst(STORAGE_HOME_PREFIX_SUBST, "");
+        try {
+            BasicFileProvider.DocumentPointer docRef = new BasicFileProvider.DocumentPointer(CONFIG_DEFAULT_STORAGE_TYPE, FileUtils.getFileBasePath(filePath));
+            if (!docRef.isValid()) {
+                return null;
+            } else if (!docRef.locateDocument(filePath)) {
+                return null;
+            }
+            return docRef.readFileContentsAsString().toString();
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
     }
 
 }

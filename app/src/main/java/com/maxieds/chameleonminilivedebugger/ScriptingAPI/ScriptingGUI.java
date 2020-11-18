@@ -19,6 +19,7 @@ package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -27,6 +28,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.maxieds.chameleonminilivedebugger.AndroidFileChooser;
 import com.maxieds.chameleonminilivedebugger.AndroidSettingsStorage;
 import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.R;
@@ -69,6 +71,8 @@ public class ScriptingGUI {
                 ScriptingConfig.LAST_SCRIPT_LOADED_PATH = nextPath;
                 AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.SCRIPTING_CONFIG_LAST_SCRIPT_LOADED_PATH);
                 ScriptingGUI.displayEditTextValue(nextPath, selectedScriptText);
+                //Log.i(TAG, "NEXT PATH: " + nextPath);
+                //Log.i(TAG, "CONTENTS: [" + AndroidFileChooser.getFileContentsAsString(nextPath) + "]"); // WORKS :)
             }
         });
         CheckBox cbLimitExecTime = cfgBaseLayout.findViewById(R.id.scriptingLoadImportTabLimitExecTimeCbox);
