@@ -219,7 +219,8 @@ public class SerialUSBInterface extends SerialIOReceiver {
             return STATUS_ERROR;
         }
         activeDevice = device;
-        ChameleonSettings.chameleonDeviceSerialNumber = String.format(BuildConfig.DEFAULT_LOCALE, "%s-%s", activeDevice.getProductName(), activeDevice.getVersion());
+        ChameleonSettings.chameleonDeviceSerialNumber = String.format(BuildConfig.DEFAULT_LOCALE, "%s-%s-%s",
+                activeDevice.getProductName(), activeDevice.getVersion(), activeDevice.getSerialNumber());
         ChameleonIO.PAUSED = false;
         serialConfigured = true;
         receiversRegistered = true;

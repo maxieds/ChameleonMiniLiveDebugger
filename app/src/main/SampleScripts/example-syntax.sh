@@ -12,7 +12,7 @@ Printf("CmdName=%s (%d) [%s] -> \"%s\" %s / %s\n",
 myBkptLabel:
 
 $tagUID = $$("UID?")
-$tagUID = Replace("..(?!$)", "$0" + ":")
+$tagUID = Replace($tagUID, "..(?!$)", "$0" + ":")
 Print("Tag UID = ", $tagUID)
 
 Exit(0)

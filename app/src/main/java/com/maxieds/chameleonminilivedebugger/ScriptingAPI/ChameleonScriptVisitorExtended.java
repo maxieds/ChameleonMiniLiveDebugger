@@ -34,13 +34,13 @@ public class ChameleonScriptVisitorExtended extends ChameleonScriptBaseVisitor<S
         scriptContext = ctxInstance;
     }
 
-    /*public ScriptVariable visitWhile_loop(ChameleonScriptParser.While_loopContext ctx) {
+    public ScriptVariable visitWhile_loop(ChameleonScriptParser.While_loopContext ctx) {
         ScriptVariable boolCond = this.visit(ctx.operand_expression());
         while(boolCond.getValueAsBoolean()) {
             this.visit(ctx.script_line_block());
             boolCond = this.visit(ctx.operand_expression());
         }
         return ScriptVariable.newInstance();
-    }*/
+    }
 
 }

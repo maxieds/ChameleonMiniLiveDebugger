@@ -17,6 +17,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
+import java.util.Locale;
+
 public class ScriptingExceptions {
 
     private static final String TAG = ScriptingExceptions.class.getSimpleName();
@@ -43,16 +45,51 @@ public class ScriptingExceptions {
         NotImplementedException,
         InvalidArgumentException,
         IndexOutOfBoundsException,
+        KeyNotFoundException,
         ChameleonDisconnectedException,
     }
 
     public static class ChameleonScriptingException extends RuntimeException {
 
-        public ChameleonScriptingException(ExceptionType exType) {}
+        public ChameleonScriptingException(ExceptionType exType) {
+            super(exType.name());
+        }
 
-        public ChameleonScriptingException(ExceptionType exType, String msg) {}
+        public ChameleonScriptingException(ExceptionType exType, String msg) {
+            super(String.format(Locale.getDefault(), "%s => %s", exType.name(), msg));
+        }
 
-        public ChameleonScriptingException(ExceptionType exType, Exception ex) {}
+        public int getInvokingLineNumber() {
+            StackTraceElement[] stackTraceData = getStackTrace();
+            if(stackTraceData.length > 1) {
+                return stackTraceData[1].getLineNumber();
+            }
+            return 0;
+        }
+
+        public String getInvokingSourceFile() {
+            StackTraceElement[] stackTraceData = getStackTrace();
+            if(stackTraceData.length > 1) {
+                return stackTraceData[1].getFileName();
+            }
+            return "";
+        }
+
+        public String getInvokingClassName() {
+            StackTraceElement[] stackTraceData = getStackTrace();
+            if(stackTraceData.length > 1) {
+                return stackTraceData[1].getClassName();
+            }
+            return "";
+        }
+
+        public String getInvokingMethodName() {
+            StackTraceElement[] stackTraceData = getStackTrace();
+            if(stackTraceData.length > 1) {
+                return stackTraceData[1].getMethodName();
+            }
+            return "";
+        }
 
     }
 

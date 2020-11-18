@@ -159,4 +159,8 @@ android {
         maven { url "https://jitpack.io" }
     }
 
+    configurations.all() {
+        resolutionStrategy.force 'org.antlr:antlr4-runtime:4.7'
+    }
+
 }

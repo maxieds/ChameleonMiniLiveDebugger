@@ -21,6 +21,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.LinearLayout;
 
+import com.maxieds.androidfilepickerlightlibrary.FileChooserException;
 import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.ChameleonIO;
 import com.maxieds.chameleonminilivedebugger.ChameleonSerialIOInterface;
@@ -174,7 +175,6 @@ public class ChameleonScripting {
         private ChameleonDeviceState chameleonDeviceState;
         private Thread scriptRunnerThread;
 
-        /* ANTLR4 types: https://www.antlr.org/api/Java/ */
         ANTLRInputStream scriptInputStream;
         ChameleonScriptLexer scriptLexer;
         CommonTokenStream scriptTokenStream;
@@ -257,14 +257,20 @@ public class ChameleonScripting {
             return initialized;
         }
 
+        public boolean loadedScriptHasSyntaxErrors() {
+            return scriptParser.getNumberOfSyntaxErrors() > 0;
+        }
+
         public List<ChameleonScriptErrorListener.SyntaxError> listSyntaxErrors(String scriptFileText) {
-            // report errors with: parser.getNumberOfSyntaxErrors();
-            // display them in a nice presentation / GUI fragment and vibrate for the user ...
             return null;
         }
 
         private boolean runScriptPreambleActions() {
-            // TODO: Check the syntax errors ...
+            if(loadedScriptHasSyntaxErrors()) {
+                Log.w(TAG, "TODO ===> Need to print / list syntax errors in nice PPrinted format for the user ...");
+                ScriptingUtils.signalStateChangeByVibration(ScriptRuntimeState.EXCEPTION);
+                return false;
+            }
             chameleonDeviceState.saveState(ScriptingConfig.SAVE_RESTORE_CHAMELEON_STATE);
             LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusScriptingIsExec, R.drawable.toolbar_paused_icon16);
             ScriptingBreakPoint.bpDisabled = true;
@@ -289,7 +295,6 @@ public class ChameleonScripting {
                     //scriptParseTree.inspect(scriptParser);
                     //ParseTreeWalker.DEFAULT.walk(new VarListener(), scriptParseTree);
 
-
                     // post UI updates on the GUI thread ...
                     // post console output (either in realtime, or at the conclusion of the run, or on RT error)
                     // restore state (Chameleon, app, phone), reset the serial I/O redirect handler,
@@ -297,6 +302,7 @@ public class ChameleonScripting {
                     // re-enable editing / modifying / adding breakpoints ...
                     // clear out all of the buffered serial I/O data ...
                     // notify user and/or vibrate on exit ...
+
                 }
             };
             scriptRunnerThread.start();
@@ -317,16 +323,16 @@ public class ChameleonScripting {
         }
 
         public boolean pauseRunningScript() throws ScriptingExceptions.ChameleonScriptingException {
-            return false; // TODO
+            throw new FileChooserException.NotImplementedException(); // TODO
         }
 
         public boolean stepRunningScript() throws ScriptingExceptions.ChameleonScriptingException {
-            return false; // TODO
+            throw new FileChooserException.NotImplementedException(); // TODO
         }
 
         public boolean killRunningScript() throws ScriptingExceptions.ChameleonScriptingException {
             // cleanup, notify user of termination, restore the previous app state ...
-            return false; // TODO
+            throw new FileChooserException.NotImplementedException(); // TODO
         }
 
         public boolean variableNameExists(String varName) {
@@ -346,7 +352,7 @@ public class ChameleonScripting {
         }
 
         public boolean writeLogFile(String logLine) {
-            return false;
+            throw new FileChooserException.NotImplementedException(); // TODO
         }
 
         public boolean writeConsoleOutput(String consoleOutputLine) {

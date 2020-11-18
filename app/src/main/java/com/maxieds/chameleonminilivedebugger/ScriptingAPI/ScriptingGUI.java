@@ -304,7 +304,8 @@ public class ScriptingGUI {
         return true;
     }
 
-    /* Console output tab message types: */
+    /**** Console output tab message types: ****/
+    /**** Create layout factory ??? ****/
     // scripting_gui_error.xml
     // scripting_gui_livelog.xml
     // scripting_gui_console_output.xml (msg | summary)

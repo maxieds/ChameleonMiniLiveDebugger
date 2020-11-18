@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 public class ScriptingTypes {
 
@@ -471,6 +472,14 @@ public class ScriptingTypes {
             throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
         }
 
+        public ScriptVariable setArrayListItems(String[] listItems) {
+            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IllegalOperationException);
+        }
+
+        public ScriptVariable setArrayListItems(ScriptVariable[] listItems) {
+            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IllegalOperationException);
+        }
+
     }
 
     public static class ScriptVariableArrayMap extends ScriptVariable {
@@ -604,6 +613,77 @@ public class ScriptingTypes {
              throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
         }
 
+        @Override
+        public ScriptVariable setArrayListItems(String[] listItems) {
+            for(String s : listItems) {
+                arrayList.add(new ScriptVariable(s));
+            }
+            return this;
+        }
+
+        @Override
+        public ScriptVariable setArrayListItems(ScriptVariable[] listItems) {
+            for(ScriptVariable svar : listItems) {
+                arrayList.add(svar);
+            }
+            return this;
+        }
+
+    }
+
+    public static boolean verifyArgumentListHasPattern(List<ScriptVariable> varsList, ScriptVariable.VariableType[][] patternsMatchList) {
+        if(varsList == null) {
+            return false;
+        }
+        else if(varsList.size() == 0 && (patternsMatchList.length == 0 || patternsMatchList == null)) {
+            return true;
+        }
+        for(ScriptVariable.VariableType[] varArgsListType : patternsMatchList) {
+            if(varsList.size() != varArgsListType.length) {
+                continue;
+            }
+            boolean completeMatch = true;
+            for(int vaIdx = 0; vaIdx < varArgsListType.length; vaIdx++) {
+                boolean matchesSoFar = true;
+                switch(varArgsListType[vaIdx]) {
+                    case VariableTypeNone:
+                        matchesSoFar = false;
+                        break;
+                    case VariableTypeInteger:
+                        if(!varsList.get(vaIdx).isIntegerType()) {
+                            matchesSoFar = false;
+                        }
+                        break;
+                    case VariableTypeBoolean:
+                        if(!varsList.get(vaIdx).isBooleanType()) {
+                            matchesSoFar = false;
+                        }
+                        break;
+                    case VariableTypeBytes:
+                        if(!varsList.get(vaIdx).isBytesType()) {
+                            matchesSoFar = false;
+                        }
+                        break;
+                    case VariableTypeArrayMap:
+                        if(!varsList.get(vaIdx).isArrayType()) {
+                            matchesSoFar = false;
+                        }
+                        break;
+                    default:
+                        if(!varsList.get(vaIdx).isStringType()) {
+                            matchesSoFar = false;
+                        }
+                }
+                if(!matchesSoFar) {
+                    completeMatch = false;
+                    break;
+                }
+                if(completeMatch) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

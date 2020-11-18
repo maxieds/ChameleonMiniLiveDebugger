@@ -26,7 +26,9 @@ parser grammar ChameleonScriptParser;
     }
 }
 
-/* Start rule for the main grammar: */
+options { tokenVocab=ChameleonScriptLexer; }
+
+/**** Start rule for the main grammar: ****/
 file_contents: (script_line)+ EOF | EOF ;
 
 script_line: label_statement |
@@ -37,21 +39,21 @@ script_line: label_statement |
 
 script_line_block: (script_line)* ;
 
-while_loop: While OpenParens oe=operand_expression ClosedParens
-            OpenBrace slb=script_line_block ClosedBrace {
+while_loop: whl=While op=OpenParens oe=operand_expression cp=ClosedParens
+            ob=OpenBrace slb=script_line_block cb=ClosedBrace {
             }
             ;
 
-if_block:   IfCond OpenParens oe=operand_expression ClosedParens
-            OpenBrace slb=script_line_block ClosedBrace {
+if_block:   ic=IfCond op=OpenParens oe=operand_expression cp=ClosedParens
+            ob=OpenBrace slb=script_line_block cb=ClosedBrace {
             }
             ;
-elif_block: ElifCond OpenParens oe=operand_expression ClosedParens
-            OpenBrace slb=script_line_block ClosedBrace {
+elif_block: eic=ElifCond op=OpenParens oe=operand_expression cp=ClosedParens
+            ob=OpenBrace slb=script_line_block cb=ClosedBrace {
             }
             ;
-else_block: ElseCond OpenParens oe=operand_expression ClosedParens
-            OpenBrace slb=script_line_block ClosedBrace {
+else_block: ec=ElseCond op=OpenParens oe=operand_expression cp=ClosedParens
+            ob=OpenBrace slb=script_line_block cb=ClosedBrace {
             }
             ;
 
@@ -59,13 +61,13 @@ conditional_block: if_block (elif_block)+ else_block |
                    if_block (elif_block)* ;
 
 variable_reference_v1 returns [ScriptVariable svar]:
-     VariableStartSymbol vname=VariableName {
+     vss=VariableStartSymbol vname=VariableName {
            $svar=ChameleonScripting.getRunningInstance().lookupVariableByName($vname.text);
      }
      ;
 
 variable_reference_v2 returns [ScriptVariable svar]:
-     var=variable_reference_v1 HashedIndexAccessor propName=VariableName {
+     var=variable_reference_v1 hia=HashedIndexAccessor propName=VariableName {
           $svar=$var.svar.getValueAt($propName.text);
      }
      ;
@@ -102,7 +104,7 @@ type_literal returns [ScriptVariable svar]:
      |
      qsl=quoted_string_literal { $svar=$qsl.svar; }
      |
-     OpenBrace bll=byte_literal_list CloseBrace { $svar=$bll.svar; }
+     ob=OpenBrace bll=byte_literal_list cb=ClosedBrace { $svar=$bll.svar; }
      ;
 
 quoted_string_literal returns [ScriptVariable svar]:
@@ -124,7 +126,7 @@ byte_literal_list returns [ScriptVariable svar]:
           $svar=ScriptVariable.newInstance().set(new byte[] { (byte) Integer.parseInt($hb.text, 16) });
      }
      |
-     hb=HexByte CommaSeparator bll=byte_literal_list {
+     hb=HexByte cs=CommaSeparator bll=byte_literal_list {
           int bllLength = $bll.svar.getValueAsBytes().length;
           byte[] bytesArr = new byte[bllLength + 1];
           System.arraycopy($bll.svar.getValueAsBytes(), 0, bytesArr, 0, bllLength);
@@ -144,27 +146,27 @@ operand_expression_v1 returns [ScriptVariable svar]:
      ;
 
 typecast_expression returns [ScriptVariable svar]:
-     TypeCastByte initVar=operand_expression_v1 {
+     tctype=TypeCastByte initVar=operand_expression_v1 {
           $svar=ScriptVariable.newInstance().set(new byte[] { $initVar.svar.getValueAsByte() });
      }
      |
-     TypeCastShort initVar=operand_expression_v1 {
+     tctype=TypeCastShort initVar=operand_expression_v1 {
           $svar=ScriptVariable.newInstance().set((int) $initVar.svar.getValueAsShort());
      }
      |
-     TypeCastInt32 initVar=operand_expression_v1 {
+     tctype=TypeCastInt32 initVar=operand_expression_v1 {
           $svar=ScriptVariable.newInstance().set((int) $initVar.svar.getValueAsInt());
      }
      |
-     TypeCastBoolean initVar=operand_expression_v1 {
+     tctype=TypeCastBoolean initVar=operand_expression_v1 {
           $svar=ScriptVariable.newInstance().set((boolean) $initVar.svar.getValueAsBoolean());
      }
      |
-     TypeCastString initVar=operand_expression_v1 {
+     tctype=TypeCastString initVar=operand_expression_v1 {
           $svar=ScriptVariable.newInstance().set($initVar.svar.getValueAsString());
      }
      |
-     TypeCastBytes initVar=operand_expression_v1 {
+     tctype=TypeCastBytes initVar=operand_expression_v1 {
           $svar=ScriptVariable.newInstance().set($initVar.svar.getValueAsBytes());
      }
      ;

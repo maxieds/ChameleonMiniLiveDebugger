@@ -25,22 +25,22 @@ ScriptingAPIFunctionName:  ScriptControlFlowFunctions | PrintingAndLoggingFuncti
                            StringFunctions | APDUHandlingFunctions |
                            CryptoAndHashFunctions | UtilityFunctions ;
 
-/* Script control flow functions: */
-/* Debugging and assertion commands */
+/**** Script control flow functions:    ****/
+/**** Debugging and assertion commands: ****/
 ExitFuncName:               'Exit(' ;
 AssertFuncName:             'Assert(' ;
 
 ScriptControlFlowFunctions: ExitFuncName | AssertFuncName;
 
-/* Console printing and logging functions: */
+/**** Console printing and logging functions: ****/
 PrintFuncName:              'Print(' ;
 PrintfFuncName:             'Printf(' ;
 SprintfFuncName:            'Sprintf(' ;
 
 PrintingAndLoggingFunctions: PrintFuncName | PrintfFuncName | SprintfFuncName;
 
-/* Type conversion and checking functions: */
-/* Environmental variables: */
+/**** Type conversion and checking functions: ****/
+/**** Environmental variables: ****/
 AsHexStringFuncName:      'AsHexString(' ;
 AsBinaryStringFuncName:   'AsBinaryString(' ;
 AsByteArrayFuncName:      'AsByteArray(' ;
@@ -59,7 +59,7 @@ GetChameleonDescFuncName:         'GetChameleonDesc(' ;
 ChameleonConnectionTypeFunctions: IsChameleonConnectedFuncName |
                                   IsChameleonRevGFuncName | IsChameleonRevEFuncName ;
 
-/* Chameleon command and command output post processing functions: */
+/**** Chameleon command and command output post processing functions: ****/
 CmdDownloadTagFuncName:              'DownloadTagDump(' ;
 CmdUploadTagFuncName:                'UploadTagDump(' ;
 CmdDownloadLogsFuncName:             'DownloadLogs(' ;
@@ -67,7 +67,7 @@ CmdDownloadLogsFuncName:             'DownloadLogs(' ;
 ChameleonCommandAndLogFunctions:     CmdDownloadTagFuncName | CmdUploadTagFuncName |
                                      CmdDownloadLogsFuncName ;
 
-/* String handling functions: */
+/**** String handling functions: ****/
 StringSearchFuncName:              'Find(' ;
 StringContainsFuncName:            'Contains(' ;
 StringReplaceFuncName:             'Replace(' ;
@@ -78,7 +78,7 @@ SubstrFuncName:                    'Substring(' ;
 StringFunctions:                   StringSearchFuncName | StringContainsFuncName | StringReplaceFuncName |
                                    StringStripFuncName | StringSplitFuncName | SubstrFuncName ;
 
-/* APDU handling functions: */
+/**** APDU handling functions: ****/
 AsWrappedAPDUFuncName:                 'AsWrappedAPDU(' ; // ($v -- assumes have prepended CLA,INS); -> ByteArray | ($v, CLA,INS,P1,P2)
 ExtractDataFromWrappedAPDUFuncName:    'ExtractDataFromWrappedAPDU(' ;
 ExtractDataFromNativeAPDUFuncName:     'ExtractDataFromNativeAPDU(' ;
@@ -92,7 +92,7 @@ APDUHandlingFunctions:                 AsWrappedAPDUFuncName | ExtractDataFromWr
                                        SearchAPDUCStatusCodesFuncName | SearchAPDUInsCodesFuncName |
                                        SearchAPDUClaCodesFuncName ;
 
-/* Crypto and hash related functionality: */
+/**** Crypto and hash related functionality: ****/
 GetRandomBytesFuncName:       'RandomBytes(' ;
 GetRandomIntFuncName:         'RandomInt32(' ;
 GetCRC16FuncName:             'GetCRC16(' ;
@@ -105,7 +105,7 @@ CryptoAndHashFunctions:       GetRandomBytesFuncName | GetRandomIntFuncName |
                               GetCRC16FuncName | AppendCRC16FuncName | CheckCRC16FuncName |
                               GetCommonKeysFuncName | GetUserKeysFuncName ;
 
-/* Misc utility functions: */
+/**** Misc utility functions: ****/
 GetTimestampFuncName:          'GetTimestamp(' ;
 MemoryXORFuncName:             'MemoryXOR(' ;
 MaxFuncName:                   'Max(' ;
@@ -150,7 +150,7 @@ OpenParens: '(' ;
 ClosedParens: ')' ;
 ColonSeparator: ':' ;
 OpenBrace: '{' ;
-CloseBrace: '}' ;
+ClosedBrace: '}' ;
 
 EqualsComparisonOperator: '==' ;
 NotEqualsComparisonOperator: '!=' ;
