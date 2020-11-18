@@ -128,7 +128,6 @@ UtilityFunctions:              GetTimestampFuncName |
 
 While: 'while' ;
 IfCond: 'if' ;
-ElifCond: 'else if' ;
 ElseCond: 'else' ;
 
 /**** Other syntax constants and regex matchers to define non-constant ids: ****/

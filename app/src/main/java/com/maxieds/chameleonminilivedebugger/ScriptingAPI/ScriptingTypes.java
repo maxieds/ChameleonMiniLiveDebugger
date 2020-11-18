@@ -355,7 +355,7 @@ public class ScriptingTypes {
                 nextVar.set(intVal);
                 return nextVar;
             } catch(NumberFormatException nfe) {
-                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NumberFormatException, nfe);
+                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NumberFormatException, nfe.getMessage());
             }
         }
 
@@ -366,7 +366,7 @@ public class ScriptingTypes {
                 nextVar.set(logicalValue);
                 return nextVar;
             } catch(Exception ex) {
-                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.FormatErrorException, ex);
+                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.FormatErrorException, ex.getMessage());
             }
         }
 

@@ -39,6 +39,24 @@ def getGitCommitDate() {
     return getShellCommandOutput("git show | grep Date: | head -n 1 | sed -e \"s/Date:[ ]*//\"");
 }
 
+/* NOTE: The gradle plugin with Android does not work, this is a shell command within the standard system paths. */
+def generateAntlrJava(String grammarFile) {
+    def scriptRunCmd = "antlr -o app/src/main/antlr-gen -package 'com.maxieds.chameleonminilivedebugger.ScriptingAPI' -Dlanguage=Java" +
+            " -listener -visitor -long-messages -lib 'app/src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI'" +
+            " -Xexact-output-dir 'app/src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI/" + grammarFile + "'";
+    def cmdResult = ['bash', '-c', scriptRunCmd].execute();
+    cmdResult.waitFor();
+    return cmdResult.text
+}
+
+task preBuildGenAntlr4JavaSources {
+    //println 'do it before build'
+    file(new File('app/src/main/antlr-gen')).mkdirs()
+    generateAntlrJava("ChameleonScriptLexer.g4")
+    generateAntlrJava("ChameleonScriptParser.g4")
+}
+preBuild.dependsOn preBuildGenAntlr4JavaSources
+
 android {
 
     def configBuildTimeStamp = getDateTimestamp()
@@ -62,6 +80,14 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    sourceSets {
+        main {
+            java {
+                srcDirs = [ 'src/main/java', 'src/main/antlr-gen' ]
+            }
+        }
     }
 
     buildTypes {
@@ -157,10 +183,6 @@ android {
             name 'Google'
         }
         maven { url "https://jitpack.io" }
-    }
-
-    configurations.all() {
-        resolutionStrategy.force 'org.antlr:antlr4-runtime:4.7'
     }
 
 }

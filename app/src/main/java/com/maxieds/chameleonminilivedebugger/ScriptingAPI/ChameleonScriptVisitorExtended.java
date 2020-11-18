@@ -17,14 +17,14 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptVisitor;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParserVisitor;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingTypes;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingTypes.ScriptVariable;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScripting.ChameleonScriptInstance;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParser;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptBaseVisitor;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParserBaseVisitor;
 
-public class ChameleonScriptVisitorExtended extends ChameleonScriptBaseVisitor<ScriptVariable> {
+public class ChameleonScriptVisitorExtended { //extends ChameleonScriptBaseVisitor<ScriptVariable> {
 
     private static final String TAG = ChameleonScriptVisitorExtended.class.getSimpleName();
 
@@ -34,13 +34,13 @@ public class ChameleonScriptVisitorExtended extends ChameleonScriptBaseVisitor<S
         scriptContext = ctxInstance;
     }
 
-    public ScriptVariable visitWhile_loop(ChameleonScriptParser.While_loopContext ctx) {
+    /*public ScriptVariable visitWhile_loop(ChameleonScriptParser.While_loopContext ctx) {
         ScriptVariable boolCond = this.visit(ctx.operand_expression());
         while(boolCond.getValueAsBoolean()) {
             this.visit(ctx.script_line_block());
             boolCond = this.visit(ctx.operand_expression());
         }
         return ScriptVariable.newInstance();
-    }
+    }*/
 
 }

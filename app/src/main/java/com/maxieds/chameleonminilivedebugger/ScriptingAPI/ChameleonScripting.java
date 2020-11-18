@@ -32,7 +32,7 @@ import com.maxieds.chameleonminilivedebugger.SerialIOReceiver;
 import com.maxieds.chameleonminilivedebugger.TabFragment;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptLexer;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParser;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptVisitor;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParserVisitor;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -180,7 +180,7 @@ public class ChameleonScripting {
         CommonTokenStream scriptTokenStream;
         ChameleonScriptParser scriptParser;
         ParseTree scriptParseTree;
-        ChameleonScriptVisitor scriptVisitor;
+        ChameleonScriptParserVisitor scriptVisitor;
 
         public ChameleonScriptInstance(String scriptFile) {
             initialized = true;

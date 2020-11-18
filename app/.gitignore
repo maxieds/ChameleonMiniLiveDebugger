@@ -4,6 +4,12 @@ free
 free/*
 paid
 paid/*
+src/main/gen
+src/main/gen/*
+src/main/antlr
+src/main/antlr/*
+src/main/antlr-gen
+src/main/antlr-gen/*
 gen
 gen/*
 *.aab

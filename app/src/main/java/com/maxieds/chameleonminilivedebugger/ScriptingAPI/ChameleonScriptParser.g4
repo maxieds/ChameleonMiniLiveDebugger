@@ -35,30 +35,22 @@ script_line: label_statement |
              assignment_operation | assignment_by_array_slice |
              scripting_api_function_result |
              exec_chameleon_command |
-             conditional_block | while_loop ;
-
-script_line_block: (script_line)* ;
+             while_loop | if_block | ifelse_block
+             ;
 
 while_loop: whl=While op=OpenParens oe=operand_expression cp=ClosedParens
-            ob=OpenBrace slb=script_line_block cb=ClosedBrace {
+            ob=OpenBrace (script_line)* cb=ClosedBrace {
             }
             ;
 
 if_block:   ic=IfCond op=OpenParens oe=operand_expression cp=ClosedParens
-            ob=OpenBrace slb=script_line_block cb=ClosedBrace {
+            ob=OpenBrace (script_line)* cb=ClosedBrace {
             }
             ;
-elif_block: eic=ElifCond op=OpenParens oe=operand_expression cp=ClosedParens
-            ob=OpenBrace slb=script_line_block cb=ClosedBrace {
-            }
-            ;
-else_block: ec=ElseCond op=OpenParens oe=operand_expression cp=ClosedParens
-            ob=OpenBrace slb=script_line_block cb=ClosedBrace {
-            }
-            ;
-
-conditional_block: if_block (elif_block)+ else_block |
-                   if_block (elif_block)* ;
+ifelse_block: if_block ec=ElseCond op=OpenParens oe=operand_expression cp=ClosedParens
+              ob=OpenBrace (script_line)* cb=ClosedBrace {
+              }
+              ;
 
 variable_reference_v1 returns [ScriptVariable svar]:
      vss=VariableStartSymbol vname=VariableName {
