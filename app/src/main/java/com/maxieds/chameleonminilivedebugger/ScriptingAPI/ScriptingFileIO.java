@@ -46,12 +46,11 @@ public class ScriptingFileIO {
     public static final String CMLD_SCRIPT_BINARY_DATA_FILE_EXT = ".dmp";
 
     private static final String STORAGE_HOME_PREFIX = "${EXT}";
-    private static final String STORAGE_HOME_DIRECTORY = Environment.getExternalStoragePublicDirectory("").getAbsolutePath();
-    public static final String  DEFAULT_CMLD_DIRECTORY = STORAGE_HOME_PREFIX + "//CMLD";
-    public static final String  DEFAULT_CMLD_SCRIPTS_FOLDER = DEFAULT_CMLD_DIRECTORY + "//Scripts";
-    public static final String  DEFAULT_CMLD_SCRIPT_LOGGING_FOLDER = DEFAULT_CMLD_DIRECTORY + "//Logs";
-    public static final String  DEFAULT_CMLD_SCRIPT_OUTPUT_FOLDER = DEFAULT_CMLD_DIRECTORY + "//Output";
-    public static final String  DEFAULT_CMLD_SCRIPT_DATA_FOLDER = DEFAULT_CMLD_DIRECTORY + "//Data";
+    public static final String  DEFAULT_CMLD_DIRECTORY = STORAGE_HOME_PREFIX + "/CMLD";
+    public static final String  DEFAULT_CMLD_SCRIPTS_FOLDER = DEFAULT_CMLD_DIRECTORY + "/Scripts";
+    public static final String  DEFAULT_CMLD_SCRIPT_LOGGING_FOLDER = DEFAULT_CMLD_DIRECTORY + "/Logs";
+    public static final String  DEFAULT_CMLD_SCRIPT_OUTPUT_FOLDER = DEFAULT_CMLD_DIRECTORY + "/Output";
+    public static final String  DEFAULT_CMLD_SCRIPT_DATA_FOLDER = DEFAULT_CMLD_DIRECTORY + "/Data";
 
     private static boolean checkExternalStoragePermissions(boolean displayToastOnFail) {
         if(ContextCompat.checkSelfPermission(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -70,7 +69,7 @@ public class ScriptingFileIO {
     }
 
     public static File getStoragePathFromRelative(String filePath, boolean createFile, boolean isDir) {
-        String extStorageDir = STORAGE_HOME_DIRECTORY;
+        String extStorageDir = AndroidFileChooser.getInitialFileChooserBaseFolder();
         filePath = filePath.replace(STORAGE_HOME_PREFIX, extStorageDir);
         File storageFile = new File(filePath);
         boolean setPermissions = true;
@@ -118,7 +117,10 @@ public class ScriptingFileIO {
         if(maxLength <= 0) {
             return null;
         }
-        String extStorageDir = STORAGE_HOME_DIRECTORY.replace("//", "/");
+        else if(fullPath.length() <= DISPLAY_TEXT_MAX_LENGTH) {
+            return new String[] { fullPath, fullPath };
+        }
+        String extStorageDir = AndroidFileChooser.getInitialFileChooserBaseFolder().replace("//", "/");
         String shortenedPath = fullPath.replace("//", "/").replace(extStorageDir, STORAGE_HOME_PREFIX);
         if(fullPath.contains(STORAGE_HOME_PREFIX)) {
             int fullPathAfterIdx = fullPath.indexOf(STORAGE_HOME_PREFIX) + STORAGE_HOME_PREFIX.length();
@@ -126,7 +128,7 @@ public class ScriptingFileIO {
             int suffixLength = Math.min(Math.max(0, maxLength - 5), shortenedPath.length() - fullPathAfterIdx - 2);
             String suffixPath = "";
             if(suffixLength < shortenedPath.length() - fullPathAfterIdx + 1) {
-                suffixPath = "<...>" + shortenedPath.substring(shortenedPath.length() - suffixLength - 1);
+                suffixPath = "<...>" + shortenedPath.substring(shortenedPath.length() - suffixLength);
             }
             else {
                 suffixPath = shortenedPath.substring(fullPathAfterIdx + 2);
@@ -176,19 +178,11 @@ public class ScriptingFileIO {
     }
 
     public static String selectDirectoryFromGUIList(@NonNull String baseDirectory) {
-        String dirPath = AndroidFileChooser.selectFolderFromGUIList(baseDirectory, true);
-        if(dirPath.indexOf(STORAGE_HOME_DIRECTORY) > 0) {
-            dirPath = dirPath.substring(dirPath.indexOf(STORAGE_HOME_DIRECTORY));
-        }
-        return dirPath;
+        return AndroidFileChooser.selectFolderFromGUIList(baseDirectory, true);
     }
 
     public static String selectFileFromGUIList(@NonNull String baseDirectory) {
-        String filePath = AndroidFileChooser.selectFileFromGUIList(baseDirectory, true);
-        if(filePath.indexOf(STORAGE_HOME_DIRECTORY) > 0) {
-            filePath = filePath.substring(filePath.indexOf(STORAGE_HOME_DIRECTORY));
-        }
-        return filePath;
+        return AndroidFileChooser.selectFileFromGUIList(baseDirectory, true);
     }
 
     public static String getScriptOutputFilePath(String scriptFilePath) {

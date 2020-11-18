@@ -260,6 +260,25 @@ public class ScriptingGUI {
                         return;
                     }
                     ScriptingGUI.displayEditTextValue(nextPath, btnView.getRootView().findViewById(getFileFromPickerResIds[pidxConstValue][0]));
+                    switch(pidxConstValue) {
+                        case 0:
+                            ScriptingConfig.DEFAULT_SCRIPT_LOAD_FOLDER = nextPath;
+                            break;
+                        case 1:
+                            ScriptingConfig.DEFAULT_FILE_OUTPUT_FOLDER = nextPath;
+                            break;
+                        case 2:
+                            ScriptingConfig.DEFAULT_LOGGING_OUTPUT_FOLDER = nextPath;
+                            break;
+                        case 3:
+                            ScriptingConfig.DEFAULT_SCRIPT_CWD = nextPath;
+                            break;
+                        case 4:
+                            ScriptingConfig.EXTRA_KEYS_FILE = nextPath;
+                            break;
+                        default:
+                            break;
+                    }
                     AndroidSettingsStorage.updateValueByKey(androidSettingsFileUpdateKeys[pidxConstValue]);
                     AndroidSettingsStorage.restorePreviousSettings(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE,
                                                                    AndroidSettingsStorage.AndroidSettingsType.SCRIPTING_CONFIG);

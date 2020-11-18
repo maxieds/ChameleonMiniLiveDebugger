@@ -96,7 +96,7 @@ android {
                     appRoundIcon       : "@mipmap/chameleon_app_icon_round",
                     appTheme           : "@style/AppThemeGreen",
                     appDebug           : "false",
-                    installLocation    : "preferExternal" // "internalOnly"
+                    installLocation    : "preferExternal"
             ]
         }
         paid {
@@ -145,7 +145,7 @@ android {
         implementation 'org.antlr:antlr4-runtime:4.7'
         implementation 'com.github.felHR85:UsbSerial:4.5.2'
         implementation 'com.shawnlin:number-picker:2.4.9'
-        implementation 'com.github.maxieds:AndroidFilePickerLight:release-v8'
+        implementation 'com.github.maxieds:AndroidFilePickerLight:46def50060'
     }
 
     repositories {

@@ -18,10 +18,12 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 package com.maxieds.chameleonminilivedebugger;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.maxieds.androidfilepickerlightlibrary.BasicFileProvider;
 import com.maxieds.androidfilepickerlightlibrary.CustomThemeBuilder;
 import com.maxieds.androidfilepickerlightlibrary.FileChooserBuilder;
 
@@ -31,7 +33,7 @@ public class AndroidFileChooser {
 
     private static final String TAG = AndroidFileChooser.class.getSimpleName();
 
-    private static final int CMLD_PICKER_ACTION_SWIZZLE_CODE = (42691 << 2) + 3;
+    private static final int CMLD_PICKER_ACTION_SWIZZLE_CODE = (42691 >> 1) + 3;
     public static final int ACTION_SELECT_DIRECTORY_ONLY = 1 + CMLD_PICKER_ACTION_SWIZZLE_CODE;
     public static final int ACTION_SELECT_FILE_ONLY = 2 + CMLD_PICKER_ACTION_SWIZZLE_CODE;
 
@@ -41,7 +43,32 @@ public class AndroidFileChooser {
     public static final FileChooserBuilder.BaseFolderPathType CONFIG_DEFAULT_STORAGE_TYPE = FileChooserBuilder.BaseFolderPathType.BASE_PATH_DEFAULT;
 
     public static String getFileNotifySelectExceptionFormat() {
-        return "PATHSELECTION:==%s==";
+        return "PATHSELECTION:==%s";
+    }
+
+    private static final String PATH_SEP = "/";
+    private static final String STORAGE_HOME_PREFIX_SUBST = "\\$\\{EXT\\}" + PATH_SEP;
+    public static final String NULL_FILE_PATH_LABEL = "\\.//";
+
+    public static String getFileChooserBaseFolder(String startingRelPath) {
+        BasicFileProvider fpInst = BasicFileProvider.getInstance();
+        String fileProviderCwd = fpInst.getCWD();
+        int trailingPathIndex = fileProviderCwd.lastIndexOf(startingRelPath);
+        if(trailingPathIndex >= 0) {
+            return fileProviderCwd.substring(0, trailingPathIndex);
+        }
+        return fileProviderCwd;
+    }
+
+    public static String getInitialFileChooserBaseFolder() {
+        BasicFileProvider fpInst = BasicFileProvider.getInstance();
+        if(fpInst == null) {
+            return NULL_FILE_PATH_LABEL;
+        }
+        fpInst.selectBaseDirectoryByType(CONFIG_DEFAULT_STORAGE_TYPE);
+        String fpCwd = fpInst.getCWD();
+        fpInst.resetBaseDirectory();
+        return fpCwd;
     }
 
     public static CustomThemeBuilder getFileChooserCustomStyle() {
@@ -100,28 +127,26 @@ public class AndroidFileChooser {
         }
         fcBuilder.launchFilePicker();
 
-        final Thread callingThread = Thread.currentThread();
-        final Handler killFileChooserTimeoutHandler = new Handler();
-        final Runnable killFileChooserTimeoutSaveRunner = new Runnable() {
-            private Thread callbackToThread = callingThread;
-            @Override
-            public void run() {
-                callbackToThread.interrupt();
-            }
-        };
-        killFileChooserTimeoutHandler.postDelayed(killFileChooserTimeoutSaveRunner, PICKER_MAX_ALIVE_RUNTIME);
         while(true) {
             try {
-                Thread.sleep(PICKER_SLEEP_DELAY_MILLIS);
-            } catch(InterruptedException ie) {
-                killFileChooserTimeoutHandler.removeCallbacks(killFileChooserTimeoutSaveRunner);
+                Looper.loop();
+            } catch(RuntimeException ie) {
+                ie.printStackTrace();
                 String excptMsg = ie.getMessage();
-                String returnedPathRegex = String.format(Locale.getDefault(), getFileNotifySelectExceptionFormat(), "([a-zA-Z0-9_.-]+)");
-                if(!excptMsg.matches(returnedPathRegex)) {
-                    Log.i(TAG, "USER SELECTED <__NO__> PATH! ...");
-                    return null;
+                String replaceRegex = String.format(Locale.getDefault(), getFileNotifySelectExceptionFormat(), "");
+                String[] excptMsgComponents = excptMsg.split(replaceRegex);
+                if(excptMsgComponents.length != 2) {
+                    Log.i(TAG, "USER SELECTED <__NO__> PATH! ... " + ie.getMessage());
+                    return NULL_FILE_PATH_LABEL;
                 }
-                excptMsg.replace(returnedPathRegex, "$1");
+                excptMsg = excptMsgComponents[1];
+                if(excptMsg.length() == 0) {
+                    Log.i(TAG, "USER SELECTED <__EMPTY__> PATH! ... " + ie.getMessage());
+                    return NULL_FILE_PATH_LABEL;
+                }
+                String fileChooserBaseFolder = getFileChooserBaseFolder(baseDirectory);
+                excptMsg = excptMsg.replaceFirst(fileChooserBaseFolder, STORAGE_HOME_PREFIX_SUBST);
+                excptMsg = excptMsg.replaceAll(String.format(Locale.getDefault(), "[%s]+", PATH_SEP), "/");
                 Log.i(TAG, "USER SELECTED PATH: \"" + excptMsg + "\" ...");
                 return excptMsg;
             }

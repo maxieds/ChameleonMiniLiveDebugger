@@ -56,9 +56,9 @@
         android:defaultToDeviceProtectedStorage="true"
         android:usesCleartextTraffic="false"
         android:installLocation="${installLocation}"
-        android:requestLegacyExternalStorage="true"
         android:allowBackup="true"
         >
+        <!--tools:replace="android:theme,roundIcon,icon,manageSpaceActivity,name,label,description"-->
 
         <uses-library android:name="com.android.future.usb.accessory" />
 
