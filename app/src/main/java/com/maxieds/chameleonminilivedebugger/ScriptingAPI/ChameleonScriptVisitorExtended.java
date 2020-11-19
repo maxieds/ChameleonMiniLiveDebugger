@@ -17,14 +17,12 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParserVisitor;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingTypes;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingTypes.ScriptVariable;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScripting.ChameleonScriptInstance;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParser;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParserBaseVisitor;
 
-public class ChameleonScriptVisitorExtended { //extends ChameleonScriptBaseVisitor<ScriptVariable> {
+public class ChameleonScriptVisitorExtended extends ChameleonScriptParserBaseVisitor<ScriptVariable> {
 
     private static final String TAG = ChameleonScriptVisitorExtended.class.getSimpleName();
 
@@ -34,13 +32,38 @@ public class ChameleonScriptVisitorExtended { //extends ChameleonScriptBaseVisit
         scriptContext = ctxInstance;
     }
 
-    /*public ScriptVariable visitWhile_loop(ChameleonScriptParser.While_loopContext ctx) {
-        ScriptVariable boolCond = this.visit(ctx.operand_expression());
-        while(boolCond.getValueAsBoolean()) {
-            this.visit(ctx.script_line_block());
-            boolCond = this.visit(ctx.operand_expression());
+    public ScriptVariable visitWhile_loop(ChameleonScriptParser.While_loopContext ctx) {
+        ScriptVariable boolPreCond = this.visit(ctx.oe);
+        while(boolPreCond.getValueAsBoolean()) {
+            this.visit(ctx.scrLineBlk);
+            boolPreCond = this.visit(ctx.oe);
         }
         return ScriptVariable.newInstance();
-    }*/
+    }
+
+    public ScriptVariable visitIf_block(ChameleonScriptParser.If_blockContext ctx) {
+        ScriptVariable boolPreCond = this.visit(ctx.oe);
+        if(boolPreCond.getValueAsBoolean()) {
+            this.visit(ctx.scrLineBlk);
+        }
+        return ScriptVariable.newInstance();
+    }
+
+    public ScriptVariable visitIfelse_block(ChameleonScriptParser.Ifelse_blockContext ctx) {
+        ScriptVariable boolPreCond = this.visit(ctx.ifoe);
+        if(boolPreCond.getValueAsBoolean()) {
+            this.visit(ctx.scrLineBlkIf);
+        }
+        else {
+            this.visit(ctx.scrLineBlkElse);
+        }
+        return ScriptVariable.newInstance();
+    }
+
+    public ScriptVariable visitLabel_statement(ChameleonScriptParser.Label_statementContext ctx) {
+        String labelName = ctx.lblNameWithSep.getText();
+        ChameleonScripting.getRunningInstance().postBreakpointLabel(labelName);
+        return ScriptVariable.newInstance();
+    }
 
 }

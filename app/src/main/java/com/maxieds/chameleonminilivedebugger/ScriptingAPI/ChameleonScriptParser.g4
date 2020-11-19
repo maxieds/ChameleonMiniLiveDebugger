@@ -38,17 +38,21 @@ script_line: label_statement |
              while_loop | if_block | ifelse_block
              ;
 
+script_line_block: (script_line)* ;
+
 while_loop: whl=While op=OpenParens oe=operand_expression cp=ClosedParens
-            ob=OpenBrace (script_line)* cb=ClosedBrace {
+            ob=OpenBrace scrLineBlk=script_line_block cb=ClosedBrace {
             }
             ;
 
 if_block:   ic=IfCond op=OpenParens oe=operand_expression cp=ClosedParens
-            ob=OpenBrace (script_line)* cb=ClosedBrace {
+            ob=OpenBrace scrLineBlk=script_line_block cb=ClosedBrace {
             }
             ;
-ifelse_block: if_block ec=ElseCond op=OpenParens oe=operand_expression cp=ClosedParens
-              ob=OpenBrace (script_line)* cb=ClosedBrace {
+ifelse_block: IfCond OpenParens ifoe=operand_expression cp=ClosedParens
+              OpenBrace scrLineBlkIf=script_line_block ClosedBrace
+              ElseCond OpenParens ClosedParens
+              OpenBrace scrLineBlkElse=script_line_block ClosedBrace {
               }
               ;
 
@@ -409,10 +413,7 @@ function_args_list returns [List<ScriptVariable> varsList]:
      }
      ;
 
-label_statement: lblNameWithSep=LabelText {
-          String labelName = $lblNameWithSep.text.substring(0, $lblNameWithSep.text.length() - 1);
-          // TODO: no goto for now, so see if have encountered a breakpoint ...
-     }
+label_statement: lblNameWithSep=LabelText {}
      ;
 
 /*

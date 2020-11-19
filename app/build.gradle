@@ -49,13 +49,26 @@ def generateAntlrJava(String grammarFile) {
     return cmdResult.text
 }
 
-task preBuildGenAntlr4JavaSources {
-    //println 'do it before build'
+task PreBuildGenAntlr4JavaSources {
+    println 'REMOVING OLD ANTLR4 JAVA SOURCES ==> '
+    file(new File('app/src/main/antlr-gen')).deleteDir()
+    println 'GENERATING ANTLR4 JAVA SOURCES ==> '
+    file(new File('app/src/main/antlr-gen')).mkdirs()
+    generateAntlrJava("ChameleonScriptLexer.g4")
+    generateAntlrJava("ChameleonScriptParser.g4")
+    outputs.upToDateWhen { false } /* Make the task run every time (no UP-TO-DATE skippage) */
+}
+preBuild.dependsOn PreBuildGenAntlr4JavaSources
+
+task cleanPreBuildGenAntlr4JavaSources {
+    println 'REMOVING OLD ANTLR4 JAVA SOURCES ==> '
+    file(new File('app/src/main/antlr-gen')).deleteDir()
+    println 'GENERATING ANTLR4 JAVA SOURCES ==> '
     file(new File('app/src/main/antlr-gen')).mkdirs()
     generateAntlrJava("ChameleonScriptLexer.g4")
     generateAntlrJava("ChameleonScriptParser.g4")
 }
-preBuild.dependsOn preBuildGenAntlr4JavaSources
+clean.dependsOn cleanPreBuildGenAntlr4JavaSources
 
 android {
 

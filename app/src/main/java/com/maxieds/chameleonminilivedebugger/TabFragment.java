@@ -321,8 +321,7 @@ public class TabFragment extends Fragment {
                 TAB_SCRIPTING_MITEM_COLUMNS,
                 new String[] {
                         "Main",
-                        "Console",
-                        "Inspect Registers"
+                        "Console View"
                 },
                 new int[] {
                         BuildConfig.DEBUG ? R.layout.scripting_tab_load_import : R.layout.tab_under_construction,

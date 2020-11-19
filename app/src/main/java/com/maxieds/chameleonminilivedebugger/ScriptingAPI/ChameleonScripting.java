@@ -261,7 +261,7 @@ public class ChameleonScripting {
             return scriptParser.getNumberOfSyntaxErrors() > 0;
         }
 
-        public List<ChameleonScriptErrorListener.SyntaxError> listSyntaxErrors(String scriptFileText) {
+        public List<ChameleonScriptErrorListener.SyntaxError> getSyntaxErrors(String scriptFileText) {
             return null;
         }
 
@@ -382,6 +382,11 @@ public class ChameleonScripting {
                 registerViewMainLayout.removeAllViews();
             }
         }
+
+        public boolean postBreakpointLabel(String bpLabel) { return false; }
+
+        // how do we handle these ??? (Have to check at *every* line, or can this be signaled somehow?)
+        public boolean postBreakpointLabel(int bpLineNumber) { return false; }
 
     }
 
