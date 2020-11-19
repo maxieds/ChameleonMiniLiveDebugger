@@ -124,35 +124,6 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
         return false;
     }
 
-    private ArrayList<Byte[]> splitReceivedDataIntoLogs(byte[] liveLogData) {
-        ArrayList<Byte[]> splitLogData = new ArrayList<Byte[]>();
-        int logLength = liveLogData.length, indexPos = 0;
-        while(indexPos < liveLogData.length && logLength > 0) {
-            int nextLogLength = ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData, indexPos, logLength);
-            if(nextLogLength == 0) {
-                indexPos++;
-                continue;
-            }
-            if(nextLogLength + indexPos >= liveLogData.length) {
-                nextLogLength = liveLogData.length - indexPos;
-                if(nextLogLength == 0) {
-                    break;
-                }
-            }
-            byte[] nextLogBytes = new byte[nextLogLength];
-            System.arraycopy(liveLogData, indexPos, nextLogBytes, 0, nextLogLength);
-            splitLogData.add(ArrayUtils.toObject(nextLogBytes));
-            logLength -= nextLogLength;
-            indexPos += Math.max(1, nextLogLength);
-        }
-        if(logLength > 0) {
-            byte[] nextLogBytes = new byte[logLength];
-            System.arraycopy(liveLogData, liveLogData.length - logLength, nextLogBytes, 0, logLength);
-            splitLogData.add(ArrayUtils.toObject(nextLogBytes));
-        }
-        return splitLogData;
-    }
-
     public static ChameleonSerialIOInterface.SerialDataReceiverInterface redirectSerialDataInterface = null;
     public static void setRedirectInterface(ChameleonSerialIOInterface.SerialDataReceiverInterface iface) {
         redirectSerialDataInterface = iface;
@@ -170,70 +141,64 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
         Log.d(getInterfaceLoggingTag(), "SerialReaderCallback Received Data: (HEX) " + Utils.bytes2Hex(liveLogData));
         Log.d(getInterfaceLoggingTag(), "SerialReaderCallback Received Data: (TXT) " + Utils.bytes2Ascii(liveLogData));
 
-        ArrayList<Byte[]> splitLogData = new ArrayList<Byte[]>();
-        splitLogData.add(ArrayUtils.toObject(liveLogData));
-        for(int sidx = 0; sidx < splitLogData.size(); sidx++) {
-            liveLogData = new byte[splitLogData.get(sidx).length];
-            System.arraycopy(ArrayUtils.toPrimitive(splitLogData.get(sidx)), 0, liveLogData, 0, ArrayUtils.toPrimitive(splitLogData.get(sidx)).length);
-            if (liveLogData.length == 0) {
+        if (liveLogData.length == 0) {
+            return;
+        }
+        int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData);
+        if (loggingRespSize > 0) {
+            Log.i(TAG, "Received new LogEntry @ " + String.format(BuildConfig.DEFAULT_LOCALE, "0x%02x", liveLogData[0]));
+            if(ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS) {
+                notifyLogDataReceived(liveLogData);
+            }
+            byte logCode = liveLogData[0];
+            if(ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_CODECRX_STATUS_INDICATOR &&
+                    (ChameleonLogUtils.LogCode.LOG_CODE_MAP.get(logCode) == LOG_INFO_CODEC_RX_DATA ||
+                            ChameleonLogUtils.LogCode.LOG_CODE_MAP.get(logCode) == LOG_INFO_CODEC_RX_DATA_W_PARITY)) {
+                LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusCodecRXDataEvent, R.drawable.toolbar_icon16_codec_rx);
+            }
+            return;
+        }
+        if (ChameleonIO.PAUSED) {
+            return;
+        } else if (ChameleonIO.DOWNLOAD) {
+            ExportTools.performXModemSerialDownload(liveLogData);
+            return;
+        } else if (ChameleonIO.UPLOAD) {
+            ExportTools.performXModemSerialUpload(liveLogData);
+            return;
+        } else if (ChameleonIO.WAITING_FOR_XMODEM) {
+            String strLogData = new String(liveLogData);
+            if (strLogData.length() >= 11 && strLogData.substring(0, 11).equals("110:WAITING")) {
+                ChameleonIO.WAITING_FOR_XMODEM = false;
                 return;
             }
-            int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData);
-            if (loggingRespSize > 0) {
-                Log.i(TAG, "Received new LogEntry @ " + String.format(BuildConfig.DEFAULT_LOCALE, "0x%02x", liveLogData[0]));
-                if(ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS) {
-                    notifyLogDataReceived(liveLogData);
-                }
-                byte logCode = liveLogData[0];
-                if(ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_CODECRX_STATUS_INDICATOR &&
-                        (ChameleonLogUtils.LogCode.LOG_CODE_MAP.get(logCode) == LOG_INFO_CODEC_RX_DATA ||
-                                ChameleonLogUtils.LogCode.LOG_CODE_MAP.get(logCode) == LOG_INFO_CODEC_RX_DATA_W_PARITY)) {
-                    LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusCodecRXDataEvent, R.drawable.toolbar_icon16_codec_rx);
-                }
-                continue;
+        } else if (ChameleonIO.isCommandResponse(liveLogData)) {
+            String[] strLogData = (new String(liveLogData)).split("[\n\r\t][\n\r\t]+");
+            ChameleonIO.DEVICE_RESPONSE_CODE = strLogData[0];
+            int respCodeStartIndex = Utils.getFirstResponseCodeIndex(ChameleonIO.DEVICE_RESPONSE_CODE);
+            ChameleonIO.DEVICE_RESPONSE_CODE = ChameleonIO.DEVICE_RESPONSE_CODE.substring(respCodeStartIndex);
+            boolean respCodeHasPreText = respCodeStartIndex > 0;
+            if (respCodeHasPreText) {
+                strLogData[0] = strLogData[0].substring(0, respCodeStartIndex - 1);
             }
-            if (ChameleonIO.PAUSED) {
-                continue;
-            } else if (ChameleonIO.DOWNLOAD) {
-                ExportTools.performXModemSerialDownload(liveLogData);
-                continue;
-            } else if (ChameleonIO.UPLOAD) {
-                ExportTools.performXModemSerialUpload(liveLogData);
-                continue;
-            } else if (ChameleonIO.WAITING_FOR_XMODEM) {
-                String strLogData = new String(liveLogData);
-                if (strLogData.length() >= 11 && strLogData.substring(0, 11).equals("110:WAITING")) {
-                    ChameleonIO.WAITING_FOR_XMODEM = false;
-                    continue;
-                }
-            } else if (ChameleonIO.isCommandResponse(liveLogData)) {
-                String[] strLogData = (new String(liveLogData)).split("[\n\r\t][\n\r\t]+");
-                ChameleonIO.DEVICE_RESPONSE_CODE = strLogData[0];
-                int respCodeStartIndex = Utils.getFirstResponseCodeIndex(ChameleonIO.DEVICE_RESPONSE_CODE);
-                ChameleonIO.DEVICE_RESPONSE_CODE = ChameleonIO.DEVICE_RESPONSE_CODE.substring(respCodeStartIndex);
-                boolean respCodeHasPreText = respCodeStartIndex > 0;
+            if (strLogData.length >= 2) {
                 if (respCodeHasPreText) {
-                    strLogData[0] = strLogData[0].substring(0, respCodeStartIndex - 1);
+                    ChameleonIO.DEVICE_RESPONSE = Arrays.copyOfRange(strLogData, 0, strLogData.length);
+                } else {
+                    ChameleonIO.DEVICE_RESPONSE = Arrays.copyOfRange(strLogData, 1, strLogData.length);
                 }
-                if (strLogData.length >= 2) {
-                    if (respCodeHasPreText) {
-                        ChameleonIO.DEVICE_RESPONSE = Arrays.copyOfRange(strLogData, 0, strLogData.length);
-                    } else {
-                        ChameleonIO.DEVICE_RESPONSE = Arrays.copyOfRange(strLogData, 1, strLogData.length);
-                    }
-                } else
-                    ChameleonIO.DEVICE_RESPONSE[0] = strLogData[0];
-                if (ChameleonIO.EXPECTING_BINARY_DATA) {
-                    int binaryBufSize = liveLogData.length - ChameleonIO.DEVICE_RESPONSE_CODE.length() - 2;
-                    ChameleonIO.DEVICE_RESPONSE_BINARY = new byte[binaryBufSize];
-                    System.arraycopy(liveLogData, liveLogData.length - binaryBufSize, ChameleonIO.DEVICE_RESPONSE_BINARY, 0, binaryBufSize);
-                    ChameleonIO.EXPECTING_BINARY_DATA = false;
-                }
-                ChameleonIO.WAITING_FOR_RESPONSE = false;
-                continue;
+            } else
+                ChameleonIO.DEVICE_RESPONSE[0] = strLogData[0];
+            if (ChameleonIO.EXPECTING_BINARY_DATA) {
+                int binaryBufSize = liveLogData.length - ChameleonIO.DEVICE_RESPONSE_CODE.length() - 2;
+                ChameleonIO.DEVICE_RESPONSE_BINARY = new byte[binaryBufSize];
+                System.arraycopy(liveLogData, liveLogData.length - binaryBufSize, ChameleonIO.DEVICE_RESPONSE_BINARY, 0, binaryBufSize);
+                ChameleonIO.EXPECTING_BINARY_DATA = false;
             }
-            notifySerialDataReceived(liveLogData);
+            ChameleonIO.WAITING_FOR_RESPONSE = false;
+            return;
         }
+        notifySerialDataReceived(liveLogData);
     }
 
     public int sendDataBuffer(byte[] dataWriteBuffer) {

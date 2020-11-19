@@ -37,6 +37,7 @@ import com.maxieds.chameleonminilivedebugger.Utils;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.FileInputStream;
@@ -180,7 +181,7 @@ public class ChameleonScripting {
         CommonTokenStream scriptTokenStream;
         ChameleonScriptParser scriptParser;
         ParseTree scriptParseTree;
-        ChameleonScriptParserVisitor scriptVisitor;
+        ChameleonScriptVisitorExtended scriptVisitor;
 
         public ChameleonScriptInstance(String scriptFile) {
             initialized = true;
@@ -251,6 +252,7 @@ public class ChameleonScripting {
             if(restoreChameleonState) {
                 chameleonDeviceState.restoreState(true);
             }
+            SerialIOReceiver.setRedirectInterface(null);
         }
 
         public boolean isInitialized() {
@@ -289,41 +291,43 @@ public class ChameleonScripting {
                 @Override
                 public void run() {
 
-                    // TODO: scriptParser -> run through all of its actions ???
-                    //scriptParser.setBuildParseTree(true);
-                    //scriptParseTree = ;
-                    //scriptParseTree.inspect(scriptParser);
-                    //ParseTreeWalker.DEFAULT.walk(new VarListener(), scriptParseTree);
+                    Handler setTimeLimitHandler = new Handler();
+                    Runnable enforceTimeLimitRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            if (scriptRunnerThread.isAlive()) {
+                                scriptRunnerThread.interrupt();
+                                scriptState = ScriptRuntimeState.EXCEPTION;
+                                killRunningScript();
+                            }
+                        }
+                    };
+                    if(execTimeLimit > 0) {
+                        setTimeLimitHandler.postDelayed(enforceTimeLimitRunnable, execTimeLimit * 1000);
+                    }
+
+                    scriptParser.setBuildParseTree(true);
+                    scriptVisitor = new ChameleonScriptVisitorExtended(ChameleonScripting.getRunningInstance());
+                    for(int tcIdx = 0; tcIdx < scriptParseTree.getChildCount(); tcIdx++) {
+                        ScriptingTypes.ScriptVariable scriptResultVar = scriptVisitor.visit(scriptParseTree.getChild(tcIdx));
+                    }
 
                     // post UI updates on the GUI thread ...
                     // post console output (either in realtime, or at the conclusion of the run, or on RT error)
-                    // restore state (Chameleon, app, phone), reset the serial I/O redirect handler,
+                    // reset the serial I/O redirect handler,
                     // start posting stats again ...
                     // re-enable editing / modifying / adding breakpoints ...
                     // clear out all of the buffered serial I/O data ...
                     // notify user and/or vibrate on exit ...
 
+                    runningTime = System.currentTimeMillis() - lastStartTime;
+                    setTimeLimitHandler.removeCallbacks(enforceTimeLimitRunnable);
+                    scriptState = ScriptRuntimeState.FINISHED;
+
                 }
             };
             scriptRunnerThread.start();
-            if(execTimeLimit > 0) {
-                Handler setTimeLimitHandler = new Handler();
-                Runnable enforceTimeLimitRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        if (scriptRunnerThread.isAlive()) {
-                            scriptRunnerThread.interrupt();
-                            killRunningScript();
-                        }
-                    }
-                };
-                setTimeLimitHandler.postDelayed(enforceTimeLimitRunnable, execTimeLimit * 1000);
-            }
             return true;
-        }
-
-        public boolean pauseRunningScript() throws ScriptingExceptions.ChameleonScriptingException {
-            throw new FileChooserException.NotImplementedException(); // TODO
         }
 
         public boolean stepRunningScript() throws ScriptingExceptions.ChameleonScriptingException {
@@ -331,8 +335,11 @@ public class ChameleonScripting {
         }
 
         public boolean killRunningScript() throws ScriptingExceptions.ChameleonScriptingException {
-            // cleanup, notify user of termination, restore the previous app state ...
-            throw new FileChooserException.NotImplementedException(); // TODO
+            scriptRunnerThread.interrupt();
+            Log.i(TAG, "TODO: Notify the user of what happened, post state, post display message, cleanup other display items ... ");
+            scriptState = ScriptRuntimeState.PAUSED;
+            cleanupRuntimeData(ScriptingConfig.SAVE_RESTORE_CHAMELEON_STATE);
+            throw new FileChooserException.NotImplementedException();
         }
 
         public boolean variableNameExists(String varName) {
@@ -352,6 +359,8 @@ public class ChameleonScripting {
         }
 
         public boolean writeLogFile(String logLine) {
+            //scriptParseTree.inspect(scriptParser);
+            //scriptParseTree.toStringTree();
             throw new FileChooserException.NotImplementedException(); // TODO
         }
 
@@ -377,16 +386,12 @@ public class ChameleonScripting {
             }
         }
 
-        public void clearRegisterViewGUI() {
-            if(registerViewMainLayout != null) {
-                registerViewMainLayout.removeAllViews();
-            }
+        public boolean postBreakpointLabel(String bpLabel, ParserRuleContext lastRuleCtx) {
+            Log.i(TAG, "TODO: Need to handle break points (certainly by label almost immediately) ... ");
+            //scriptState = ScriptRuntimeState.BREAKPOINT;
+            //atBreakpoint = true;
+            return false;
         }
-
-        public boolean postBreakpointLabel(String bpLabel) { return false; }
-
-        // how do we handle these ??? (Have to check at *every* line, or can this be signaled somehow?)
-        public boolean postBreakpointLabel(int bpLineNumber) { return false; }
 
     }
 
