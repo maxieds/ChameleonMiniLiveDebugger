@@ -1,5 +1,7 @@
 /* example-script1.sh */
 
+Printf("Example Script V1:\n > Runs a few sample commands off of the Chameleon Mini\n")
+
 $cmdOutput = $$("CONFIG=MF_DESFIRE")
 Printf("CMD-RESP(%03d) [%s] ... \n", $cmdOutput->respCode, $cmdOutput->respText)
 
