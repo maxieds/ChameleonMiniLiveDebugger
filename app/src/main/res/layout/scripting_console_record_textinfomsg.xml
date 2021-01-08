@@ -18,27 +18,24 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
 
-    <ScrollView
+    <TextView
+        android:id="@+id/consoleOutputRecordMainTextBoxData"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fadeScrollbars="false"
-        android:orientation="vertical"
-        android:scrollbarSize="25dp"
-        android:verticalScrollbarPosition="right">
-
-        <LinearLayout
-            android:id="@+id/scriptingTabRegisterViewMainLayoutContainer"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_margin="2dp"
-            android:orientation="vertical"
-            android:padding="2dp">
-
-        </LinearLayout>
-
-    </ScrollView>
+        android:layout_height="wrap_content"
+        android:background="?colorPrimaryDarkLog"
+        android:drawablePadding="5dp"
+        android:singleLine="false"
+        android:hint="Text-Data"
+        android:textAllCaps="true"
+        android:textColor="?colorPrimaryDark"
+        android:textSize="10sp"
+        android:textStyle="normal"
+        android:typeface="monospace"
+        />
 
 </LinearLayout>

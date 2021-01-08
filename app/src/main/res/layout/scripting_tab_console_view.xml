@@ -22,6 +22,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     android:layout_height="match_parent">
 
     <ScrollView
+        android:id="@+id/scriptingTabConsoleViewMainLayoutScroller"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fadeScrollbars="false"

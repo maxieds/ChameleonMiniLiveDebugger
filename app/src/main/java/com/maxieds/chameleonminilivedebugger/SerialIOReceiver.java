@@ -124,9 +124,14 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
         return false;
     }
 
-    public static ChameleonSerialIOInterface.SerialDataReceiverInterface redirectSerialDataInterface = null;
+    private static ChameleonSerialIOInterface.SerialDataReceiverInterface redirectSerialDataInterface = null;
+
     public static void setRedirectInterface(ChameleonSerialIOInterface.SerialDataReceiverInterface iface) {
         redirectSerialDataInterface = iface;
+    }
+
+    public static void resetRedirectInterface() {
+        redirectSerialDataInterface = null;
     }
 
     public void onReceivedData(byte[] liveLogData) {

@@ -38,4 +38,5 @@ public abstract class LogEntryBase {
     public abstract String toString();
     public abstract View getLayoutContainer();
     public abstract View cloneLayoutContainer();
+
 }

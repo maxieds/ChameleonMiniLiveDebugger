@@ -75,7 +75,7 @@ public class TabFragment extends Fragment {
     public static final int TAB_EXPORT_MITEM_UPLOAD_DOWNLOAD = 0;
     public static final int TAB_EXPORT_MITEM_CLONE = 1;
 
-    public static final int TAB_SCRIPTING_MITEM_COLUMNS = 3;
+    public static final int TAB_SCRIPTING_MITEM_COLUMNS = 2;
     public static final int TAB_SCRIPTING_MITEM_LOAD_IMPORT = 0;
     public static final int TAB_SCRIPTING_MITEM_CONSOLE_VIEW = 1;
     public static final int TAB_SCRIPTING_MITEM_REGISTER_VIEW = 2;
@@ -326,7 +326,6 @@ public class TabFragment extends Fragment {
                 new int[] {
                         BuildConfig.DEBUG ? R.layout.scripting_tab_load_import : R.layout.tab_under_construction,
                         BuildConfig.DEBUG ? R.layout.scripting_tab_console_view : R.layout.tab_under_construction,
-                        BuildConfig.DEBUG ? R.layout.scripting_tab_register_view : R.layout.tab_under_construction,
                 });
         UITAB_DATA[TAB_CONFIG] = new UITab(
                 TAB_CONFIG,

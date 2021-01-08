@@ -61,8 +61,10 @@ public class ChameleonScriptVisitorExtended extends ChameleonScriptParserBaseVis
     }
 
     public ScriptVariable visitLabel_statement(ChameleonScriptParser.Label_statementContext ctx) {
-        String labelName = ctx.lblNameWithSep.getText();
-        scriptContext.postBreakpointLabel(labelName, ctx);
+        String labelName = ctx.lblNameWithSep.getText().replaceAll(":", "");
+        if(ScriptingBreakPoint.searchBreakpointByLineLabel(labelName)) {
+            scriptContext.postBreakpointLabel(labelName, ctx);
+        }
         return ScriptVariable.newInstance();
     }
 

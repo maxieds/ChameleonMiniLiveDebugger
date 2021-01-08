@@ -19,6 +19,7 @@ package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import com.maxieds.androidfilepickerlightlibrary.FileChooserException;
@@ -32,12 +33,14 @@ import com.maxieds.chameleonminilivedebugger.SerialIOReceiver;
 import com.maxieds.chameleonminilivedebugger.TabFragment;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptLexer;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParser;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParserBaseListener;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParserVisitor;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.atn.ATNState;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.FileInputStream;
@@ -47,6 +50,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
 
@@ -165,7 +169,6 @@ public class ChameleonScripting {
         private long limitScriptExecTime;
         private int scriptExecLine;
         private StringBuilder consoleOutput;
-        private LinearLayout registerViewMainLayout;
         private LinearLayout consoleViewMainLayout;
         private List<String> breakpointLabels;
         private List<Integer> breakpointLines;
@@ -182,6 +185,7 @@ public class ChameleonScripting {
         ChameleonScriptParser scriptParser;
         ParseTree scriptParseTree;
         ChameleonScriptVisitorExtended scriptVisitor;
+        ChameleonScriptErrorListener scriptErrorListener;
 
         public ChameleonScriptInstance(String scriptFile) {
             initialized = true;
@@ -205,11 +209,10 @@ public class ChameleonScripting {
             scriptExecLine = 0;
             consoleOutput = new StringBuilder();
             try {
-                registerViewMainLayout = TabFragment.UITAB_DATA[TabFragment.TAB_SCRIPTING].tabMenuItemLayouts[TabFragment.TAB_SCRIPTING_MITEM_REGISTER_VIEW].findViewById(R.id.scriptingTabRegisterViewMainLayoutContainer);
                 consoleViewMainLayout = TabFragment.UITAB_DATA[TabFragment.TAB_SCRIPTING].tabMenuItemLayouts[TabFragment.TAB_SCRIPTING_MITEM_CONSOLE_VIEW].findViewById(R.id.scriptingTabConsoleViewMainLayoutContainer);
             } catch(Exception ex) {
                 ex.printStackTrace();
-                registerViewMainLayout = consoleViewMainLayout = null;
+                consoleViewMainLayout = null;
                 initialized = false;
             }
             breakpointLabels = new ArrayList<String>();
@@ -226,13 +229,15 @@ public class ChameleonScripting {
                 scriptTokenStream = new CommonTokenStream(scriptLexer);
                 scriptParser = new ChameleonScriptParser(scriptTokenStream);
                 scriptParser.removeErrorListeners();
-                scriptParser.addErrorListener(new ChameleonScriptErrorListener());
+                scriptErrorListener = new ChameleonScriptErrorListener();
+                scriptParser.addErrorListener(scriptErrorListener);
+                scriptParser.setBuildParseTree(true);
+                scriptParseTree = scriptParser.file_contents().getChild(0);
+                scriptVisitor = new ChameleonScriptVisitorExtended(this);
             } catch(IOException ioe) {
                 ioe.printStackTrace();
                 initialized = false;
             }
-            scriptParseTree = null;
-            scriptVisitor = null;
         }
 
         public void cleanupRuntimeData(boolean restoreChameleonState) {
@@ -248,11 +253,14 @@ public class ChameleonScripting {
             } catch(IOException ioe) {
                 ioe.printStackTrace();
             }
-            scriptState = ScriptRuntimeState.DONE;
+            if(scriptState != ScriptRuntimeState.EXCEPTION) {
+                scriptState = ScriptRuntimeState.DONE;
+            }
+            ScriptingBreakPoint.bpDisabled = false;
             if(restoreChameleonState) {
                 chameleonDeviceState.restoreState(true);
             }
-            SerialIOReceiver.setRedirectInterface(null);
+            SerialIOReceiver.resetRedirectInterface();
         }
 
         public boolean isInitialized() {
@@ -263,13 +271,25 @@ public class ChameleonScripting {
             return scriptParser.getNumberOfSyntaxErrors() > 0;
         }
 
-        public List<ChameleonScriptErrorListener.SyntaxError> getSyntaxErrors(String scriptFileText) {
-            return null;
+        public List<ChameleonScriptErrorListener.SyntaxError> getSyntaxErrors() {
+            return scriptErrorListener.getSyntaxErrors();
         }
 
         private boolean runScriptPreambleActions() {
             if(loadedScriptHasSyntaxErrors()) {
-                Log.w(TAG, "TODO ===> Need to print / list syntax errors in nice PPrinted format for the user ...");
+                List<ChameleonScriptErrorListener.SyntaxError> syntaxErrorsList = getSyntaxErrors();
+                for(ChameleonScriptErrorListener.SyntaxError syntaxError : syntaxErrorsList) {
+                    String syntaxErrorNotifyMsg = String.format(Locale.getDefault(), "%s\n%s",
+                            syntaxError.getException().getClass().getSimpleName(), syntaxError.getMessage());
+                    String[] syntaxErrorDetailsList = new String[] {
+                            String.format(Locale.getDefault(), "@LINE-NO:  %d", syntaxError.getLine()),
+                            String.format(Locale.getDefault(), "@CHAR-POS: %d", syntaxError.getCharPositionInLine()),
+                            String.format(Locale.getDefault(), "@SYMBOL:   '%s'", syntaxError.getOffendingSymbol().toString()),
+                            String.format(Locale.getDefault(), "@TOKEN:    %s", syntaxError.getException().getOffendingToken().getText())
+                    };
+                    ScriptingGUIConsole.appendConsoleOutputRecordErrorWarning(syntaxErrorNotifyMsg, syntaxErrorDetailsList, syntaxError.getLine());
+                    Log.w(TAG, "SYNTAX ERROR: " + syntaxErrorNotifyMsg + "\n" + String.join("\n  > ", syntaxErrorDetailsList));
+                }
                 ScriptingUtils.signalStateChangeByVibration(ScriptRuntimeState.EXCEPTION);
                 return false;
             }
@@ -283,6 +303,7 @@ public class ChameleonScripting {
         }
 
         public boolean runScriptFromStart() {
+
             if(!runScriptPreambleActions()) {
                 return false;
             }
@@ -291,6 +312,7 @@ public class ChameleonScripting {
                 @Override
                 public void run() {
 
+                    scriptState = ScriptRuntimeState.RUNNING;
                     Handler setTimeLimitHandler = new Handler();
                     Runnable enforceTimeLimitRunnable = new Runnable() {
                         @Override
@@ -306,40 +328,63 @@ public class ChameleonScripting {
                         setTimeLimitHandler.postDelayed(enforceTimeLimitRunnable, execTimeLimit * 1000);
                     }
 
-                    scriptParser.setBuildParseTree(true);
-                    scriptVisitor = new ChameleonScriptVisitorExtended(ChameleonScripting.getRunningInstance());
-                    for(int tcIdx = 0; tcIdx < scriptParseTree.getChildCount(); tcIdx++) {
-                        ScriptingTypes.ScriptVariable scriptResultVar = scriptVisitor.visit(scriptParseTree.getChild(tcIdx));
-                    }
-
-                    // post UI updates on the GUI thread ...
-                    // post console output (either in realtime, or at the conclusion of the run, or on RT error)
-                    // reset the serial I/O redirect handler,
-                    // start posting stats again ...
-                    // re-enable editing / modifying / adding breakpoints ...
-                    // clear out all of the buffered serial I/O data ...
-                    // notify user and/or vibrate on exit ...
-
+                    scriptVisitor.visit(scriptParseTree);
+                    writeLogFile(String.format(Locale.getDefault(), "TEXT PARSE TREE for file \"%s\":\n\n%s\n", scriptFilePath, scriptParseTree.toStringTree()));
                     runningTime = System.currentTimeMillis() - lastStartTime;
                     setTimeLimitHandler.removeCallbacks(enforceTimeLimitRunnable);
                     scriptState = ScriptRuntimeState.FINISHED;
+                    ScriptingUtils.signalStateChangeByVibration(scriptState);
+
+                    String scriptRuntimeSummaryMsg = String.format(Locale.getDefault(), "The script finished running normally in %g min (%g sec).",
+                            runningTime / 60000.0, runningTime / 1000.0);
+                    scriptRuntimeSummaryMsg += "It generated the following output:\n\n";
+                    scriptRuntimeSummaryMsg += getConsoleOutput();
+                    ScriptingGUIConsole.appendConsoleOutputRecordScriptRuntimeSummary(scriptRuntimeSummaryMsg, null);
+
+                    SerialIOReceiver.resetRedirectInterface();
+                    ChameleonIO.DeviceStatusSettings.startPostingStats(0);
+                    cleanupRuntimeData(ScriptingConfig.SAVE_RESTORE_CHAMELEON_STATE);
 
                 }
             };
             scriptRunnerThread.start();
             return true;
+
         }
 
-        public boolean stepRunningScript() throws ScriptingExceptions.ChameleonScriptingException {
-            throw new FileChooserException.NotImplementedException(); // TODO
+        public boolean stepRunningScript() {
+            if(scriptState != ScriptRuntimeState.BREAKPOINT && scriptState != ScriptRuntimeState.PAUSED) {
+                return false;
+            }
+            ScriptingBreakPoint.bpDisabled = true;
+            scriptState = ScriptRuntimeState.RUNNING;
+            ScriptingUtils.signalStateChangeByVibration(scriptState);
+            return true;
         }
 
-        public boolean killRunningScript() throws ScriptingExceptions.ChameleonScriptingException {
+        public boolean pauseRunningScript() {
             scriptRunnerThread.interrupt();
-            Log.i(TAG, "TODO: Notify the user of what happened, post state, post display message, cleanup other display items ... ");
             scriptState = ScriptRuntimeState.PAUSED;
-            cleanupRuntimeData(ScriptingConfig.SAVE_RESTORE_CHAMELEON_STATE);
-            throw new FileChooserException.NotImplementedException();
+            ScriptingUtils.signalStateChangeByVibration(scriptState);
+            ScriptingBreakPoint.bpDisabled = false;
+            return true;
+        }
+
+        public boolean killRunningScript() {
+            if(!scriptRunnerThread.isInterrupted()) {
+                scriptRunnerThread.interrupt();
+                ScriptingGUIConsole.appendConsoleOutputRecordInfoMessage("Script killed.", null, scriptExecLine);
+                scriptState = ScriptRuntimeState.PAUSED;
+                ScriptingUtils.signalStateChangeByVibration(scriptState);
+                cleanupRuntimeData(ScriptingConfig.SAVE_RESTORE_CHAMELEON_STATE);
+                ScriptingBreakPoint.bpDisabled = false;
+                return true;
+            }
+            return false;
+        }
+
+        public void setActiveLineOfCode(int nextLOC) {
+            scriptExecLine = nextLOC;
         }
 
         public boolean variableNameExists(String varName) {
@@ -359,9 +404,17 @@ public class ChameleonScripting {
         }
 
         public boolean writeLogFile(String logLine) {
-            //scriptParseTree.inspect(scriptParser);
-            //scriptParseTree.toStringTree();
-            throw new FileChooserException.NotImplementedException(); // TODO
+            if(!ScriptingConfig.VERBOSE_ERROR_LOGGING) {
+                return false;
+            }
+            try {
+                loggingFileStream.write(String.format(Locale.getDefault(), ">> [%s] %s\n", Utils.getTimestamp(), logLine).getBytes());
+                Log.i(TAG, "LOG FILE LINE>> " + logLine);
+            } catch(IOException ioe) {
+                ioe.printStackTrace();
+                return false;
+            }
+            return true;
         }
 
         public boolean writeConsoleOutput(String consoleOutputLine) {
@@ -380,6 +433,10 @@ public class ChameleonScripting {
             return "";
         }
 
+        public LinearLayout getConsoleViewMainLayout() {
+            return consoleViewMainLayout;
+        }
+
         public void clearConsoleViewGUI() {
             if(consoleViewMainLayout != null) {
                 consoleViewMainLayout.removeAllViews();
@@ -387,9 +444,10 @@ public class ChameleonScripting {
         }
 
         public boolean postBreakpointLabel(String bpLabel, ParserRuleContext lastRuleCtx) {
-            Log.i(TAG, "TODO: Need to handle break points (certainly by label almost immediately) ... ");
-            //scriptState = ScriptRuntimeState.BREAKPOINT;
-            //atBreakpoint = true;
+            scriptState = ScriptRuntimeState.BREAKPOINT;
+            atBreakpoint = true;
+            ScriptingGUIConsole.appendConsoleOutputRecordBreakpoint(bpLabel, lastRuleCtx.getStart().getLine());
+            ScriptingUtils.signalStateChangeByVibration(scriptState);
             return false;
         }
 
@@ -407,7 +465,12 @@ public class ChameleonScripting {
             Utils.displayToastMessageShort(String.format(BuildConfig.DEFAULT_LOCALE, "Invalid script file path \"%s\".", scriptPath));
             return false;
         }
+        if(activeChameleonScript != null && !activeChameleonScript.scriptRunnerThread.isInterrupted()) {
+            activeChameleonScript.scriptRunnerThread.interrupt();
+            activeChameleonScript.cleanupRuntimeData(ScriptingConfig.SAVE_RESTORE_CHAMELEON_STATE);
+        }
         activeChameleonScript = new ChameleonScriptInstance(scriptPath);
+        activeChameleonScript.clearConsoleViewGUI();
         return getRunningInstance().runScriptFromStart();
     }
 

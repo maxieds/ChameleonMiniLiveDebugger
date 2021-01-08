@@ -19,7 +19,6 @@ package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -28,7 +27,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.maxieds.chameleonminilivedebugger.AndroidFileChooser;
 import com.maxieds.chameleonminilivedebugger.AndroidSettingsStorage;
 import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.R;
@@ -36,9 +34,9 @@ import com.maxieds.chameleonminilivedebugger.Utils;
 
 import java.io.File;
 
-public class ScriptingGUI {
+public class ScriptingGUIMain {
 
-    private static final String TAG = ScriptingGUI.class.getSimpleName();
+    private static final String TAG = ScriptingGUIMain.class.getSimpleName();
 
     public static void scriptGUIHandlePerformTaskClick(Button clickedBtn, String btnTag) {
         switch(btnTag) {
@@ -46,12 +44,16 @@ public class ScriptingGUI {
                 ChameleonScripting.runScriptFromStart();
                 break;
             case "SCRIPTING_BTN_KILL_SCRIPT":
+                ChameleonScripting.getRunningInstance().killRunningScript();
                 break;
             case "SCRIPTING_BTN_PAUSE_SCRIPT":
+                ChameleonScripting.getRunningInstance().pauseRunningScript();
                 break;
             case "SCRIPTING_BTN_STEP_SCRIPT":
+                ChameleonScripting.getRunningInstance().stepRunningScript();
                 break;
-            default: /* TODO: Breakpoint actions */
+            default:
+                /* TODO: Breakpoint actions */
                 break;
         }
     }
@@ -59,7 +61,7 @@ public class ScriptingGUI {
     public static boolean initializeScriptingTabGUI(View cfgBaseLayout) {
         ScriptingConfig.initializeScriptingConfig();
         EditText selectedScriptText = cfgBaseLayout.findViewById(R.id.scriptingLoadImportTabScriptFileText);
-        ScriptingGUI.displayEditTextValue(ScriptingConfig.LAST_SCRIPT_LOADED_PATH, selectedScriptText);
+        ScriptingGUIMain.displayEditTextValue(ScriptingConfig.LAST_SCRIPT_LOADED_PATH, selectedScriptText);
         Button setLoadedScriptBtn = cfgBaseLayout.findViewById(R.id.scriptingLoadImportTabScriptFileSetBtn);
         setLoadedScriptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,7 +72,7 @@ public class ScriptingGUI {
                 }
                 ScriptingConfig.LAST_SCRIPT_LOADED_PATH = nextPath;
                 AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.SCRIPTING_CONFIG_LAST_SCRIPT_LOADED_PATH);
-                ScriptingGUI.displayEditTextValue(nextPath, selectedScriptText);
+                ScriptingGUIMain.displayEditTextValue(nextPath, selectedScriptText);
                 //Log.i(TAG, "NEXT PATH: " + nextPath);
                 //Log.i(TAG, "CONTENTS: [" + AndroidFileChooser.getFileContentsAsString(nextPath) + "]"); // WORKS :)
             }
@@ -263,7 +265,7 @@ public class ScriptingGUI {
                     if(nextPath == null || nextPath.equals("")) {
                         return;
                     }
-                    ScriptingGUI.displayEditTextValue(nextPath, btnView.getRootView().findViewById(getFileFromPickerResIds[pidxConstValue][0]));
+                    ScriptingGUIMain.displayEditTextValue(nextPath, btnView.getRootView().findViewById(getFileFromPickerResIds[pidxConstValue][0]));
                     switch(pidxConstValue) {
                         case 0:
                             ScriptingConfig.DEFAULT_SCRIPT_LOAD_FOLDER = nextPath;
@@ -303,11 +305,5 @@ public class ScriptingGUI {
         }
         return true;
     }
-
-    /**** Console output tab message types: ****/
-    /**** Create layout factory ??? ****/
-    // scripting_gui_error.xml
-    // scripting_gui_livelog.xml
-    // scripting_gui_console_output.xml (msg | summary)
 
 }

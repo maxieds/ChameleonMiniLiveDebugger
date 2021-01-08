@@ -39,12 +39,8 @@ import android.widget.TextView;
 
 import androidx.core.widget.CompoundButtonCompat;
 
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingConfig;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingFileIO;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingGUI;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingGUIMain;
 import com.shawnlin.numberpicker.NumberPicker;
-
-import java.util.Locale;
 
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG_MITEM_CONNECT;
@@ -307,7 +303,7 @@ public class UITabUtils {
 
     public static boolean initializeScriptingTab(int menuItemIdx, View tabMainLayoutView) {
         if(menuItemIdx == TAB_SCRIPTING_MITEM_LOAD_IMPORT) {
-            ScriptingGUI.initializeScriptingTabGUI(tabMainLayoutView);
+            ScriptingGUIMain.initializeScriptingTabGUI(tabMainLayoutView);
         }
         else if(menuItemIdx == TAB_SCRIPTING_MITEM_CONSOLE_VIEW) {}
         else if(menuItemIdx == TAB_SCRIPTING_MITEM_REGISTER_VIEW) {}
@@ -531,7 +527,7 @@ public class UITabUtils {
             });
         }
         else if(menuItemIdx == TAB_CONFIG_MITEM_SCRIPTING) {
-            ScriptingGUI.initializeScriptingConfigGUI(tabMainLayoutView);
+            ScriptingGUIMain.initializeScriptingConfigGUI(tabMainLayoutView);
         }
         return true;
     }

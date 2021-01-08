@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+This program (The Chameleon Mini Live Debugger) is free software written by
+Maxie Dion Schmidt: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+The complete license provided with source distributions of this library is
+available at the following link:
+https://github.com/maxieds/ChameleonMiniLiveDebugger
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <GridLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="1dp"
+        android:columnCount="2"
+        android:padding="4dp"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="0.225"
+            android:layout_gravity="center_vertical|left"
+            android:singleLine="true"
+            android:text="CMD"
+            android:textSize="10sp"
+            android:textAllCaps="true"
+            android:textStyle="bold|italic" />
+
+        <TextView
+            android:id="@+id/localCmdResponseRecordChamCmdNameText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="0.725"
+            android:layout_gravity="center_vertical|left"
+            android:singleLine="true"
+            android:hint="chameleon-command"
+            android:textSize="10sp"
+            android:textAllCaps="false"
+            android:textStyle="normal|italic"
+            android:fontFamily="serif-monospace"
+            android:typeface="monospace"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="0.225"
+            android:layout_gravity="center_vertical|left"
+            android:singleLine="true"
+            android:text="RET"
+            android:textSize="10sp"
+            android:textAllCaps="true"
+            android:textStyle="bold|italic" />
+
+        <TextView
+            android:id="@+id/localCmdResponseRecordChamCmdRespAndCodeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="0.725"
+            android:layout_gravity="center_vertical|left"
+            android:singleLine="true"
+            android:hint="resp-text (resp-code)"
+            android:textSize="10sp"
+            android:textAllCaps="false"
+            android:textStyle="normal|italic"
+            android:fontFamily="serif-monospace"
+            android:typeface="monospace"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="0.225"
+            android:layout_gravity="center_vertical|left"
+            android:singleLine="true"
+            android:text="ASC"
+            android:textSize="10sp"
+            android:textAllCaps="true"
+            android:textStyle="bold|italic" />
+
+        <TextView
+            android:id="@+id/localCmdResponseRecordChamCmdReturnDataAsciiText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="0.725"
+            android:layout_gravity="center_vertical|left"
+            android:singleLine="true"
+            android:hint="ascii-return-data"
+            android:textSize="10sp"
+            android:textAllCaps="false"
+            android:textStyle="normal|italic"
+            android:fontFamily="serif-monospace"
+            android:typeface="monospace"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="0.225"
+            android:layout_gravity="center_vertical|left"
+            android:singleLine="true"
+            android:text="HEX"
+            android:textSize="10sp"
+            android:textAllCaps="true"
+            android:textStyle="bold|italic" />
+
+        <TextView
+            android:id="@+id/localCmdResponseRecordChamCmdReturnDataHexText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="0.725"
+            android:layout_gravity="center_vertical|left"
+            android:singleLine="true"
+            android:hint="hexfmt-return-data"
+            android:textSize="10sp"
+            android:textAllCaps="false"
+            android:textStyle="normal|italic"
+            android:fontFamily="serif-monospace"
+            android:typeface="monospace"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="0.225"
+            android:layout_gravity="center_vertical|left"
+            android:singleLine="true"
+            android:text="ERR"
+            android:textSize="10sp"
+            android:textAllCaps="true"
+            android:textStyle="bold|italic" />
+
+        <TextView
+            android:id="@+id/localCmdResponseRecordChamCmdIsErrorText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="0.725"
+            android:layout_gravity="center_vertical|left"
+            android:singleLine="true"
+            android:hint="True|False"
+            android:textSize="10sp"
+            android:textAllCaps="false"
+            android:textStyle="normal|italic"
+            android:fontFamily="serif-monospace"
+            android:typeface="monospace"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="0.225"
+            android:layout_gravity="center_vertical|left"
+            android:singleLine="true"
+            android:text="TMT"
+            android:textSize="10sp"
+            android:textAllCaps="true"
+            android:textStyle="bold|italic" />
+
+        <TextView
+            android:id="@+id/localCmdResponseRecordChamCmdIsTimeoutText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="0.725"
+            android:layout_gravity="center_vertical|left"
+            android:singleLine="true"
+            android:hint="True|False"
+            android:textSize="10sp"
+            android:textAllCaps="false"
+            android:textStyle="normal|italic"
+            android:fontFamily="serif-monospace"
+            android:typeface="monospace"
+            />
+
+    </GridLayout>
+
+</LinearLayout>

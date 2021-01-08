@@ -49,9 +49,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingGUI;
-
-import java.util.Locale;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingGUIMain;
 
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
@@ -930,7 +928,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
      }
 
      public void actionButtonScriptingGUIHandlePerformTaskClick(View view) {
-          ScriptingGUI.scriptGUIHandlePerformTaskClick((Button) view, view.getTag().toString());
+          ScriptingGUIMain.scriptGUIHandlePerformTaskClick((Button) view, view.getTag().toString());
      }
 
 }

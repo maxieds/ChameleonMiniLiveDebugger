@@ -214,6 +214,7 @@ public class ChameleonIOHandler implements ChameleonSerialIOInterface.SerialData
             } else {
                 cmdRespVar.setValueAt("isTimeout", ScriptVariable.newInstance().set(false));
             }
+            ScriptingGUIConsole.appendConsoleOutputRecordChameleonCommandResponse(cmdRespVar, -1);
             return cmdRespVar;
         } catch(Exception ex) {
             ex.printStackTrace();

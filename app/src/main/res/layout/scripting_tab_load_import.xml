@@ -202,7 +202,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:paddingLeft="10dp"
                     android:onClick="actionButtonScriptingGUIHandlePerformTaskClick"
                     android:tag="SCRIPTING_BTN_STEP_SCRIPT"
-                    android:text="Step" />
+                    android:text="Step + 1" />
 
             </GridLayout>
 

@@ -210,7 +210,7 @@ public class ScriptingBreakPoint {
         return false;
     }
 
-    private static boolean searchBreakpointByLineLabel(String lineLabel) {
+    public static boolean searchBreakpointByLineLabel(String lineLabel) {
         for(int bpIdx = 0; bpIdx < breakpointsObjList.size(); bpIdx++) {
             if(breakpointsObjList.get(bpIdx).isLabelType() && breakpointsObjList.get(bpIdx).getLabel().equals(lineLabel)) {
                 return true;

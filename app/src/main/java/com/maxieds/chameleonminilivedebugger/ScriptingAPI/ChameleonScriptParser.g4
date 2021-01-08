@@ -22,7 +22,10 @@ parser grammar ChameleonScriptParser;
 }
 @rulecatch {
     catch(ScriptingExecptions.ChameleonScriptingException rtEx) {
-        throw rtEx;
+        String ewarnMsg = String.format(Locale.getDefault(), "%s: %s\n%s", rtEx.getName(), rtEx.getCause(), rtEx.getMessage());
+        ScriptingGUIConsole.appendConsoleOutputRecordErrorWarning(ewarnMsg, null, ctx.start.getLine());
+        ChameleonScripting.getRunningInstance().setActiveLineOfCode(ctx.start.getLine());
+        ChameleonScripting.getRunningInstance().killRunningScript();
     }
 }
 
@@ -424,3 +427,5 @@ label_statement: lblNameWithSep=LabelText {}
  /* TODO: No current support for hash indexed assignments:
   *       $v->propName = $q // does NOT work!
   */
+
+/* TODO: Add 'break' and 'continue' labels to loops. */
