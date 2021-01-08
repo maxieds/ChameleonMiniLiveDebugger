@@ -21,6 +21,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.text.format.Time;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -45,7 +46,10 @@ public class ScriptingFileIO {
     public static final String CMLD_SCRIPT_DEBUGGING_FILE_EXT = ".debug";
     public static final String CMLD_SCRIPT_BINARY_DATA_FILE_EXT = ".dmp";
 
+    private static final String PATH_SEPARATOR = "/";
     private static final String STORAGE_HOME_PREFIX = "${EXT}";
+    private static final String STORAGE_HOME_PREFIX_SUBST = "\\$\\{EXT\\}" + PATH_SEPARATOR;
+
     public static final String  DEFAULT_CMLD_DIRECTORY = STORAGE_HOME_PREFIX + "/CMLD";
     public static final String  DEFAULT_CMLD_SCRIPTS_FOLDER = DEFAULT_CMLD_DIRECTORY + "/Scripts";
     public static final String  DEFAULT_CMLD_SCRIPT_LOGGING_FOLDER = DEFAULT_CMLD_DIRECTORY + "/Logs";
@@ -69,8 +73,8 @@ public class ScriptingFileIO {
     }
 
     public static File getStoragePathFromRelative(String filePath, boolean createFile, boolean isDir) {
-        String extStorageDir = AndroidFileChooser.getInitialFileChooserBaseFolder();
-        filePath = filePath.replace(STORAGE_HOME_PREFIX, extStorageDir);
+        String extStorageDir = (AndroidFileChooser.getInitialFileChooserBaseFolder() + PATH_SEPARATOR).replace("//", "/");
+        filePath = filePath.replaceAll(STORAGE_HOME_PREFIX_SUBST, extStorageDir);
         File storageFile = new File(filePath);
         boolean setPermissions = true;
         if(createFile && isDir && !storageFile.exists()) {
@@ -83,7 +87,7 @@ public class ScriptingFileIO {
         }
         else if(createFile && !isDir && !storageFile.exists()) {
             try {
-                Files.createDirectories(storageFile.toPath());
+                Files.createDirectories(storageFile.getParentFile().toPath());
                 storageFile.createNewFile();
             } catch(IOException ioe) {
                 ioe.printStackTrace();
@@ -109,7 +113,7 @@ public class ScriptingFileIO {
         return storageFile;
     }
 
-    public static final int DISPLAY_TEXT_MAX_LENGTH = 30;
+    public static final int DISPLAY_TEXT_MAX_LENGTH = 35;
     public static final int SHORTENED_PATH_INDEX = 0;
     public static final int COMPLETE_PATH_INDEX = 1;
 
@@ -123,15 +127,15 @@ public class ScriptingFileIO {
         String extStorageDir = AndroidFileChooser.getInitialFileChooserBaseFolder().replace("//", "/");
         String shortenedPath = fullPath.replace("//", "/").replace(extStorageDir, STORAGE_HOME_PREFIX);
         if(fullPath.contains(STORAGE_HOME_PREFIX)) {
-            int fullPathAfterIdx = fullPath.indexOf(STORAGE_HOME_PREFIX) + STORAGE_HOME_PREFIX.length();
-            String prefixPath = shortenedPath.substring(0, fullPathAfterIdx + 2);
-            int suffixLength = Math.min(Math.max(0, maxLength - 5), shortenedPath.length() - fullPathAfterIdx - 2);
+            int fullPathAfterIdx = fullPath.indexOf(STORAGE_HOME_PREFIX) + STORAGE_HOME_PREFIX.length() + 1;
+            String prefixPath = shortenedPath.substring(0, fullPathAfterIdx);
+            int suffixLength = Math.min(Math.max(0, maxLength - 5), shortenedPath.length() + 1 - fullPathAfterIdx);
             String suffixPath = "";
-            if(suffixLength < shortenedPath.length() - fullPathAfterIdx + 1) {
-                suffixPath = "<...>" + shortenedPath.substring(shortenedPath.length() - suffixLength);
+            if(suffixLength < shortenedPath.length() - fullPathAfterIdx) {
+                suffixPath = "<...>" + shortenedPath.substring(shortenedPath.length() + 1 - suffixLength);
             }
             else {
-                suffixPath = shortenedPath.substring(fullPathAfterIdx + 2);
+                suffixPath = shortenedPath.substring(fullPathAfterIdx + 1);
             }
             shortenedPath = prefixPath + suffixPath;
         }
@@ -151,6 +155,11 @@ public class ScriptingFileIO {
                 shortenedPath,
                 fullPath
         };
+    }
+
+    public static String expandStoragePath(String initFilePath) {
+        String extStorageDir = (AndroidFileChooser.getInitialFileChooserBaseFolder() + PATH_SEPARATOR).replace("//", "/");
+        return initFilePath.replaceAll(STORAGE_HOME_PREFIX_SUBST, extStorageDir);
     }
 
     public static boolean createDefaultFilePaths() {
@@ -196,7 +205,7 @@ public class ScriptingFileIO {
             outputFileBaseName = currentTime.format(outputFileBaseName);
         }
         outputFileBaseName +=  CMLD_SCRIPT_CONSOLE_OUTPUT_FILE_EXT;
-        outputFileBaseName = ScriptingConfig.DEFAULT_FILE_OUTPUT_FOLDER + "//" + outputFileBaseName;
+        outputFileBaseName = expandStoragePath(ScriptingConfig.DEFAULT_FILE_OUTPUT_FOLDER + "//" + outputFileBaseName);
         ScriptingFileIO.getStoragePathFromRelative(outputFileBaseName, true, false);
         return outputFileBaseName;
     }
@@ -212,7 +221,7 @@ public class ScriptingFileIO {
             loggingFileBaseName = currentTime.format(loggingFileBaseName);
         }
         loggingFileBaseName +=  CMLD_SCRIPT_LOGGING_FILE_EXT;
-        loggingFileBaseName = ScriptingConfig.DEFAULT_LOGGING_OUTPUT_FOLDER + "//" + loggingFileBaseName;
+        loggingFileBaseName = expandStoragePath(ScriptingConfig.DEFAULT_LOGGING_OUTPUT_FOLDER + "//" + loggingFileBaseName);
         ScriptingFileIO.getStoragePathFromRelative(loggingFileBaseName, true, false);
         return loggingFileBaseName;
     }
@@ -228,7 +237,7 @@ public class ScriptingFileIO {
         currentTime.setToNow();
         debuggingFileBaseName = currentTime.format(debuggingFileBaseName);
         debuggingFileBaseName +=  CMLD_SCRIPT_DEBUGGING_FILE_EXT;
-        debuggingFileBaseName = ScriptingConfig.DEFAULT_LOGGING_OUTPUT_FOLDER + "//" + debuggingFileBaseName;
+        debuggingFileBaseName = expandStoragePath(ScriptingConfig.DEFAULT_LOGGING_OUTPUT_FOLDER + "//" + debuggingFileBaseName);
         ScriptingFileIO.getStoragePathFromRelative(debuggingFileBaseName, true, false);
         return debuggingFileBaseName;
     }

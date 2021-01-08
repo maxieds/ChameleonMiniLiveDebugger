@@ -119,7 +119,7 @@ public class ScriptingGUIConsole {
             LinearLayout mainLayoutContainer = (LinearLayout) mainLayoutView.findViewById(R.id.consoleOutputRecordMainLayoutContainer);
             mainLayoutContainer.removeAllViews();
             LayoutInflater inflater = LiveLoggerActivity.getInstance().getLayoutInflater();
-            View mainLayoutView = inflater.inflate(layoutResID, mainLayoutContainer);
+            View mainLayoutView = inflater.inflate(layoutResID, null);
             mainLayoutContainer.addView(mainLayoutView);
             return this;
         }

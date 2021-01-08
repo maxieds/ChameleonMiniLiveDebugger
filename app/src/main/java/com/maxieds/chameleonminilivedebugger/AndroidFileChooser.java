@@ -141,7 +141,7 @@ public class AndroidFileChooser {
                     Log.i(TAG, "USER SELECTED <__EMPTY__> PATH! ... " + ie.getMessage());
                     return NULL_FILE_PATH_LABEL;
                 }
-                String fileChooserBaseFolder = getFileChooserBaseFolder(baseDirectory);
+                String fileChooserBaseFolder = getInitialFileChooserBaseFolder();
                 excptMsg = excptMsg.replaceFirst(fileChooserBaseFolder, STORAGE_HOME_PREFIX_SUBST);
                 excptMsg = excptMsg.replaceAll(String.format(Locale.getDefault(), "[%s]+", PATH_SEP), "/");
                 Log.i(TAG, "USER SELECTED PATH: \"" + excptMsg + "\" ...");

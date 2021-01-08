@@ -53,6 +53,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 public class ChameleonScripting {
 
@@ -209,6 +212,9 @@ public class ChameleonScripting {
             scriptExecLine = 0;
             consoleOutput = new StringBuilder();
             try {
+                if(TabFragment.UITAB_DATA[TabFragment.TAB_SCRIPTING].tabMenuItemLayouts[TabFragment.TAB_SCRIPTING_MITEM_CONSOLE_VIEW] == null) {
+                    TabFragment.UITAB_DATA[TabFragment.TAB_SCRIPTING].changeMenuItemDisplay(TabFragment.TAB_SCRIPTING_MITEM_CONSOLE_VIEW, true);
+                }
                 consoleViewMainLayout = TabFragment.UITAB_DATA[TabFragment.TAB_SCRIPTING].tabMenuItemLayouts[TabFragment.TAB_SCRIPTING_MITEM_CONSOLE_VIEW].findViewById(R.id.scriptingTabConsoleViewMainLayoutContainer);
             } catch(Exception ex) {
                 ex.printStackTrace();
@@ -223,21 +229,13 @@ public class ChameleonScripting {
             scriptState = ScriptRuntimeState.INITIALIZED;
             chameleonDeviceState = new ChameleonDeviceState();
             scriptRunnerThread = null;
-            try {
-                scriptInputStream = new ANTLRInputStream(scriptFileStream);
-                scriptLexer = new ChameleonScriptLexer(scriptInputStream);
-                scriptTokenStream = new CommonTokenStream(scriptLexer);
-                scriptParser = new ChameleonScriptParser(scriptTokenStream);
-                scriptParser.removeErrorListeners();
-                scriptErrorListener = new ChameleonScriptErrorListener();
-                scriptParser.addErrorListener(scriptErrorListener);
-                scriptParser.setBuildParseTree(true);
-                scriptParseTree = scriptParser.file_contents().getChild(0);
-                scriptVisitor = new ChameleonScriptVisitorExtended(this);
-            } catch(IOException ioe) {
-                ioe.printStackTrace();
-                initialized = false;
-            }
+            scriptInputStream = null;
+            scriptLexer = null;
+            scriptTokenStream = null;
+            scriptParser = null;
+            scriptErrorListener = null;
+            scriptParseTree = null;
+            scriptVisitor = null;
         }
 
         public void cleanupRuntimeData(boolean restoreChameleonState) {
@@ -304,13 +302,28 @@ public class ChameleonScripting {
 
         public boolean runScriptFromStart() {
 
-            if(!runScriptPreambleActions()) {
-                return false;
-            }
-            long execTimeLimit = ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME ?  ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME_SECONDS : 0;
             scriptRunnerThread = new Thread() {
                 @Override
                 public void run() {
+
+                    try {
+                        scriptInputStream = new ANTLRInputStream(scriptFileStream);
+                        scriptLexer = new ChameleonScriptLexer(scriptInputStream);
+                        scriptTokenStream = new CommonTokenStream(scriptLexer);
+                        scriptParser = new ChameleonScriptParser(scriptTokenStream);
+                        scriptParser.removeErrorListeners();
+                        scriptErrorListener = new ChameleonScriptErrorListener();
+                        scriptParser.addErrorListener(scriptErrorListener);
+                        scriptParser.setBuildParseTree(true);
+                        scriptParseTree = scriptParser.file_contents().getChild(0);
+                        scriptVisitor = new ChameleonScriptVisitorExtended(getRunningInstance());
+                    } catch(IOException ioe) {
+                        ioe.printStackTrace();
+                        initialized = false;
+                    }
+                    if(!runScriptPreambleActions()) {
+                        return;
+                    }
 
                     scriptState = ScriptRuntimeState.RUNNING;
                     Handler setTimeLimitHandler = new Handler();
@@ -324,6 +337,7 @@ public class ChameleonScripting {
                             }
                         }
                     };
+                    long execTimeLimit = ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME ?  ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME_SECONDS : 0;
                     if(execTimeLimit > 0) {
                         setTimeLimitHandler.postDelayed(enforceTimeLimitRunnable, execTimeLimit * 1000);
                     }
@@ -347,7 +361,31 @@ public class ChameleonScripting {
 
                 }
             };
-            scriptRunnerThread.start();
+            ThreadFactory threadFactory = new ThreadFactory() {
+                @Override
+                public Thread newThread(Runnable runner) {
+                    final Thread thread = new Thread(runner);
+                    thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+                        @Override
+                        public void uncaughtException(Thread paramThread, Throwable paramExcpt) {
+                            String ewarnMsg = "Unexpected exception caught.";
+                            try {
+                                RuntimeException rtEx = (RuntimeException) paramExcpt;
+                                ewarnMsg = String.format(Locale.getDefault(), "%s: %s\n%s", rtEx.getClass().getSimpleName(), rtEx.getCause(), rtEx.getMessage());
+                                ScriptingGUIConsole.appendConsoleOutputRecordErrorWarning(ewarnMsg, null, getExecutingLineOfCode());
+                            } catch(Exception ex) {
+                                ex.printStackTrace();
+                            }
+                            ChameleonScripting.getRunningInstance().setActiveLineOfCode(getExecutingLineOfCode());
+                            ChameleonScripting.getRunningInstance().killRunningScript();
+                            paramThread.interrupt();
+                        }
+                    });
+                    return thread;
+                }
+            };
+            ExecutorService thExecPool = Executors.newSingleThreadExecutor(threadFactory);
+            thExecPool.execute(scriptRunnerThread);
             return true;
 
         }
@@ -383,6 +421,10 @@ public class ChameleonScripting {
             return false;
         }
 
+        public int getExecutingLineOfCode() {
+            return scriptExecLine;
+        }
+
         public void setActiveLineOfCode(int nextLOC) {
             scriptExecLine = nextLOC;
         }
@@ -393,14 +435,11 @@ public class ChameleonScripting {
 
         public ScriptingTypes.ScriptVariable lookupVariableByName(String varName) throws ScriptingExceptions.ChameleonScriptingException {
             ScriptingTypes.ScriptVariable svar = scriptVariablesHashMap.get(varName);
-            if(svar == null) {
-                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.VariableNotFoundException, "varName");
-            }
             return svar;
         }
 
-        public void setVariableByName(ScriptingTypes.ScriptVariable scriptVar) throws ScriptingExceptions.ChameleonScriptingException {
-            scriptVariablesHashMap.put(scriptVar.getName(), scriptVar);
+        public void setVariableByName(String varName, ScriptingTypes.ScriptVariable scriptVar) throws ScriptingExceptions.ChameleonScriptingException {
+            scriptVariablesHashMap.put(varName, scriptVar);
         }
 
         public boolean writeLogFile(String logLine) {
@@ -460,7 +499,8 @@ public class ChameleonScripting {
     }
 
     public static boolean runScriptFromStart() {
-        String scriptPath = ScriptingConfig.LAST_SCRIPT_LOADED_PATH;
+        String scriptPath = ScriptingFileIO.expandStoragePath(ScriptingConfig.LAST_SCRIPT_LOADED_PATH);
+        Log.i(TAG, "Attempting to run script from file path: " + scriptPath);
         if(ScriptingFileIO.getStoragePathFromRelative(scriptPath, false, false) == null) {
             Utils.displayToastMessageShort(String.format(BuildConfig.DEFAULT_LOCALE, "Invalid script file path \"%s\".", scriptPath));
             return false;

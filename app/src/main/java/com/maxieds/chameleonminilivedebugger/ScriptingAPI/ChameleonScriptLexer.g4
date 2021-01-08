@@ -132,6 +132,10 @@ ElseCond: 'else' ;
 
 /**** Other syntax constants and regex matchers to define non-constant ids: ****/
 
+QuotedStringLiteral: '"' (~["\\] | '\\' [a-z0-9])* '"' ;
+QuotedHexStringLiteral: 'h\'' (~["\\] | '\\' [a-z0-9])* '\'' ;
+QuotedRawStringLiteral: 'r\'' (~["\\] | '\\' [a-z0-9])* '\'' ;
+
 WhiteSpace:            [ \t\r\u000C]+ -> channel(HIDDEN) ;
 NewLine:               ('\n' ('\n\n')*)+ -> channel(HIDDEN) ;
 CStyleBlockComment:    '/*'.*?'*/' -> channel(HIDDEN) ;
@@ -186,7 +190,4 @@ HexString: ([0-9a-fA-F])+ ;
 HexByte: '0x' [0-9a-fA-F] [0-9a-fA-F] | '0x' [0-9a-fA-F] ;
 HexLiteral: HexByte | '0x'HexString ;
 BooleanLiteral: 'true' | 'True' | 'TRUE' | 'false' | 'False' | 'FALSE' ;
-QuotedStringLiteral: '"' (~["\\] | '\\' .)* '"' ;
-QuotedHexStringLiteral: 'h\'' (~["\\] | '\\' .)* '\'' ;
-QuotedRawStringLiteral: 'r\'' (~["\\] | '\\' .)* '\'' ;
 LabelText: VariableName ColonSeparator ;

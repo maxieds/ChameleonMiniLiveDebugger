@@ -22,6 +22,9 @@ import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScripting.Cha
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParser;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParserBaseVisitor;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.RuleNode;
+
 public class ChameleonScriptVisitorExtended extends ChameleonScriptParserBaseVisitor<ScriptVariable> {
 
     private static final String TAG = ChameleonScriptVisitorExtended.class.getSimpleName();
@@ -33,6 +36,7 @@ public class ChameleonScriptVisitorExtended extends ChameleonScriptParserBaseVis
     }
 
     public ScriptVariable visitWhile_loop(ChameleonScriptParser.While_loopContext ctx) {
+        setActiveLineOfCode(ctx);
         ScriptVariable boolPreCond = this.visit(ctx.oe);
         while(boolPreCond.getValueAsBoolean()) {
             this.visit(ctx.scrLineBlk);
@@ -42,6 +46,7 @@ public class ChameleonScriptVisitorExtended extends ChameleonScriptParserBaseVis
     }
 
     public ScriptVariable visitIf_block(ChameleonScriptParser.If_blockContext ctx) {
+        setActiveLineOfCode(ctx);
         ScriptVariable boolPreCond = this.visit(ctx.oe);
         if(boolPreCond.getValueAsBoolean()) {
             this.visit(ctx.scrLineBlk);
@@ -50,6 +55,7 @@ public class ChameleonScriptVisitorExtended extends ChameleonScriptParserBaseVis
     }
 
     public ScriptVariable visitIfelse_block(ChameleonScriptParser.Ifelse_blockContext ctx) {
+        setActiveLineOfCode(ctx);
         ScriptVariable boolPreCond = this.visit(ctx.ifoe);
         if(boolPreCond.getValueAsBoolean()) {
             this.visit(ctx.scrLineBlkIf);
@@ -61,11 +67,28 @@ public class ChameleonScriptVisitorExtended extends ChameleonScriptParserBaseVis
     }
 
     public ScriptVariable visitLabel_statement(ChameleonScriptParser.Label_statementContext ctx) {
+        setActiveLineOfCode(ctx);
         String labelName = ctx.lblNameWithSep.getText().replaceAll(":", "");
         if(ScriptingBreakPoint.searchBreakpointByLineLabel(labelName)) {
             scriptContext.postBreakpointLabel(labelName, ctx);
         }
         return ScriptVariable.newInstance();
+    }
+
+    @Override
+    public ScriptVariable visitChildren(RuleNode parentCtx) {
+        setActiveLineOfCode(parentCtx);
+        return super.visitChildren(parentCtx);
+    }
+
+    public static void setActiveLineOfCode(RuleNode ctx) {
+        try {
+            int activeLOC = ((ParserRuleContext) ctx).getStart().getLine();
+            ChameleonScripting.getRunningInstance().setActiveLineOfCode(activeLOC);
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            ChameleonScripting.getRunningInstance().setActiveLineOfCode(-1);
+        }
     }
 
 }

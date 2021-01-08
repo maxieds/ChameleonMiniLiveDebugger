@@ -90,9 +90,9 @@ public class ScriptingTypes {
             set(strLiteral);
         }
 
-        public boolean setName(String nextVarName) {
+        public ScriptVariable setName(String nextVarName) {
             varName = nextVarName;
-            return true;
+            return this;
         }
 
         public String getName() {
@@ -240,6 +240,7 @@ public class ScriptingTypes {
                     return varValueAsBoolean ? "true" : "false";
                 case VariableTypeInteger:
                     return String.format(BuildConfig.DEFAULT_LOCALE, "%d", varValueAsInt);
+                case VariableTypeArrayMap:
                 default:
                     throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.InvalidTypeException);
             }
@@ -499,7 +500,28 @@ public class ScriptingTypes {
 
         @Override
         public String getValueAsString() {
-            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
+            String[] arrayListStrDescList = new String[arrayList.size()];
+            for(int arrListIdx = 0; arrListIdx < arrayList.size(); arrListIdx++) {
+                arrayListStrDescList[arrListIdx] = arrayList.get(arrListIdx).getValueAsString();
+            }
+            String[] hashMapStrDescList = new String[hashMap.size()];
+            int hmCount = 0;
+            for(String hashKey : hashMap.keySet()) {
+                hashMapStrDescList[hmCount] = hashMap.get(hashKey).getValueAsString();
+                ++hmCount;
+            }
+            String arrValueDesc = String.format(BuildConfig.DEFAULT_LOCALE, "[ ");
+            if(arrayListStrDescList.length > 0) {
+                arrValueDesc += String.join(", ", arrayListStrDescList);
+                if(hashMapStrDescList.length > 0) {
+                    arrValueDesc += " ; ";
+                }
+            }
+            if(hashMapStrDescList.length > 0) {
+                arrValueDesc += String.join(", ", hashMapStrDescList);
+            }
+            arrValueDesc += " ]";
+            return arrValueDesc;
         }
 
         @Override

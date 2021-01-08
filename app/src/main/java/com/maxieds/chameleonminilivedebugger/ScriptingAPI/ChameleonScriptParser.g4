@@ -20,14 +20,7 @@ parser grammar ChameleonScriptParser;
 @header {
      import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingTypes.ScriptVariable;
 }
-@rulecatch {
-    catch(ScriptingExecptions.ChameleonScriptingException rtEx) {
-        String ewarnMsg = String.format(Locale.getDefault(), "%s: %s\n%s", rtEx.getName(), rtEx.getCause(), rtEx.getMessage());
-        ScriptingGUIConsole.appendConsoleOutputRecordErrorWarning(ewarnMsg, null, ctx.start.getLine());
-        ChameleonScripting.getRunningInstance().setActiveLineOfCode(ctx.start.getLine());
-        ChameleonScripting.getRunningInstance().killRunningScript();
-    }
-}
+@rulecatch {}
 
 options { tokenVocab=ChameleonScriptLexer; }
 
@@ -61,7 +54,14 @@ ifelse_block: IfCond OpenParens ifoe=operand_expression cp=ClosedParens
 
 variable_reference_v1 returns [ScriptVariable svar]:
      vss=VariableStartSymbol vname=VariableName {
-           $svar=ChameleonScripting.getRunningInstance().lookupVariableByName($vname.text);
+           String varName = $vname.text;
+           if(!ChameleonScripting.getRunningInstance().variableNameExists(varName)) {
+                $svar=ScriptVariable.newInstance().set("<uninitialized>").setName(varName);
+                ChameleonScripting.getRunningInstance().setVariableByName(varName, $svar);
+           }
+           else {
+                $svar=ChameleonScripting.getRunningInstance().lookupVariableByName(varName);
+           }
      }
      ;
 
@@ -112,11 +112,11 @@ quoted_string_literal returns [ScriptVariable svar]:
      }
      |
      qhsl=QuotedHexStringLiteral {
-          $svar=ScriptVariable.newInstance().set($qhsl.text.substring(2, $qhsl.text.length() - 2));
+          $svar=ScriptVariable.newInstance().set($qhsl.text.substring(1, $qhsl.text.length() - 1));
      }
      |
      qrsl=QuotedHexStringLiteral {
-          $svar=ScriptVariable.newInstance().set($qrsl.text.substring(2, $qrsl.text.length() - 2));
+          $svar=ScriptVariable.newInstance().set($qrsl.text.substring(1, $qrsl.text.length() - 1));
      }
      ;
 
@@ -303,13 +303,13 @@ exec_chameleon_command returns [ScriptVariable svar]:
 
 
 scripting_api_function_result returns [ScriptVariable svar]:
-     funcName=ScriptingAPIFunctionName
-     funcArgs=function_args_list ClosedParens {
-          $svar=ScriptingFunctions.callFunction($funcName.text, $funcArgs.varsList);
+     funcName=ScriptingAPIFunctionName ClosedParens {
+          $svar=ScriptingFunctions.callFunction($funcName.text.replaceAll("\\(", ""), new ArrayList<ScriptVariable>());
      }
      |
-     funcName=ScriptingAPIFunctionName ClosedParens {
-          $svar=ScriptingFunctions.callFunction($funcName.text, new ArrayList<ScriptVariable>());
+     funcName=ScriptingAPIFunctionName
+     funcArgs=function_args_list ClosedParens {
+          $svar=ScriptingFunctions.callFunction($funcName.text.replaceAll("\\(", ""), $funcArgs.varsList);
      }
      ;
 
@@ -330,12 +330,12 @@ operand_expression_v7 returns [ScriptVariable svar]:
 assignment_operation returns [ScriptVariable svar]:
      lhs=variable_reference DefEqualsOperator rhs=operand_expression_v7 {
           $svar=$rhs.svar;
-          ChameleonScripting.getRunningInstance().setVariableByName($lhs.svar);
+          ChameleonScripting.getRunningInstance().setVariableByName($lhs.svar.getName(), $lhs.svar);
      }
      |
      lhs=variable_reference PlusEqualsOperator rhs=operand_expression_v7 {
           $svar=$lhs.svar.binaryOperation(ScriptVariable.Operation.BINOP_PLUS, $rhs.svar);
-          ChameleonScripting.getRunningInstance().setVariableByName($lhs.svar);
+          ChameleonScripting.getRunningInstance().setVariableByName($lhs.svar.getName(), $lhs.svar);
      }
      ;
 
@@ -384,7 +384,7 @@ assignment_by_array_slice returns [ScriptVariable svar]:
      DefEqualsOperator rhsExpr=operand_expression {
           $varRef.svar.insertSubArray($oexprStartIdx.svar.getValueAsInt(), $oexprLengthIdx.svar.getValueAsInt(), $rhsExpr.svar);
           $svar=$varRef.svar;
-          ChameleonScripting.getRunningInstance().setVariableByName($varRef.svar);
+          ChameleonScripting.getRunningInstance().setVariableByName($varRef.svar.getName(), $varRef.svar);
      }
      |
      varRef=variable_reference ArrayIndexOpenBracket oexprStartIdx=operand_expression
@@ -392,7 +392,7 @@ assignment_by_array_slice returns [ScriptVariable svar]:
      DefEqualsOperator rhsExpr=operand_expression {
           $varRef.svar.insertSubArray($oexprStartIdx.svar.getValueAsInt(), $rhsExpr.svar);
           $svar=$varRef.svar;
-          ChameleonScripting.getRunningInstance().setVariableByName($varRef.svar);
+          ChameleonScripting.getRunningInstance().setVariableByName($varRef.svar.getName(), $varRef.svar);
      }
      |
      varRef=variable_reference ArrayIndexOpenBracket
@@ -400,7 +400,7 @@ assignment_by_array_slice returns [ScriptVariable svar]:
      DefEqualsOperator rhsExpr=operand_expression {
           $varRef.svar.insertSubArray(0, $oexprLengthIdx.svar.getValueAsInt(), $rhsExpr.svar);
           $svar=$varRef.svar;
-          ChameleonScripting.getRunningInstance().setVariableByName($varRef.svar);
+          ChameleonScripting.getRunningInstance().setVariableByName($varRef.svar.getName(), $varRef.svar);
      }
      ;
 

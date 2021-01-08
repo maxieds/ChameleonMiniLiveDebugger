@@ -17,6 +17,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
+import android.util.Log;
+
 import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.ChameleonIO;
 import com.maxieds.chameleonminilivedebugger.ChameleonSettings;
@@ -35,15 +37,15 @@ public class ScriptingFunctions {
     public static ScriptVariable callFunction(String funcName, List<ScriptVariable> funcArgs) throws ChameleonScriptingException {
         switch(funcName) {
             case "Exit":
-                return ScriptingAPIFunctions.Exit(funcArgs);
+                return ScriptingFunctions.ScriptingAPIFunctions.Exit(funcArgs);
             case "Assert":
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
             case "Print":
-                return ScriptingAPIFunctions.Print(funcArgs);
+                return ScriptingFunctions.ScriptingAPIFunctions.Print(funcArgs);
             case "Printf":
-                return ScriptingAPIFunctions.Printf(funcArgs);
+                return ScriptingFunctions.ScriptingAPIFunctions.Printf(funcArgs);
             case "Sprintf":
-                return ScriptingAPIFunctions.Sprintf(funcArgs);
+                return ScriptingFunctions.ScriptingAPIFunctions.Sprintf(funcArgs);
             case "AsHexString":
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
             case "AsBinaryString":
@@ -117,20 +119,21 @@ public class ScriptingFunctions {
             case "IntegerRange":
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
             case "Find":
-                return ScriptingAPIFunctions.Find(funcArgs);
+                return ScriptingFunctions.ScriptingAPIFunctions.Find(funcArgs);
             case "Contains":
-                return ScriptingAPIFunctions.Contains(funcArgs);
+                return ScriptingFunctions.ScriptingAPIFunctions.Contains(funcArgs);
             case "Replace":
-                return ScriptingAPIFunctions.Replace(funcArgs);
+                return ScriptingFunctions.ScriptingAPIFunctions.Replace(funcArgs);
             case "Split":
-                return ScriptingAPIFunctions.Split(funcArgs);
+                return ScriptingFunctions.ScriptingAPIFunctions.Split(funcArgs);
             case "Strip":
-                return ScriptingAPIFunctions.Strip(funcArgs);
+                return ScriptingFunctions.ScriptingAPIFunctions.Strip(funcArgs);
             case "Substring":
-                return ScriptingAPIFunctions.Substring(funcArgs);
+                return ScriptingFunctions.ScriptingAPIFunctions.Substring(funcArgs);
             default:
                 break;
         }
+        Log.w(TAG, "Script: Calling function '" + funcName + "'");
         throw new ChameleonScriptingException(ExceptionType.OperationNotSupportedException);
     }
 
@@ -151,7 +154,10 @@ public class ScriptingFunctions {
         }
 
         public static ScriptVariable Printf(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            Log.i(TAG, "Number of arguments passed: " + argList.size());
+            Log.i(TAG, "First argument: " + argList.get(0).getValueAsString());
             ScriptVariable sprintfText = Sprintf(argList);
+            Log.i(TAG, "Printf [sprintf var str value] -> \"" + sprintfText.getValueAsString() + "\"");
             ChameleonScripting.getRunningInstance().writeConsoleOutput(sprintfText.getValueAsString());
             return ScriptVariable.newInstance().set(sprintfText.getValueAsString().length());
         }
@@ -162,9 +168,12 @@ public class ScriptingFunctions {
             }
             String fmtMsg = argList.get(0).getValueAsString();
             int varIndex = 1, strBaseIdx = 0;
-            StringBuilder consoleOutput = new StringBuilder();
+            StringBuilder consoleOutput = new StringBuilder("");
             Pattern fmtFlagPattern = Pattern.compile("%[^diuoxXcs]*[diuoxXcs]");
             Matcher fmtMatcher = fmtFlagPattern.matcher(fmtMsg);
+            if(!fmtMatcher.matches()) {
+                return ScriptVariable.newInstance().set(fmtMsg);
+            }
             while(fmtMatcher.find()) {
                 String fmtFlag = fmtMatcher.group();
                 String fmtSpec = new String(new char[] { fmtFlag.charAt(fmtFlag.length() - 1) });
@@ -180,9 +189,10 @@ public class ScriptingFunctions {
                     break;
                 }
             }
-            if(fmtMatcher.find()) {
-                throw new ChameleonScriptingException(ExceptionType.FormatErrorException);
+            if(strBaseIdx + 1 < fmtMsg.length()) {
+                consoleOutput.append(fmtMsg.substring(strBaseIdx));
             }
+            Log.i(TAG, "Sprintf -> \"" + consoleOutput.toString() + "\"");
             return ScriptVariable.newInstance().set(consoleOutput.toString());
         }
 
