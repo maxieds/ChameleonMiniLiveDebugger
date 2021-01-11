@@ -21,7 +21,9 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layout_margin="4dp"
+    >
 
     <TextView
         android:id="@+id/consoleOutputRecordMainTextBoxData"

@@ -25,6 +25,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     android:background="?colorAccent"
     android:layout_margin="1dp"
     android:padding="0dp"
+    android:layout_marginTop="2dp"
     >
 
     <View
@@ -53,11 +54,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@android:color/transparent" />
-
-    <View
-        android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="?colorPrimaryDark" />
 
@@ -71,17 +67,19 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:id="@+id/consoleOutputRecordIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center|center_horizontal|center_vertical"
+            android:layout_gravity="center|center_horizontal|center_vertical|left"
             android:gravity="center|center_vertical"
             android:src="@drawable/scripting_output_icon_info16"
+            android:padding="2dp"
+            android:paddingRight="20dp"
             />
 
         <TextView
             android:id="@+id/consoleOutputRecordTypeText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.2"
             android:layout_gravity="center_vertical|left"
+            android:layout_weight="0.2"
             android:background="@android:color/transparent"
             android:singleLine="true"
             android:text="REC-TYPE"
@@ -97,7 +95,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_gravity="center_vertical|center_horizontal|center"
             android:background="@android:color/transparent"
             android:singleLine="true"
             android:text="Line ---"
@@ -112,7 +110,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:id="@+id/consoleOutputRecordTimestampText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.4"
+            android:layout_weight="0.42"
             android:layout_gravity="center_vertical|right"
             android:background="@android:color/transparent"
             android:singleLine="true"
@@ -124,36 +122,29 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:typeface="serif"
             />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@android:color/transparent" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?colorPrimaryDark" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/transparent" />
-
-        <LinearLayout
-            android:id="@+id/consoleOutputRecordMainLayoutContainer"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@android:color/transparent" />
-
     </LinearLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@android:color/transparent" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?colorPrimaryDark" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/transparent" />
+
+    <LinearLayout
+        android:id="@+id/consoleOutputRecordMainLayoutContainer"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+    </LinearLayout>
 
 </LinearLayout>

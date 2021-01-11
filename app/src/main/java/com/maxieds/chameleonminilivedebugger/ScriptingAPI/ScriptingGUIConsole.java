@@ -74,10 +74,10 @@ public class ScriptingGUIConsole {
         public ConsoleOutputRecord setRecordLineOfCode(int nextLoc) {
             TextView tvRecLoc = (TextView) mainLayoutView.findViewById(R.id.consoleOutputRecordLOCText);
             if(nextLoc <= 0) {
-                tvRecLoc.setText("Line ---");
+                tvRecLoc.setText("Line ----  ");
             }
             else {
-                tvRecLoc.setText(String.format(Locale.getDefault(), "Line % 3d", nextLoc));
+                tvRecLoc.setText(String.format(Locale.getDefault(), "Line % 3d  ", nextLoc));
             }
             return this;
         }
@@ -92,8 +92,17 @@ public class ScriptingGUIConsole {
             return setRecordTimestamp(Utils.getTimestamp());
         }
 
+        private static final int RECORD_TYPE_MARKER_CHAR_WIDTH = 16;
+
         public ConsoleOutputRecord setRecordTypeMarker(String typeMarkerText) {
             TextView tvRecTypeMarker = (TextView) mainLayoutView.findViewById(R.id.consoleOutputRecordTypeText);
+            if(typeMarkerText.length() > RECORD_TYPE_MARKER_CHAR_WIDTH) {
+                typeMarkerText = typeMarkerText.substring(0, RECORD_TYPE_MARKER_CHAR_WIDTH - 1);
+            }
+            else {
+                String fmtString = String.format(Locale.getDefault(), "%%%ds", RECORD_TYPE_MARKER_CHAR_WIDTH);
+                typeMarkerText = String.format(Locale.getDefault(), fmtString, typeMarkerText);
+            }
             tvRecTypeMarker.setText(typeMarkerText);
             return this;
         }
@@ -119,8 +128,7 @@ public class ScriptingGUIConsole {
             LinearLayout mainLayoutContainer = (LinearLayout) mainLayoutView.findViewById(R.id.consoleOutputRecordMainLayoutContainer);
             mainLayoutContainer.removeAllViews();
             LayoutInflater inflater = LiveLoggerActivity.getInstance().getLayoutInflater();
-            View mainLayoutView = inflater.inflate(layoutResID, null);
-            mainLayoutContainer.addView(mainLayoutView);
+            View mainLayoutView = inflater.inflate(layoutResID, mainLayoutContainer);
             return this;
         }
 
@@ -129,13 +137,13 @@ public class ScriptingGUIConsole {
             if(msgData != null && msgData.length > 0) {
                 String nextMsgText = msgPrefixData;
                 for(int mdidx = 0; mdidx < msgData.length; mdidx++) {
-                    msgPrefixData += "\n" + msgData[mdidx];
+                    nextMsgText += "\n" + msgData[mdidx];
                 }
                 SpannableString spanBulletListText = new SpannableString(nextMsgText);
-                int curBulletPos = msgPrefixData.length() + 1;
+                int curBulletPos = msgPrefixData.length() ;
                 for(int mdidx = 0; mdidx < msgData.length; mdidx++) {
                     spanBulletListText.setSpan(
-                            new BulletSpan(9, Utils.getColorFromTheme(R.attr.colorPrimaryDark)),
+                            new BulletSpan(15, Utils.getColorFromTheme(R.attr.colorPrimaryDark)),
                             curBulletPos, curBulletPos + msgData[mdidx].length() + 1,
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                     );
@@ -201,7 +209,7 @@ public class ScriptingGUIConsole {
         }
 
         public static ConsoleOutputRecord newInfoMessageInstance(String msgDataPrefix, String msgData[], int lineOfCode) {
-            ConsoleOutputRecord newInfoMsgRecord = new ConsoleOutputRecord(String.format(Locale.getDefault(), "Message @@ LINE % 4d", lineOfCode));
+            ConsoleOutputRecord newInfoMsgRecord = new ConsoleOutputRecord(String.format(Locale.getDefault(), "Message"));
             newInfoMsgRecord.setMainContentLayout(R.layout.scripting_console_record_textinfomsg);
             newInfoMsgRecord.setRecordIcon(R.drawable.scripting_output_icon_info16);
             newInfoMsgRecord.setRecordLineOfCode(lineOfCode);
@@ -212,7 +220,7 @@ public class ScriptingGUIConsole {
         }
 
         public static ConsoleOutputRecord newErrorWarningMessageInstance(String msgDataPrefix, String msgData[], int lineOfCode) {
-            ConsoleOutputRecord newEWarnMsgRecord = new ConsoleOutputRecord(String.format(Locale.getDefault(), "Error -- Warning @@ LINE % 4d", lineOfCode));
+            ConsoleOutputRecord newEWarnMsgRecord = new ConsoleOutputRecord(String.format(Locale.getDefault(), "Error -- Warning"));
             newEWarnMsgRecord.setMainContentLayout(R.layout.scripting_console_record_textinfomsg);
             newEWarnMsgRecord.setRecordIcon(R.drawable.scripting_output_icon_error16);
             newEWarnMsgRecord.setRecordLineOfCode(lineOfCode);
@@ -223,7 +231,7 @@ public class ScriptingGUIConsole {
         }
 
         public static ConsoleOutputRecord newBreakpointRecordInstance(String bpLabel, int lineOfCode) {
-            ConsoleOutputRecord newBkptMsgRecord = new ConsoleOutputRecord(String.format(Locale.getDefault(), "Bkpt '%s' @@ LINE % 4d", bpLabel, lineOfCode));
+            ConsoleOutputRecord newBkptMsgRecord = new ConsoleOutputRecord(String.format(Locale.getDefault(), "Breakpoint '%s'", bpLabel));
             newBkptMsgRecord.setMainContentLayout(R.layout.scripting_console_record_textinfomsg);
             newBkptMsgRecord.setRecordIcon(R.drawable.scripting_output_icon_bkpt16);
             newBkptMsgRecord.setRecordLineOfCode(lineOfCode);
@@ -235,7 +243,7 @@ public class ScriptingGUIConsole {
 
         public static ConsoleOutputRecord newChameleonCommandResponseRecordInstance(ScriptingTypes.ScriptVariable scHashedArrayVar, int lineOfCode) {
 
-            ConsoleOutputRecord newCmdRespMsgRecord = new ConsoleOutputRecord(String.format(Locale.getDefault(), "Command Response @@ LINE % 4d", lineOfCode));
+            ConsoleOutputRecord newCmdRespMsgRecord = new ConsoleOutputRecord(String.format(Locale.getDefault(), "Command Response"));
             newCmdRespMsgRecord.setMainContentLayout(R.layout.scripting_console_record_cmdresp);
             newCmdRespMsgRecord.setRecordIcon(R.drawable.scripting_output_icon_cmdresp16_v1);
             newCmdRespMsgRecord.setRecordLineOfCode(lineOfCode);

@@ -27,6 +27,13 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                \nChameleon Mini Live Debugger (CMLD) are found on
                \nthe project WIKI pages at the next link:
                \nhttps://github.com/maxieds/ChameleonMiniLiveDebugger/wiki
+               \n\nPlease note that the Chameleon Mini scripting features
+               \nin the subtab are still under active development. They
+               \nare not yet considered production ready. However,
+               \ntesters and early adopters are welcome to try things
+               \nout at any rate. A list of prospective test scripts
+               \nis here:
+               \nhttps://github.com/maxieds/ChameleonMiniLiveDebugger/tree/master/app/src/main/SampleScripts
                \n\nStay safe out there!
     </string>
     <string name="appInitialUserGreetingMsgPaid">

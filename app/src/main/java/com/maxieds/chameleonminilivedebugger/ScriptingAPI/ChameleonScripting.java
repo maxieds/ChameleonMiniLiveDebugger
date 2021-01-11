@@ -306,6 +306,17 @@ public class ChameleonScripting {
                 @Override
                 public void run() {
 
+                    /* Remove after testing: */
+                    ScriptingGUIConsole.appendConsoleOutputRecordInfoMessage(
+                            "New message prefix starting here ... ",
+                            new String[] {
+                                    "Bullet point 1.",
+                                    "Bullet point 2;"
+                            },
+                            100
+                    );
+                    /* END: Remove after testing: */
+
                     try {
                         scriptInputStream = new ANTLRInputStream(scriptFileStream);
                         scriptLexer = new ChameleonScriptLexer(scriptInputStream);
@@ -368,15 +379,20 @@ public class ChameleonScripting {
                     thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
                         @Override
                         public void uncaughtException(Thread paramThread, Throwable paramExcpt) {
+                            LiveLoggerActivity.getInstance().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Utils.displayToastMessageShort("Runtime error encountered.");
+                                }
+                            });
                             String ewarnMsg = "Unexpected exception caught.";
                             try {
                                 RuntimeException rtEx = (RuntimeException) paramExcpt;
-                                ewarnMsg = String.format(Locale.getDefault(), "%s: %s\n%s", rtEx.getClass().getSimpleName(), rtEx.getCause(), rtEx.getMessage());
+                                ewarnMsg = String.format(Locale.getDefault(), "%s: \n%s", rtEx.getClass().getSimpleName(), rtEx.getMessage());
                                 ScriptingGUIConsole.appendConsoleOutputRecordErrorWarning(ewarnMsg, null, getExecutingLineOfCode());
                             } catch(Exception ex) {
                                 ex.printStackTrace();
                             }
-                            ChameleonScripting.getRunningInstance().setActiveLineOfCode(getExecutingLineOfCode());
                             ChameleonScripting.getRunningInstance().killRunningScript();
                             paramThread.interrupt();
                         }
