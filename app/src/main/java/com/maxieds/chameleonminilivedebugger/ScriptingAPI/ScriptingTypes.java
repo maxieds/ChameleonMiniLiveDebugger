@@ -17,6 +17,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
+import android.util.Log;
+
 import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
@@ -57,14 +59,19 @@ public class ScriptingTypes {
         private byte[]  varValueAsByteArray;
         private String  varValueAsString;
 
+        private ArrayList<ScriptVariable> arrayList;
+        private HashMap<String, ScriptVariable> hashMap;
+
         private void setLocalVariableDefaults() {
             varName = "";
-            varType = VariableType.VariableTypeNone;
+            varType = VariableType.VariableTypeArrayMap;
             varIsInit = false;
             varValueAsInt = 0;
             varValueAsBoolean = false;
             varValueAsByteArray = new byte[0];
             varValueAsString = "";
+            arrayList = new ArrayList<ScriptVariable>();
+            hashMap = new HashMap<String, ScriptVariable>();
         }
         public ScriptVariable() {
             setLocalVariableDefaults();
@@ -241,6 +248,28 @@ public class ScriptingTypes {
                 case VariableTypeInteger:
                     return String.format(BuildConfig.DEFAULT_LOCALE, "%d", varValueAsInt);
                 case VariableTypeArrayMap:
+                    String[] arrayListStrDescList = new String[arrayList.size()];
+                    for(int arrListIdx = 0; arrListIdx < arrayList.size(); arrListIdx++) {
+                        arrayListStrDescList[arrListIdx] = arrayList.get(arrListIdx).getValueAsString();
+                    }
+                    String[] hashMapStrDescList = new String[hashMap.size()];
+                    int hmCount = 0;
+                    for(String hashKey : hashMap.keySet()) {
+                        hashMapStrDescList[hmCount] = hashMap.get(hashKey).getValueAsString();
+                        ++hmCount;
+                    }
+                    String arrValueDesc = String.format(BuildConfig.DEFAULT_LOCALE, "[ ");
+                    if(arrayListStrDescList.length > 0) {
+                        arrValueDesc += String.join(", ", arrayListStrDescList);
+                        if(hashMapStrDescList.length > 0) {
+                            arrValueDesc += " ; ";
+                        }
+                    }
+                    if(hashMapStrDescList.length > 0) {
+                        arrValueDesc += String.join(", ", hashMapStrDescList);
+                    }
+                    arrValueDesc += " ]";
+                    return arrValueDesc;
                 default:
                     throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.InvalidTypeException);
             }
@@ -385,6 +414,9 @@ public class ScriptingTypes {
             if(isStringType()) {
                 return getValueAsString().length();
             }
+            else if(varType != VariableType.VariableTypeArrayMap) {
+                return arrayList.size() + hashMap.size();
+            }
             else if(varType != VariableType.VariableTypeNone) {
                 return 1;
             }
@@ -392,28 +424,74 @@ public class ScriptingTypes {
         }
 
         public ScriptVariable getValueAt(int index) throws ScriptingExceptions.ChameleonScriptingException {
-            if(index == 0) {
+            if(index == 0 && getType() != VariableType.VariableTypeArrayMap) {
                 return this;
+            }
+            if(getType() == VariableType.VariableTypeArrayMap) {
+                if (index < 0 || index >= arrayList.size()) {
+                    throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IndexOutOfBoundsException);
+                }
+                return arrayList.get(index);
             }
             throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IllegalOperationException);
         }
 
         public ScriptVariable getValueAt(String hashIndex) throws ScriptingExceptions.ChameleonScriptingException {
-            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IllegalOperationException);
+            if(getType() == VariableType.VariableTypeArrayMap) {
+                if (hashIndex == null || hashMap.get(hashIndex) == null) {
+                    return newInstance().set("<null-data>");
+                    //throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IndexOutOfBoundsException);
+                }
+                return hashMap.get(hashIndex);
+            }
+            return set("<no-data>");
         }
 
         public void setValueAt(int index, ScriptVariable varObj) throws ScriptingExceptions.ChameleonScriptingException {
+            if(getType() == VariableType.VariableTypeArrayMap) {
+                if (index < 0 || index >= arrayList.size()) {
+                    throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IndexOutOfBoundsException);
+                }
+                arrayList.set(index, varObj);
+            }
             throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IllegalOperationException);
         }
 
         public void setValueAt(String hashIndex, ScriptVariable varObj) throws ScriptingExceptions.ChameleonScriptingException {
+            if(getType() == VariableType.VariableTypeArrayMap) {
+                if (hashIndex == null) {
+                    throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IllegalArgumentException);
+                }
+                hashMap.put(hashIndex, varObj);
+            }
             throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IllegalOperationException);
         }
 
         public ScriptVariable getSubArray(int startIdx) throws ScriptingExceptions.ChameleonScriptingException {
+            if(getType() == VariableType.VariableTypeArrayMap) {
+                if (startIdx < 0 || startIdx >= arrayList.size()) {
+                    throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IndexOutOfBoundsException);
+                }
+                ScriptVariable svSubArr = new ScriptVariable();
+                svSubArr.arrayList = new ArrayList<ScriptVariable>(arrayList.subList(startIdx, arrayList.size()));
+                svSubArr.hashMap = hashMap;
+                return svSubArr;
+            }
             throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
         }
         public ScriptVariable getSubArray(int startIdx, int endLength) throws ScriptingExceptions.ChameleonScriptingException {
+            if(getType() == VariableType.VariableTypeArrayMap) {
+                if (startIdx < 0 || startIdx >= arrayList.size() ||
+                        (endLength >= 0 && endLength + startIdx > arrayList.size()) ||
+                        (endLength >= 0 && endLength <= startIdx) || (endLength < 0 && arrayList.size() + endLength <= 0)) {
+                    throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IndexOutOfBoundsException);
+                }
+                ScriptVariable svSubArr = new ScriptVariable();
+                int endArrIndex = endLength >= 0 ? startIdx + endLength : arrayList.size() + endLength;
+                svSubArr.arrayList = new ArrayList<ScriptVariable>(arrayList.subList(startIdx, endArrIndex));
+                svSubArr.hashMap = hashMap;
+                return svSubArr;
+            }
             throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
         }
         public void insertSubArray(int startIdx, ScriptVariable rhs) throws ScriptingExceptions.ChameleonScriptingException {
@@ -424,6 +502,16 @@ public class ScriptingTypes {
         }
 
         public String getBinaryString() {
+            if(getType() == VariableType.VariableTypeArrayMap) {
+                StringBuilder binText = new StringBuilder();
+                for(int b = 0; b < arrayList.size(); b++) {
+                    binText.append(arrayList.get(b).getBinaryString());
+                }
+                for(ScriptVariable svar : hashMap.values()) {
+                    binText.append(svar.getBinaryString());
+                }
+                return binText.toString();
+            }
             throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
         }
 
@@ -439,7 +527,8 @@ public class ScriptingTypes {
 
         public ScriptVariable binaryOperation(Operation opType, ScriptVariable rhsVar)
                                               throws ScriptingExceptions.ChameleonScriptingException {
-            if(opType == Operation.BINOP_PLUS) {
+
+            if(opType == Operation.BINOP_PLUS && getType() != VariableType.VariableTypeArrayMap) {
                 // Handle three cases, if the remainder does not degrade nicely to one of these,
                 // then happily, sane mind intact, throw an exception at the non-standard use case:
                 // 1) numeric types; 2) arrays (concat); 3) string handling (append).
@@ -466,6 +555,22 @@ public class ScriptingTypes {
                 }
                 return this;
             }
+            else if(opType == Operation.BINOP_PLUS) {
+                if(rhsVar.getType() == VariableType.VariableTypeArrayMap) {
+                    Collections.addAll(Arrays.asList(arrayList), Arrays.asList(rhsVar.arrayList));
+                    hashMap.putAll(rhsVar.hashMap);
+                }
+                else if(rhsVar.getType() == VariableType.VariableTypeBytes) {
+                    byte[] bytesArr = rhsVar.getValueAsBytes();
+                    for(int b = 0; b < bytesArr.length; b++) {
+                        arrayList.add(ScriptVariable.newInstance().set(bytesArr[b]));
+                    }
+                }
+                else {
+                    arrayList.add(rhsVar);
+                }
+                return this;
+            }
             throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
         }
 
@@ -473,182 +578,14 @@ public class ScriptingTypes {
             throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
         }
 
-        public ScriptVariable setArrayListItems(String[] listItems) {
-            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IllegalOperationException);
-        }
-
         public ScriptVariable setArrayListItems(ScriptVariable[] listItems) {
-            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IllegalOperationException);
-        }
-
-    }
-
-    public static class ScriptVariableArrayMap extends ScriptVariable {
-
-        private ArrayList<ScriptVariable> arrayList;
-        private HashMap<String, ScriptVariable> hashMap;
-
-        public ScriptVariableArrayMap() {
-            arrayList = new ArrayList<ScriptVariable>();
-            hashMap = new HashMap<String, ScriptVariable>();
-        }
-
-        @Override
-        public byte[] getValueAsBytes() {
-            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
-        }
-
-        @Override
-        public String getValueAsString() {
-            String[] arrayListStrDescList = new String[arrayList.size()];
-            for(int arrListIdx = 0; arrListIdx < arrayList.size(); arrListIdx++) {
-                arrayListStrDescList[arrListIdx] = arrayList.get(arrListIdx).getValueAsString();
-            }
-            String[] hashMapStrDescList = new String[hashMap.size()];
-            int hmCount = 0;
-            for(String hashKey : hashMap.keySet()) {
-                hashMapStrDescList[hmCount] = hashMap.get(hashKey).getValueAsString();
-                ++hmCount;
-            }
-            String arrValueDesc = String.format(BuildConfig.DEFAULT_LOCALE, "[ ");
-            if(arrayListStrDescList.length > 0) {
-                arrValueDesc += String.join(", ", arrayListStrDescList);
-                if(hashMapStrDescList.length > 0) {
-                    arrValueDesc += " ; ";
+            if(getType() == VariableType.VariableTypeArrayMap) {
+                for(ScriptVariable svar : listItems) {
+                    arrayList.add(svar);
                 }
+                return this;
             }
-            if(hashMapStrDescList.length > 0) {
-                arrValueDesc += String.join(", ", hashMapStrDescList);
-            }
-            arrValueDesc += " ]";
-            return arrValueDesc;
-        }
-
-        @Override
-        public int length() throws ScriptingExceptions.ChameleonScriptingException {
-            return arrayList.size() + hashMap.size();
-        }
-
-        @Override
-        public ScriptVariable getValueAt(int index) throws ScriptingExceptions.ChameleonScriptingException {
-            if(index < 0 || index >= arrayList.size()) {
-                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IndexOutOfBoundsException);
-            }
-            return arrayList.get(index);
-        }
-
-        @Override
-        public ScriptVariable getValueAt(String hashIndex) throws ScriptingExceptions.ChameleonScriptingException {
-            if(hashIndex == null || hashMap.get(hashIndex) == null) {
-                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IndexOutOfBoundsException);
-            }
-            return hashMap.get(hashIndex);
-        }
-
-        @Override
-        public void setValueAt(int index, ScriptVariable varObj) throws ScriptingExceptions.ChameleonScriptingException {
-            if(index < 0 || index >= arrayList.size()) {
-                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IndexOutOfBoundsException);
-            }
-            arrayList.set(index, varObj);
-        }
-
-        @Override
-        public void setValueAt(String hashIndex, ScriptVariable varObj) throws ScriptingExceptions.ChameleonScriptingException {
-            if(hashIndex == null) {
-                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IllegalArgumentException);
-            }
-            hashMap.put(hashIndex, varObj);
-        }
-
-        @Override
-        public ScriptVariable getSubArray(int startIdx) throws ScriptingExceptions.ChameleonScriptingException {
-            if(startIdx < 0 || startIdx >= arrayList.size()) {
-                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IndexOutOfBoundsException);
-            }
-            ScriptVariableArrayMap svSubArr = new ScriptVariableArrayMap();
-            svSubArr.arrayList = new ArrayList<ScriptVariable>(arrayList.subList(startIdx, arrayList.size()));
-            svSubArr.hashMap = hashMap;
-            return svSubArr;
-        }
-
-        @Override
-        public ScriptVariable getSubArray(int startIdx, int endLength) throws ScriptingExceptions.ChameleonScriptingException {
-            if(startIdx < 0 || startIdx >= arrayList.size() ||
-                    (endLength >= 0 && endLength + startIdx > arrayList.size()) ||
-                    (endLength >= 0 && endLength <= startIdx) || (endLength < 0 && arrayList.size() + endLength <= 0)) {
-                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IndexOutOfBoundsException);
-            }
-            ScriptVariableArrayMap svSubArr = new ScriptVariableArrayMap();
-            int endArrIndex = endLength >= 0 ? startIdx + endLength : arrayList.size() + endLength;
-            svSubArr.arrayList = new ArrayList<ScriptVariable>(arrayList.subList(startIdx, endArrIndex));
-            svSubArr.hashMap = hashMap;
-            return svSubArr;
-        }
-
-        @Override
-        public void insertSubArray(int startIdx, ScriptVariable rhs) throws ScriptingExceptions.ChameleonScriptingException {
-            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
-        }
-
-        @Override
-        public void insertSubArray(int startIdx, int endLength, ScriptVariable rhs) throws ScriptingExceptions.ChameleonScriptingException {
-            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
-        }
-
-        @Override
-        public String getBinaryString() {
-            StringBuilder binText = new StringBuilder();
-            for(int b = 0; b < arrayList.size(); b++) {
-                binText.append(arrayList.get(b).getBinaryString());
-            }
-            for(ScriptVariable svar : hashMap.values()) {
-                binText.append(svar.getBinaryString());
-            }
-            return binText.toString();
-        }
-
-        @Override
-        public ScriptVariable binaryOperation(ScriptVariable.Operation opType, ScriptVariable rhsVar)
-                                              throws ScriptingExceptions.ChameleonScriptingException {
-             if(opType == Operation.BINOP_PLUS) {
-                 if(rhsVar.getType() == VariableType.VariableTypeArrayMap) {
-                     Collections.addAll(Arrays.asList(arrayList), Arrays.asList(((ScriptVariableArrayMap) rhsVar).arrayList));
-                     hashMap.putAll(((ScriptVariableArrayMap) rhsVar).hashMap);
-                 }
-                 else if(rhsVar.getType() == VariableType.VariableTypeBytes) {
-                     byte[] bytesArr = rhsVar.getValueAsBytes();
-                     for(int b = 0; b < bytesArr.length; b++) {
-                         arrayList.add(ScriptVariable.newInstance().set(bytesArr[b]));
-                     }
-                 }
-                 else {
-                     arrayList.add(rhsVar);
-                 }
-                 return this;
-             }
-             throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
-        }
-
-        @Override
-        public ScriptVariable unaryOperation(ScriptVariable.Operation opType) throws ScriptingExceptions.ChameleonScriptingException {
-             throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.NotImplementedException);
-        }
-
-        @Override
-        public ScriptVariable setArrayListItems(String[] listItems) {
-            for(String s : listItems) {
-                arrayList.add(new ScriptVariable(s));
-            }
-            return this;
-        }
-
-        @Override
-        public ScriptVariable setArrayListItems(ScriptVariable[] listItems) {
-            for(ScriptVariable svar : listItems) {
-                arrayList.add(svar);
-            }
-            return this;
+            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IllegalOperationException);
         }
 
     }

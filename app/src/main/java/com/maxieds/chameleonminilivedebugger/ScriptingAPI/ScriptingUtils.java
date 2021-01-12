@@ -97,5 +97,12 @@ public class ScriptingUtils {
         return true;
     }
 
+    public static String rawStringToSpecialCharEncoding(String inputRawMsg) {
+        inputRawMsg = inputRawMsg.replaceAll("\\\\n", "\n");
+        inputRawMsg = inputRawMsg.replaceAll("\\\\t", "\t");
+        inputRawMsg = inputRawMsg.replaceAll("\\\\r", "\r");
+        return inputRawMsg;
+    }
+
 
 }

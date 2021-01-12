@@ -17,10 +17,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExceptions;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExceptions.ChameleonScriptingException;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExceptions.ExceptionType;
-
 import android.os.Handler;
 import android.util.Log;
 
@@ -29,7 +25,6 @@ import com.maxieds.chameleonminilivedebugger.ChameleonLogUtils;
 import com.maxieds.chameleonminilivedebugger.ChameleonSerialIOInterface;
 import com.maxieds.chameleonminilivedebugger.ChameleonSettings;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingTypes.ScriptVariable;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingTypes.ScriptVariableArrayMap;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -139,7 +134,7 @@ public class ChameleonIOHandler implements ChameleonSerialIOInterface.SerialData
         ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
         if(serialIOPort == null) {
             // Try to recover in the script semi-gracefully:
-            return ScriptingTypes.ScriptVariableArrayMap.newInstance().set("NO DATA -- Chameleon Mini not attached???");
+            return ScriptingTypes.ScriptVariable.newInstance().set("NO DATA -- Chameleon Mini not attached???");
             //throw new ChameleonScriptingException(ExceptionType.ChameleonDisconnectedException, "Serial port is null -- Is the Chameleon attached?");
         }
         if(!serialIOPort.tryAcquireSerialPort(ChameleonIO.LOCK_TIMEOUT)) {
@@ -175,7 +170,7 @@ public class ChameleonIOHandler implements ChameleonSerialIOInterface.SerialData
     // ->isTimeout
     public static ScriptVariable parseChameleonCommandResponse(String cmdData, String response, boolean isTimeout) {
 
-        ScriptVariable cmdRespVar = new ScriptVariableArrayMap();
+        ScriptVariable cmdRespVar = new ScriptVariable();
         Pattern cmdNamePattern = Pattern.compile("\\([a-zA-Z0-9]+\\)[=\\? ]");
         Matcher cmdNameMatcher = cmdNamePattern.matcher(cmdData);
         String cmdName = cmdData;

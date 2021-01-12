@@ -55,6 +55,7 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
 public class ChameleonScripting {
@@ -181,6 +182,7 @@ public class ChameleonScripting {
         private ScriptRuntimeState scriptState;
         private ChameleonDeviceState chameleonDeviceState;
         private Thread scriptRunnerThread;
+        private Future<?> scriptRunnerThreadExecRef;
 
         ANTLRInputStream scriptInputStream;
         ChameleonScriptLexer scriptLexer;
@@ -306,17 +308,6 @@ public class ChameleonScripting {
                 @Override
                 public void run() {
 
-                    /* Remove after testing: */
-                    ScriptingGUIConsole.appendConsoleOutputRecordInfoMessage(
-                            "New message prefix starting here ... ",
-                            new String[] {
-                                    "Bullet point 1.",
-                                    "Bullet point 2;"
-                            },
-                            100
-                    );
-                    /* END: Remove after testing: */
-
                     try {
                         scriptInputStream = new ANTLRInputStream(scriptFileStream);
                         scriptLexer = new ChameleonScriptLexer(scriptInputStream);
@@ -401,7 +392,8 @@ public class ChameleonScripting {
                 }
             };
             ExecutorService thExecPool = Executors.newSingleThreadExecutor(threadFactory);
-            thExecPool.execute(scriptRunnerThread);
+            //thExecPool.execute(scriptRunnerThread);
+            scriptRunnerThreadExecRef = thExecPool.submit(scriptRunnerThread);
             return true;
 
         }
@@ -424,10 +416,16 @@ public class ChameleonScripting {
             return true;
         }
 
-        public boolean killRunningScript() {
+        public boolean killRunningScript(String scriptKillNotifyMsg) {
             if(!scriptRunnerThread.isInterrupted()) {
-                scriptRunnerThread.interrupt();
-                ScriptingGUIConsole.appendConsoleOutputRecordInfoMessage("Script killed.", null, scriptExecLine);
+                if(!scriptRunnerThreadExecRef.isCancelled()) {
+                    scriptRunnerThreadExecRef.cancel(true);
+                }
+                if(!scriptRunnerThread.isInterrupted()) {
+                    scriptRunnerThread.interrupt();
+                }
+                ScriptingGUIConsole.appendConsoleOutputRecordInfoMessage(scriptKillNotifyMsg, null, scriptExecLine);
+                ScriptingGUIConsole.appendConsoleOutputRecordInfoMessage(getConsoleOutput(), null, scriptExecLine);
                 scriptState = ScriptRuntimeState.PAUSED;
                 ScriptingUtils.signalStateChangeByVibration(scriptState);
                 cleanupRuntimeData(ScriptingConfig.SAVE_RESTORE_CHAMELEON_STATE);
@@ -435,6 +433,10 @@ public class ChameleonScripting {
                 return true;
             }
             return false;
+        }
+
+        public boolean killRunningScript() {
+            return killRunningScript("Script killed.");
         }
 
         public int getExecutingLineOfCode() {

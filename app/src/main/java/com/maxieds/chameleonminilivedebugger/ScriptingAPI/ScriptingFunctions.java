@@ -27,6 +27,7 @@ import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExceptions.Ch
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExceptions.ExceptionType;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -140,7 +141,12 @@ public class ScriptingFunctions {
     public static class ScriptingAPIFunctions {
 
         public static ScriptVariable Exit(List<ScriptVariable> argList) throws ChameleonScriptingException {
-            throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+            if(argList.size() != 1) {
+                throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException, "Invalid number of parameters.");
+            }
+            String scriptExitMsg = String.format(Locale.getDefault(), "Script exited with CODE = %d.", argList.get(0).getValueAsInt());
+            ChameleonScripting.getRunningInstance().killRunningScript(scriptExitMsg);
+            return ScriptingTypes.ScriptVariable.newInstance();
         }
 
         public static ScriptVariable Print(List<ScriptVariable> argList) throws ChameleonScriptingException {
@@ -149,7 +155,7 @@ public class ScriptingFunctions {
                 ScriptVariable svar = argList.get(argIdx);
                 consoleOutput.append(svar.getValueAsString());
             }
-            ChameleonScripting.getRunningInstance().writeConsoleOutput(consoleOutput.toString());
+            ChameleonScripting.getRunningInstance().writeConsoleOutput(ScriptingUtils.rawStringToSpecialCharEncoding(consoleOutput.toString()));
             return ScriptVariable.newInstance().set(consoleOutput.toString());
         }
 
@@ -158,8 +164,9 @@ public class ScriptingFunctions {
             Log.i(TAG, "First argument: " + argList.get(0).getValueAsString());
             ScriptVariable sprintfText = Sprintf(argList);
             Log.i(TAG, "Printf [sprintf var str value] -> \"" + sprintfText.getValueAsString() + "\"");
-            ChameleonScripting.getRunningInstance().writeConsoleOutput(sprintfText.getValueAsString());
-            return ScriptVariable.newInstance().set(sprintfText.getValueAsString().length());
+            String returnText = ScriptingUtils.rawStringToSpecialCharEncoding(sprintfText.getValueAsString());
+            ChameleonScripting.getRunningInstance().writeConsoleOutput(returnText);
+            return ScriptVariable.newInstance().set(returnText.length());
         }
 
         public static ScriptVariable Sprintf(List<ScriptVariable> argList) throws ChameleonScriptingException {
@@ -193,7 +200,7 @@ public class ScriptingFunctions {
                 consoleOutput.append(fmtMsg.substring(strBaseIdx));
             }
             Log.i(TAG, "Sprintf -> \"" + consoleOutput.toString() + "\"");
-            return ScriptVariable.newInstance().set(consoleOutput.toString());
+            return ScriptVariable.newInstance().set(ScriptingUtils.rawStringToSpecialCharEncoding(consoleOutput.toString()));
         }
 
         public static ScriptVariable Find(List<ScriptVariable> argList) throws ChameleonScriptingException {
@@ -270,8 +277,12 @@ public class ScriptingFunctions {
             }
             String strBaseVar = argList.get(0).getValueAsString(), strDelimVar = argList.get(1).getValueAsString();
             String[] splitItemsStrArr = strBaseVar.split(strBaseVar);
-            ScriptVariable splitItemsArrVar = new ScriptingTypes.ScriptVariableArrayMap();
-            splitItemsArrVar.setArrayListItems(splitItemsStrArr);
+            ScriptVariable[] splitItemsScriptVarArr = new ScriptVariable[splitItemsStrArr.length];
+            for(int sidx = 0; sidx < splitItemsStrArr.length; sidx++) {
+                splitItemsScriptVarArr[sidx] = new ScriptVariable(splitItemsStrArr[sidx]);
+            }
+            ScriptVariable splitItemsArrVar = new ScriptingTypes.ScriptVariable();
+            splitItemsArrVar.setArrayListItems(splitItemsScriptVarArr);
             return splitItemsArrVar;
         }
 

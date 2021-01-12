@@ -18,6 +18,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.BulletSpan;
@@ -55,6 +56,14 @@ public class ScriptingGUIConsole {
         public ConsoleOutputRecord(String recTitleMsg) {
             LayoutInflater inflater = LiveLoggerActivity.getInstance().getLayoutInflater();
             mainLayoutView = inflater.inflate(R.layout.scripting_console_record_entry_base, null);
+            GradientDrawable gradientBg = new GradientDrawable(
+                    GradientDrawable.Orientation.BL_TR,
+                    new int[] {
+                            Utils.getColorFromTheme(R.attr.colorAccent),
+                            Utils.getColorFromTheme(R.attr.colorAccentHighlight)
+                    });
+            TextView tvRecordTitleMsg = mainLayoutView.findViewById(R.id.consoleOutputTitleMsgText);
+            tvRecordTitleMsg.setBackground(gradientBg);
             setRecordTitle(recTitleMsg);
         }
 
@@ -209,7 +218,7 @@ public class ScriptingGUIConsole {
         }
 
         public static ConsoleOutputRecord newInfoMessageInstance(String msgDataPrefix, String msgData[], int lineOfCode) {
-            ConsoleOutputRecord newInfoMsgRecord = new ConsoleOutputRecord(String.format(Locale.getDefault(), "Message"));
+            ConsoleOutputRecord newInfoMsgRecord = new ConsoleOutputRecord(String.format(Locale.getDefault(), "Information"));
             newInfoMsgRecord.setMainContentLayout(R.layout.scripting_console_record_textinfomsg);
             newInfoMsgRecord.setRecordIcon(R.drawable.scripting_output_icon_info16);
             newInfoMsgRecord.setRecordLineOfCode(lineOfCode);
