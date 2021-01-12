@@ -210,13 +210,17 @@ public class ScriptingFunctions {
                     }
                     char fmtSpec = rawStringPart.charAt(fmtSearchPos);
                     try {
-                        if(fmtSpec == 's' || fmtSpec == 'S' || fmtSpec == 'c' || !argList.get(varIndex).isIntegerType()) {
+                        if(fmtSpec == 's' || fmtSpec == 'S' || fmtSpec == 'c') {
                             consoleOutput.append(String.format(Locale.getDefault(), rawStringPart, argList.get(varIndex).getValueAsString()));
-                            Log.d(TAG, "MATCHING RAW FMT PART II: " + fmtSpec + " -- '" + rawStringPart + "'" + "    " + String.format(Locale.getDefault(), rawStringPart, argList.get(varIndex).getValueAsString()));
+                            //Log.d(TAG, "MATCHING RAW FMT PART II: " + fmtSpec + " -- '" + rawStringPart + "'" + "    " + String.format(Locale.getDefault(), rawStringPart, argList.get(varIndex).getValueAsString()));
+                        }
+                        else if(!argList.get(varIndex).isIntegerType()) {
+                            rawStringPart = "%s" + rawStringPart.substring(fmtSearchPos + 1);
+                            consoleOutput.append(String.format(Locale.getDefault(), rawStringPart, argList.get(varIndex).getValueAsString()));
                         }
                         else {
                             consoleOutput.append(String.format(Locale.getDefault(), rawStringPart, argList.get(varIndex).getValueAsInt()));
-                            Log.d(TAG, "MATCHING RAW FMT PART II: " + fmtSpec + " -- '" + rawStringPart + "'" + "    " + String.format(Locale.getDefault(), rawStringPart, argList.get(varIndex).getValueAsString()));
+                            //Log.d(TAG, "MATCHING RAW FMT PART II: " + fmtSpec + " -- '" + rawStringPart + "'" + "    " + String.format(Locale.getDefault(), rawStringPart, argList.get(varIndex).getValueAsString()));
                         }
                     } catch(Exception strFmtEx) {
                         strFmtEx.printStackTrace();
