@@ -127,7 +127,6 @@ android {
             buildConfigField "boolean",            "PAID_APP_VERSION", "false"
             buildConfigField "boolean",            "REPORT_CRASHES", "false"
             buildConfigField "String",             "BUILD_TIMESTAMP", "\"" + configBuildTimeStamp + "\""
-            buildConfigField "java.util.Locale",   "DEFAULT_LOCALE",  "java.util.Locale.getDefault()"
             resConfigs       "en", "en_US", "en_UK", "de", "fr", "ru"
             manifestPlaceholders = [
                     appLabelDesc       : "@string/app_display_short_name",
@@ -144,7 +143,6 @@ android {
             buildConfigField "boolean",            "PAID_APP_VERSION", "true"
             buildConfigField "boolean",            "REPORT_CRASHES", "false"
             buildConfigField "String",             "BUILD_TIMESTAMP", "\"" + configBuildTimeStamp + "\""
-            buildConfigField "java.util.Locale",   "DEFAULT_LOCALE",  "Locale.default"
             resConfigs       "en", "en_US", "en_UK", "de", "fr", "ru"
             dimension "mode"
             manifestPlaceholders = [

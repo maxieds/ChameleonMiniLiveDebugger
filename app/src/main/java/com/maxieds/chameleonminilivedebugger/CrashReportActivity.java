@@ -186,10 +186,10 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
     private String getEncodedNewGitHubIssueURL() {
         String newIssueURL = "https://github.com/maxieds/ChameleonMiniLiveDebugger/issues/new?";
         String[][] issueContentsData = new String[][] {
-                { "CMLD Version",           String.format(BuildConfig.DEFAULT_LOCALE, "v%s (%d:%d)",
-                                                          BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE,
+                { "CMLD Version",           String.format(Locale.getDefault(), "v%s (%d:%d)",
+                                                   BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE,
                                                           BuildConfig.VERSION_CODE - 8080) },
-                { "CMLD GitHub Commit",     String.format(BuildConfig.DEFAULT_LOCALE, "%s @ %s",
+                { "CMLD GitHub Commit",     String.format(Locale.getDefault(), "%s @ %s",
                                                           BuildConfig.GIT_COMMIT_HASH, BuildConfig.GIT_COMMIT_DATE) },
                 { "CMLD Build Date",        BuildConfig.BUILD_TIMESTAMP },
                 { "Chameleon Type",         chameleonDeviceType },
@@ -203,8 +203,8 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
                 { "Android Product",        Build.PRODUCT },
                 { "Android Model",          Build.MODEL },
                 { "Android Hardware",       Build.HARDWARE},
-                { "Android SDK",            String.format(BuildConfig.DEFAULT_LOCALE, "%d", Build.VERSION.SDK_INT) },
-                { "Android OS Release",     String.format(BuildConfig.DEFAULT_LOCALE, "%s %s (%s / %s)",
+                { "Android SDK",            String.format(Locale.getDefault(), "%d", Build.VERSION.SDK_INT) },
+                { "Android OS Release",     String.format(Locale.getDefault(), "%s %s (%s / %s)",
                                                           Build.VERSION.BASE_OS, Build.VERSION.RELEASE,
                                                           Build.VERSION.CODENAME, Build.VERSION.INCREMENTAL) },
                 { "Android Board",          Build.BOARD },
@@ -217,10 +217,10 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
         String issueBodyText = "@maxieds:\n\n" + "**Crash data summary:**\n" + assembleIssueContentBldr.toString();
         issueBodyText += "**Stack trace:**\n\" + \"```java\n" + stackTrace + "\n```\n";
         issueBodyText += "**Additional comments:**\n\n*NONE*\n";
-        String issueTitle = String.format(BuildConfig.DEFAULT_LOCALE, "Crash Report: CMLD %s running %s %s [SDK %d] on device %s %s %s",
+        String issueTitle = String.format(Locale.getDefault(), "Crash Report: CMLD %s running %s %s [SDK %d] on device %s %s %s",
                                           BuildConfig.VERSION_NAME, Build.VERSION.BASE_OS, Build.VERSION.INCREMENTAL,
                                           Build.VERSION.SDK_INT, Build.MANUFACTURER, Build.PRODUCT, Build.MODEL);
-        newIssueURL += String.format(BuildConfig.DEFAULT_LOCALE, "title=%s&body=%s&assignee=maxieds",
+        newIssueURL += String.format(Locale.getDefault(), "title=%s&body=%s&assignee=maxieds",
                                      Utils.encodeAsciiToURL(issueTitle), Utils.encodeAsciiToURL(issueBodyText));
         return newIssueURL;
     }

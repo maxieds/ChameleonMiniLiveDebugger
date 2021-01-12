@@ -42,6 +42,8 @@ import androidx.core.widget.CompoundButtonCompat;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingGUIMain;
 import com.shawnlin.numberpicker.NumberPicker;
 
+import java.util.Locale;
+
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG_MITEM_CONNECT;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG_MITEM_LOGGING;
@@ -136,7 +138,7 @@ public class UITabUtils {
                     if(scrollState == SCROLL_STATE_IDLE) {
                         int previousSlotNumber = ChameleonIO.DeviceStatusSettings.DIP_SETTING;
                         String settingCmd = ChameleonIO.REVE_BOARD ? "setting=" : "SETTING=";
-                        ChameleonIO.getSettingFromDevice(String.format(BuildConfig.DEFAULT_LOCALE, "%s%d", settingCmd, numberPicker.getValue()));
+                        ChameleonIO.getSettingFromDevice(String.format(Locale.getDefault(), "%s%d", settingCmd, numberPicker.getValue()));
                         int activeSlotNumber = numberPicker.getValue();
                         if(previousSlotNumber != activeSlotNumber) {
                             ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[previousSlotNumber - 1].disableLayout();
@@ -216,14 +218,14 @@ public class UITabUtils {
                         thresholdSeekbar.setProgress(threshold);
                     }
                     thresholdSeekbar.incrementProgressBy(25);
-                    ((TextView) tabMainLayoutView.findViewById(R.id.thresholdSeekbarValueText)).setText(String.format(BuildConfig.DEFAULT_LOCALE, "% 5d mV", threshold));
+                    ((TextView) tabMainLayoutView.findViewById(R.id.thresholdSeekbarValueText)).setText(String.format(Locale.getDefault(), "% 5d mV", threshold));
                     final View seekbarView = tabMainLayoutView;
                     thresholdSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                         TextView labelText = (TextView) seekbarView.findViewById(R.id.thresholdSeekbarValueText);
 
                         @Override
                         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                            labelText.setText(String.format(BuildConfig.DEFAULT_LOCALE, "% 5d mV", progress));
+                            labelText.setText(String.format(Locale.getDefault(), "% 5d mV", progress));
                         }
 
                         @Override
@@ -250,14 +252,14 @@ public class UITabUtils {
                         timeoutSeekbar.setProgress(timeout);
                     }
                     timeoutSeekbar.incrementProgressBy(2);
-                    ((TextView) tabMainLayoutView.findViewById(R.id.cmdTimeoutSeekbarValueText)).setText(String.format(BuildConfig.DEFAULT_LOCALE, "% 4d (x128) ms", timeout));
+                    ((TextView) tabMainLayoutView.findViewById(R.id.cmdTimeoutSeekbarValueText)).setText(String.format(Locale.getDefault(), "% 4d (x128) ms", timeout));
                     final View tmtSeekbarView = tabMainLayoutView;
                     timeoutSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                         TextView labelText = (TextView) tmtSeekbarView.findViewById(R.id.thresholdSeekbarValueText);
 
                         @Override
                         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                            labelText.setText(String.format(BuildConfig.DEFAULT_LOCALE, "% 4d (x128) ms", progress));
+                            labelText.setText(String.format(Locale.getDefault(), "% 4d (x128) ms", progress));
                         }
 
                         @Override
@@ -455,7 +457,7 @@ public class UITabUtils {
         else if(menuItemIdx == TAB_CONFIG_MITEM_LOGGING) {
             UITabUtils.connectPeripheralSpinnerAdapterLogMode(tabMainLayoutView, R.id.LogModeSpinner,
                     R.array.LogModeOptions, ChameleonPeripherals.spinnerLogModeAdapter);
-            String loggingMinDataFieldValue = String.format(BuildConfig.DEFAULT_LOCALE, "%d", ChameleonLogUtils.LOGGING_MIN_DATA_BYTES);
+            String loggingMinDataFieldValue = String.format(Locale.getDefault(), "%d", ChameleonLogUtils.LOGGING_MIN_DATA_BYTES);
             ((EditText) tabMainLayoutView.findViewById(R.id.loggingLogDataMinBytesField)).setText(loggingMinDataFieldValue);
             ((EditText) tabMainLayoutView.findViewById(R.id.loggingLogDataMinBytesField)).addTextChangedListener(new TextWatcher() {
                 @Override

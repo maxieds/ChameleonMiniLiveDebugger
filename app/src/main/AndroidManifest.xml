@@ -56,6 +56,7 @@
         android:defaultToDeviceProtectedStorage="true"
         android:usesCleartextTraffic="false"
         android:installLocation="${installLocation}"
+        tools:replace="android:installLocation"
         android:allowBackup="true"
         >
         <!--tools:replace="android:theme,roundIcon,icon,manageSpaceActivity,name,label,description"-->

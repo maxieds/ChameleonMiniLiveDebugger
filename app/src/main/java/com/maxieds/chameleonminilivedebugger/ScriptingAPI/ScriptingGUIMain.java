@@ -33,6 +33,7 @@ import com.maxieds.chameleonminilivedebugger.R;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
 import java.io.File;
+import java.util.Locale;
 
 public class ScriptingGUIMain {
 
@@ -80,7 +81,7 @@ public class ScriptingGUIMain {
         CheckBox cbLimitExecTime = cfgBaseLayout.findViewById(R.id.scriptingLoadImportTabLimitExecTimeCbox);
         cbLimitExecTime.setChecked(ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME);
         EditText limitExecTimeSecsText = cfgBaseLayout.findViewById(R.id.scriptingRuntimeLimitExecSecondsText);
-        limitExecTimeSecsText.setText(String.format(BuildConfig.DEFAULT_LOCALE, "%d", ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME_SECONDS));
+        limitExecTimeSecsText.setText(String.format(Locale.getDefault(), "%d", ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME_SECONDS));
         /* Setup breakpoints GUI displays: */
         ScriptingBreakPoint.breakpointsGUIDisplayContainer = (LinearLayout) cfgBaseLayout.findViewById(R.id.scriptingMainTabBreakpointsListView);
         ImageButton addBPLineBtn = cfgBaseLayout.findViewById(R.id.scriptingBPAddLineAppendBtn);

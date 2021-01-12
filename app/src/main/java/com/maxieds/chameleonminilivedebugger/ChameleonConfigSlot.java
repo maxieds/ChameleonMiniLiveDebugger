@@ -94,7 +94,7 @@ public class ChameleonConfigSlot {
     }
 
     public void resetLayoutParameters(int slotNumber) {
-        slotNickname = String.format(BuildConfig.DEFAULT_LOCALE, "Slot %02d", slotNumber);
+        slotNickname = String.format(Locale.getDefault(), "Slot %02d", slotNumber);
         slotIndex = slotNumber;
         uidHexBytes = "";
         uidHexDisplayStr = "<uid-unknown>";
@@ -167,7 +167,7 @@ public class ChameleonConfigSlot {
             return false;
         }
         try {
-            ChameleonIO.getSettingFromDevice(String.format(BuildConfig.DEFAULT_LOCALE, "SETTING=%d", nextSlot));
+            ChameleonIO.getSettingFromDevice(String.format(Locale.getDefault(), "SETTING=%d", nextSlot));
             readParametersFromChameleonSlot();
         } catch(Exception exe) {
             exe.printStackTrace();
@@ -201,7 +201,7 @@ public class ChameleonConfigSlot {
         EditText slotNicknameDisplay = slotConfigLayout.findViewById(R.id.slotNicknameText);
         slotNicknameDisplay.setText(slotNickname);
         TextView slotNumberLabel = slotConfigLayout.findViewById(R.id.slotOnOffNumberText);
-        slotNumberLabel.setText(String.format(BuildConfig.DEFAULT_LOCALE, "SLOT #%02d", slotIndex));
+        slotNumberLabel.setText(String.format(Locale.getDefault(), "SLOT #%02d", slotIndex));
         Spinner tagConfigModeSpinner = slotConfigLayout.findViewById(R.id.tagConfigModeSpinner);
         if(tagConfigModeSpinner == null) {
             return false;
@@ -219,7 +219,7 @@ public class ChameleonConfigSlot {
         uidHexDisplayStr = Utils.formatUIDString(uidHexBytes, " ");
         uidBytes.setText(uidHexDisplayStr);
         TextView memSizeText = (TextView) slotConfigLayout.findViewById(R.id.memorySizeText);
-        memSizeText.setText(String.format(BuildConfig.DEFAULT_LOCALE, "%dB | %dK", tagMemorySize, tagMemorySize / 1024));
+        memSizeText.setText(String.format(Locale.getDefault(), "%dB | %dK", tagMemorySize, tagMemorySize / 1024));
         Switch lockSwitch = (Switch) slotConfigLayout.findViewById(R.id.readonlyOnOffSwitch);
         lockSwitch.setChecked(isLocked);
         Switch fieldModeSwitch = (Switch) slotConfigLayout.findViewById(R.id.fieldOnOffSwitch);
@@ -262,7 +262,7 @@ public class ChameleonConfigSlot {
                 }
                 lastSelectedPosition = i;
                 String nextConfigMode = localSpinnerList[i];
-                String setConfigCmd = String.format(BuildConfig.DEFAULT_LOCALE, "CONFIG=%s", nextConfigMode);
+                String setConfigCmd = String.format(Locale.getDefault(), "CONFIG=%s", nextConfigMode);
                 ChameleonIO.getSettingFromDevice(setConfigCmd);
                 readParametersFromChameleonSlot();
                 updateLayoutParameters(false);
@@ -280,7 +280,7 @@ public class ChameleonConfigSlot {
                     return;
                 }
                 else {
-                    String lockCmd = String.format(BuildConfig.DEFAULT_LOCALE, "READONLY=%s", isChecked ? "1" : "0");
+                    String lockCmd = String.format(Locale.getDefault(), "READONLY=%s", isChecked ? "1" : "0");
                     ChameleonIO.getSettingFromDevice(lockCmd);
                 }
             }
@@ -292,7 +292,7 @@ public class ChameleonConfigSlot {
                     return;
                 }
                 else {
-                    String uidModeCmd = String.format(BuildConfig.DEFAULT_LOCALE, "FIELD=%s", isChecked ? "1" : "0");
+                    String uidModeCmd = String.format(Locale.getDefault(), "FIELD=%s", isChecked ? "1" : "0");
                     ChameleonIO.getSettingFromDevice(uidModeCmd);
                 }
             }

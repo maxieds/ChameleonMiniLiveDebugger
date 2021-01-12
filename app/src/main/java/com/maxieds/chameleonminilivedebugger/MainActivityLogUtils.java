@@ -294,7 +294,7 @@ public class MainActivityLogUtils {
         else if(selectedBytes) {
             searchString = searchString.replace("[\n\t\r]+", "").replaceAll("..(?!$)", "$0 ");
         }
-        searchString = searchString.toLowerCase(BuildConfig.DEFAULT_LOCALE);
+        searchString = searchString.toLowerCase(Locale.getDefault());
 
         boolean searchStatus = ((CheckBox) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.entrySearchIncludeStatus)).isChecked();
         boolean searchAPDU = ((CheckBox) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.entrySearchAPDU)).isChecked();
@@ -304,16 +304,16 @@ public class MainActivityLogUtils {
         Log.i(TAG, "Searching for: " + searchString);
         for(int vi = 0; vi < logDataEntries.size(); vi++) {
             if (logDataEntries.get(vi) instanceof LogEntryMetadataRecord) {
-                if (searchStatus && logDataEntries.get(vi).toString().toLowerCase(BuildConfig.DEFAULT_LOCALE).contains(searchString)) {
+                if (searchStatus && logDataEntries.get(vi).toString().toLowerCase(Locale.getDefault()).contains(searchString)) {
                     searchResultsContainer.addView(logDataEntries.get(vi).cloneLayoutContainer());
                     matchCount++;
                 }
                 continue;
             }
             Log.i(TAG, ((LogEntryUI) logDataEntries.get(vi)).getPayloadDataString(selectedBytes));
-            if (searchAPDU && ((LogEntryUI) logDataEntries.get(vi)).getAPDUString().toLowerCase(BuildConfig.DEFAULT_LOCALE).contains(searchString) ||
-                    searchLogHeaders && ((LogEntryUI) logDataEntries.get(vi)).getLogCodeName().toLowerCase(BuildConfig.DEFAULT_LOCALE).contains(searchString) ||
-                    searchLogPayload && ((LogEntryUI) logDataEntries.get(vi)).getPayloadDataString(selectedBytes).toLowerCase(BuildConfig.DEFAULT_LOCALE).contains(searchString)) {
+            if (searchAPDU && ((LogEntryUI) logDataEntries.get(vi)).getAPDUString().toLowerCase(Locale.getDefault()).contains(searchString) ||
+                    searchLogHeaders && ((LogEntryUI) logDataEntries.get(vi)).getLogCodeName().toLowerCase(Locale.getDefault()).contains(searchString) ||
+                    searchLogPayload && ((LogEntryUI) logDataEntries.get(vi)).getPayloadDataString(selectedBytes).toLowerCase(Locale.getDefault()).contains(searchString)) {
                 LinearLayout searchResult = (LinearLayout) logDataEntries.get(vi).cloneLayoutContainer();
                 searchResult.setVisibility(LinearLayout.VISIBLE);
                 searchResult.setEnabled(true);
@@ -326,7 +326,7 @@ public class MainActivityLogUtils {
             }
         }
         double diffSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
-        String resultStr = String.format(BuildConfig.DEFAULT_LOCALE, "Explored #%d logs in %4g seconds for a total of #%d matching records.",
+        String resultStr = String.format(Locale.getDefault(), "Explored #%d logs in %4g seconds for a total of #%d matching records.",
                 logDataEntries.size(), diffSeconds, matchCount);
         searchResultsContainer.addView(LogEntryMetadataRecord.createDefaultEventRecord("SEARCH", resultStr).getLayoutContainer());
     }

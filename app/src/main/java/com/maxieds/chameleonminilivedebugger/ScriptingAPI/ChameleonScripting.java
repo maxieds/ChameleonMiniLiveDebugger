@@ -125,19 +125,19 @@ public class ChameleonScripting {
             ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
             if(serialIOPort != null) {
                 if (!ChameleonIO.REVE_BOARD) {
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "CONFIG=%s", CONFIG));
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "UID=%s", UID));
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "LOGMODE=%s", LOGMODE));
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "SETTING=%s", SETTING));
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "READONLY=%s", READONLY));
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "FIELD=%s", FIELD));
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "THRESHOLD=%s", THRESHOLD));
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "TIMEOUT=%s", TIMEOUT));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "CONFIG=%s", CONFIG));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "UID=%s", UID));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "LOGMODE=%s", LOGMODE));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "SETTING=%s", SETTING));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "READONLY=%s", READONLY));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "FIELD=%s", FIELD));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "THRESHOLD=%s", THRESHOLD));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "TIMEOUT=%s", TIMEOUT));
                 } else {
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "config=%s", CONFIG));
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "uid=%s", UID));
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "setting=%s", SETTING));
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "readonly=%s", READONLY));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "config=%s", CONFIG));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "uid=%s", UID));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "setting=%s", SETTING));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "readonly=%s", READONLY));
                 }
             }
             if(serialIOPort != null && pop && !SAVED_DEVICE_STATES.empty()) {
@@ -522,7 +522,7 @@ public class ChameleonScripting {
         String scriptPath = ScriptingFileIO.expandStoragePath(ScriptingConfig.LAST_SCRIPT_LOADED_PATH);
         Log.i(TAG, "Attempting to run script from file path: " + scriptPath);
         if(ScriptingFileIO.getStoragePathFromRelative(scriptPath, false, false) == null) {
-            Utils.displayToastMessageShort(String.format(BuildConfig.DEFAULT_LOCALE, "Invalid script file path \"%s\".", scriptPath));
+            Utils.displayToastMessageShort(String.format(Locale.getDefault(), "Invalid script file path \"%s\".", scriptPath));
             return false;
         }
         if(activeChameleonScript != null && !activeChameleonScript.scriptRunnerThread.isInterrupted()) {

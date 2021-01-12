@@ -32,6 +32,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ScriptingBreakPoint {
 
@@ -112,10 +113,10 @@ public class ScriptingBreakPoint {
         tvBpTypeDesc.setText(isLabelType() ? "<BP_LABEL>" : "<BP_LINE>");
         TextView tvBpValue = mainGUILayoutView.findViewById(R.id.scriptingGUIBreakpointLabelValue);
         if(isLabelType) {
-            tvBpValue.setText(String.format(BuildConfig.DEFAULT_LOCALE, "@%s", getLabel()));
+            tvBpValue.setText(String.format(Locale.getDefault(), "@%s", getLabel()));
         }
         else {
-            tvBpValue.setText(String.format(BuildConfig.DEFAULT_LOCALE, "L%d (0x%02X)", getLineNumber(), getLineNumber()));
+            tvBpValue.setText(String.format(Locale.getDefault(), "L%d (0x%02X)", getLineNumber(), getLineNumber()));
         }
     }
 

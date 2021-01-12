@@ -212,7 +212,6 @@ public class ScriptingFunctions {
                     try {
                         if(fmtSpec == 's' || fmtSpec == 'S' || fmtSpec == 'c') {
                             consoleOutput.append(String.format(Locale.getDefault(), rawStringPart, argList.get(varIndex).getValueAsString()));
-                            //Log.d(TAG, "MATCHING RAW FMT PART II: " + fmtSpec + " -- '" + rawStringPart + "'" + "    " + String.format(Locale.getDefault(), rawStringPart, argList.get(varIndex).getValueAsString()));
                         }
                         else if(!argList.get(varIndex).isIntegerType()) {
                             rawStringPart = "%s" + rawStringPart.substring(fmtSearchPos + 1);
@@ -220,7 +219,6 @@ public class ScriptingFunctions {
                         }
                         else {
                             consoleOutput.append(String.format(Locale.getDefault(), rawStringPart, argList.get(varIndex).getValueAsInt()));
-                            //Log.d(TAG, "MATCHING RAW FMT PART II: " + fmtSpec + " -- '" + rawStringPart + "'" + "    " + String.format(Locale.getDefault(), rawStringPart, argList.get(varIndex).getValueAsString()));
                         }
                     } catch(Exception strFmtEx) {
                         strFmtEx.printStackTrace();
@@ -387,9 +385,9 @@ public class ScriptingFunctions {
             case "CMLD.versionName":
                 return BuildConfig.VERSION_NAME;
             case "CMLD.versionCode":
-                return String.format(BuildConfig.DEFAULT_LOCALE, "%d", BuildConfig.VERSION_CODE);
+                return String.format(Locale.getDefault(), "%d", BuildConfig.VERSION_CODE);
             case "CMLD.versionCodeNormalized":
-                return String.format(BuildConfig.DEFAULT_LOCALE, "%d", BuildConfig.VERSION_CODE - 8080);
+                return String.format(Locale.getDefault(), "%d", BuildConfig.VERSION_CODE - 8080);
             case "$env0":
                 return ScriptingConfig.ENV0_VALUE;
             case "$env1":

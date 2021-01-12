@@ -141,9 +141,9 @@ public class Utils {
         else if (bytes.length == 0)
             return "";
         StringBuilder hstr = new StringBuilder();
-        hstr.append(String.format(BuildConfig.DEFAULT_LOCALE, "%02x", bytes[0]));
+        hstr.append(String.format(Locale.getDefault(), "%02x", bytes[0]));
         for (int b = 1; b < bytes.length; b++)
-            hstr.append(" " + String.format(BuildConfig.DEFAULT_LOCALE, "%02x", bytes[b]));
+            hstr.append(" " + String.format(Locale.getDefault(), "%02x", bytes[b]));
         return hstr.toString();
     }
 
@@ -292,7 +292,7 @@ public class Utils {
             cmprByteCount += cmpr.deflate(new byte[1024]);
         }
         double entropyRatio = (double) cmprByteCount / inputBytes.length;
-        Log.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "Compressed #%d bytes to #%d bytes ... Entropy ratio = %1.4g", inputBytes.length, cmprByteCount, entropyRatio));
+        Log.i(TAG, String.format(Locale.getDefault(), "Compressed #%d bytes to #%d bytes ... Entropy ratio = %1.4g", inputBytes.length, cmprByteCount, entropyRatio));
         return entropyRatio;
     }
 
@@ -389,8 +389,8 @@ public class Utils {
             }
             Location bestLocProvider = (gpsProviderLocTime - netProviderLocTime > 0) ? locGPSProvider : locGPSProvider;
             String[] gpsAttrsArray = new String[]{
-                    String.format(BuildConfig.DEFAULT_LOCALE, "%g", bestLocProvider.getLatitude()),
-                    String.format(BuildConfig.DEFAULT_LOCALE, "%g", bestLocProvider.getLongitude())
+                    String.format(Locale.getDefault(), "%g", bestLocProvider.getLatitude()),
+                    String.format(Locale.getDefault(), "%g", bestLocProvider.getLongitude())
             };
             return gpsAttrsArray;
         } catch(SecurityException secExcpt) {
@@ -405,7 +405,7 @@ public class Utils {
 
     public static String getGPSLocationString() {
         String[] gpsCoords = Utils.getGPSLocationCoordinates();
-        String gpsLocStr = String.format(BuildConfig.DEFAULT_LOCALE, " -- Location at %s LONG, %s LAT -- ",
+        String gpsLocStr = String.format(Locale.getDefault(), " -- Location at %s LONG, %s LAT -- ",
                 gpsCoords[Utils.GPS_LONGITUDE_CINDEX], gpsCoords[Utils.GPS_LATITUDE_CINDEX]);
         return gpsLocStr;
     }
@@ -512,7 +512,7 @@ public class Utils {
         StackTraceElement[] stackTraceEltsInit = ex.getStackTrace();
         String[] stackTraceElts = new String[stackTraceEltsInit.length];
         for(int stidx = 0; stidx < stackTraceElts.length; stidx++) {
-            stackTraceElts[stidx] = String.format(BuildConfig.DEFAULT_LOCALE, "L%02d| %s", stidx + 1, stackTraceEltsInit[stidx].toString());
+            stackTraceElts[stidx] = String.format(Locale.getDefault(), "L%02d| %s", stidx + 1, stackTraceEltsInit[stidx].toString());
         }
         stackTraceText += String.join("\n", stackTraceElts);
         return stackTraceText;

@@ -74,7 +74,7 @@ public class UIDCommands {
         ChameleonIO.deviceStatus.LASTUID = ChameleonIO.deviceStatus.UID;
         byte[] uid = UIDCommands.processUIDCommand(uidAction);
         String uidCmd = ChameleonIO.REVE_BOARD ? "uid" : "UID";
-        String cmdStatus = ChameleonIO.getSettingFromDevice(String.format(BuildConfig.DEFAULT_LOCALE, "%s=%s", uidCmd, Utils.bytes2Hex(uid).replace(" ", "").toUpperCase()));
+        String cmdStatus = ChameleonIO.getSettingFromDevice(String.format(Locale.getDefault(), "%s=%s", uidCmd, Utils.bytes2Hex(uid).replace(" ", "").toUpperCase()));
         ChameleonIO.deviceStatus.startPostingStats(250);
         MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("UID", "Next device UID set to " + Utils.bytes2Hex(uid).replace(" ", ":").toUpperCase()));
     }

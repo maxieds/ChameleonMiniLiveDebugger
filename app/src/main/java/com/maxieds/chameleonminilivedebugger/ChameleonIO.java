@@ -140,7 +140,7 @@ public class ChameleonIO {
         }
         String chameleonDeviceType = getDeviceDescription(CHAMELEON_MINI_BOARD_TYPE);
         CHAMELEON_MINI_BOARD_TYPE_DESC = chameleonDeviceType;
-        String statusMsg = String.format(BuildConfig.DEFAULT_LOCALE, "New Chameleon discovered over %s: %s.", deviceConnType, chameleonDeviceType);
+        String statusMsg = String.format(Locale.getDefault(), "New Chameleon discovered over %s: %s.", deviceConnType, chameleonDeviceType);
         Utils.displayToastMessageLong(statusMsg);
         return CHAMELEON_MINI_BOARD_TYPE;
     }
@@ -416,21 +416,21 @@ public class ChameleonIO {
                                     String formattedUID = Utils.formatUIDString(UID, ":");
                                     ((TextView) LiveLoggerActivity.getContentView(R.id.deviceConfigUID)).setText(formattedUID);
                                 }
-                                String subStats1 = String.format(BuildConfig.DEFAULT_LOCALE, "REV%s|MEM-%dK|LOG-%s-%dK", ChameleonIO.REVE_BOARD ? "E" : "G", round(MEMSIZE / 1024), LOGMODE, round(LOGSIZE / 1024));
+                                String subStats1 = String.format(Locale.getDefault(), "REV%s|MEM-%dK|LOG-%s-%dK", ChameleonIO.REVE_BOARD ? "E" : "G", round(MEMSIZE / 1024), LOGMODE, round(LOGSIZE / 1024));
                                 ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats1)).setText(subStats1);
-                                String subStats2 = String.format(BuildConfig.DEFAULT_LOCALE, "SLOT-%d|%s|FLD-%s|CHRG-%s", DIP_SETTING, READONLY ? "RO" : "RW", FIELD ? "1" : "0", CHARGING ? "1" : "0");
+                                String subStats2 = String.format(Locale.getDefault(), "SLOT-%d|%s|FLD-%s|CHRG-%s", DIP_SETTING, READONLY ? "RO" : "RW", FIELD ? "1" : "0", CHARGING ? "1" : "0");
                                 ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats2)).setText(subStats2);
-                                String subStats3 = String.format(BuildConfig.DEFAULT_LOCALE, "THRS-%dmv|TMT-%s", THRESHOLD, TIMEOUT.replace(" ", ""));
+                                String subStats3 = String.format(Locale.getDefault(), "THRS-%dmv|TMT-%s", THRESHOLD, TIMEOUT.replace(" ", ""));
                                 ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats3)).setText(subStats3);
                                 SeekBar thresholdSeekbar = (SeekBar) LiveLoggerActivity.getContentView(R.id.thresholdSeekbar);
                                 if (thresholdSeekbar != null) {
                                     thresholdSeekbar.setProgress(THRESHOLD);
-                                    ((TextView) LiveLoggerActivity.getContentView(R.id.thresholdSeekbarValueText)).setText(String.format(BuildConfig.DEFAULT_LOCALE, "% 5d mV", THRESHOLD));
+                                    ((TextView) LiveLoggerActivity.getContentView(R.id.thresholdSeekbarValueText)).setText(String.format(Locale.getDefault(), "% 5d mV", THRESHOLD));
                                 }
                                 SeekBar timeoutSeekbar = (SeekBar) LiveLoggerActivity.getContentView(R.id.cmdTimeoutSeekbar);
                                 if (thresholdSeekbar != null) {
                                     thresholdSeekbar.setProgress(THRESHOLD);
-                                    ((TextView) LiveLoggerActivity.getContentView(R.id.cmdTimeoutSeekbarValueText)).setText(String.format(BuildConfig.DEFAULT_LOCALE, "% 4s (x128) ms", TIMEOUT));
+                                    ((TextView) LiveLoggerActivity.getContentView(R.id.cmdTimeoutSeekbarValueText)).setText(String.format(Locale.getDefault(), "% 4s (x128) ms", TIMEOUT));
                                 }
                             } catch (Exception ex) {
                                 ex.printStackTrace();

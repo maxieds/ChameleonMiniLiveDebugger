@@ -136,7 +136,7 @@ public class TabFragment extends Fragment {
             deselectMenuItem(lastMenuIndex);
             lastMenuIndex = midx;
             GridLayout menuItemsNav = (GridLayout) tabInflatedView.findViewById(R.id.tabMenuItemsNav);
-            String indexRefTag = String.format(BuildConfig.DEFAULT_LOCALE, "%d:%d", tabIndex, midx);
+            String indexRefTag = String.format(Locale.getDefault(), "%d:%d", tabIndex, midx);
             Button menuItem = (Button) menuItemsNav.findViewWithTag(indexRefTag);
             menuItem.setTypeface(Typeface.DEFAULT, Typeface.BOLD_ITALIC);
             final Button menuItemFinal = menuItem;
@@ -168,7 +168,7 @@ public class TabFragment extends Fragment {
                 return false;
             }
             GridLayout menuItemsNav = (GridLayout) tabInflatedView.findViewById(R.id.tabMenuItemsNav);
-            String indexRefTag = String.format(BuildConfig.DEFAULT_LOCALE, "%d:%d", tabIndex, midx);
+            String indexRefTag = String.format(Locale.getDefault(), "%d:%d", tabIndex, midx);
             Button menuItem = (Button) menuItemsNav.findViewWithTag(indexRefTag);
             menuItem.setBackgroundColor(tabInflatedView.getContext().getResources().getColor(android.R.color.transparent));
             menuItem.setTextColor(Utils.getColorFromTheme(R.attr.colorPrimaryDark));
@@ -202,7 +202,7 @@ public class TabFragment extends Fragment {
                 menuItemClick.setPadding(20, 8, 20, 8);
                 menuItemClick.setMaxHeight(100);
                 menuItemClick.setMinWidth(menuItemsNav.getMeasuredWidth() / tabNumColumns);
-                String indexRefTag = String.format(BuildConfig.DEFAULT_LOCALE, "%d:%d", tabIndex, totalItems);
+                String indexRefTag = String.format(Locale.getDefault(), "%d:%d", tabIndex, totalItems);
                 menuItemClick.setTag(indexRefTag);
                 menuItemClick.setOnClickListener(new View.OnClickListener() {
                     @Override

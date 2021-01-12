@@ -151,7 +151,7 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
         }
         int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData);
         if (loggingRespSize > 0) {
-            Log.i(TAG, "Received new LogEntry @ " + String.format(BuildConfig.DEFAULT_LOCALE, "0x%02x", liveLogData[0]));
+            Log.i(TAG, "Received new LogEntry @ " + String.format(Locale.getDefault(), "0x%02x", liveLogData[0]));
             if(ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS) {
                 notifyLogDataReceived(liveLogData);
             }

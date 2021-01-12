@@ -51,6 +51,8 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingGUIMain;
 
+import java.util.Locale;
+
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
@@ -565,7 +567,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
           }
           else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED)) {
                byte[] serialByteData = intent.getByteArrayExtra("DATA");
-               String dataMsg = String.format(BuildConfig.DEFAULT_LOCALE, "Unexpected serial I/O data received:\n%s\n%s",
+               String dataMsg = String.format(Locale.getDefault(), "Unexpected serial I/O data received:\n%s\n%s",
                        Utils.bytes2Hex(serialByteData), Utils.bytes2Ascii(serialByteData));
                MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", dataMsg));
           }
@@ -922,7 +924,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
           EditText piccSetBytesText = (EditText) findViewById(R.id.mfDESFireTagSetPICCDataBytes);
           String piccSetBytes = "";
           if(piccSetBytesText != null) {
-               cmdTag = String.format(BuildConfig.DEFAULT_LOCALE, cmdTag, piccSetBytesText.getText().toString());
+               cmdTag = String.format(Locale.getDefault(), cmdTag, piccSetBytesText.getText().toString());
           }
           ChameleonIO.executeChameleonMiniCommand(cmdTag, ChameleonIO.TIMEOUT);
      }

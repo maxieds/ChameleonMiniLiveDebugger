@@ -177,7 +177,7 @@ public class LogEntryUI extends LogEntryBase {
         apduParseStatus = (ImageView) mainContainerRef.findViewById(R.id.apduParseStatusImg);
         tvLabel = (TextView) mainContainerRef.findViewById(R.id.text_label);
         recordID = ++MainActivityLogUtils.RECORDID;
-        tvLabel.setText(logLabel + String.format(BuildConfig.DEFAULT_LOCALE, "%06d", MainActivityLogUtils.RECORDID));
+        tvLabel.setText(logLabel + String.format(Locale.getDefault(), "%06d", MainActivityLogUtils.RECORDID));
         tvNumBytes = (TextView) mainContainerRef.findViewById(R.id.text_data_num_bytes);
         tvNumBytes.setText(String.valueOf(numBytes) + "B");
         tvNumMillis = (TextView) mainContainerRef.findViewById(R.id.text_offset_millis);
@@ -185,7 +185,7 @@ public class LogEntryUI extends LogEntryBase {
         tvLogType = (TextView) mainContainerRef.findViewById(R.id.text_log_type);
         tvLogType.setText(ChameleonLogUtils.LogCode.lookupByLogCode(logType).getShortCodeName(logType));
         tvEntropy = (TextView) mainContainerRef.findViewById(R.id.text_entropy_compression_ratio);
-        tvEntropy.setText(String.format(BuildConfig.DEFAULT_LOCALE, "CPR/ENT: %1.4g", Utils.computeByteArrayEntropy(entryData)));
+        tvEntropy.setText(String.format(Locale.getDefault(), "CPR/ENT: %1.4g", Utils.computeByteArrayEntropy(entryData)));
         tvDataHexBytes = (TextView) mainContainerRef.findViewById(R.id.text_logdata_hex);
         tvDataHexBytes.setText(Utils.bytes2Hex(entryData));
         tvDataAscii = (TextView) mainContainerRef.findViewById(R.id.text_logdata_ascii);
@@ -280,10 +280,10 @@ public class LogEntryUI extends LogEntryBase {
         boolean drawCountInHex = Math.log10(numDuplicates) > 5.0 ? true : false;
         String duplicateNumberText = "";
         if(drawCountInHex) {
-            duplicateNumberText = String.format(BuildConfig.DEFAULT_LOCALE, "0x%04x", numDuplicates);
+            duplicateNumberText = String.format(Locale.getDefault(), "0x%04x", numDuplicates);
         }
         else {
-            duplicateNumberText = String.format(BuildConfig.DEFAULT_LOCALE, "%06d", numDuplicates);
+            duplicateNumberText = String.format(Locale.getDefault(), "%06d", numDuplicates);
         }
         duplicateNumberText += " -- IDENTICAL LOGS";
         tvDuplicateCount.setVisibility(View.VISIBLE);
@@ -320,7 +320,7 @@ public class LogEntryUI extends LogEntryBase {
     @Override
     public String toString() {
         ChameleonLogUtils.LogCode logCode = ChameleonLogUtils.LogCode.lookupByLogCode(logType);
-        String recordFmt = String.format(BuildConfig.DEFAULT_LOCALE, "%06d -- %-32s [%-3s bytes] (%s%-6s ms) [%s] {%s}", recordID, logCode.name(),
+        String recordFmt = String.format(Locale.getDefault(), "%06d -- %-32s [%-3s bytes] (%s%-6s ms) [%s] {%s}", recordID, logCode.name(),
                 String.valueOf(entryData.length), diffTimeMillis >= 0 ? "+" : "~", String.valueOf(abs(diffTimeMillis)),
                 Utils.bytes2Hex(entryData), tvApdu.getText().toString());
         return recordFmt;
