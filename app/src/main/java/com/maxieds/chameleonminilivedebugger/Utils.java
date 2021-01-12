@@ -30,6 +30,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -412,16 +414,16 @@ public class Utils {
         return gpsLocStr;
     }
 
-    private static void displayToastMessage(String toastMsg, int msgDuration) {
+    public static void displayToastMessage(ChameleonMiniLiveDebuggerActivity callingActivity, String toastMsg, int msgDuration) {
         Toast toastDisplay = Toast.makeText(
-                LiveLoggerActivity.getLiveLoggerInstance(),
+                callingActivity,
                 toastMsg,
                 msgDuration
         );
         toastDisplay.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 0, 25);
         toastDisplay.getView().setPadding(10, 10, 10, 10);
-        int toastBackgroundColor = Utils.getColorFromTheme(R.attr.colorAccent);
-        int toastTextColor = Utils.getColorFromTheme(R.attr.colorPrimaryDark);
+        int toastBackgroundColor = Utils.getColorFromTheme(R.attr.colorAccent, callingActivity);
+        int toastTextColor = Utils.getColorFromTheme(R.attr.colorPrimaryDark, callingActivity);
         toastDisplay.getView().getBackground().setColorFilter(toastBackgroundColor, PorterDuff.Mode.SRC_IN);
         TextView toastTextMsg = toastDisplay.getView().findViewById(android.R.id.message);
         if(toastTextMsg != null) {
@@ -432,6 +434,10 @@ public class Utils {
         toastDisplay.getView().setAlpha(0.75f);
         toastDisplay.show();
         Log.i(TAG, "TOAST MSG DISPLAYED: " + toastMsg);
+    }
+
+    private static void displayToastMessage(String toastMsg, int msgDuration) {
+        displayToastMessage(LiveLoggerActivity.getLiveLoggerInstance(), toastMsg, msgDuration);
     }
 
     public static void displayToastMessageShort(String toastMsg) {
@@ -511,14 +517,16 @@ public class Utils {
         if(ex.getMessage() != null) {
             stackTraceText += "**Exception Message:** " + ex.getMessage() + "\n\n";
         }
-        StringWriter stackTracePrintStr = new StringWriter();
-        ex.printStackTrace(new PrintWriter(stackTracePrintStr));
+        /*
         StackTraceElement[] stackTraceEltsInit = ex.getStackTrace();
         String[] stackTraceElts = new String[stackTraceEltsInit.length];
         for(int stidx = 0; stidx < stackTraceElts.length; stidx++) {
             stackTraceElts[stidx] = String.format(Locale.getDefault(), "L%02d| %s", stidx + 1, stackTraceEltsInit[stidx].toString());
         }
         stackTraceText += String.join("\n", stackTraceElts);
+        */
+        StringWriter stackTracePrintStr = new StringWriter();
+        ex.printStackTrace(new PrintWriter(stackTracePrintStr));
         stackTraceText += "\n\nDetailed Stack Trace:\n" + stackTracePrintStr.toString() + "\n\n";
         if(enumerateCauseExcpt && ex.getCause() != null) {
             stackTraceText += "**Stack Trace for Causal Exception:**\n" + getStackTraceAsText(ex.getCause(), false);
@@ -527,7 +535,7 @@ public class Utils {
     }
 
     public static String getStackTraceAsText(Throwable ex) {
-        return getStackTraceAsText(ex, true);
+        return getStackTraceAsText(ex, false);
     }
 
     public static void dismissAndroidKeyboard(ChameleonMiniLiveDebuggerActivity activity) {

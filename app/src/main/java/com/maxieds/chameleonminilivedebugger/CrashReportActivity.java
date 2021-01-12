@@ -30,6 +30,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.text.Spannable;
@@ -39,6 +40,7 @@ import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
 import java.util.Locale;
@@ -224,15 +226,21 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
         issueBodyText += "like what actions you took before this screen is displayed. Did the error happen on launch of ";
         issueBodyText += "the application? Did you click a button or switch tabs? Any extra details about how the error ";
         issueBodyText += "happened are useful to fixing the issue in future releases.*\n\n";
+        int invokingMsgLastItemPos = invokingExcptMsg.lastIndexOf(':');
         String issueTitle = String.format(Locale.getDefault(), "Crash Report (CMLD %s): %s [Android %s, SDK %d]",
-                                          BuildConfig.VERSION_NAME, invokingExcptMsg, Build.VERSION.RELEASE, Build.VERSION.SDK_INT);
+                                          BuildConfig.VERSION_NAME, invokingExcptMsg.substring(invokingMsgLastItemPos + 1),
+                                          Build.VERSION.RELEASE, Build.VERSION.SDK_INT);
         newIssueURL += String.format(Locale.getDefault(), "title=%s&body=%s&assignee=maxieds",
                                      Utils.encodeAsciiToURL(issueTitle), Utils.encodeAsciiToURL(issueBodyText));
         return newIssueURL;
     }
 
+    private static final long ISSUE_INSTRUCTIONS_TOASTMSG_PAUSE_DURATION = 750; // milliseconds
+
     private boolean sendNewGitHubIssue() {
-        // TODO: Toast to please fill in extra details + sleep timer ...
+        String toastInstMsgToUsers = "Please remember to fill in the extra details section before posting the new issue!";
+        Utils.displayToastMessage(this, toastInstMsgToUsers, Toast.LENGTH_LONG);
+        SystemClock.sleep(ISSUE_INSTRUCTIONS_TOASTMSG_PAUSE_DURATION);
         String newIssueURL = getEncodedNewGitHubIssueURL();
         Intent startIssueBrowserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(newIssueURL));
         startActivity(startIssueBrowserIntent);

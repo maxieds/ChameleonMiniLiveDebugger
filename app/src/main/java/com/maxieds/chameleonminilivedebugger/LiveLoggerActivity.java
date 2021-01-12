@@ -293,6 +293,8 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
           }
 
           setUnhandledExceptionHandler();
+          //String generateCrashRptObj = null;
+          //generateCrashRptObj.length();
 
           boolean completeRestart = (getLiveLoggerInstance() == null);
           serialUSBDeviceSettingsNeedUpdate = true;
