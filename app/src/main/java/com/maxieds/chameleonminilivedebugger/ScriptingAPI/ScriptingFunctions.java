@@ -26,6 +26,7 @@ import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingTypes.ScriptV
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExceptions.ChameleonScriptingException;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExceptions.ExceptionType;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -36,6 +37,8 @@ public class ScriptingFunctions {
     private static final String TAG = ScriptingFunctions.class.getSimpleName();
 
     public static ScriptVariable callFunction(String funcName, List<ScriptVariable> funcArgs) throws ChameleonScriptingException {
+        // The argument list is passed in reverse default from the parser:
+        Collections.reverse(funcArgs);
         switch(funcName) {
             case "Exit":
                 return ScriptingFunctions.ScriptingAPIFunctions.Exit(funcArgs);
@@ -150,6 +153,7 @@ public class ScriptingFunctions {
         }
 
         public static ScriptVariable Print(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            printFunctionArgumentList("Print", argList);
             StringBuilder consoleOutput = new StringBuilder();
             for(int argIdx = 0; argIdx < argList.size(); argIdx++) {
                 ScriptVariable svar = argList.get(argIdx);
@@ -160,8 +164,7 @@ public class ScriptingFunctions {
         }
 
         public static ScriptVariable Printf(List<ScriptVariable> argList) throws ChameleonScriptingException {
-            Log.i(TAG, "Number of arguments passed: " + argList.size());
-            Log.i(TAG, "First argument: " + argList.get(0).getValueAsString());
+            printFunctionArgumentList("Printf", argList);
             ScriptVariable sprintfText = Sprintf(argList);
             Log.i(TAG, "Printf [sprintf var str value] -> \"" + sprintfText.getValueAsString() + "\"");
             String returnText = ScriptingUtils.rawStringToSpecialCharEncoding(sprintfText.getValueAsString());
@@ -170,34 +173,61 @@ public class ScriptingFunctions {
         }
 
         public static ScriptVariable Sprintf(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            printFunctionArgumentList("Sprintf", argList);
             if(argList.size() == 0) {
                 throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException, "Requires a format string parameter");
             }
             String fmtMsg = argList.get(0).getValueAsString();
-            int varIndex = 1, strBaseIdx = 0;
+            int varIndex = -1;
             StringBuilder consoleOutput = new StringBuilder("");
-            Pattern fmtFlagPattern = Pattern.compile("%[^diuoxXcs]*[diuoxXcs]");
-            Matcher fmtMatcher = fmtFlagPattern.matcher(fmtMsg);
-            if(!fmtMatcher.matches()) {
-                return ScriptVariable.newInstance().set(fmtMsg);
+            String[] fmtFlagMatches = fmtMsg.split("%");
+            if(fmtFlagMatches.length > 0 && fmtFlagMatches.length != argList.size()) {
+                throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException, "Not enough variables supplied");
             }
-            while(fmtMatcher.find()) {
-                String fmtFlag = fmtMatcher.group();
-                String fmtSpec = new String(new char[] { fmtFlag.charAt(fmtFlag.length() - 1) });
-                String fmtFragment = fmtMsg.substring(strBaseIdx, fmtMatcher.end() + 1);
-                if(fmtSpec.equalsIgnoreCase("s") || fmtSpec.equalsIgnoreCase("c")) {
-                    consoleOutput.append(String.format(BuildConfig.DEFAULT_LOCALE, fmtFragment, argList.get(varIndex).getValueAsString()));
+            for(String rawStringPart : fmtFlagMatches) {
+                Log.d(TAG, "MATCHING RAW FMT PART: '" + rawStringPart + "'");
+                ++varIndex;
+                if(varIndex == 0 && fmtMsg.charAt(0) != '%') {
+                    consoleOutput.append(rawStringPart);
                 }
-                else { // integer types:
-                    consoleOutput.append(String.format(BuildConfig.DEFAULT_LOCALE, fmtFragment, argList.get(varIndex).getValueAsInt()));
+                else {
+                    rawStringPart = "%" + rawStringPart;
+                    int fmtSpecPos = 0, fmtSearchPos = 1;
+                    while(fmtSearchPos < rawStringPart.length()) {
+                        if(Character.isLetter(rawStringPart.charAt(fmtSearchPos))) {
+                            break;
+                        }
+                        fmtSearchPos++;
+                    }
+                    if(fmtSearchPos == rawStringPart.length()) {
+                        ScriptingGUIConsole.appendConsoleOutputRecordErrorWarning(
+                                String.format(Locale.getDefault(), "String format error '%s' is invalid!", rawStringPart),
+                                null,
+                                ChameleonScripting.getRunningInstance().getExecutingLineOfCode()
+                        );
+                        consoleOutput.append(rawStringPart);
+                        continue;
+                    }
+                    char fmtSpec = rawStringPart.charAt(fmtSearchPos);
+                    try {
+                        if(fmtSpec == 's' || fmtSpec == 'S' || fmtSpec == 'c' || !argList.get(varIndex).isIntegerType()) {
+                            consoleOutput.append(String.format(Locale.getDefault(), rawStringPart, argList.get(varIndex).getValueAsString()));
+                            Log.d(TAG, "MATCHING RAW FMT PART II: " + fmtSpec + " -- '" + rawStringPart + "'" + "    " + String.format(Locale.getDefault(), rawStringPart, argList.get(varIndex).getValueAsString()));
+                        }
+                        else {
+                            consoleOutput.append(String.format(Locale.getDefault(), rawStringPart, argList.get(varIndex).getValueAsInt()));
+                            Log.d(TAG, "MATCHING RAW FMT PART II: " + fmtSpec + " -- '" + rawStringPart + "'" + "    " + String.format(Locale.getDefault(), rawStringPart, argList.get(varIndex).getValueAsString()));
+                        }
+                    } catch(Exception strFmtEx) {
+                        strFmtEx.printStackTrace();
+                        ScriptingGUIConsole.appendConsoleOutputRecordErrorWarning(
+                                String.format(Locale.getDefault(), "String format error '%s' is invalid!", rawStringPart),
+                                null,
+                                ChameleonScripting.getRunningInstance().getExecutingLineOfCode()
+                        );
+                        consoleOutput.append(rawStringPart);
+                    }
                 }
-                strBaseIdx += fmtMatcher.end() + 1;
-                if(++varIndex >= argList.size()) {
-                    break;
-                }
-            }
-            if(strBaseIdx + 1 < fmtMsg.length()) {
-                consoleOutput.append(fmtMsg.substring(strBaseIdx));
             }
             Log.i(TAG, "Sprintf -> \"" + consoleOutput.toString() + "\"");
             return ScriptVariable.newInstance().set(ScriptingUtils.rawStringToSpecialCharEncoding(consoleOutput.toString()));
@@ -368,6 +398,14 @@ public class ScriptingFunctions {
                 break;
         }
         throw new ChameleonScriptingException(ExceptionType.KeyNotFoundException);
+    }
+
+    private static void printFunctionArgumentList(String funcName, List<ScriptVariable> svList) {
+        Log.i(TAG, String.format(Locale.getDefault(), "FUNCTION %s(...) called with ##% 2d ARGS", funcName, svList.size()));
+        int varIndex = 0;
+        for(ScriptVariable svar : svList) {
+            Log.i(TAG, String.format(Locale.getDefault(), "    &&&& [VARIDX=% 2d] '%s' (quoted)", varIndex, svList.get(varIndex++).getValueAsString()));
+        }
     }
 
 }

@@ -360,6 +360,7 @@ public class ChameleonScripting {
                     SerialIOReceiver.resetRedirectInterface();
                     ChameleonIO.DeviceStatusSettings.startPostingStats(0);
                     cleanupRuntimeData(ScriptingConfig.SAVE_RESTORE_CHAMELEON_STATE);
+                    LiveLoggerActivity.getLiveLoggerInstance().clearStatusIcon(R.id.statusScriptingIsExec);
 
                 }
             };
@@ -429,6 +430,7 @@ public class ChameleonScripting {
                 scriptState = ScriptRuntimeState.PAUSED;
                 ScriptingUtils.signalStateChangeByVibration(scriptState);
                 cleanupRuntimeData(ScriptingConfig.SAVE_RESTORE_CHAMELEON_STATE);
+                LiveLoggerActivity.getLiveLoggerInstance().clearStatusIcon(R.id.statusScriptingIsExec);
                 ScriptingBreakPoint.bpDisabled = false;
                 return true;
             }

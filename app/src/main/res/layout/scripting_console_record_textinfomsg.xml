@@ -38,6 +38,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:textSize="10sp"
         android:textStyle="normal"
         android:typeface="monospace"
+        android:ellipsize="none"
+        android:scrollHorizontally="false"
         />
 
 </LinearLayout>

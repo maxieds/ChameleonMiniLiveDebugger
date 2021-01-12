@@ -107,6 +107,9 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:textStyle="normal|italic"
             android:fontFamily="serif-monospace"
             android:typeface="monospace"
+            android:ellipsize="none"
+            android:maxLines="100"
+            android:scrollHorizontally="false"
             />
 
         <TextView
@@ -133,6 +136,9 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:textStyle="normal|italic"
             android:fontFamily="serif-monospace"
             android:typeface="monospace"
+            android:ellipsize="none"
+            android:maxLines="100"
+            android:scrollHorizontally="false"
             />
 
         <TextView

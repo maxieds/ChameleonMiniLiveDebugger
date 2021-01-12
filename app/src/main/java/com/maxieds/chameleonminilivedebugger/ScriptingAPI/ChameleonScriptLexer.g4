@@ -132,7 +132,7 @@ ElseCond: 'else' ;
 
 /**** Other syntax constants and regex matchers to define non-constant ids: ****/
 
-QuotedStringLiteral: '"' (~[\\"] | '\\' [a-z0-9])* '"' ;
+QuotedStringLiteral: '"' (~["] | '\\' [a-z0-9] | [\n\r\t]+ )* '"' ;
 QuotedHexStringLiteral: 'h\'' (~[\\"] | '\\' [a-z0-9])* '\'' ;
 QuotedRawStringLiteral: 'r\'' (~[\\"] | '\\' [a-z0-9])* '\'' ;
 
