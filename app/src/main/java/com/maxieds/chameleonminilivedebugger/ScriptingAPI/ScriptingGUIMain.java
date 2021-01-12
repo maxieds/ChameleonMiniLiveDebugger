@@ -123,6 +123,9 @@ public class ScriptingGUIMain {
 
     public static boolean initializeScriptingConfigGUI(View cfgBaseLayout) {
         ScriptingConfig.initializeScriptingConfig();
+        if(cfgBaseLayout == null) {
+            return false;
+        }
         int[] checkBoxResIds = new int[] {
                 R.id.scriptingConfigCBoxSaveConsoleOutputToFile,
                 R.id.scriptingConfigCBoxAppendConsoleOutput,
@@ -155,12 +158,14 @@ public class ScriptingGUIMain {
         };
         for(int cbIdx = 0; cbIdx < checkBoxResIds.length; cbIdx++) {
             CheckBox cbView = cfgBaseLayout.findViewById(checkBoxResIds[cbIdx]);
+            if(cbView == null) {
+                continue;
+            }
             cbView.setChecked(checkBoxValues[cbIdx]);
             final int cbIdxConstValue = cbIdx;
             cbView.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View cbView) {
-                    CheckBox cb = (CheckBox) cbView;
+                public void onClick(View cboxView) {
                     AndroidSettingsStorage.updateValueByKey(androidSettingsKey[cbIdxConstValue]);
                     AndroidSettingsStorage.restorePreviousSettings(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE,
                                                                    AndroidSettingsStorage.AndroidSettingsType.SCRIPTING_CONFIG);
@@ -196,6 +201,9 @@ public class ScriptingGUIMain {
         };
         for(int evIdx = 0; evIdx < envVarResIds.length; evIdx++) {
             EditText etEnvVarInput = cfgBaseLayout.findViewById(envVarResIds[evIdx]);
+            if(etEnvVarInput == null) {
+                continue;
+            }
             etEnvVarInput.setText(envVarDefaults[evIdx]);
             final int evIdxConstValue = evIdx;
             etEnvVarInput.addTextChangedListener(new TextWatcher() {
@@ -242,8 +250,14 @@ public class ScriptingGUIMain {
         };
         for(int pidx = 0; pidx < getFileFromPickerResIds.length; pidx++) {
             EditText etFilePickerValueDisplay = cfgBaseLayout.findViewById(getFileFromPickerResIds[pidx][0]);
+            if(etFilePickerValueDisplay == null) {
+                continue;
+            }
             etFilePickerValueDisplay.setText(defaultFilePathValues[pidx]);
             ImageButton choosePathBtn = cfgBaseLayout.findViewById(getFileFromPickerResIds[pidx][1]);
+            if(choosePathBtn == null) {
+                continue;
+            }
             final int pidxConstValue = pidx;
             choosePathBtn.setOnClickListener(new View.OnClickListener() {
                 @Override

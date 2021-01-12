@@ -90,6 +90,9 @@ public class UITabUtils {
     }
 
     public static boolean initializeLoggingTab(int menuItemIdx, View tabMainLayoutView) {
+        if(tabMainLayoutView == null) {
+            return false;
+        }
         if(menuItemIdx == TAB_LOG_MITEM_LOGS && !MainActivityLogUtils.logDataFeedConfigured) {
             if(MainActivityLogUtils.logDataFeed == null) {
                 MainActivityLogUtils.logDataFeed = new LinearLayout(LiveLoggerActivity.getLiveLoggerInstance());
@@ -300,10 +303,16 @@ public class UITabUtils {
     }
 
     public static boolean initializeExportTab(int menuItemIdx, View tabMainLayoutView) {
+        if(tabMainLayoutView == null) {
+            return false;
+        }
         return true;
     }
 
     public static boolean initializeScriptingTab(int menuItemIdx, View tabMainLayoutView) {
+        if(tabMainLayoutView == null) {
+            return false;
+        }
         if(menuItemIdx == TAB_SCRIPTING_MITEM_LOAD_IMPORT) {
             ScriptingGUIMain.initializeScriptingTabGUI(tabMainLayoutView);
         }
@@ -316,6 +325,9 @@ public class UITabUtils {
     }
 
     public static boolean initializeConfigTab(int menuItemIdx, View tabMainLayoutView) {
+        if(tabMainLayoutView == null) {
+            return false;
+        }
         if(menuItemIdx == TAB_CONFIG_MITEM_SETTINGS) {
              // allow USB checkbox setup:
              CheckBox cbAllowUSB = tabMainLayoutView.findViewById(R.id.settingsAllowWiredUSB);

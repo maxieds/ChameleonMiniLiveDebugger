@@ -53,6 +53,7 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
     public static final String INTENT_ACTION_RESTART_CMLD_ACTIVITY = "Intent.CrashReport.Action.RestartCMLDMainActivity";
     public static final String INTENT_CMLD_RECOVERED_FROM_CRASH = "Intent.CrashReport.CMLDRestartRecoveredFromCrash";
     public static final String INTENT_STACK_TRACE = "Intent.CrashReport.StackTrace";
+    public static final String INTENT_INVOKING_EXCPTMSG = "Intent.CrashReport.InvokingExceptionMessage";
     public static final String INTENT_TIMESTAMP = "Intent.CrashReport.Timestamp";
     public static final String INTENT_CHAMELEON_DEVICE_TYPE = "Intent.CrashReport.ChameleonDeviceType";
     public static final String INTENT_SERIAL_CONNECTION_TYPE = "Intent.CrashReport.";
@@ -63,6 +64,7 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
     public static final String CRASH_REPORT_THEME_NAME = "Standard Green";
 
     private String stackTrace;
+    private String invokingExcptMsg;
     private String timeStamp;
     private String chameleonDeviceType;
     private String serialConnType;
@@ -84,6 +86,7 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
         configureLayoutToolbar();
         if(getIntent() != null && getIntent().getAction() != null && getIntent().getAction().equals(INTENT_ACTION_START_ACTIVITY)) {
             stackTrace = getIntent().getStringExtra(INTENT_STACK_TRACE);
+            invokingExcptMsg = getIntent().getStringExtra(INTENT_INVOKING_EXCPTMSG);
             timeStamp = getIntent().getStringExtra(INTENT_TIMESTAMP);
             chameleonDeviceType = getIntent().getStringExtra(INTENT_CHAMELEON_DEVICE_TYPE);
             serialConnType = getIntent().getStringExtra(INTENT_SERIAL_CONNECTION_TYPE);
@@ -212,20 +215,24 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
         };
         StringBuilder assembleIssueContentBldr = new StringBuilder();
         for(int sidx = 0; sidx < issueContentsData.length; sidx++) {
-            assembleIssueContentBldr.append("* *" + issueContentsData[0] + "*: " + issueContentsData[1] + "\n");
+            assembleIssueContentBldr.append("* *" + issueContentsData[sidx][0] + "*: " + issueContentsData[sidx][1] + "\n");
         }
         String issueBodyText = "@maxieds:\n\n" + "**Crash data summary:**\n" + assembleIssueContentBldr.toString();
-        issueBodyText += "**Stack trace:**\n\" + \"```java\n" + stackTrace + "\n```\n";
-        issueBodyText += "**Additional comments:**\n\n*NONE*\n";
-        String issueTitle = String.format(Locale.getDefault(), "Crash Report: CMLD %s running %s %s [SDK %d] on device %s %s %s",
-                                          BuildConfig.VERSION_NAME, Build.VERSION.BASE_OS, Build.VERSION.INCREMENTAL,
-                                          Build.VERSION.SDK_INT, Build.MANUFACTURER, Build.PRODUCT, Build.MODEL);
+        issueBodyText += "\n**Stack trace:**\n```java" + stackTrace + "\n```\n";
+        issueBodyText += "\n**Additional comments:**\n";
+        issueBodyText += "*NONE -- Please fill in more details about how you generated this error, ";
+        issueBodyText += "like what actions you took before this screen is displayed. Did the error happen on launch of ";
+        issueBodyText += "the application? Did you click a button or switch tabs? Any extra details about how the error ";
+        issueBodyText += "happened are useful to fixing the issue in future releases.*\n\n";
+        String issueTitle = String.format(Locale.getDefault(), "Crash Report (CMLD %s): %s [Android %s, SDK %d]",
+                                          BuildConfig.VERSION_NAME, invokingExcptMsg, Build.VERSION.RELEASE, Build.VERSION.SDK_INT);
         newIssueURL += String.format(Locale.getDefault(), "title=%s&body=%s&assignee=maxieds",
                                      Utils.encodeAsciiToURL(issueTitle), Utils.encodeAsciiToURL(issueBodyText));
         return newIssueURL;
     }
 
     private boolean sendNewGitHubIssue() {
+        // TODO: Toast to please fill in extra details + sleep timer ...
         String newIssueURL = getEncodedNewGitHubIssueURL();
         Intent startIssueBrowserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(newIssueURL));
         startActivity(startIssueBrowserIntent);

@@ -171,6 +171,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
                     startCrashRptIntent.setType ("plain/text");
                     String stackTraceAsText = Utils.getStackTraceAsText(paramExcpt);
                     startCrashRptIntent.putExtra(CrashReportActivity.INTENT_STACK_TRACE, stackTraceAsText);
+                    startCrashRptIntent.putExtra(CrashReportActivity.INTENT_INVOKING_EXCPTMSG, paramExcpt.getMessage());
                     startCrashRptIntent.putExtra(CrashReportActivity.INTENT_TIMESTAMP, Utils.getTimestamp());
                     startCrashRptIntent.putExtra(CrashReportActivity.INTENT_CHAMELEON_DEVICE_TYPE, ChameleonIO.CHAMELEON_MINI_BOARD_TYPE_DESC);
                     String chameleonSerialType = ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX < 0 ? "NULL" :

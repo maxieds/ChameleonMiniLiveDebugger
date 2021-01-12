@@ -34,6 +34,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -501,21 +503,31 @@ public class Utils {
         return "";
     }
 
-    public static String getStackTraceAsText(Throwable ex) {
+    public static String getStackTraceAsText(Throwable ex, boolean enumerateCauseExcpt) {
         if(ex == null) {
             return "";
         }
         String stackTraceText = "";
         if(ex.getMessage() != null) {
-            stackTraceText += ex.getMessage() + "\n\n";
+            stackTraceText += "**Exception Message:** " + ex.getMessage() + "\n\n";
         }
+        StringWriter stackTracePrintStr = new StringWriter();
+        ex.printStackTrace(new PrintWriter(stackTracePrintStr));
         StackTraceElement[] stackTraceEltsInit = ex.getStackTrace();
         String[] stackTraceElts = new String[stackTraceEltsInit.length];
         for(int stidx = 0; stidx < stackTraceElts.length; stidx++) {
             stackTraceElts[stidx] = String.format(Locale.getDefault(), "L%02d| %s", stidx + 1, stackTraceEltsInit[stidx].toString());
         }
         stackTraceText += String.join("\n", stackTraceElts);
+        stackTraceText += "\n\nDetailed Stack Trace:\n" + stackTracePrintStr.toString() + "\n\n";
+        if(enumerateCauseExcpt && ex.getCause() != null) {
+            stackTraceText += "**Stack Trace for Causal Exception:**\n" + getStackTraceAsText(ex.getCause(), false);
+        }
         return stackTraceText;
+    }
+
+    public static String getStackTraceAsText(Throwable ex) {
+        return getStackTraceAsText(ex, true);
     }
 
     public static void dismissAndroidKeyboard(ChameleonMiniLiveDebuggerActivity activity) {
