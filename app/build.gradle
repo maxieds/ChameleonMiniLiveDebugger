@@ -182,7 +182,7 @@ android {
         implementation 'org.antlr:antlr4:4.9.1'
         implementation 'com.github.felHR85:UsbSerial:4.5.2'
         implementation 'com.shawnlin:number-picker:2.4.9'
-        implementation 'com.github.maxieds:AndroidFilePickerLight:release-v14'
+        implementation 'com.github.maxieds:AndroidFilePickerLight:release-v15'
     }
 
     repositories {
