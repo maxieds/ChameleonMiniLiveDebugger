@@ -62,8 +62,8 @@ public class ScriptingGUIConsole {
                             Utils.getColorFromTheme(R.attr.colorAccent),
                             Utils.getColorFromTheme(R.attr.colorAccentHighlight)
                     });
-            TextView tvRecordTitleMsg = mainLayoutView.findViewById(R.id.consoleOutputTitleMsgText);
-            tvRecordTitleMsg.setBackground(gradientBg);
+            LinearLayout mainHdrLayout = mainLayoutView.findViewById(R.id.consoleOutputRecordHeaderLayout);
+            mainHdrLayout.setBackground(gradientBg);
             setRecordTitle(recTitleMsg);
         }
 

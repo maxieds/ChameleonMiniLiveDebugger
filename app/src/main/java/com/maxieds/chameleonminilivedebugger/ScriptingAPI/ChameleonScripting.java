@@ -112,7 +112,7 @@ public class ChameleonScripting {
             CHAMIO_DOWNLOAD = ChameleonIO.DOWNLOAD;
             CHAMIO_UPLOAD = ChameleonIO.UPLOAD;
             CHAMIO_WAITING_FOR_XMODEM = ChameleonIO.WAITING_FOR_XMODEM;
-            if(push) {
+            if(serialIOPort != null && push) {
                 SAVED_DEVICE_STATES.push(this);
             }
         }
@@ -140,7 +140,7 @@ public class ChameleonScripting {
                     ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "readonly=%s", READONLY));
                 }
             }
-            if(pop) {
+            if(serialIOPort != null && pop && !SAVED_DEVICE_STATES.empty()) {
                 SAVED_DEVICE_STATES.pop();
             }
         }
@@ -476,8 +476,8 @@ public class ChameleonScripting {
 
         public boolean writeConsoleOutput(String consoleOutputLine) {
             if(consoleOutput != null) {
+                Log.i(TAG, " CONSOLE APPENDED >>> " + consoleOutputLine);
                 consoleOutput.append(consoleOutputLine);
-                Log.i(TAG, " >>> " + consoleOutputLine);
                 return true;
             }
             return false;

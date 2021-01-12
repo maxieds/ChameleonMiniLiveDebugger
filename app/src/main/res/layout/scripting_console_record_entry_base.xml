@@ -50,6 +50,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:textSize="14sp"
         android:textStyle="normal|bold|italic"
         android:typeface="serif"
+        android:visibility="gone"
         />
 
     <View
@@ -58,9 +59,11 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         android:background="?colorPrimaryDark" />
 
     <LinearLayout
+        android:id="@+id/consoleOutputRecordHeaderLayout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_margin="0px"
         >
 
         <ImageView
