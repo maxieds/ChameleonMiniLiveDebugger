@@ -17,3 +17,4 @@ gen/*
 *.zip 
 *.json
 .DS_Store
+.*
