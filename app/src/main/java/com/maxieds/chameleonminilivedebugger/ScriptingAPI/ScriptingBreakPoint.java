@@ -79,6 +79,9 @@ public class ScriptingBreakPoint {
 
     public void initMainLayoutView() {
         ImageButton removeBtn = mainGUILayoutView.findViewById(R.id.scriptingGUIBreakpointRemoveBtn);
+        if(removeBtn == null) {
+            return;
+        }
         removeBtn.setTag((Object) this);
         removeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,6 +93,9 @@ public class ScriptingBreakPoint {
         ImageView activeImageView = mainGUILayoutView.findViewById(R.id.scriptingGUIBreakpointActiveIcon);
         activeImageView.setImageAlpha(DISABLED_IMAGE_ALPHA);
         ImageButton enabledImageButton = mainGUILayoutView.findViewById(R.id.scriptingGUIBreakpointEnableIcon);
+        if(enabledImageButton == null) {
+            return;
+        }
         enabledImageButton.setImageAlpha(ENABLED_IMAGE_ALPHA);
         enabledImageButton.setTag((Object) this);
         enabledImageButton.setOnClickListener(new View.OnClickListener() {
@@ -100,6 +106,9 @@ public class ScriptingBreakPoint {
             }
         });
         ImageButton preserveImageButton = mainGUILayoutView.findViewById(R.id.scriptingGUIBreakpointPreserveIcon);
+        if(preserveImageButton == null) {
+            return;
+        }
         preserveImageButton.setImageAlpha(ENABLED_IMAGE_ALPHA);
         preserveImageButton.setTag((Object) this);
         preserveImageButton.setOnClickListener(new View.OnClickListener() {
@@ -110,8 +119,14 @@ public class ScriptingBreakPoint {
             }
         });
         TextView tvBpTypeDesc = mainGUILayoutView.findViewById(R.id.scriptingGUIBreakpointTypeDesc);
+        if(tvBpTypeDesc == null) {
+            return;
+        }
         tvBpTypeDesc.setText(isLabelType() ? "<BP_LABEL>" : "<BP_LINE>");
         TextView tvBpValue = mainGUILayoutView.findViewById(R.id.scriptingGUIBreakpointLabelValue);
+        if(tvBpValue == null) {
+            return;
+        }
         if(isLabelType) {
             tvBpValue.setText(String.format(Locale.getDefault(), "@%s", getLabel()));
         }

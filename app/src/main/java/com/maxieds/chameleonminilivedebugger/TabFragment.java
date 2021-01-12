@@ -181,6 +181,9 @@ public class TabFragment extends Fragment {
                 return null;
             }
             GridLayout menuItemsNav = (GridLayout) tabInflatedView.findViewById(R.id.tabMenuItemsNav);
+            if(menuItemsNav == null) {
+                return null;
+            }
             menuItemsNav.setColumnCount(tabNumColumns);
             GradientDrawable gradientBg = new GradientDrawable(
                     GradientDrawable.Orientation.BL_TR,

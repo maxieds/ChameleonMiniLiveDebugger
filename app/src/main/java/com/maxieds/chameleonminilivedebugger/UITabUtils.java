@@ -331,6 +331,9 @@ public class UITabUtils {
         if(menuItemIdx == TAB_CONFIG_MITEM_SETTINGS) {
              // allow USB checkbox setup:
              CheckBox cbAllowUSB = tabMainLayoutView.findViewById(R.id.settingsAllowWiredUSB);
+             if(cbAllowUSB == null) {
+                 return false;
+             }
              cbAllowUSB.setChecked(ChameleonSettings.allowWiredUSB);
              cbAllowUSB.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
                  @Override
@@ -344,6 +347,9 @@ public class UITabUtils {
              });
              // allow bluetooth checkbox setup:
              CheckBox cbAllowBT = tabMainLayoutView.findViewById(R.id.settingsAllowBluetooth);
+             if(cbAllowBT == null) {
+                 return false;
+             }
              cbAllowBT.setChecked(ChameleonSettings.allowBluetooth);
              cbAllowBT.setOnClickListener(new View.OnClickListener() {
                  @Override
@@ -402,6 +408,9 @@ public class UITabUtils {
             String btStatus = ((BluetoothSerialInterface) ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX]).isBluetoothEnabled() ? "Enabled" : "Disabled";
             btStatusText.setText(btStatus);
             Button btSettingsBtn = tabMainLayoutView.findViewById(R.id.androidBTSettingsButton);
+            if(btSettingsBtn == null) {
+                return false;
+            }
             btSettingsBtn.setEnabled(ChameleonSettings.allowBluetooth);
             btSettingsBtn.setOnClickListener(new Button.OnClickListener() {
                 @Override
@@ -437,6 +446,9 @@ public class UITabUtils {
             }
             // Chameleon device connect / disconnect buttons:
             Button chamConnectBtn = tabMainLayoutView.findViewById(R.id.connectToDeviceButton);
+            if(chamConnectBtn == null) {
+                return false;
+            }
             chamConnectBtn.setOnClickListener(new Button.OnClickListener() {
                 @Override
                 public void onClick(View btn) {
@@ -451,6 +463,9 @@ public class UITabUtils {
                 }
             });
             Button chamDisconnectBtn = tabMainLayoutView.findViewById(R.id.disconnectFromDeviceButton);
+            if(chamDisconnectBtn == null) {
+                return false;
+            }
             chamDisconnectBtn.setOnClickListener(new Button.OnClickListener() {
                 @Override
                 public void onClick(View btn) {
@@ -467,78 +482,85 @@ public class UITabUtils {
             });
         }
         else if(menuItemIdx == TAB_CONFIG_MITEM_LOGGING) {
-            UITabUtils.connectPeripheralSpinnerAdapterLogMode(tabMainLayoutView, R.id.LogModeSpinner,
-                    R.array.LogModeOptions, ChameleonPeripherals.spinnerLogModeAdapter);
-            String loggingMinDataFieldValue = String.format(Locale.getDefault(), "%d", ChameleonLogUtils.LOGGING_MIN_DATA_BYTES);
-            ((EditText) tabMainLayoutView.findViewById(R.id.loggingLogDataMinBytesField)).setText(loggingMinDataFieldValue);
-            ((EditText) tabMainLayoutView.findViewById(R.id.loggingLogDataMinBytesField)).addTextChangedListener(new TextWatcher() {
-                @Override
-                public void afterTextChanged(Editable s) {
-                    LiveLoggerActivity.getLiveLoggerInstance().actionButtonSetMinimumLogDataLength(null);
-                }
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    LiveLoggerActivity.getLiveLoggerInstance().actionButtonSetMinimumLogDataLength(null);
-                }
-            });
-            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingConfigClearOnNewConnect)).setChecked(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT);
-            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingConfigClearOnNewConnect)).setOnClickListener(new CheckBox.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    CheckBox cb = (CheckBox) view;
-                    ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT = cb.isChecked();
-                    AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE);
-                }
-            });
-            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingConfigCollapseCommonEntries)).setChecked(ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES);
-            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingConfigCollapseCommonEntries)).setOnClickListener(new CheckBox.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    CheckBox cb = (CheckBox) view;
-                    ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES = cb.isChecked();
-                    AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES);
-                }
-            });
-            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingEnableToolbarStatusUpdates)).setChecked(ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES);
-            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingEnableToolbarStatusUpdates)).setOnClickListener(new CheckBox.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    CheckBox cb = (CheckBox) view;
-                    ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES = cb.isChecked();
-                    AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_ENABLE_LIVE_STATUS_UPDATES);
-                    if(ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) {
-                        if(ChameleonSettings.getActiveSerialIOPort() != null) {
-                            ChameleonIO.DeviceStatusSettings.stopPostingStats();
-                            ChameleonIO.DeviceStatusSettings.startPostingStats(0);
+            try {
+                UITabUtils.connectPeripheralSpinnerAdapterLogMode(tabMainLayoutView, R.id.LogModeSpinner,
+                        R.array.LogModeOptions, ChameleonPeripherals.spinnerLogModeAdapter);
+                String loggingMinDataFieldValue = String.format(Locale.getDefault(), "%d", ChameleonLogUtils.LOGGING_MIN_DATA_BYTES);
+                ((EditText) tabMainLayoutView.findViewById(R.id.loggingLogDataMinBytesField)).setText(loggingMinDataFieldValue);
+                ((EditText) tabMainLayoutView.findViewById(R.id.loggingLogDataMinBytesField)).addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        LiveLoggerActivity.getLiveLoggerInstance().actionButtonSetMinimumLogDataLength(null);
+                    }
+
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        LiveLoggerActivity.getLiveLoggerInstance().actionButtonSetMinimumLogDataLength(null);
+                    }
+                });
+                ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingConfigClearOnNewConnect)).setChecked(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT);
+                ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingConfigClearOnNewConnect)).setOnClickListener(new CheckBox.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        CheckBox cb = (CheckBox) view;
+                        ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT = cb.isChecked();
+                        AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE);
+                    }
+                });
+                ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingConfigCollapseCommonEntries)).setChecked(ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES);
+                ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingConfigCollapseCommonEntries)).setOnClickListener(new CheckBox.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        CheckBox cb = (CheckBox) view;
+                        ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES = cb.isChecked();
+                        AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES);
+                    }
+                });
+                ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingEnableToolbarStatusUpdates)).setChecked(ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES);
+                ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingEnableToolbarStatusUpdates)).setOnClickListener(new CheckBox.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        CheckBox cb = (CheckBox) view;
+                        ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES = cb.isChecked();
+                        AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_ENABLE_LIVE_STATUS_UPDATES);
+                        if (ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) {
+                            if (ChameleonSettings.getActiveSerialIOPort() != null) {
+                                ChameleonIO.DeviceStatusSettings.stopPostingStats();
+                                ChameleonIO.DeviceStatusSettings.startPostingStats(0);
+                            }
+                        } else {
+                            if (ChameleonSettings.getActiveSerialIOPort() != null) {
+                                ChameleonIO.DeviceStatusSettings.stopPostingStats();
+                            }
                         }
                     }
-                    else {
-                        if(ChameleonSettings.getActiveSerialIOPort() != null) {
-                            ChameleonIO.DeviceStatusSettings.stopPostingStats();
-                        }
+                });
+                ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingNotifyModeEnableCodecRXEvent)).setChecked(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT);
+                ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingNotifyModeEnableCodecRXEvent)).setOnClickListener(new CheckBox.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        CheckBox cb = (CheckBox) view;
+                        ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_CODECRX_STATUS_INDICATOR = cb.isChecked();
+                        AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_LOGMODE_NOTIFY_CODECRX_EVENTS);
                     }
-                }
-            });
-            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingNotifyModeEnableCodecRXEvent)).setChecked(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT);
-            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingNotifyModeEnableCodecRXEvent)).setOnClickListener(new CheckBox.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    CheckBox cb = (CheckBox) view;
-                    ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_CODECRX_STATUS_INDICATOR = cb.isChecked();
-                    AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_LOGMODE_NOTIFY_CODECRX_EVENTS);
-                }
-            });
-            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingNotifyModeEnableCodecReaderFieldDetected)).setChecked(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT);
-            ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingNotifyModeEnableCodecReaderFieldDetected)).setOnClickListener(new CheckBox.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    CheckBox cb = (CheckBox) view;
-                    ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_RDRFLDDETECT_STATUS_INDICATOR = cb.isChecked();
-                    AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_LOGMODE_NOTIFY_RDRFLDDETECT_EVENTS);
-                }
-            });
+                });
+                ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingNotifyModeEnableCodecReaderFieldDetected)).setChecked(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT);
+                ((CheckBox) tabMainLayoutView.findViewById(R.id.cbLoggingNotifyModeEnableCodecReaderFieldDetected)).setOnClickListener(new CheckBox.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        CheckBox cb = (CheckBox) view;
+                        ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_RDRFLDDETECT_STATUS_INDICATOR = cb.isChecked();
+                        AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_LOGMODE_NOTIFY_RDRFLDDETECT_EVENTS);
+                    }
+                });
+            } catch(Exception ex) {
+                ex.printStackTrace();
+                return false;
+            }
         }
         else if(menuItemIdx == TAB_CONFIG_MITEM_SCRIPTING) {
             ScriptingGUIMain.initializeScriptingConfigGUI(tabMainLayoutView);

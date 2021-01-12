@@ -64,6 +64,9 @@ public class ScriptingGUIMain {
         EditText selectedScriptText = cfgBaseLayout.findViewById(R.id.scriptingLoadImportTabScriptFileText);
         ScriptingGUIMain.displayEditTextValue(ScriptingConfig.LAST_SCRIPT_LOADED_PATH, selectedScriptText);
         Button setLoadedScriptBtn = cfgBaseLayout.findViewById(R.id.scriptingLoadImportTabScriptFileSetBtn);
+        if(setLoadedScriptBtn == null) {
+            return false;
+        }
         setLoadedScriptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View cbView) {
@@ -85,6 +88,9 @@ public class ScriptingGUIMain {
         /* Setup breakpoints GUI displays: */
         ScriptingBreakPoint.breakpointsGUIDisplayContainer = (LinearLayout) cfgBaseLayout.findViewById(R.id.scriptingMainTabBreakpointsListView);
         ImageButton addBPLineBtn = cfgBaseLayout.findViewById(R.id.scriptingBPAddLineAppendBtn);
+        if(addBPLineBtn == null) {
+            return false;
+        }
         addBPLineBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View cbView) {
@@ -102,6 +108,9 @@ public class ScriptingGUIMain {
             }
         });
         ImageButton addBPLabelBtn = cfgBaseLayout.findViewById(R.id.scriptingBPAddLabelAppendBtn);
+        if(addBPLabelBtn == null) {
+            return false;
+        }
         addBPLabelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View cbView) {

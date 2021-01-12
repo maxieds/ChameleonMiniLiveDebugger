@@ -162,6 +162,15 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
           Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
                @Override
                public void uncaughtException(Thread paramThread, Throwable paramExcpt) {
+
+                    // For debugging with logcat:
+                    paramExcpt.printStackTrace();
+                    Throwable[] suppressedExcptLst = paramExcpt.getSuppressed();
+                    for(Throwable thEx : suppressedExcptLst) {
+                         thEx.printStackTrace();
+                    }
+
+                    // Start the crash report activity to display a pleasant error explanation to users:
                     ChameleonIO.DeviceStatusSettings.stopPostingStats();
                     Intent startCrashRptIntent = new Intent(liveLoggerActivityContext, CrashReportActivity.class);
                     startCrashRptIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
