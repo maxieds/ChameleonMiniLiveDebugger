@@ -338,10 +338,14 @@ public class UITabUtils {
              cbAllowUSB.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
                  @Override
                  public void onCheckedChanged(CompoundButton cb, boolean checked) {
-                     ChameleonSettings.allowWiredUSB = checked;
-                     if(ChameleonSettings.getActiveSerialIOPort() == null) {
-                         ChameleonSettings.stopSerialIOConnectionDiscovery();
-                         ChameleonSettings.initializeSerialIOConnections();
+                     try {
+                         ChameleonSettings.allowWiredUSB = checked;
+                         if (ChameleonSettings.getActiveSerialIOPort() == null) {
+                             ChameleonSettings.stopSerialIOConnectionDiscovery();
+                             ChameleonSettings.initializeSerialIOConnections();
+                         }
+                     } catch(Exception ex) {
+                         ex.printStackTrace();
                      }
                  }
              });
@@ -354,13 +358,16 @@ public class UITabUtils {
              cbAllowBT.setOnClickListener(new View.OnClickListener() {
                  @Override
                  public void onClick(View cbView) {
-                     CheckBox cb = (CheckBox) cbView;
-                     ChameleonSettings.allowBluetooth = cb.isChecked();
-                     AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.ALLOW_BLUETOOTH_PREFERENCE);
-                     if(ChameleonSettings.getActiveSerialIOPort() == null) {
-                         ChameleonSettings.stopSerialIOConnectionDiscovery();
-                         ChameleonSettings.initializeSerialIOConnections();
-                     }
+                     try {
+                         CheckBox cb = (CheckBox) cbView;
+                         ChameleonSettings.allowBluetooth = cb.isChecked();
+                         AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.ALLOW_BLUETOOTH_PREFERENCE);
+                         if (ChameleonSettings.getActiveSerialIOPort() == null) {
+                             ChameleonSettings.stopSerialIOConnectionDiscovery();
+                             ChameleonSettings.initializeSerialIOConnections();
+                         }
+                     } catch(Exception ex) {
+                     ex.printStackTrace();
                  }
              });
              // bi/unidirectional sniffing checkbox setup:
