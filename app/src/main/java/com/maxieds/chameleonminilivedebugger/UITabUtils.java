@@ -367,7 +367,8 @@ public class UITabUtils {
                              ChameleonSettings.initializeSerialIOConnections();
                          }
                      } catch(Exception ex) {
-                     ex.printStackTrace();
+                         ex.printStackTrace();
+                     }
                  }
              });
              // bi/unidirectional sniffing checkbox setup:
