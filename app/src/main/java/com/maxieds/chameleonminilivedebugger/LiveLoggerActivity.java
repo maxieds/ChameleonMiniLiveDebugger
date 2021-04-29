@@ -945,4 +945,9 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
           ScriptingGUIMain.scriptGUIHandlePerformTaskClick((Button) view, view.getTag().toString());
      }
 
+     public void copyButtonTagToClipboard(View btn) {
+          String clipBoardText = ((Button) btn).getTag().toString();
+          Utils.copyTextToClipboard(this, clipBoardText, true);
+     }
+
 }

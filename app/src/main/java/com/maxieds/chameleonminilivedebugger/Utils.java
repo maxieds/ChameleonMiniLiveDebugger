@@ -17,6 +17,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
@@ -542,6 +544,16 @@ public class Utils {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         if(imm.isAcceptingText()) {
             imm.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
+    public static void copyTextToClipboard(ChameleonMiniLiveDebuggerActivity activityCtx, String textToCopy, boolean showToastStatus) {
+        ClipboardManager clipboard = (ClipboardManager) activityCtx.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clipData = ClipData.newPlainText("CMLD Find Scripts URL", textToCopy);
+        clipboard.setPrimaryClip(clipData);
+        if(showToastStatus) {
+            String toastMsg = "Copied URL to Clipboard:\n" + textToCopy;
+            Utils.displayToastMessage(activityCtx, toastMsg, Toast.LENGTH_SHORT);
         }
     }
 

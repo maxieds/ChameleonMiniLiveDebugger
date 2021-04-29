@@ -376,6 +376,60 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
             <View
                 android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="?colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/locate_scripts24"
+                android:drawablePadding="5dp"
+                android:paddingLeft="10dp"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:text="Find Sample Scripts:"
+                android:textAllCaps="true"
+                android:textSize="18sp"
+                android:textStyle="bold|italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="1"
+                android:padding="0dp">
+
+                <Button
+                    style="@style/GridButtonsNoWidth"
+                    android:layout_columnWeight="1.0"
+                    android:layout_weight="1.0"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:layout_gravity="center_vertical|left"
+                    android:drawableLeft="@drawable/copy24"
+                    android:drawablePadding="8dp"
+                    android:paddingLeft="10dp"
+                    android:text="Copy link to sample scripts  "
+                    android:tag="https://github.com/maxieds/ChameleonMiniLiveDebugger/tree/master/app/src/main/SampleScripts"
+                    android:onClick="copyButtonTagToClipboard" />
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <View
+                android:layout_width="match_parent"
                 android:layout_height="4dp"
                 android:background="@android:color/transparent" />
 

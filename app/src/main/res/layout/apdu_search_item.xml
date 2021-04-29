@@ -85,7 +85,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:textAllCaps="true"
             android:textSize="12.5sp"
             android:textStyle="normal"
-            android:onClick="actionButtonAPDUCopyCmd"
             android:text="COPY" />
 
     </RelativeLayout>
