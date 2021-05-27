@@ -17,6 +17,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
+import android.util.Log;
+
 import java.util.Locale;
 
 public class ScriptingExceptions {
@@ -53,6 +55,8 @@ public class ScriptingExceptions {
 
         public ChameleonScriptingException(ExceptionType exType) {
             super(exType.name());
+            Log.i(TAG, exType.name());
+            this.printStackTrace();
         }
 
         public ChameleonScriptingException(ExceptionType exType, String msg) {

@@ -37,10 +37,8 @@ public class ChameleonScriptVisitorExtended extends ChameleonScriptParserBaseVis
 
     public ScriptVariable visitWhile_loop(ChameleonScriptParser.While_loopContext ctx) {
         setActiveLineOfCode(ctx);
-        ScriptVariable boolPreCond = this.visit(ctx.oe);
-        while(boolPreCond.getValueAsBoolean()) {
+        while(visit(ctx.oe.getRuleContext()).getValueAsBoolean()) {
             this.visit(ctx.scrLineBlk);
-            boolPreCond = this.visit(ctx.oe);
         }
         return ScriptVariable.newInstance();
     }

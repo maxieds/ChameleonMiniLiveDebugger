@@ -79,8 +79,8 @@ android {
         minSdkVersion 29
         targetSdkVersion 29
         compileSdkVersion 29
-        versionCode 96 + 8080
-        versionName "1.3.4"
+        versionCode 99 + 8080
+        versionName "1.3.7"
         multiDexEnabled true
 
         buildConfigField "String", "GIT_COMMIT_HASH", "\"" + getGitCommitHash() + "\""
@@ -109,12 +109,14 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             crunchPngs false
+            debuggable false
         }
         debug {
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             crunchPngs false
+            debuggable true
         }
     }
     buildToolsVersion '30.0.1'

@@ -330,7 +330,7 @@ public class ScriptingGUIConsole {
                         @Override
                         public void run() {
                             ScrollView mainLayoutScroller = (ScrollView) TabFragment.UITAB_DATA[TabFragment.TAB_SCRIPTING].tabMenuItemLayouts[TabFragment.TAB_SCRIPTING_MITEM_CONSOLE_VIEW].findViewById(R.id.scriptingTabConsoleViewMainLayoutScroller);
-                            if (mainLayoutScroller == null) {
+                            if (mainLayoutScroller == null || consoleViewMainLayout.getChildCount() == 0) {
                                 return;
                             }
                             LinearLayout lastRecordElt = (LinearLayout) consoleViewMainLayout.getChildAt(consoleViewMainLayout.getChildCount() - 1);

@@ -114,6 +114,7 @@ ArrayReverseFuncName:          'Reverse(' ;
 ArrayPadLeftFuncName:          'PadLeft(' ;
 ArrayPadRightFuncName:         'PadRight(' ;
 GetSubarrayFuncName:           'GetSubarray(' ;
+ArrayToStringFuncName:         'ArrayToString(' ;
 GetConstantStringFuncName:     'GetConstantString(' ;
 GetConstantByteArrayFuncName:  'GetConstantArray(' ;
 GetIntegersFromRangeFuncName:  'IntegerRange(' ;
@@ -121,7 +122,8 @@ GetIntegersFromRangeFuncName:  'IntegerRange(' ;
 UtilityFunctions:              GetTimestampFuncName |
                                MemoryXORFuncName | MaxFuncName | MinFuncName |
                                ArrayReverseFuncName | ArrayPadLeftFuncName | ArrayPadRightFuncName |
-                               GetSubarrayFuncName | GetConstantStringFuncName | GetConstantByteArrayFuncName |
+                               GetSubarrayFuncName | ArrayToStringFuncName |
+                               GetConstantStringFuncName | GetConstantByteArrayFuncName |
                                GetIntegersFromRangeFuncName ;
 
 /**** Loops and conditional blocks: ****/
@@ -142,6 +144,9 @@ CStyleBlockComment:    '/*'.*?'*/' -> channel(HIDDEN) ;
 CStyleLineComment:     '//'~[\n]* ('\n'|EOF) -> channel(HIDDEN) ;
 HashStyleLineComment:  '#'~[\n]*  ('\n'|EOF) -> channel(HIDDEN) ;
 
+EqualsComparisonOperator: '==' ;
+NotEqualsComparisonOperator: '!=' ;
+PlusEqualsOperator: '+=' ;
 DefEqualsOperator: '=' | ':=' ;
 ExecCommandStartSymbol: '$$(' ;
 TernaryOperatorFirstSymbol: '?' ;
@@ -152,11 +157,11 @@ CommaSeparator: ',' ;
 OpenParens: '(' ;
 ClosedParens: ')' ;
 ColonSeparator: ':' ;
+DoubleOpenCurlyBrace: '{{' ;
 OpenBrace: '{' ;
+DoubleClosedCurlyBrace: '}}' ;
 ClosedBrace: '}' ;
 
-EqualsComparisonOperator: '==' ;
-NotEqualsComparisonOperator: '!=' ;
 LogicalAndOperator: '&&' | 'and' ;
 LogicalOrOperator: '||' | 'or' ;
 LogicalNotOperator: '!' | 'not' ;
@@ -167,9 +172,9 @@ BitwiseOrOperator: '|' ;
 BitwiseXorOperator: '^' ;
 BitwiseNotOperator: '~' ;
 ArithmeticPlusOperator: '+' ;
-PlusEqualsOperator: '+=' ;
-UnaryIncrementOperator: '++' ; // TODO
-UnaryDecrementOperator: '--' ; // TODO
+
+//UnaryIncrementOperator: '++' ;
+//UnaryDecrementOperator: '--' ;
 
 TypeCastByte: '(Byte)' ;
 TypeCastBytes: '(Bytes)' ;

@@ -39,6 +39,8 @@ public class ScriptingFunctions {
     public static ScriptVariable callFunction(String funcName, List<ScriptVariable> funcArgs) throws ChameleonScriptingException {
         // The argument list is passed in reverse default from the parser:
         Collections.reverse(funcArgs);
+        Log.w(TAG, "Script: Calling function '" + funcName + "'");
+        printFunctionArgumentList(funcName, funcArgs);
         switch(funcName) {
             case "Exit":
                 return ScriptingFunctions.ScriptingAPIFunctions.Exit(funcArgs);
@@ -118,6 +120,8 @@ public class ScriptingFunctions {
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
             case "GetSubarray":
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+            case "ArrayToString":
+                return ScriptingFunctions.ScriptingAPIFunctions.ArrayToString(funcArgs);
             case "GetConstantString":
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
             case "IntegerRange":
@@ -358,6 +362,25 @@ public class ScriptingFunctions {
                 }
                 return new ScriptVariable(strValue.substring(intIndexStartValue, intIndexLengthValue));
             }
+        }
+
+        public static ScriptVariable ArrayToString(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            if (argList.size() != 1) {
+                throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
+            } else if (!argList.get(0).isArrayType()) {
+                throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
+            }
+            String arrReprStr = "{ ";
+            ScriptVariable arrVar = argList.get(0);
+            int arrLength = arrVar.length();
+            Log.i(TAG,"ArrayToString -> Array Length = " + arrLength);
+            for(int ai = 0; ai < arrLength; ai++) {
+                String nextSpace = (ai + 1 == arrLength) ? " " : ", ";
+                arrReprStr += String.format(Locale.getDefault(), "%s%s", arrVar.getValueAt(ai).getValueAsString(), nextSpace);
+            }
+            arrReprStr += "}";
+            Log.i(TAG, "ArrayToString -> \"" + arrReprStr + "\"");
+            return new ScriptVariable(arrReprStr);
         }
 
     };

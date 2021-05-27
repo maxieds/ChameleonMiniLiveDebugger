@@ -98,6 +98,11 @@ public class ScriptingTypes {
             set(strLiteral);
         }
 
+        public ScriptVariable(List<ScriptVariable> listItems) {
+            setLocalVariableDefaults();
+            setArrayListItems(listItems);
+        }
+
         public ScriptVariable setName(String nextVarName) {
             varName = nextVarName;
             return this;
@@ -416,10 +421,7 @@ public class ScriptingTypes {
                 return getValueAsString().length();
             }
             else if(varType != VariableType.VariableTypeArrayMap) {
-                return arrayList.size() + hashMap.size();
-            }
-            else if(varType != VariableType.VariableTypeNone) {
-                return 1;
+                return arrayList.size();
             }
             return 0;
         }
@@ -554,6 +556,7 @@ public class ScriptingTypes {
                 else {
                     throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.ArithmeticErrorException);
                 }
+                Log.i(TAG, "BINARY-OP: New Value " + getValueAsString());
                 return this;
             }
             else if(opType == Operation.BINOP_PLUS) {
@@ -580,13 +583,19 @@ public class ScriptingTypes {
         }
 
         public ScriptVariable setArrayListItems(ScriptVariable[] listItems) {
-            if(getType() == VariableType.VariableTypeArrayMap) {
-                for(ScriptVariable svar : listItems) {
-                    arrayList.add(svar);
-                }
-                return this;
+            varType = VariableType.VariableTypeArrayMap;
+            for(ScriptVariable svar : listItems) {
+                arrayList.add(svar);
             }
-            throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.IllegalOperationException);
+            return this;
+        }
+
+        public ScriptVariable setArrayListItems(List<ScriptVariable> listItems) {
+            varType = VariableType.VariableTypeArrayMap;
+            for(ScriptVariable svar : listItems) {
+                arrayList.add(svar);
+            }
+            return this;
         }
 
     }

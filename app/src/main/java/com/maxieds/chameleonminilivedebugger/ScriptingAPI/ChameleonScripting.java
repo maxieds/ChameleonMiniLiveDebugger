@@ -455,11 +455,17 @@ public class ChameleonScripting {
 
         public ScriptingTypes.ScriptVariable lookupVariableByName(String varName) throws ScriptingExceptions.ChameleonScriptingException {
             ScriptingTypes.ScriptVariable svar = scriptVariablesHashMap.get(varName);
+            Log.i(TAG, String.format(Locale.getDefault(), "LOOKED UP (%s) -> VARBYNAME = %s", varName, svar.getName()));
             return svar;
         }
 
         public void setVariableByName(String varName, ScriptingTypes.ScriptVariable scriptVar) throws ScriptingExceptions.ChameleonScriptingException {
-            scriptVariablesHashMap.put(varName, scriptVar);
+            if(scriptVariablesHashMap.get(varName) == null) {
+                scriptVariablesHashMap.put(varName, scriptVar);
+            }
+            else {
+                scriptVariablesHashMap.replace(varName, scriptVar);
+            }
         }
 
         public boolean writeLogFile(String logLine) {
