@@ -337,19 +337,6 @@ scripting_api_function_result returns [ScriptVariable svar]:
      }
      ;
 
-array_literal_list returns [List<ScriptVariable> arrElts]:
-     curArrElt=operand_expression {
-          $arrElts=new ArrayList<ScriptVariable>();
-          $arrElts.add($curArrElt.svar);
-     }
-     |
-      curArrElt=operand_expression CommaSeparator prevArrElts=array_literal_list {
-          $prevArrElts.arrElts.add($curArrElt.svar);
-          $arrElts=$prevArrElts.arrElts;
-          Log.i("PARSER-G4", $curArrElt.svar.getValueAsString());
-     }
-     ;
-
 operand_expression_v7 returns [ScriptVariable svar]:
      oe=operand_expression_v6 {
           $svar=$oe.svar;
@@ -362,6 +349,25 @@ operand_expression_v7 returns [ScriptVariable svar]:
      funcResult=scripting_api_function_result {
           $svar=$funcResult.svar;
      }
+     ;
+
+array_literal_list returns [List<ScriptVariable> arrElts]:
+     curArrElt=operand_expression_v7 {
+          $arrElts=new ArrayList<ScriptVariable>();
+          $arrElts.add($curArrElt.svar);
+     }
+     |
+      curArrElt=operand_expression_v7 CommaSeparator prevArrElts=array_literal_list {
+          $prevArrElts.arrElts.add($curArrElt.svar);
+          $arrElts=$prevArrElts.arrElts;
+          Log.i("PARSER-G4", $curArrElt.svar.getValueAsString());
+     }
+     ;
+
+operand_expression_v72 returns [ScriptVariable svar]:
+     oe=operand_expression_v7 {
+          $svar=$oe.svar;
+     }
      |
      DoubleOpenCurlyBrace arr=array_literal_list DoubleClosedCurlyBrace {
           $svar=new ScriptVariable($arr.arrElts);
@@ -369,20 +375,20 @@ operand_expression_v7 returns [ScriptVariable svar]:
      ;
 
 assignment_operation returns [ScriptVariable svar]:
-     lhs=variable_reference DefEqualsOperator rhs=operand_expression_v7 {
+     lhs=variable_reference DefEqualsOperator rhs=operand_expression_v72 {
           $svar=$rhs.svar;
           ChameleonScripting.getRunningInstance().setVariableByName($lhs.svar.getName(), $svar);
           Log.i("PARSER-G4", ":= LHS VAR NAME = " + $lhs.svar.getName() + ", NEW VALUE = " + $svar.getValueAsString());
      }
      |
-     lhs=variable_reference PlusEqualsOperator rhs=operand_expression_v7 {
+     lhs=variable_reference PlusEqualsOperator rhs=operand_expression_v72 {
           $svar=$lhs.svar.binaryOperation(ScriptVariable.Operation.BINOP_PLUS, $rhs.svar);
           ChameleonScripting.getRunningInstance().setVariableByName($lhs.svar.getName(), $svar);
      }
      ;
 
 operand_expression_v8 returns [ScriptVariable svar]:
-     oe=operand_expression_v7 {
+     oe=operand_expression_v72 {
           $svar=$oe.svar;
      }
      |
