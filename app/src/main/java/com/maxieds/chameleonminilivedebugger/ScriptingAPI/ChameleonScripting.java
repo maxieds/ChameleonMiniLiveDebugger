@@ -316,8 +316,8 @@ public class ChameleonScripting {
                         scriptParser.removeErrorListeners();
                         scriptErrorListener = new ChameleonScriptErrorListener();
                         scriptParser.addErrorListener(scriptErrorListener);
-                        scriptParser.setBuildParseTree(true);
-                        scriptParseTree = scriptParser.file_contents().getChild(0);
+                        //scriptParser.setBuildParseTree(true);
+                        //scriptParseTree = scriptParser.file_contents().getChild(0);
                         scriptVisitor = new ChameleonScriptVisitorExtended(getRunningInstance());
                     } catch(IOException ioe) {
                         ioe.printStackTrace();
@@ -344,7 +344,8 @@ public class ChameleonScripting {
                         setTimeLimitHandler.postDelayed(enforceTimeLimitRunnable, execTimeLimit * 1000);
                     }
 
-                    scriptVisitor.visit(scriptParseTree);
+                    scriptVisitor.visit(scriptParser.file_contents());
+                    //scriptVisitor.visit(scriptParseTree);
                     writeLogFile(String.format(Locale.getDefault(), "TEXT PARSE TREE for file \"%s\":\n\n%s\n", scriptFilePath, scriptParseTree.toStringTree()));
                     runningTime = System.currentTimeMillis() - lastStartTime;
                     setTimeLimitHandler.removeCallbacks(enforceTimeLimitRunnable);

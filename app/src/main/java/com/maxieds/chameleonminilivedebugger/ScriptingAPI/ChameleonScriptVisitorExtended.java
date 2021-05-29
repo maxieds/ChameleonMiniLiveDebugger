@@ -17,6 +17,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
+import android.util.Log;
+
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingTypes.ScriptVariable;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScripting.ChameleonScriptInstance;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParser;
@@ -35,42 +37,50 @@ public class ChameleonScriptVisitorExtended extends ChameleonScriptParserBaseVis
         scriptContext = ctxInstance;
     }
 
+    @Override
     public ScriptVariable visitWhile_loop(ChameleonScriptParser.While_loopContext ctx) {
         setActiveLineOfCode(ctx);
-        while(visit(ctx.oe.getRuleContext()).getValueAsBoolean()) {
+        Log.i(TAG, "Before WHILE BLOCK");
+        while(this.visit(ctx.oe).getValueAsBoolean()) {
             this.visit(ctx.scrLineBlk);
+            Log.i(TAG, "Visiting WHILE BLOCK");
         }
-        return ScriptVariable.newInstance();
+        return this.visitChildren(ctx);
     }
 
+    @Override
     public ScriptVariable visitIf_block(ChameleonScriptParser.If_blockContext ctx) {
         setActiveLineOfCode(ctx);
         ScriptVariable boolPreCond = this.visit(ctx.oe);
         if(boolPreCond.getValueAsBoolean()) {
             this.visit(ctx.scrLineBlk);
+            Log.i(TAG, "Visiting IF (SG) BLOCK");
         }
-        return ScriptVariable.newInstance();
+        return this.visitChildren(ctx);
     }
 
+    @Override
     public ScriptVariable visitIfelse_block(ChameleonScriptParser.Ifelse_blockContext ctx) {
         setActiveLineOfCode(ctx);
-        ScriptVariable boolPreCond = this.visit(ctx.ifoe);
-        if(boolPreCond.getValueAsBoolean()) {
+        if(this.visit(ctx.ifoe).getValueAsBoolean()) {
             this.visit(ctx.scrLineBlkIf);
+            Log.i(TAG, "Visiting IF BLOCK");
         }
         else {
             this.visit(ctx.scrLineBlkElse);
+            Log.i(TAG, "Visiting ELSE BLOCK");
         }
-        return ScriptVariable.newInstance();
+        return this.visitChildren(ctx);
     }
 
+    @Override
     public ScriptVariable visitLabel_statement(ChameleonScriptParser.Label_statementContext ctx) {
         setActiveLineOfCode(ctx);
         String labelName = ctx.lblNameWithSep.getText().replaceAll(":", "");
         if(ScriptingBreakPoint.searchBreakpointByLineLabel(labelName)) {
             scriptContext.postBreakpointLabel(labelName, ctx);
         }
-        return ScriptVariable.newInstance();
+        return this.visitChildren(ctx);
     }
 
     @Override

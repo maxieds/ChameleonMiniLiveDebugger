@@ -81,19 +81,6 @@ variable_reference returns [ScriptVariable svar]:
      }
      ;
 
-array_literal_list returns [List<ScriptVariable> arrElts]:
-      curArrElt=operand_expression CommaSeparator prevArrElts=array_literal_list {
-          $prevArrElts.arrElts.add(0, $currArrElt.svar);
-          $arrElts=$prevArrElts.arrElts;
-          Log.i("PARSER-G4", $curArrElt.svar.getValueAsString());
-     }
-     |
-     curArrElt=operand_expression {
-          $arrElts=new ArrayList<ScriptVariable>();
-          $arrElts.add($curArrElt.svar);
-     }
-     ;
-
 type_literal returns [ScriptVariable svar]:
      dl=DecimalLiteral   { $svar=ScriptVariable.parseInt($dl.text); }
      |
@@ -117,8 +104,6 @@ type_literal returns [ScriptVariable svar]:
      qsl=quoted_string_literal { $svar=$qsl.svar; }
      |
      ob=OpenBrace bll=byte_literal_list cb=ClosedBrace { $svar=$bll.svar; }
-     |
-     DoubleOpenCurlyBrace arr=array_literal_list DoubleClosedCurlyBrace { $svar=new ScriptVariable($arr.arrElts); }
      ;
 
 quoted_string_literal returns [ScriptVariable svar]:
@@ -352,6 +337,19 @@ scripting_api_function_result returns [ScriptVariable svar]:
      }
      ;
 
+array_literal_list returns [List<ScriptVariable> arrElts]:
+     curArrElt=operand_expression {
+          $arrElts=new ArrayList<ScriptVariable>();
+          $arrElts.add($curArrElt.svar);
+     }
+     |
+      curArrElt=operand_expression CommaSeparator prevArrElts=array_literal_list {
+          $prevArrElts.arrElts.add($curArrElt.svar);
+          $arrElts=$prevArrElts.arrElts;
+          Log.i("PARSER-G4", $curArrElt.svar.getValueAsString());
+     }
+     ;
+
 operand_expression_v7 returns [ScriptVariable svar]:
      oe=operand_expression_v6 {
           $svar=$oe.svar;
@@ -363,6 +361,10 @@ operand_expression_v7 returns [ScriptVariable svar]:
      |
      funcResult=scripting_api_function_result {
           $svar=$funcResult.svar;
+     }
+     |
+     DoubleOpenCurlyBrace arr=array_literal_list DoubleClosedCurlyBrace {
+          $svar=new ScriptVariable($arr.arrElts);
      }
      ;
 

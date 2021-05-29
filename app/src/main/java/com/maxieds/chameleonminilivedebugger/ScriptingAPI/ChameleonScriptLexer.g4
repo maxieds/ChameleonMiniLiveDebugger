@@ -141,7 +141,8 @@ QuotedRawStringLiteral: 'r\'' (~[\\"] | '\\' [a-z0-9])* '\'' ;
 WhiteSpace:            [ \t\r\u000C]+ -> channel(HIDDEN) ;
 NewLine:               ('\n' ('\n\n')*)+ -> channel(HIDDEN) ;
 CStyleBlockComment:    '/*'.*?'*/' -> channel(HIDDEN) ;
-CStyleLineComment:     '//'~[\n]* ('\n'|EOF) -> channel(HIDDEN) ;
+//CStyleLineComment:     '//'~[\n]* ('\n'|EOF) -> channel(HIDDEN) ;
+CStyleLineComment:     '//' ~[\r\n]* '\r'? '\n' -> channel(HIDDEN) ;
 HashStyleLineComment:  '#'~[\n]*  ('\n'|EOF) -> channel(HIDDEN) ;
 
 EqualsComparisonOperator: '==' ;
