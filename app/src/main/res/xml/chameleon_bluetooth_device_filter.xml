@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+This program (The Chameleon Mini Live Debugger) is free software written by
+Maxie Dion Schmidt: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+The complete license provided with source distributions of this library is
+available at the following link:
+https://github.com/maxieds/ChameleonMiniLiveDebugger
+-->
+
+<resources>
+
+    <bluetooth-device uuid="51510001-7969-6473-6f40-6b6f6c6c6957" name="BLE-Chameleon" />
+    <bluetooth-device uuid="51510002-7969-6473-6f40-6b6f6c6c6957" name="BLE-Chameleon" />
+    <bluetooth-device uuid="51510003-7969-6473-6f40-6b6f6c6c6957" name="BLE-Chameleon" />
+    <bluetooth-device uuid="51510001-7969-6473-6f40-6b6f6c6c6957" name="ChameleonTiny" />
+    <bluetooth-device uuid="51510002-7969-6473-6f40-6b6f6c6c6957" name="ChameleonTiny" />
+    <bluetooth-device uuid="51510003-7969-6473-6f40-6b6f6c6c6957" name="ChameleonTiny" />
+    <bluetooth-device uuid="52520003-7969-6473-6f40-6b6f6c6c6957" name="Chameleon" />
+    <bluetooth-device uuid="00002902-0000-1000-8000-00805f9b34fb" name="Chameleon" />
+
+</resources>

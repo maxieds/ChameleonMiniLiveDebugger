@@ -29,6 +29,8 @@
     <uses-permission android:name="android.permission.USB_PERMISSION" android:required="true" />
     <uses-permission android:name="android.permission.BLUETOOTH" android:required="false" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:required="false" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" android:required="false" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:required="false" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:required="false" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:required="false" />
     <uses-permission android:name="android.permission.VIBRATE" android:required="true" />
@@ -81,7 +83,7 @@
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
                 <category android:name="android.intent.category.HOME" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
             </intent-filter>
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
@@ -103,9 +105,14 @@
                 />
 
             <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
                 <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
             </intent-filter>
+            <meta-data
+                android:name="android.hardware.usb.action.ACL_CONNECTED"
+                android:resource="@xml/chameleon_bluetooth_device_filter"
+                />
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
