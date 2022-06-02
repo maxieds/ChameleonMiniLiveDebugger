@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.maxieds.chameleonminilivedebugger"
-    android:installLocation="preferExternal" >
 
 <!--
     This program (The Chameleon Mini Live Debugger) is free software written by
@@ -21,26 +17,92 @@
     https://github.com/maxieds/ChameleonMiniLiveDebugger
 -->
 
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.maxieds.chameleonminilivedebugger"
+    android:installLocation="preferExternal" >
+
     <protected-broadcast android:name="android.hardware.usb.action.USB_STATE" />
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:required="true" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:required="true" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.USB_PERMISSION" android:required="true" />
-    <uses-permission android:name="android.permission.BLUETOOTH" android:required="false" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:required="false" />
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" android:required="false" />
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:required="false" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:required="false" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:required="false" />
-    <uses-permission android:name="android.permission.VIBRATE" android:required="true" />
+    <permission-group
+        android:name="CMLD.permission-group.MINIMAL_APP_REQUIREMENTS"
+        android:label="@string/cmld_permgroup_minimal"
+        android:icon="${appRoundIcon}"
+        android:description="@string/cmld_permgroup_minimal"
+        />
+    <uses-permission
+        android:name="android.permission.INTERNET"
+        android:permissionGroup="CMLD.permission-group.MINIMAL_APP_REQUIREMENTS"
+        />
+    <uses-permission
+        android:name="android.permission.USB_PERMISSION"
+        android:permissionGroup="CMLD.permission-group.MINIMAL_APP_REQUIREMENTS"
+        android:required="true"
+        />
+    <uses-permission
+        android:name="android.permission.ACCESS_FINE_LOCATION"
+        android:permissionGroup="CMLD.permission-group.MINIMAL_APP_REQUIREMENTS"
+        android:required="false"
+        />
+    <uses-permission
+        android:name="android.permission.ACCESS_COARSE_LOCATION"
+        android:permissionGroup="CMLD.permission-group.MINIMAL_APP_REQUIREMENTS"
+        android:required="false"
+        />
+    <uses-permission
+        android:name="android.permission.VIBRATE"
+        android:permissionGroup="CMLD.permission-group.MINIMAL_APP_REQUIREMENTS"
+        android:required="true"
+        />
+
+    <permission-group
+        android:name="CMLD.permission-group.FILES_AND_STORAGE"
+        android:label="@string/cmld_permgroup_storage"
+        android:icon="${appRoundIcon}"
+        android:description="@string/cmld_permgroup_storage"
+        />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:permissionGroup="CMLD.permission-group.FILES_AND_STORAGE"
+        android:required="true"
+        />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:permissionGroup="CMLD.permission-group.FILES_AND_STORAGE"
+        android:required="true"
+        />
+
+    <permission-group
+        android:name="CMLD.permission-group.BLUETOOTH_COMPENDIA"
+        android:label="@string/cmld_permgroup_bluetooth"
+        android:icon="${appRoundIcon}"
+        android:description="@string/cmld_permgroup_bluetooth"
+        />
+    <uses-permission
+        android:name="android.permission.BLUETOOTH"
+        android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
+        android:required="false"
+        />
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_ADMIN"
+        android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
+        android:required="false"
+        />
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_CONNECT"
+        android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
+        android:required="false"
+        />
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_SCAN"
+        android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
+        android:required="false"
+        />
 
     <uses-feature android:name="android.hardware.usb.host" android:required="true" />
     <uses-feature android:name="android.hardware.usb.accessory" android:required="false" />
     <uses-feature android:name="android.bluetooth" android:required="false" />
     <uses-feature android:name="android.bluetooth.le" android:required="false" />
-
-    <!-- TODO: See https://developer.android.com/guide/topics/manifest/permission-group-element -->
 
     <application
         android:name=".ChameleonMiniLiveDebugger"
@@ -57,12 +119,12 @@
         android:supportsRtl="true"
         android:manageSpaceActivity=".LiveLoggerActivity"
         android:defaultToDeviceProtectedStorage="true"
+        android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="false"
         android:installLocation="${installLocation}"
         tools:replace="android:installLocation"
         android:allowBackup="true"
         >
-        <!--tools:replace="android:theme,roundIcon,icon,manageSpaceActivity,name,label,description"-->
 
         <uses-library android:name="com.android.future.usb.accessory" />
 
@@ -83,7 +145,7 @@
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
                 <category android:name="android.intent.category.HOME" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
@@ -96,16 +158,6 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <meta-data
-                android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"
-                android:resource="@xml/custom_usb_device_filter"
-                />
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
                 <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
             </intent-filter>
@@ -113,16 +165,6 @@
                 android:name="android.hardware.usb.action.ACL_CONNECTED"
                 android:resource="@xml/chameleon_bluetooth_device_filter"
                 />
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <!--<category android:name="android.intent.category.IOT_LAUNCHER" />-->
-            </intent-filter>
 
         </activity>
 
@@ -136,6 +178,12 @@
             android:stateNotNeeded="true"
             android:exported="true"
             >
+
+            <intent-filter>
+                <action android:name=".CrashReportActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
         </activity>
 
     </application>
