@@ -39,9 +39,10 @@ def getGitCommitDate() {
     return getShellCommandOutput("git show | grep Date: | head -n 1 | sed -e \"s/Date:[ ]*//\"");
 }
 
-/* NOTE: The gradle plugin with Android does not work, this is a shell command within the
-         standard system paths (make sure the antlr4 command binary version matches
-         the runtime version in the implementation line below, or you will get errors). */
+/* INFO: The gradle plugin with Android does not work, this is a shell command within the
+ *       standard system paths (make sure the antlr -- version 4.x.x -- command binary version matches
+ *       the runtime version in the implementation line below, or you will get errors).
+ */
 def generateAntlrJava(String grammarFile) {
     def scriptRunCmd = "antlr -o app/src/main/antlr-gen -package 'com.maxieds.chameleonminilivedebugger.ScriptingAPI' -Dlanguage=Java" +
             " -listener -visitor -long-messages -lib 'app/src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI'" +
@@ -78,11 +79,11 @@ android {
     defaultConfig {
 
         applicationId "com.maxieds.chameleonminilivedebugger"
-        minSdkVersion 29
+        minSdkVersion 30
         targetSdkVersion 30
-        compileSdkVersion 29
-        versionCode 104 + 8080
-        versionName "1.4.0"
+        compileSdkVersion 30
+        versionCode 105 + 8080
+        versionName "1.4.1"
         multiDexEnabled true
 
         buildConfigField "String", "GIT_COMMIT_HASH", "\"" + getGitCommitHash() + "\""
@@ -93,8 +94,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        /* INFO: Install-from-source users will need to update their JVM to
+         *       Java-11. It is still common to have Java-1.8 installed
+         *       as the default runtime.
+         */
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
     sourceSets {
@@ -121,7 +126,6 @@ android {
             debuggable true
         }
     }
-    buildToolsVersion '30.0.1'
 
     flavorDimensions "mode"
     productFlavors {
@@ -131,7 +135,7 @@ android {
             buildConfigField "boolean",            "PAID_APP_VERSION", "false"
             buildConfigField "boolean",            "REPORT_CRASHES", "false"
             buildConfigField "String",             "BUILD_TIMESTAMP", "\"" + configBuildTimeStamp + "\""
-            resConfigs       "en", "en_US", "en_UK", "de", "fr", "ru"
+            resConfigs 'en', 'en_US', 'en_UK', 'de', 'fr', 'ru'
             manifestPlaceholders = [
                     appLabelDesc       : "@string/app_display_short_name",
                     appIcon            : "@mipmap/chameleon_app_icon_round",
@@ -147,7 +151,7 @@ android {
             buildConfigField "boolean",            "PAID_APP_VERSION", "true"
             buildConfigField "boolean",            "REPORT_CRASHES", "false"
             buildConfigField "String",             "BUILD_TIMESTAMP", "\"" + configBuildTimeStamp + "\""
-            resConfigs       "en", "en_US", "en_UK", "de", "fr", "ru"
+            resConfigs 'en', 'en_US', 'en_UK', 'de', 'fr', 'ru'
             dimension "mode"
             manifestPlaceholders = [
                     appLabelDesc       : "@string/app_display_short_name_paid",

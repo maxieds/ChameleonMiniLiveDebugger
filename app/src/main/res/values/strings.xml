@@ -22,21 +22,16 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     <string name="app_name_file_picker">Chameleon Mini Live Debugger (File Chooser Activity)</string>
     <string name="app_desc">GUI and portable logging interface for the Chameleon Mini NFC pentesting boards</string>
     <string name="appInitialUserGreetingMsg">
-               Thank you for using and testing this Android application!
-               \n\nA detailed man page and instructions for using the
+               A detailed man page and instructions for using the
                \nChameleon Mini Live Debugger (CMLD) are found on
                \nthe project WIKI pages at the next link:
                \nhttps://github.com/maxieds/ChameleonMiniLiveDebugger/wiki
-               \n\n🇺🇸🇺🇸🇺🇸 American hackers stand with the Ukraine 🇺🇦🇺🇦🇺🇦
     </string>
     <string name="appInitialUserGreetingMsgPaid">
-               Thank you for your contribution in purchasing the paid
-               \nflavor of the application!
-               \n\nA detailed man page and instructions for using the
+               A detailed man page and instructions for using the
                \nChameleon Mini Live Debugger (CMLD) are found on
                \nthe project WIKI pages at the next link:
                \nhttps://github.com/maxieds/ChameleonMiniLiveDebugger/wiki
-               \n\nStay safe out there!
     </string>
     <string name="appPaidFlavorDisclaimerEULA">
                This program is distributed in the hope that it will be useful,
@@ -75,6 +70,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     <string name="appGuiTabConfigContentDesc">
                Configure settings within the application.
     </string>
+
+    <string name="btPermsRequiredMsg">CMLD does not have permission to use Bluetooth.\nEnable them in the system settings app.</string>
 
     <string name="aboutapp">
         &lt;h1>About the CMLD application&lt;/h1>

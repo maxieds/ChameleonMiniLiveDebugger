@@ -81,28 +81,28 @@
     <uses-permission
         android:name="android.permission.BLUETOOTH"
         android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
-        android:required="false"
+        android:required="true"
         />
     <uses-permission
         android:name="android.permission.BLUETOOTH_ADMIN"
         android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
-        android:required="false"
+        android:required="true"
         />
     <uses-permission
         android:name="android.permission.BLUETOOTH_CONNECT"
         android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
-        android:required="false"
+        android:required="true"
         />
     <uses-permission
         android:name="android.permission.BLUETOOTH_SCAN"
         android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
-        android:required="false"
+        android:required="true"
         />
 
     <uses-feature android:name="android.hardware.usb.host" android:required="true" />
     <uses-feature android:name="android.hardware.usb.accessory" android:required="false" />
-    <uses-feature android:name="android.bluetooth" android:required="false" />
-    <uses-feature android:name="android.bluetooth.le" android:required="false" />
+    <uses-feature android:name="android.bluetooth" android:required="true" />
+    <uses-feature android:name="android.bluetooth.le" android:required="true" />
 
     <application
         android:name=".ChameleonMiniLiveDebugger"

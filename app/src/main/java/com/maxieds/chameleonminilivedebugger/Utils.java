@@ -32,6 +32,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.BufferedReader;
@@ -422,18 +423,23 @@ public class Utils {
                 toastMsg,
                 msgDuration
         );
-        toastDisplay.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 0, 25);
-        toastDisplay.getView().setPadding(10, 10, 10, 10);
-        int toastBackgroundColor = Utils.getColorFromTheme(R.attr.colorAccent, callingActivity);
-        int toastTextColor = Utils.getColorFromTheme(R.attr.colorPrimaryDark, callingActivity);
-        toastDisplay.getView().getBackground().setColorFilter(toastBackgroundColor, PorterDuff.Mode.SRC_IN);
-        TextView toastTextMsg = toastDisplay.getView().findViewById(android.R.id.message);
-        if(toastTextMsg != null) {
-            toastTextMsg.setTextColor(toastTextColor);
-            toastTextMsg.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
-            toastTextMsg.setTypeface(toastTextMsg.getTypeface(), Typeface.BOLD_ITALIC);
+        if(toastDisplay == null) {
+            return;
         }
-        toastDisplay.getView().setAlpha(0.75f);
+        toastDisplay.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 0, 25);
+        if(toastDisplay.getView() != null) {
+            toastDisplay.getView().setPadding(10, 10, 10, 10);
+            int toastBackgroundColor = Utils.getColorFromTheme(R.attr.colorAccent, callingActivity);
+            int toastTextColor = Utils.getColorFromTheme(R.attr.colorPrimaryDark, callingActivity);
+            toastDisplay.getView().getBackground().setColorFilter(toastBackgroundColor, PorterDuff.Mode.SRC_IN);
+            TextView toastTextMsg = toastDisplay.getView().findViewById(android.R.id.message);
+            if (toastTextMsg != null) {
+                toastTextMsg.setTextColor(toastTextColor);
+                toastTextMsg.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+                toastTextMsg.setTypeface(toastTextMsg.getTypeface(), Typeface.BOLD_ITALIC);
+            }
+            toastDisplay.getView().setAlpha(0.75f);
+        }
         toastDisplay.show();
         Log.i(TAG, "TOAST MSG DISPLAYED: " + toastMsg);
     }
@@ -519,14 +525,6 @@ public class Utils {
         if(ex.getMessage() != null) {
             stackTraceText += "**Exception Message:** " + ex.getMessage() + "\n\n";
         }
-        /*
-        StackTraceElement[] stackTraceEltsInit = ex.getStackTrace();
-        String[] stackTraceElts = new String[stackTraceEltsInit.length];
-        for(int stidx = 0; stidx < stackTraceElts.length; stidx++) {
-            stackTraceElts[stidx] = String.format(Locale.getDefault(), "L%02d| %s", stidx + 1, stackTraceEltsInit[stidx].toString());
-        }
-        stackTraceText += String.join("\n", stackTraceElts);
-        */
         StringWriter stackTracePrintStr = new StringWriter();
         ex.printStackTrace(new PrintWriter(stackTracePrintStr));
         stackTraceText += "\n\nDetailed Stack Trace:\n" + stackTracePrintStr.toString() + "\n\n";
@@ -555,6 +553,16 @@ public class Utils {
             String toastMsg = "Copied URL to Clipboard:\n" + textToCopy;
             Utils.displayToastMessage(activityCtx, toastMsg, Toast.LENGTH_SHORT);
         }
+    }
+
+    public static String hashObjectToString(@NonNull Object obj, int radix) {
+        int initObjHash = obj.hashCode();
+        try {
+            return Integer.toString(initObjHash, radix);
+        } catch(Exception excpt) {
+            excpt.printStackTrace();
+        }
+        return "";
     }
 
 }

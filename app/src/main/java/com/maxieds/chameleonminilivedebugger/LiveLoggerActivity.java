@@ -25,8 +25,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PermissionGroupInfo;
+import android.content.pm.PermissionInfo;
 import android.graphics.Color;
 import android.hardware.usb.UsbManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -44,13 +48,16 @@ import android.widget.TextView;
 import android.widget.Toolbar;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingGUIMain;
 
+import java.util.List;
 import java.util.Locale;
 
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG;
@@ -67,7 +74,7 @@ import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_
  * @author  Maxie D. Schmidt
  * @since   12/31/17
  */
-public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
+public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implements ActivityPermissions {
 
      private static final String TAG = LiveLoggerActivity.class.getSimpleName();
 
@@ -638,6 +645,96 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity {
      public void onDestroy() {
           AndroidSettingsStorage.saveAllSettings();
           super.onDestroy();
+     }
+
+     /**** Start implementation of the ActivityPermissions interface: ****/
+
+     public String[] getPermissionsByGroup(String groupName) {
+          Context activityCtx = getContext();
+          PackageManager activityPkgMgr = activityCtx.getPackageManager();
+          List<PermissionGroupInfo> lstGroups = activityPkgMgr.getAllPermissionGroups(0);
+          for (PermissionGroupInfo pginfo : lstGroups) {
+               if(pginfo.name.equals(groupName)) {
+                    try {
+
+                         List<PermissionInfo> groupPermsList = activityPkgMgr.queryPermissionsByGroup(pginfo.name, 0);
+                         int numGroupPerms = groupPermsList.size();
+                         String[] groupPermsArray = new String[numGroupPerms];
+                         for(int gpIdx = 0; gpIdx < numGroupPerms; gpIdx++) {
+                              groupPermsArray[gpIdx] = groupPermsList.get(gpIdx).loadLabel(activityPkgMgr).toString();
+                         }
+                         return groupPermsArray;
+                    } catch (Exception expt) {
+                         expt.printStackTrace();
+                    }
+               }
+          }
+          return null;
+     }
+
+     public boolean checkPermissionsAcquired(@NonNull String[] permissions, boolean requestIfNot, View viewToNotify) {
+          boolean checkPermsStatus = false;
+          if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && permissions != null) {
+               checkPermsStatus = true;
+               for (String permission : permissions) {
+                    if (ActivityCompat.checkSelfPermission(getContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+                         checkPermsStatus = false;
+                         break;
+                    }
+               }
+          }
+          if(viewToNotify != null && !checkPermsStatus && requestIfNot) {
+               int hashKeyRequestCode = ActivityPermissions.addToRequestQueue(viewToNotify);
+               if(hashKeyRequestCode < 0) {
+                    return false;
+               }
+               ActivityCompat.requestPermissions(this, permissions, hashKeyRequestCode);
+               return false;
+          }
+          return checkPermsStatus;
+     }
+
+     public boolean checkPermissionsAcquired(@NonNull String[] permissions, boolean requestIfNot) {
+          return checkPermissionsAcquired(permissions, requestIfNot, null);
+     }
+
+     public boolean checkPermissionsAcquired(@NonNull String[] permissions) {
+          return checkPermissionsAcquired(permissions, true);
+     }
+
+     public boolean checkPermissionsAcquired(@NonNull String groupName, boolean requestIfNot, View viewToNotify) {
+          String[] groupPermissions = getPermissionsByGroup(groupName);
+          if(groupPermissions == null) {
+               return false;
+          }
+          else {
+               return checkPermissionsAcquired(groupPermissions, requestIfNot, viewToNotify);
+          }
+     }
+
+     public boolean checkPermissionsAcquired(@NonNull String groupName, boolean requestIfNot) {
+          return checkPermissionsAcquired(groupName, requestIfNot, null);
+     }
+
+     public boolean checkPermissionsAcquired(@NonNull String groupName) {
+          return checkPermissionsAcquired(groupName, true);
+     }
+
+     @Override
+     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+          super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+          if(!ActivityPermissions.acquireRequestQueueLock()) {
+               return;
+          }
+          String objHashKey = ActivityPermissions.resolveRequestCodeKey(requestCode);
+          if(!ActivityPermissions.REQUEST_QUEUE.containsKey(objHashKey)) {
+               ActivityPermissions.PERMS_REQUEST_QUEUE_LOCK.release();
+               return;
+          }
+          View invokingRequestObj = ActivityPermissions.REQUEST_QUEUE.get(objHashKey);
+          invokingRequestObj.notify();
+          ActivityPermissions.REQUEST_QUEUE.remove(objHashKey);
+          ActivityPermissions.PERMS_REQUEST_QUEUE_LOCK.release();
      }
 
      /**

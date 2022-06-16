@@ -22,6 +22,7 @@ import android.content.SharedPreferences;
 
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingConfig;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
@@ -40,6 +41,7 @@ public class AndroidSettingsStorage {
     public static final String SERIAL_BAUDRATE_PREFERENCE = "serialBaudRate";
     public static final String ALLOW_USB_PREFERENCE = "allowWiredUSB";
     public static final String ALLOW_BLUETOOTH_PREFERENCE = "allowBluetooth";
+    public static final String BLUETOOTH_DEVICE_PIN_DATA = "bluetoothDevicePinData";
     public static final String SNIFFING_MODE_PREFERENCE = "sniffingModeDirection";
     public static final String KEY_CONFIG_PREFERENCE = "keyConfigurations";
     public static final String CWD_PREFERENCE = "currentWorkingDirectory";
@@ -98,6 +100,7 @@ public class AndroidSettingsStorage {
             updateValueByKey(profileID, SERIAL_BAUDRATE_PREFERENCE);
             updateValueByKey(profileID, ALLOW_USB_PREFERENCE);
             updateValueByKey(profileID, ALLOW_BLUETOOTH_PREFERENCE);
+            updateValueByKey(profileID, BLUETOOTH_DEVICE_PIN_DATA);
             updateValueByKey(profileID, SNIFFING_MODE_PREFERENCE);
             return true;
         }
@@ -156,6 +159,7 @@ public class AndroidSettingsStorage {
                 ChameleonSettings.allowWiredUSB = Boolean.valueOf(getStringValueByKey(profileID, ALLOW_USB_PREFERENCE));
                 ChameleonSettings.allowBluetooth = Boolean.valueOf(getStringValueByKey(profileID, ALLOW_BLUETOOTH_PREFERENCE));
                 ChameleonSettings.sniffingMode = Integer.parseInt(getStringValueByKey(profileID, SNIFFING_MODE_PREFERENCE));
+                BluetoothGattConnector.btDevicePinDataBytes = getStringValueByKey(profileID, BLUETOOTH_DEVICE_PIN_DATA).getBytes(StandardCharsets.UTF_8);
                 return true;
             }
             else if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.LOGGING_CONFIG) {
@@ -232,6 +236,10 @@ public class AndroidSettingsStorage {
         }
         else if(prefsKey.equals(ALLOW_BLUETOOTH_PREFERENCE)) {
             spEditor.putBoolean(prefsKey, ChameleonSettings.allowBluetooth);
+        }
+        else if(prefsKey.equals(BLUETOOTH_DEVICE_PIN_DATA)) {
+            String btDevicePinData = new String(BluetoothGattConnector.btDevicePinDataBytes, StandardCharsets.UTF_8);
+            spEditor.putString(prefsKey, btDevicePinData);
         }
         else if(prefsKey.equals(SNIFFING_MODE_PREFERENCE)) {
             spEditor.putInt(prefsKey, ChameleonSettings.sniffingMode);
@@ -370,6 +378,9 @@ public class AndroidSettingsStorage {
         }
         else if(prefsKey.equals(ALLOW_BLUETOOTH_PREFERENCE)) {
             return sharedPrefs.getBoolean(prefsKey, ChameleonSettings.allowBluetooth) ? "true" : "false";
+        }
+        else if(prefsKey.equals(BLUETOOTH_DEVICE_PIN_DATA)) {
+            return sharedPrefs.getString(prefsKey, new String(BluetoothGattConnector.btDevicePinDataBytes, StandardCharsets.UTF_8));
         }
         else if(prefsKey.equals(SNIFFING_MODE_PREFERENCE)) {
             return String.format(Locale.getDefault(), "%d", sharedPrefs.getInt(prefsKey, ChameleonSettings.sniffingMode));

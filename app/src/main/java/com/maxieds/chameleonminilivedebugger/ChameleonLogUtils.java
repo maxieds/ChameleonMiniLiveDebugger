@@ -76,6 +76,9 @@ public class ChameleonLogUtils {
         LOG_INFO_APP_CMD_AUTH((byte) 0x90, DATADIR_BIDIRECTIONAL, "Application processed authentication command."),
         LOG_INFO_APP_CMD_HALT((byte) 0x91, DATADIR_BIDIRECTIONAL, "Application processed halt command."),
         LOG_INFO_APP_CMD_UNKNOWN((byte) 0x92, DATADIR_BIDIRECTIONAL, "Application processed an unknown command."),
+        LOG_INFO_APP_CMD_REQA((byte) 0x93, DATADIR_BIDIRECTIONAL, "Application processed a REQA (ISO14443A) command."),
+        LOG_INFO_APP_CMD_WUPA((byte) 0x94, DATADIR_BIDIRECTIONAL, "Application processed a WUPA (ISO14443A) command."),
+        LOG_INFO_APP_CMD_DESELECT((byte) 0x95, DATADIR_BIDIRECTIONAL, "Application processed a DESELECT (ISO14443A) command."),
         LOG_INFO_APP_AUTHING((byte) 0xA0, DATADIR_BIDIRECTIONAL, "Application is in `authing` state."),
         LOG_INFO_APP_AUTHED((byte) 0xA1, DATADIR_BIDIRECTIONAL, "Application is in `auth` state."),
         /* Log errors */

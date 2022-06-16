@@ -358,20 +358,42 @@ public class UITabUtils {
              cbAllowBT.setOnClickListener(new View.OnClickListener() {
                  @Override
                  public void onClick(View cbView) {
+                     CheckBox cb = (CheckBox) cbView;
                      try {
-                         CheckBox cb = (CheckBox) cbView;
-                         ChameleonSettings.allowBluetooth = cb.isChecked();
-                         AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.ALLOW_BLUETOOTH_PREFERENCE);
+                         LiveLoggerActivity llInst = LiveLoggerActivity.getLiveLoggerInstance();
+                         if(llInst == null) {
+                             return;
+                         }
+                         boolean haveSufficientBTPerms = true;
+                         if(!llInst.checkPermissionsAcquired(ActivityPermissions.CMLD_PERMISSIONS_GROUP_BLUETOOTH, true, cbView)) {
+                             cbView.wait(ActivityPermissions.REQUEST_RESULT_MAX_VIEWOBJ_WAIT_TIMEOUT);
+                             haveSufficientBTPerms = llInst.checkPermissionsAcquired(ActivityPermissions.CMLD_PERMISSIONS_GROUP_BLUETOOTH, false);
+                         }
+                         if(!cb.isChecked() && !haveSufficientBTPerms) {
+                             String btPermsRequiredResStr = llInst.getResources().getString(R.string.btPermsRequiredMsg);
+                             Utils.displayToastMessageShort(btPermsRequiredResStr);
+                             return;
+                         }
                          if (ChameleonSettings.getActiveSerialIOPort() == null) {
                              ChameleonSettings.stopSerialIOConnectionDiscovery();
                              ChameleonSettings.initializeSerialIOConnections();
                          }
+                         ChameleonSettings.allowBluetooth = cb.isChecked();
+                         AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.ALLOW_BLUETOOTH_PREFERENCE);
                      } catch(Exception ex) {
                          ex.printStackTrace();
+                         cb.setChecked(!cb.isChecked());
+                         LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(new Runnable() {
+                             @Override
+                             public void run() {
+                                 String btPermsRequiredResStr = LiveLoggerActivity.getLiveLoggerInstance().getResources().getString(R.string.btPermsRequiredMsg);
+                                 Utils.displayToastMessageShort(btPermsRequiredResStr);
+                             }
+                         });
                      }
                  }
              });
-             // bi/unidirectional sniffing checkbox setup:
+             // bi/uni-directional sniffing checkbox setup:
              CheckBox cbUseBidirSniff = tabMainLayoutView.findViewById(R.id.settingsUseBidirectionalSniffing);
              cbUseBidirSniff.setChecked(ChameleonSettings.sniffingMode == ChameleonSettings.SNIFFING_MODE_BIDIRECTIONAL);
              cbUseBidirSniff.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {

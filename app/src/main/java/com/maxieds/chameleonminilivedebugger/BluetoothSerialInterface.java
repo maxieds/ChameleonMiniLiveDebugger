@@ -30,10 +30,6 @@ import java.util.concurrent.Semaphore;
 
 public class BluetoothSerialInterface extends SerialIOReceiver {
 
-    /**
-     * TODO: Check XModem functionality with the BT devices ...
-     */
-
     private static final String TAG = BluetoothSerialInterface.class.getSimpleName();
 
     public String getInterfaceLoggingTag() {
@@ -43,7 +39,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
     private Context notifyContext;
     private BluetoothDevice activeDevice;
     private BluetoothGattConnector btGattConnectorBLEDevice;
-    private int baudRate; // irrelevant?
+    private int baudRate;
     private boolean serialConfigured;
     private boolean receiversRegistered;
     private final Semaphore serialPortLock = new Semaphore(1, true);

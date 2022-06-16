@@ -35,6 +35,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class BluetoothGattConnector extends BluetoothGattCallback {
@@ -75,6 +76,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
     private boolean btNotifyUARTService;
     private BluetoothSerialInterface btSerialIface;
     private boolean isConnected;
+    public static byte[] btDevicePinDataBytes = new byte[0];
 
     public BluetoothGattConnector(@NonNull Context localContext) {
         btSerialContext = localContext;
@@ -90,6 +92,30 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         btGattCallback = configureBluetoothGattCallback();
         btSerialIface = (BluetoothSerialInterface) ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX];
         isConnected = false;
+        BluetoothGattConnector.btDevicePinDataBytes = getStoredBluetoothDevicePinData();
+    }
+
+    public byte[] getStoredBluetoothDevicePinData() {
+        String pinData = AndroidSettingsStorage.getStringValueByKey(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE, AndroidSettingsStorage.BLUETOOTH_DEVICE_PIN_DATA);
+        if(pinData == null || pinData.length() == 0) {
+            return new byte[0];
+        }
+        else {
+            return pinData.getBytes(StandardCharsets.UTF_8);
+        }
+    }
+
+    /**
+     * TODO: Check XModem functionality with the BT devices ...
+     * TODO: https://www.tabnine.com/code/java/methods/android.bluetooth.BluetoothDevice/setPin
+     * TODO: https://developer.android.com/reference/android/bluetooth/BluetoothDevice.html#createBond()
+     */
+    // TODO: Actually setup the pin on incoming paired exchanges ...
+    // TODO: Add a small widget to the BTConfig GUI so the user can enter the pin string data ...
+
+    public void setStoredBluetoothDevicePinData(@NonNull String btPinData) {
+        AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE, AndroidSettingsStorage.BLUETOOTH_DEVICE_PIN_DATA);
+        BluetoothGattConnector.btDevicePinDataBytes = btPinData.getBytes(StandardCharsets.UTF_8);
     }
 
     public void setBluetoothSerialInterface(BluetoothSerialInterface btLocalSerialIface) {
