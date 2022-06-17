@@ -19,37 +19,147 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.Semaphore;
 
 public class BluetoothSerialInterface extends SerialIOReceiver {
 
+    /**
+     * TODO: Check XModem functionality with the BT devices ...
+     * https://punchthrough.com/android-ble-guide/
+     */
+
     private static final String TAG = BluetoothSerialInterface.class.getSimpleName();
 
+    public enum ChameleonBluetoothDeviceState {
+
+        BTDEV_STATE_ERROR(0),
+        BTDEV_STATE_DISABLED_OFF(1),
+        BTDEV_STATE_DISCONNECTED(2),
+        BTDEV_STATE_IDLE(3),
+        BTDEV_STATE_AVAILABLE_INIT(4),
+        BTDEV_STATE_AVAILABLE_CONNECTING_ABTN(5),
+        BTDEV_STATE_AVAILABLE_CONNECTING_BLE(6),
+        BTDEV_STATE_ACTIVE(7),
+        BTDEV_STATE_HALTING(8);
+
+        public static final int BTDEV_STATE_COUNT = ChameleonBluetoothDeviceState.values().length;
+
+        public static final Map<Integer, ChameleonBluetoothDeviceState> BTDEV_STATE_MAP = new HashMap<>();
+        static {
+            for (BluetoothSerialInterface.ChameleonBluetoothDeviceState btDevState : values()) {
+                Integer levelOrdering = Integer.valueOf(btDevState.getStateLevelOrdering());
+                BTDEV_STATE_MAP.put(levelOrdering, btDevState);
+            }
+        }
+
+        private int stateLevel;
+        ChameleonBluetoothDeviceState(int level) {
+            stateLevel = level;
+        }
+
+        public int getStateLevelOrdering() {
+            return this.stateLevel;
+        }
+
+        public static ChameleonBluetoothDeviceState getStateFromLevelOrdering(int inputLevel) {
+            inputLevel = inputLevel % ChameleonBluetoothDeviceState.BTDEV_STATE_COUNT;
+            if(inputLevel < 0 || inputLevel >= ChameleonBluetoothDeviceState.BTDEV_STATE_COUNT) {
+                return null;
+            }
+            int inputLevelKey = Integer.valueOf(inputLevel);
+            return BTDEV_STATE_MAP.get(inputLevelKey);
+        }
+
+        public boolean isBeforeNextStateInSequence(ChameleonBluetoothDeviceState nextState) {
+            int readyStateLevel = 0;
+            int haltStateLevel = Math.max(0, ChameleonBluetoothDeviceState.BTDEV_STATE_COUNT - 1);
+            int curStateLevel = getStateLevelOrdering();
+            int nextStateLevel = nextState.getStateLevelOrdering();
+            if(nextStateLevel == haltStateLevel && curStateLevel == readyStateLevel) {
+                return true;
+            } else if(nextStateLevel >= haltStateLevel) {
+                return false;
+            } else if(curStateLevel >= nextStateLevel) {
+                return false;
+            } else if(nextStateLevel > curStateLevel) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        public boolean isAfterNextStateInSequence(ChameleonBluetoothDeviceState nextState) {
+            return getStateLevelOrdering() != nextState.getStateLevelOrdering() && !isBeforeNextStateInSequence(nextState);
+        }
+
+        public boolean isEqualInSequence(ChameleonBluetoothDeviceState nextState) {
+            return getStateLevelOrdering() != nextState.getStateLevelOrdering();
+        }
+
+    }
+
+    public static final int ACTVITY_REQUEST_BLUETOOTH_ENABLED_CODE = 0x00B1;
+    public static final int ACTVITY_REQUEST_BLUETOOTH_DISCOVERABLE_CODE = 0x00B1;
+
     public String getInterfaceLoggingTag() {
-        return "SerialBTReader";
+        return "SerialBTReaderInterface";
     }
 
     private Context notifyContext;
     private BluetoothDevice activeDevice;
+    private BluetoothSerialInterface.ChameleonBluetoothDeviceState btDeviceState;
     private BluetoothGattConnector btGattConnectorBLEDevice;
     private int baudRate;
     private boolean serialConfigured;
     private boolean receiversRegistered;
     private final Semaphore serialPortLock = new Semaphore(1, true);
 
-    public boolean isBluetoothEnabled() {
-        BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
-        if(btAdapter == null) {
+    public boolean isBluetoothEnabled(boolean startActivityIfNot) {
+        LiveLoggerActivity mainActivityCtx = LiveLoggerActivity.getLiveLoggerInstance();
+        if(!mainActivityCtx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
+            return false;
+        } else if(!mainActivityCtx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             return false;
         }
-        return btAdapter.isEnabled();
+        BluetoothAdapter btAdapter = null;
+        BluetoothAdapter btAdapterDefault = BluetoothAdapter.getDefaultAdapter();
+        BluetoothManager btManager = (BluetoothManager) mainActivityCtx.getSystemService(Context.BLUETOOTH_SERVICE);
+        BluetoothAdapter btAdapterFromService = btManager != null ? btManager.getAdapter() : null;
+        if(btAdapterFromService != null) {
+            btAdapter = btAdapterFromService;
+        } else if(btAdapterDefault != null) {
+            btAdapter = btAdapterDefault;
+        }
+        if(btAdapter == null) {
+            return false;
+        } else if(!btAdapter.isEnabled()) {
+            if(startActivityIfNot) {
+                Intent turnBTOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                mainActivityCtx.startActivityForResult(turnBTOn, ACTVITY_REQUEST_BLUETOOTH_ENABLED_CODE);
+            }
+        }
+        if(startActivityIfNot) {
+            Intent btMakeDiscIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+            btMakeDiscIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+            mainActivityCtx.startActivityForResult(btMakeDiscIntent, ACTVITY_REQUEST_BLUETOOTH_DISCOVERABLE_CODE);
+        }
+        return false;
+    }
+
+    public boolean isBluetoothEnabled() {
+        return isBluetoothEnabled(false);
     }
 
     public static void displayAndroidBluetoothSettings() {
@@ -106,6 +216,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
         activeDevice = null;
         btGattConnectorBLEDevice = new BluetoothGattConnector(notifyContext);
         btGattConnectorBLEDevice.setBluetoothSerialInterface(this);
+        btDeviceState = ChameleonBluetoothDeviceState.BTDEV_STATE_DISCONNECTED;
         baudRate = ChameleonSettings.serialBaudRate;
         serialConfigured = false;
         receiversRegistered = false;
@@ -303,6 +414,14 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
             ioe.printStackTrace();
         }
         return STATUS_TRUE;
+    }
+
+    public BluetoothSerialInterface.ChameleonBluetoothDeviceState getState() {
+        return btDeviceState;
+    }
+
+    public BluetoothSerialInterface.ChameleonBluetoothDeviceState getBLEGattState() {
+        return btGattConnectorBLEDevice.getState();
     }
 
 }

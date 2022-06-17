@@ -369,14 +369,16 @@ public class UITabUtils {
                              cbView.wait(ActivityPermissions.REQUEST_RESULT_MAX_VIEWOBJ_WAIT_TIMEOUT);
                              haveSufficientBTPerms = llInst.checkPermissionsAcquired(ActivityPermissions.CMLD_PERMISSIONS_GROUP_BLUETOOTH, false);
                          }
+                         if (ChameleonSettings.getActiveSerialIOPort() == null) {
+                             ChameleonSettings.stopSerialIOConnectionDiscovery();
+                             ChameleonSettings.initializeSerialIOConnections();
+                         }
+                         BluetoothSerialInterface btSerialInterface = (BluetoothSerialInterface) ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX];
+                         haveSufficientBTPerms = haveSufficientBTPerms && btSerialInterface != null && btSerialInterface.isBluetoothEnabled(false);
                          if(!cb.isChecked() && !haveSufficientBTPerms) {
                              String btPermsRequiredResStr = llInst.getResources().getString(R.string.btPermsRequiredMsg);
                              Utils.displayToastMessageShort(btPermsRequiredResStr);
                              return;
-                         }
-                         if (ChameleonSettings.getActiveSerialIOPort() == null) {
-                             ChameleonSettings.stopSerialIOConnectionDiscovery();
-                             ChameleonSettings.initializeSerialIOConnections();
                          }
                          ChameleonSettings.allowBluetooth = cb.isChecked();
                          AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.ALLOW_BLUETOOTH_PREFERENCE);

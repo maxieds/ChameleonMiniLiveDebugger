@@ -82,8 +82,8 @@ android {
         minSdkVersion 30
         targetSdkVersion 30
         compileSdkVersion 30
-        versionCode 105 + 8080
-        versionName "1.4.1"
+        versionCode 106 + 8080
+        versionName "1.4.2"
         multiDexEnabled true
 
         buildConfigField "String", "GIT_COMMIT_HASH", "\"" + getGitCommitHash() + "\""

@@ -17,6 +17,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -340,13 +341,17 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                        "android.permission.INTERNET",
                        "android.permission.USB_PERMISSION",
                        "android.permission.BLUETOOTH",
+                       "android.permission.BLUETOOTH_CONNECT",
                        "android.permission.BLUETOOTH_ADMIN",
+                       "android.permission.BLUETOOTH_SCAN",
                        "android.permission.ACCESS_COARSE_LOCATION",
                        "android.permission.ACCESS_FINE_LOCATION",
                        "android.permission.VIBRATE",
                };
                if (android.os.Build.VERSION.SDK_INT >= 23) {
-                    requestPermissions(permissions, 0);
+                    for(String permissionName : permissions) {
+                         requestPermissions(new String[] { permissionName }, 0);
+                    }
                }
                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR); // keep app from crashing when the screen rotates
@@ -624,7 +629,11 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
      @Override
      public void onPause() {
           AndroidSettingsStorage.saveAllSettings();
-          ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
+          if(ChameleonSettings.getActiveSerialIOPort() != null) {
+               ChameleonSettings.getActiveSerialIOPort().stopScanningDevices();
+               ChameleonSettings.getActiveSerialIOPort().shutdownSerial();
+               ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
+          }
           super.onPause();
      }
 
@@ -636,6 +645,8 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
      public void onResume() {
           AndroidSettingsStorage.loadPreviousSettings();
           if(ChameleonSettings.getActiveSerialIOPort() != null) {
+               reconfigureSerialIODevices();
+               ChameleonSettings.getActiveSerialIOPort().startScanningDevices();
                ChameleonIO.DeviceStatusSettings.startPostingStats(0);
           }
           super.onResume();
@@ -644,6 +655,11 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
      @Override
      public void onDestroy() {
           AndroidSettingsStorage.saveAllSettings();
+          if(ChameleonSettings.getActiveSerialIOPort() != null) {
+               ChameleonSettings.getActiveSerialIOPort().stopScanningDevices();
+               ChameleonSettings.getActiveSerialIOPort().shutdownSerial();
+               ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
+          }
           super.onDestroy();
      }
 
@@ -930,7 +946,28 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       */
      @Override
      protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-          ExternalFileIO.handleActivityResult(this, requestCode, resultCode, data);
+          if(resultCode == BluetoothSerialInterface.ACTVITY_REQUEST_BLUETOOTH_ENABLED_CODE) {
+               if(resultCode == Activity.RESULT_CANCELED) {
+                    // Bluetooth not enabled.
+                    finish();
+                    return;
+               }
+          } else if(resultCode == BluetoothSerialInterface.ACTVITY_REQUEST_BLUETOOTH_DISCOVERABLE_CODE) {
+               if(resultCode == Activity.RESULT_CANCELED) {
+                    // Bluetooth discovery not enabled.
+                    finish();
+                    return;
+               }
+          } else {
+               try {
+                    ExternalFileIO.handleActivityResult(this, requestCode, resultCode, data);
+               } catch(RuntimeException  rte) {
+                    if(rte.getMessage() != null && rte.getMessage().length() > 0) {
+                         rte.printStackTrace();
+                         return;
+                    }
+               }
+          }
           super.onActivityResult(requestCode, resultCode, data);
      }
 

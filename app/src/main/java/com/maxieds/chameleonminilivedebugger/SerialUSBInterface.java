@@ -45,7 +45,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
     public static final int USB_DATA_BITS = 8;
 
     public String getInterfaceLoggingTag() {
-        return "SerialUSBReader";
+        return "SerialUSBReaderInterface";
     }
 
     private Context notifyContext;
