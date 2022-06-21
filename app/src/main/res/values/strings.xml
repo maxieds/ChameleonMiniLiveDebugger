@@ -156,6 +156,28 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
           selected values in the assembled APDU bytes are preserved.
     </string>
 
+    <string name="bluetoothTroubleshootingInstructionsHTML">
+        &lt;ul>
+            &lt;li>Enable &lt;b>&lt;i>Bluetooth&lt;/b>&lt;/i> (&lt;b>&lt;i>BT&lt;/b>&lt;/i>) on the phone&lt;/li>
+            &lt;li>Give CMLD BT permissions in the system Settings app:&lt;br/>
+                &lt;i>Settings &gt; App info &gt; CMLD &gt; Permissions&lt;/i>&lt;/li>
+            &lt;li>If the device is &lt;b>&lt;u>FACTORY NEW&lt;/u>&lt;/b>, you will need to
+                flash/update the BT firmware from the
+                manufacturer on the Chameleon first...&lt;br/>
+                This &lt;b>&lt;u>IS NOT&lt;/u>&lt;/b> the same as flashing the\n
+                Chameleon with the firmware (software) binary&lt;/li>
+            &lt;li>Make sure the Chameleon Mini is powered on&lt;/li>
+            &lt;li>For Proxgrind Chameleon Tiny devices:&lt;br/>
+                Make sure you have &lt;i>charged the device&lt;/i> for
+                &lt;b>10-15 minutes>&lt;/b> prior to connecting to phone&lt;/li>
+            &lt;li>The Chameleon cannot be connected over BT
+                (or USB) to another app running on the phone&lt;/li>
+        &lt;/ul>
+    </string>
+    <string name="bluetoothExtraConfigInstructions">
+        Press and hold button A for at least 15 seconds.
+    </string>
+
     <!-- Fields for the default application file provider: -->
 
     <string-array name="RButtonOptions">

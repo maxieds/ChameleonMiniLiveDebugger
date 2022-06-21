@@ -27,7 +27,10 @@ public class ChameleonSettings {
     public static boolean allowBluetooth = false;
     public static int serialBaudRate = 115200;
 
-    public static String chameleonDeviceSerialNumber = "<UNKNOWN>";
+    public static final String CMINI_DEVICE_FIELD_UNKNOWN = "<UNKNOWN>";
+
+    public static String chameleonDeviceSerialNumber = CMINI_DEVICE_FIELD_UNKNOWN;
+    public static String chameleonDeviceMAC = CMINI_DEVICE_FIELD_UNKNOWN;
     public static String chameleonDeviceNickname = "Chameleon Mini (Default)";
 
     public static final int SNIFFING_MODE_UNIDIRECTIONAL = 1;

@@ -57,7 +57,7 @@ public class ChameleonCommands {
             cardFilePath = R.raw.mifare_ultralight;
         }
         else if(stockChipType.equals("DESFIRE")) {
-            chipType = "MF_DESFIRE";
+            chipType = "MF_DESFIRE -- TODO";
             cardFilePath = R.raw.mfdesfire_sample_dump;
         }
         else if(stockChipType.equals("EM4233")) {

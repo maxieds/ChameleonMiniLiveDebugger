@@ -22,10 +22,15 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.util.Log;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+
+import androidx.appcompat.app.AlertDialog;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -36,8 +41,10 @@ import java.util.concurrent.Semaphore;
 public class BluetoothSerialInterface extends SerialIOReceiver {
 
     /**
+     * TODO: More documentation at:
+     *       https://punchthrough.com/android-ble-guide/
      * TODO: Check XModem functionality with the BT devices ...
-     * https://punchthrough.com/android-ble-guide/
+     * TODO: On connect, update the device serial HW/MAC ...
      */
 
     private static final String TAG = BluetoothSerialInterface.class.getSimpleName();
@@ -168,6 +175,39 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
         LiveLoggerActivity.getLiveLoggerInstance().startActivity(intentOpenBluetoothSettings);
     }
 
+    public static void displayAndroidBluetoothTroubleshooting() {
+
+        LiveLoggerActivity llActivity = LiveLoggerActivity.getLiveLoggerInstance();
+        AlertDialog.Builder adBuilder = new AlertDialog.Builder(llActivity, R.style.SpinnerTheme);
+        WebView wv = new WebView(llActivity);
+
+        String dialogMainPointsHTML = llActivity.getString(R.string.bluetoothTroubleshootingInstructionsHTML);
+
+        wv.loadDataWithBaseURL(null, dialogMainPointsHTML, "text/html", "UTF-8", "");
+        wv.getSettings().setJavaScriptEnabled(false);
+        wv.setBackgroundColor(ThemesConfiguration.getThemeColorVariant(R.attr.colorAccentHighlight));
+        wv.getSettings().setLoadWithOverviewMode(true);
+        wv.getSettings().setUseWideViewPort(true);
+        wv.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
+        wv.setInitialScale(10);
+
+        adBuilder.setCancelable(true);
+        adBuilder.setTitle("Bluetooth Troubleshooting/Tips:");
+        adBuilder.setPositiveButton(
+                "Back to Previous",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        adBuilder.setView(wv);
+        adBuilder.setInverseBackgroundForced(true);
+
+        AlertDialog alertDialog = adBuilder.create();
+        alertDialog.show();
+
+    }
+
     public boolean configureSerialConnection(BluetoothDevice btDev) {
         if(btDev == null) {
             return false;
@@ -179,7 +219,9 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
         Log.i(TAG, "BTDEV: " + activeDevice.toString());
         ChameleonIO.REVE_BOARD = false;
         ChameleonIO.PAUSED = false;
-        ChameleonSettings.chameleonDeviceSerialNumber = btDev.getAddress();
+        ChameleonSettings.chameleonDeviceMAC = btDev.getAddress();
+        ChameleonSettings.chameleonDeviceSerialNumber = ChameleonSettings.chameleonDeviceMAC;
+        // TODO: Update the settings tab ???
 
         Handler configDeviceHandler = new Handler();
         Runnable configDeviceRunnable = new Runnable() {

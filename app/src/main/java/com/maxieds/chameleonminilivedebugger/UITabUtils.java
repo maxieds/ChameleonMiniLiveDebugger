@@ -443,11 +443,22 @@ public class UITabUtils {
             if(btSettingsBtn == null) {
                 return false;
             }
-            btSettingsBtn.setEnabled(ChameleonSettings.allowBluetooth);
+            //btSettingsBtn.setEnabled(ChameleonSettings.allowBluetooth);
             btSettingsBtn.setOnClickListener(new Button.OnClickListener() {
                 @Override
                 public void onClick(View btn) {
                     BluetoothSerialInterface.displayAndroidBluetoothSettings();
+                }
+            });
+            Button btTroubleshootingBtn = tabMainLayoutView.findViewById(R.id.androidBTTroubleshootingButton);
+            if(btTroubleshootingBtn == null) {
+                return false;
+            }
+            //btTroubleshootingBtn.setEnabled(ChameleonSettings.allowBluetooth);
+            btTroubleshootingBtn.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View btn) {
+                    BluetoothSerialInterface.displayAndroidBluetoothTroubleshooting();
                 }
             });
             // Chameleon device connection information:

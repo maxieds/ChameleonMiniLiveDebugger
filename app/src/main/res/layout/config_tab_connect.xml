@@ -34,8 +34,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_margin="3dp"
-            android:orientation="vertical"
             android:background="?colorAccentLog"
+            android:orientation="vertical"
             android:padding="3dp">
 
             <View
@@ -46,12 +46,12 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
                 android:layout_gravity="center_vertical"
+                android:layout_weight="1"
                 android:background="?colorPrimaryDarkLog"
                 android:drawableLeft="@drawable/android_phone_logo24"
                 android:drawablePadding="5dp"
+                android:gravity="center_vertical"
                 android:singleLine="true"
                 android:text="Phone connection types: "
                 android:textAllCaps="true"
@@ -67,15 +67,15 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
                 android:background="?colorAccentLog"
-                android:columnCount="4"
+                android:columnCount="5"
                 android:padding="2dp">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|center_vertical"
-                    android:src="@drawable/bluetooth_icon24"
-                    android:paddingRight="5dp" />
+                    android:paddingRight="5dp"
+                    android:src="@drawable/bluetooth_icon24" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -83,9 +83,9 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_gravity="left|center_vertical"
                     android:drawablePadding="3dp"
                     android:singleLine="true"
-                    android:text="Android Bluetooth: "
-                    android:textStyle="bold|italic"
-                    android:textColor="?android:colorPrimaryDark" />
+                    android:text="Bluetooth Connection: "
+                    android:textColor="?android:colorPrimaryDark"
+                    android:textStyle="bold|italic" />
 
                 <TextView
                     android:id="@+id/androidBluetoothStatusText"
@@ -97,16 +97,24 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:paddingRight="18dp"
                     android:singleLine="true"
                     android:text="Disabled"
-                    android:textStyle="normal"
-                    android:textColor="?android:colorPrimaryDark" />
+                    android:textColor="?android:colorPrimaryDark"
+                    android:textStyle="normal" />
 
                 <Button
+                    android:id="@+id/androidBTSettingsButton"
                     style="@style/GridButtonsNoWidth"
                     android:layout_columnWeight="1"
-                    android:id="@+id/androidBTSettingsButton"
                     android:drawableLeft="@drawable/info_icon24"
                     android:drawablePadding="3dp"
-                    android:text="BT Settings" />
+                    android:text="View BT Settings" />
+
+                <Button
+                    android:id="@+id/androidBTTroubleshootingButton"
+                    style="@style/GridButtonsNoWidth"
+                    android:layout_columnWeight="1"
+                    android:drawableLeft="@drawable/info_icon24"
+                    android:drawablePadding="3dp"
+                    android:text="View BT Troubleshooting/Tips -- TODO" />
 
             </GridLayout>
 
@@ -118,12 +126,12 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
                 android:layout_gravity="center_vertical"
+                android:layout_weight="1"
                 android:background="?colorPrimaryDarkLog"
                 android:drawableLeft="@drawable/chameleon_device_logo24"
                 android:drawablePadding="5dp"
+                android:gravity="center_vertical"
                 android:singleLine="true"
                 android:text="Active Device Connection: "
                 android:textAllCaps="true"
@@ -138,17 +146,17 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
+                android:layout_marginVertical="4dp"
                 android:background="?colorAccentLog"
                 android:columnCount="3"
-                android:layout_marginVertical="4dp"
                 android:padding="4dp">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left|center_vertical"
-                    android:src="@drawable/device_board_logo24"
-                    android:paddingRight="3dp" />
+                    android:paddingRight="3dp"
+                    android:src="@drawable/device_board_logo24" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -157,25 +165,25 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:drawablePadding="3dp"
                     android:singleLine="true"
                     android:text="Device Name: "
-                    android:textStyle="bold|italic"
-                    android:textColor="?android:colorPrimaryDark" />
+                    android:textColor="?android:colorPrimaryDark"
+                    android:textStyle="bold|italic" />
 
                 <EditText
                     android:id="@+id/slotNicknameText"
                     android:layout_width="150dp"
-                    android:layout_columnWeight="1"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="4dp"
+                    android:layout_columnWeight="1"
                     android:hint="Chameleon Mini Nickname"
-                    android:textSize="11sp"
+                    android:paddingLeft="4dp"
                     android:singleLine="true"
-                    android:textColor="?colorPrimaryDarkLog" />
+                    android:textColor="?colorPrimaryDarkLog"
+                    android:textSize="11sp" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/chameleon_type_logo24"
-                    android:paddingRight="3dp" />
+                    android:paddingRight="3dp"
+                    android:src="@drawable/chameleon_type_logo24" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -184,8 +192,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:drawablePadding="3dp"
                     android:singleLine="true"
                     android:text="Chameleon Type: "
-                    android:textStyle="bold|italic"
-                    android:textColor="?colorPrimaryDark" />
+                    android:textColor="?colorPrimaryDark"
+                    android:textStyle="bold|italic" />
 
                 <TextView
                     android:id="@+id/chameleonTypeText"
@@ -196,14 +204,14 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:paddingLeft="8dp"
                     android:singleLine="true"
                     android:text="Unknown"
-                    android:textStyle="normal"
-                    android:textColor="?colorPrimaryDark" />
+                    android:textColor="?colorPrimaryDark"
+                    android:textStyle="normal" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/serial_id_logo24"
-                    android:paddingRight="3dp" />
+                    android:paddingRight="3dp"
+                    android:src="@drawable/serial_id_logo24" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -212,8 +220,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:drawablePadding="3dp"
                     android:singleLine="true"
                     android:text="Hardware Serial ID: "
-                    android:textStyle="bold|italic"
-                    android:textColor="?colorPrimaryDark" />
+                    android:textColor="?colorPrimaryDark"
+                    android:textStyle="bold|italic" />
 
                 <TextView
                     android:id="@+id/hardwareSerialIDText"
@@ -224,14 +232,14 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:paddingLeft="8dp"
                     android:singleLine="true"
                     android:text="None"
-                    android:textStyle="normal"
-                    android:textColor="?colorPrimaryDark" />
+                    android:textColor="?colorPrimaryDark"
+                    android:textStyle="normal" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/connection_status_logo24"
-                    android:paddingRight="3dp" />
+                    android:paddingRight="3dp"
+                    android:src="@drawable/connection_status_logo24" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -240,8 +248,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:drawablePadding="3dp"
                     android:singleLine="true"
                     android:text="Connection Status: "
-                    android:textStyle="bold|italic"
-                    android:textColor="?colorPrimaryDark" />
+                    android:textColor="?colorPrimaryDark"
+                    android:textStyle="bold|italic" />
 
                 <TextView
                     android:id="@+id/connectionStatusText"
@@ -252,8 +260,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:paddingLeft="8dp"
                     android:singleLine="true"
                     android:text="Not connected"
-                    android:textStyle="normal"
-                    android:textColor="?colorPrimaryDark" />
+                    android:textColor="?colorPrimaryDark"
+                    android:textStyle="normal" />
 
             </GridLayout>
 
@@ -266,20 +274,20 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
+                android:layout_marginVertical="4dp"
                 android:background="?colorAccentLog"
                 android:columnCount="2"
-                android:layout_marginVertical="4dp"
                 android:padding="4dp">
 
                 <Button
-                    style="@style/GridButtons"
                     android:id="@+id/connectToDeviceButton"
+                    style="@style/GridButtons"
                     android:drawableLeft="@drawable/connect_button_logo24"
                     android:text="Connect to Chameleon" />
 
                 <Button
-                    style="@style/GridButtons"
                     android:id="@+id/disconnectFromDeviceButton"
+                    style="@style/GridButtons"
                     android:drawableLeft="@drawable/disconnect_button_logo24"
                     android:text="Disconnect Device" />
 
