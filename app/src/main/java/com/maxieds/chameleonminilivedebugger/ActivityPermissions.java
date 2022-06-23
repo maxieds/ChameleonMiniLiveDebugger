@@ -20,7 +20,9 @@ public interface ActivityPermissions {
     public static Map<String,View> REQUEST_QUEUE = new LinkedHashMap<String,View>();
     public static final Semaphore PERMS_REQUEST_QUEUE_LOCK = new Semaphore(1, true);
     public static final int REQUEST_QUEUE_KEY_RADIX = 16;
-    public static final int REQUEST_RESULT_MAX_TIMEOUT = 500; // wait 0.5 seconds, and bail if cannot acquire the lock
+
+    /* Wait 0.5 seconds, and bail if cannot acquire the lock */
+    public static final int REQUEST_RESULT_MAX_TIMEOUT = 500;
     public static final int REQUEST_RESULT_MAX_VIEWOBJ_WAIT_TIMEOUT = 500;
 
     public static boolean acquireRequestQueueLock(int waitTimeout) {

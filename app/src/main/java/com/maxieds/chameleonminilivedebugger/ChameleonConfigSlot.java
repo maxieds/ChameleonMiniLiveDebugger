@@ -42,24 +42,18 @@ public class ChameleonConfigSlot {
     private static final String TAG = ChameleonConfigSlot.class.getSimpleName();
 
     public static int CHAMELEON_DEVICE_CONFIG_SLOT_COUNT = 8;
-    public static ChameleonConfigSlot[] CHAMELEON_DEVICE_CONFIG_SLOTS = new ChameleonConfigSlot[8];
-    public static String[] CHAMELEON_SLOT_NAMES = new String[8];
+    public static ChameleonConfigSlot[] CHAMELEON_DEVICE_CONFIG_SLOTS = new ChameleonConfigSlot[CHAMELEON_DEVICE_CONFIG_SLOT_COUNT];
+    public static String[] CHAMELEON_SLOT_NAMES = new String[CHAMELEON_DEVICE_CONFIG_SLOT_COUNT];
     static {
         String[] storedSlotNameSettings = AndroidSettingsStorage.getStringArrayValueByKey(ChameleonSettings.chameleonDeviceSerialNumber, AndroidSettingsStorage.CHAMELEON_SLOT_NAMES);
         if(storedSlotNameSettings != null) {
             System.arraycopy(storedSlotNameSettings, 0, CHAMELEON_SLOT_NAMES, 0, storedSlotNameSettings.length);
         }
         else {
-            CHAMELEON_SLOT_NAMES = new String[] {
-                    "Slot Nickname",
-                    "Slot Nickname",
-                    "Slot Nickname",
-                    "Slot Nickname",
-                    "Slot Nickname",
-                    "Slot Nickname",
-                    "Slot Nickname",
-                    "Slot Nickname"
-            };
+            CHAMELEON_SLOT_NAMES = new String[CHAMELEON_DEVICE_CONFIG_SLOT_COUNT];
+            for(int slotIdx = 0; slotIdx < CHAMELEON_DEVICE_CONFIG_SLOT_COUNT; slotIdx++) {
+                CHAMELEON_SLOT_NAMES[slotIdx] = "Slot Nickname";
+            }
         }
         for(int slotNum = 1; slotNum <= CHAMELEON_DEVICE_CONFIG_SLOT_COUNT; slotNum++) {
             CHAMELEON_DEVICE_CONFIG_SLOTS[slotNum - 1] = new ChameleonConfigSlot(slotNum, false);
@@ -201,7 +195,7 @@ public class ChameleonConfigSlot {
         EditText slotNicknameDisplay = slotConfigLayout.findViewById(R.id.slotNicknameText);
         slotNicknameDisplay.setText(slotNickname);
         TextView slotNumberLabel = slotConfigLayout.findViewById(R.id.slotOnOffNumberText);
-        slotNumberLabel.setText(String.format(Locale.getDefault(), "SLOT #%02d", slotIndex));
+        slotNumberLabel.setText(String.format(Locale.getDefault(), "SLOT %02d", slotIndex));
         Spinner tagConfigModeSpinner = slotConfigLayout.findViewById(R.id.tagConfigModeSpinner);
         if(tagConfigModeSpinner == null) {
             return false;
@@ -237,18 +231,19 @@ public class ChameleonConfigSlot {
         ImageView slotOnOffImageMarker = slotConfigLayout.findViewById(R.id.slotOnOffMarker);
         Drawable slotEnabledMarker = LiveLoggerActivity.getLiveLoggerInstance().getResources().getDrawable(R.drawable.slot_on);
         slotOnOffImageMarker.setImageDrawable(slotEnabledMarker);
-        // set onClick handlers here:
         EditText slotNicknameEditor = slotConfigLayout.findViewById(R.id.slotNicknameText);
-        slotNicknameEditor.addTextChangedListener(new TextWatcher() {
-            public void afterTextChanged(Editable editStr) {}
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.i(TAG, "Changing Slot #" + slotIndex + " name to " + s);
-                CHAMELEON_SLOT_NAMES[slotIndex - 1] = s.toString();
-                slotNickname = s.toString();
-                AndroidSettingsStorage.updateValueByKey(ChameleonSettings.chameleonDeviceSerialNumber, AndroidSettingsStorage.CHAMELEON_SLOT_NAMES);
-            }
-        });
+        if(slotNicknameEditor != null) {
+            slotNicknameEditor.addTextChangedListener(new TextWatcher() {
+                public void afterTextChanged(Editable editStr) {}
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    Log.i(TAG, "Changing Slot #" + slotIndex + " name to " + s);
+                    CHAMELEON_SLOT_NAMES[slotIndex - 1] = s.toString();
+                    slotNickname = s.toString();
+                    AndroidSettingsStorage.updateValueByKey(ChameleonSettings.chameleonDeviceSerialNumber, AndroidSettingsStorage.CHAMELEON_SLOT_NAMES);
+                }
+            });
+        }
         Spinner configModeSpinner = (Spinner) slotConfigLayout.findViewById(R.id.tagConfigModeSpinner);
         configModeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             String[] localSpinnerList = tagConfigModes;
@@ -267,7 +262,8 @@ public class ChameleonConfigSlot {
                 readParametersFromChameleonSlot();
                 updateLayoutParameters(false);
                 ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-                ChameleonIO.deviceStatus.updateAllStatusAndPost(false); /* Make sure the device returned the correct data to display */
+                /* Make sure the device returned the correct data to display: */
+                ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
             }
             public void onNothingSelected(AdapterView<?> adapterView) {
                 return;
@@ -302,12 +298,17 @@ public class ChameleonConfigSlot {
     }
 
     public boolean disableLayout() {
-        ImageView slotOnOffImageMarker = slotConfigLayout.findViewById(R.id.slotOnOffMarker);
-        Drawable slotEnabledMarker = LiveLoggerActivity.getLiveLoggerInstance().getResources().getDrawable(R.drawable.slot_off);
-        slotOnOffImageMarker.setImageDrawable(slotEnabledMarker);
-        slotConfigLayout.setEnabled(false);
-        isEnabled = false;
-        return true;
+        try {
+            ImageView slotOnOffImageMarker = slotConfigLayout.findViewById(R.id.slotOnOffMarker);
+            Drawable slotEnabledMarker = LiveLoggerActivity.getLiveLoggerInstance().getResources().getDrawable(R.drawable.slot_off);
+            slotOnOffImageMarker.setImageDrawable(slotEnabledMarker);
+            slotConfigLayout.setEnabled(false);
+            isEnabled = false;
+            return true;
+        } catch(NullPointerException npe) {
+            npe.printStackTrace();
+            return false;
+        }
     }
 
 }

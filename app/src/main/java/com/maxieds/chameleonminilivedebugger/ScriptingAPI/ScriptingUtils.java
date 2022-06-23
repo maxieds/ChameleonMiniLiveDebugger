@@ -85,7 +85,7 @@ public class ScriptingUtils {
                 return false;
         }
         Vibrator deviceVibrator = (Vibrator) ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT.getSystemService(Context.VIBRATOR_SERVICE);
-        if(!deviceVibrator.hasVibrator()) {
+        if(deviceVibrator != null && !deviceVibrator.hasVibrator()) {
             return false;
         }
         else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

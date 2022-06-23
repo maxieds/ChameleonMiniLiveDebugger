@@ -176,7 +176,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
             @Override
             public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
                 if(status == 19) {
-                    // ??? Status code 19 is caused by loss of binding information ???
+                    /* Status code 19 is caused by loss of binding information ??? */
                     return;
                 }
                 if(newState == BluetoothProfile.STATE_CONNECTED) {
@@ -217,7 +217,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     return;
                 }
                 try {
-                    // Unpack bytes ???
+                    /* Unpack bytes ?!? */
                     notifyBluetoothSerialInterfaceDataRead(charData);
                 } catch (Exception dinvEx) {
                     dinvEx.printStackTrace();
@@ -332,7 +332,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
 
     @Override
     public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
-        btGattCallback.onDescriptorWrite(gatt, descriptor, status); // TODO: Originally commented out this line
+        btGattCallback.onDescriptorWrite(gatt, descriptor, status);
     }
 
     @Override

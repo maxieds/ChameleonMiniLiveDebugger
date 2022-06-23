@@ -30,6 +30,7 @@ import android.util.Log;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
 import java.io.IOException;
@@ -221,7 +222,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
         ChameleonIO.PAUSED = false;
         ChameleonSettings.chameleonDeviceMAC = btDev.getAddress();
         ChameleonSettings.chameleonDeviceSerialNumber = ChameleonSettings.chameleonDeviceMAC;
-        // TODO: Update the settings tab ???
+        /* TODO: Update the settings tab with connected device information at this point ?!? */
 
         Handler configDeviceHandler = new Handler();
         Runnable configDeviceRunnable = new Runnable() {
@@ -430,8 +431,8 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
         try {
             status = serialPortLock.tryAcquire(timeout, java.util.concurrent.TimeUnit.MILLISECONDS);
             return status;
-        } catch(Exception inte) {
-            inte.printStackTrace();
+        } catch(Exception ie) {
+            ie.printStackTrace();
             serialPortLock.release();
             return false;
         }

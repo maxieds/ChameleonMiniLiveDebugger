@@ -138,6 +138,9 @@ public class TabFragment extends Fragment {
             GridLayout menuItemsNav = (GridLayout) tabInflatedView.findViewById(R.id.tabMenuItemsNav);
             String indexRefTag = String.format(Locale.getDefault(), "%d:%d", tabIndex, midx);
             Button menuItem = (Button) menuItemsNav.findViewWithTag(indexRefTag);
+            if(menuItem == null) {
+                return false;
+            }
             menuItem.setTypeface(Typeface.DEFAULT, Typeface.BOLD_ITALIC);
             final Button menuItemFinal = menuItem;
             if(performBtnClick) {
@@ -167,12 +170,17 @@ public class TabFragment extends Fragment {
             else if(tabInflatedView == null) {
                 return false;
             }
-            GridLayout menuItemsNav = (GridLayout) tabInflatedView.findViewById(R.id.tabMenuItemsNav);
-            String indexRefTag = String.format(Locale.getDefault(), "%d:%d", tabIndex, midx);
-            Button menuItem = (Button) menuItemsNav.findViewWithTag(indexRefTag);
-            menuItem.setBackgroundColor(tabInflatedView.getContext().getResources().getColor(android.R.color.transparent));
-            menuItem.setTextColor(Utils.getColorFromTheme(R.attr.colorPrimaryDark));
-            menuItem.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
+            try {
+                GridLayout menuItemsNav = (GridLayout) tabInflatedView.findViewById(R.id.tabMenuItemsNav);
+                String indexRefTag = String.format(Locale.getDefault(), "%d:%d", tabIndex, midx);
+                Button menuItem = (Button) menuItemsNav.findViewWithTag(indexRefTag);
+                menuItem.setBackgroundColor(tabInflatedView.getContext().getResources().getColor(android.R.color.transparent));
+                menuItem.setTextColor(Utils.getColorFromTheme(R.attr.colorPrimaryDark));
+                menuItem.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
+            } catch(NullPointerException npe) {
+                npe.printStackTrace();
+                return false;
+            }
             return true;
         }
 
@@ -231,7 +239,9 @@ public class TabFragment extends Fragment {
             }
             int tabIdx = Integer.parseInt(tagIndices[0]);
             int menuItemIdx = Integer.parseInt(tagIndices[1]);
-            TabFragment.UITAB_DATA[tabIdx].changeMenuItemDisplay(menuItemIdx, true);
+            if(TabFragment.UITAB_DATA[tabIdx] != null) {
+                TabFragment.UITAB_DATA[tabIdx].changeMenuItemDisplay(menuItemIdx, true);
+            }
         }
 
         public boolean changeMenuItemDisplay(int mitemIdx, boolean updateDeviceGUI) {
@@ -239,8 +249,10 @@ public class TabFragment extends Fragment {
                 return false;
             }
             LinearLayout containerLayout = (LinearLayout) tabInflatedView.findViewById(R.id.tabMainContent);
-            containerLayout.removeAllViews();
-            containerLayout.clearFocus();
+            if(containerLayout != null) {
+                containerLayout.removeAllViews();
+                containerLayout.clearFocus();
+            }
             View tabMainLayoutView = tabMenuItemLayouts[mitemIdx];
             if((tabMainLayoutView == null) && (mitemIdx >= 0) && (mitemIdx < menuItemText.length)) {
                 tabMainLayoutView = TabFragment.defaultInflater.inflate(menuItemLayout[mitemIdx], containerLayout, false);
@@ -251,8 +263,9 @@ public class TabFragment extends Fragment {
             else if(updateDeviceGUI) {
                 UITabUtils.initializeTabMainContent(tabIndex, mitemIdx, tabMainLayoutView);
             }
-            if(tabMainLayoutView.getParent() != null) {
-                ((LinearLayout) tabMainLayoutView.getParent()).removeView(tabMainLayoutView);
+            LinearLayout tabLayoutParent = (LinearLayout) tabMainLayoutView.getParent();
+            if(tabLayoutParent != null) {
+                tabLayoutParent.removeView(tabMainLayoutView);
             }
             containerLayout.addView(tabMainLayoutView);
             selectMenuItem(mitemIdx, false);
@@ -371,11 +384,16 @@ public class TabFragment extends Fragment {
     }
 
     public String getTabTitle() {
+        if(UITAB_DATA[tabNumber] == null) {
+            return "";
+        }
         return UITAB_DATA[tabNumber].tabText;
     }
 
     public int getTabIcon() {
-        return UITAB_DATA[tabNumber].tabIcon;
+        if(UITAB_DATA[tabNumber] == null) {
+            return 0;
+        }return UITAB_DATA[tabNumber].tabIcon;
     }
 
     /**
@@ -401,9 +419,13 @@ public class TabFragment extends Fragment {
         LiveLoggerActivity.defaultInflater = inflater;
         TabFragment.defaultInflater = inflater;
         View view = inflater.inflate(tabLayoutResRef, container, false);
+        if(UITAB_DATA[tabNumber] == null) {
+            return null;
+        }
         UITAB_DATA[tabNumber].initializeLayout();
-        if(UITAB_DATA[tabNumber].tabInflatedView != null) {
-            ((LinearLayout) UITAB_DATA[tabNumber].tabInflatedView).removeAllViews();
+        LinearLayout tabInflatedView = (LinearLayout) UITAB_DATA[tabNumber].tabInflatedView;
+        if(tabInflatedView != null) {
+            tabInflatedView.removeAllViews();
         }
         UITAB_DATA[tabNumber].tabInflatedView = view;
         UITAB_DATA[tabNumber].createTabView();

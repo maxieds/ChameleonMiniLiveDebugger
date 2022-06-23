@@ -496,7 +496,7 @@ public class AndroidSettingsStorage {
         else if (prefsKey.equals(CHAMELEON_SLOT_NAMES)) {
             Set<String> chSlotNames = sharedPrefs.getStringSet(CHAMELEON_SLOT_NAMES, null);
             if(chSlotNames != null) {
-                String[] slotNames = new String[8];
+                String[] slotNames = new String[ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOT_COUNT];
                 chSlotNames.toArray(slotNames);
                 return slotNames;
             }

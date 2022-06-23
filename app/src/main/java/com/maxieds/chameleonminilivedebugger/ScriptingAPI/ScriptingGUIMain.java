@@ -40,21 +40,25 @@ public class ScriptingGUIMain {
     private static final String TAG = ScriptingGUIMain.class.getSimpleName();
 
     public static void scriptGUIHandlePerformTaskClick(Button clickedBtn, String btnTag) {
+        ChameleonScripting.ChameleonScriptInstance csInstance = ChameleonScripting.getRunningInstance();
+        if(csInstance == null) {
+            return;
+        }
         switch(btnTag) {
             case "SCRIPTING_BTN_RUN_FROM_START":
                 ChameleonScripting.runScriptFromStart();
                 break;
             case "SCRIPTING_BTN_KILL_SCRIPT":
-                ChameleonScripting.getRunningInstance().killRunningScript();
+                csInstance.killRunningScript();
                 break;
             case "SCRIPTING_BTN_PAUSE_SCRIPT":
-                ChameleonScripting.getRunningInstance().pauseRunningScript();
+                csInstance.pauseRunningScript();
                 break;
             case "SCRIPTING_BTN_STEP_SCRIPT":
-                ChameleonScripting.getRunningInstance().stepRunningScript();
+                csInstance.stepRunningScript();
                 break;
             default:
-                /* TODO: Breakpoint actions */
+                /* TODO: Breakpoint actions -- NOT IMPLEMENTED */
                 break;
         }
     }
@@ -64,7 +68,7 @@ public class ScriptingGUIMain {
         EditText selectedScriptText = cfgBaseLayout.findViewById(R.id.scriptingLoadImportTabScriptFileText);
         ScriptingGUIMain.displayEditTextValue(ScriptingConfig.LAST_SCRIPT_LOADED_PATH, selectedScriptText);
         Button setLoadedScriptBtn = cfgBaseLayout.findViewById(R.id.scriptingLoadImportTabScriptFileSetBtn);
-        if(setLoadedScriptBtn == null) {
+        if(selectedScriptText == null || setLoadedScriptBtn == null) {
             return false;
         }
         setLoadedScriptBtn.setOnClickListener(new View.OnClickListener() {
@@ -77,8 +81,6 @@ public class ScriptingGUIMain {
                 ScriptingConfig.LAST_SCRIPT_LOADED_PATH = nextPath;
                 AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.SCRIPTING_CONFIG_LAST_SCRIPT_LOADED_PATH);
                 ScriptingGUIMain.displayEditTextValue(nextPath, selectedScriptText);
-                //Log.i(TAG, "NEXT PATH: " + nextPath);
-                //Log.i(TAG, "CONTENTS: [" + AndroidFileChooser.getFileContentsAsString(nextPath) + "]"); // WORKS :)
             }
         });
         CheckBox cbLimitExecTime = cfgBaseLayout.findViewById(R.id.scriptingLoadImportTabLimitExecTimeCbox);
@@ -97,14 +99,14 @@ public class ScriptingGUIMain {
                 int lineNumber = -1;
                 try {
                     lineNumber = Integer.parseInt(((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLineText)).getText().toString());
+                    ScriptingBreakPoint.addBreakpoint(lineNumber);
+                    Utils.dismissAndroidKeyboard(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT);
+                    ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLineText)).setText("");
+                    ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLineText)).setHint("@line");
                 } catch(Exception nfe) {
                     nfe.printStackTrace();
                     return;
                 }
-                ScriptingBreakPoint.addBreakpoint(lineNumber);
-                Utils.dismissAndroidKeyboard(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT);
-                ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLineText)).setText("");
-                ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLineText)).setHint("@line");
             }
         });
         ImageButton addBPLabelBtn = cfgBaseLayout.findViewById(R.id.scriptingBPAddLabelAppendBtn);
@@ -117,14 +119,14 @@ public class ScriptingGUIMain {
                 String lineLabel = "";
                 try {
                     lineLabel = ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLabelText)).getText().toString();
+                    ScriptingBreakPoint.addBreakpoint(lineLabel);
+                    Utils.dismissAndroidKeyboard(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT);
+                    ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLabelText)).setText("");
+                    ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLabelText)).setHint("@label");
                 } catch(Exception nfe) {
                     nfe.printStackTrace();
                     return;
                 }
-                ScriptingBreakPoint.addBreakpoint(lineLabel);
-                Utils.dismissAndroidKeyboard(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT);
-                ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLabelText)).setText("");
-                ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLabelText)).setHint("@label");
             }
         });
         return true;

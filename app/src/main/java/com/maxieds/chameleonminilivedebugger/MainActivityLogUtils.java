@@ -28,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -61,6 +62,9 @@ public class MainActivityLogUtils {
                         return;
                     }
                     LinearLayout lastLogElt = (LinearLayout) logDataFeed.getChildAt(logDataFeed.getChildCount() - 1);
+                    if(lastLogElt == null) {
+                        return;
+                    }
                     lastLogElt.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
                     int bottomEltHeight = lastLogElt.getMeasuredHeight();
                     if(logScroller.getBottom() > lastLogElt.getBottom()) {
@@ -78,15 +82,14 @@ public class MainActivityLogUtils {
      * @see LogEntryMetadataRecord
      */
     public static void appendNewLog(LogEntryBase logEntry) {
-        if(LiveLoggerActivity.getLiveLoggerInstance() == null) {
+        LiveLoggerActivity llActivity = LiveLoggerActivity.getLiveLoggerInstance();
+        if(llActivity == null) {
             return;
-        }
-        else if(LiveLoggerActivity.getLiveLoggerInstance().getSelectedTab() != TAB_LOG && LiveLoggerActivity.getLiveLoggerInstance() != null) {
+        } else if(llActivity.getSelectedTab() != TAB_LOG) {
             if(logEntry instanceof LogEntryUI) {
-                LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconNewXFer, R.drawable.statusxfer16);
-            }
-            else {
-                LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconNewMsg, R.drawable.statusnewmsg16);
+                llActivity.setStatusIcon(R.id.statusIconNewXFer, R.drawable.statusxfer16);
+            } else {
+                llActivity.setStatusIcon(R.id.statusIconNewMsg, R.drawable.statusnewmsg16);
             }
         }
         if(logDataFeed != null && logDataEntries != null) {
@@ -94,10 +97,10 @@ public class MainActivityLogUtils {
             logDataEntries.add(logEntry);
         }
         if(logEntry instanceof LogEntryMetadataRecord) { // switch to the log tab to display the results:
-            TabLayout tabLayout = (TabLayout) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.tab_layout);
+            TabLayout tabLayout = (TabLayout) llActivity.findViewById(R.id.tab_layout);
             if(tabLayout != null) {
                 tabLayout.getTabAt(TAB_LOG).select();
-                if(TabFragment.UITAB_DATA[TAB_LOG].lastMenuIndex != TAB_LOG_MITEM_LOGS) {
+                if(TabFragment.UITAB_DATA[TAB_LOG] != null && TabFragment.UITAB_DATA[TAB_LOG].lastMenuIndex != TAB_LOG_MITEM_LOGS) {
                     TabFragment.UITAB_DATA[TAB_LOG].selectMenuItem(TAB_LOG_MITEM_LOGS);
                 }
             }
@@ -106,7 +109,9 @@ public class MainActivityLogUtils {
     }
 
     public static void clearAllLogs() {
-        if (RECORDID > 0) {
+        if(logDataEntries == null || logDataFeed == null) {
+            return;
+        } else if (RECORDID > 0) {
             logDataEntries.clear();
             RECORDID = 0;
             logDataFeed.removeAllViewsInLayout();
@@ -119,26 +124,32 @@ public class MainActivityLogUtils {
      * APDU command requests, or zero bits.
      */
     public static void collapseSimilarLogs() {
-        if(RECORDID == 0)
+        if(logDataEntries == null || logDataFeed == null) {
             return;
+        } else if(RECORDID == 0) {
+            return;
+        }
         byte[] curBits = null;
         boolean newBits = true;
         for(int v = 0; v < logDataEntries.size(); v++) {
             LogEntryBase lde = logDataEntries.get(v);
+            if(lde == null) {
+                continue;
+            }
             if(lde instanceof LogEntryMetadataRecord) {
                 newBits = true;
                 continue;
-            }
-            else if(lde instanceof LogEntryUI && newBits) {
+            } else if(lde instanceof LogEntryUI && newBits) {
                 byte[] nextDataPattern = ((LogEntryUI) lde).getEntryData();
                 curBits = new byte[nextDataPattern.length];
                 System.arraycopy(nextDataPattern, 0, curBits, 0, nextDataPattern.length);
                 newBits = false;
-            }
-            else if(Arrays.equals(curBits, ((LogEntryUI) lde).getEntryData())) {
-                logDataFeed.getChildAt(v).setVisibility(LinearLayout.GONE);
-            }
-            else {
+            } else if(Arrays.equals(curBits, ((LogEntryUI) lde).getEntryData())) {
+                View vthLogDataFeedView = logDataFeed.getChildAt(v);
+                if(vthLogDataFeedView != null) {
+                    vthLogDataFeedView.setVisibility(LinearLayout.GONE);
+                }
+            } else {
                 newBits = true;
             }
         }
@@ -149,12 +160,20 @@ public class MainActivityLogUtils {
      * @param highlightColor
      */
     public static void selectedHighlightedLogs(int highlightColor) {
+        if(logDataEntries == null || logDataFeed == null) {
+            return;
+        }
         for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
             View logEntryView = logDataFeed.getChildAt(vi);
-            if (logDataEntries.get(vi) instanceof LogEntryUI) {
-                boolean isChecked = ((CheckBox) logEntryView.findViewById(R.id.entrySelect)).isChecked();
-                if (isChecked)
+            if (logEntryView != null && logDataEntries.get(vi) instanceof LogEntryUI) {
+                CheckBox cb = (CheckBox) logEntryView.findViewById(R.id.entrySelect);
+                if(cb == null) {
+                    continue;
+                }
+                boolean isChecked = cb.isChecked();
+                if (isChecked) {
                     logEntryView.setBackgroundColor(highlightColor);
+                }
             }
         }
     }
@@ -163,10 +182,16 @@ public class MainActivityLogUtils {
      * Unchecks all of the selected logs in the Log tab.
      */
     public static void uncheckAllLogs() {
+        if(logDataEntries == null || logDataFeed == null) {
+            return;
+        }
         for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
             View logEntryView = logDataFeed.getChildAt(vi);
-            if (logDataEntries.get(vi) instanceof LogEntryUI) {
-                ((CheckBox) logEntryView.findViewById(R.id.entrySelect)).setChecked(false);
+            if (logEntryView != null && logDataEntries.get(vi) instanceof LogEntryUI) {
+                CheckBox cb = (CheckBox) logEntryView.findViewById(R.id.entrySelect);
+                if(cb != null) {
+                    cb.setChecked(false);
+                }
             }
         }
     }
@@ -178,18 +203,31 @@ public class MainActivityLogUtils {
      * @param directionFlag
      */
     public static void setSelectedXFerOnLogs(int directionFlag) {
-        Drawable dirArrowIcon = LiveLoggerActivity.getLiveLoggerInstance().getResources().getDrawable(R.drawable.xfer16);
-        if(directionFlag == 1)
-            dirArrowIcon = LiveLoggerActivity.getLiveLoggerInstance().getResources().getDrawable(R.drawable.incoming16v2);
-        else if(directionFlag == 2)
-            dirArrowIcon = LiveLoggerActivity.getLiveLoggerInstance().getResources().getDrawable(R.drawable.outgoing16v2);
+        LiveLoggerActivity llActivity = LiveLoggerActivity.getLiveLoggerInstance();
+        if(llActivity == null || llActivity.getResources() == null) {
+            return;
+        } else if(logDataEntries == null || logDataFeed == null) {
+            return;
+        }
+        Drawable dirArrowIcon = llActivity.getResources().getDrawable(R.drawable.xfer16);
+        if(directionFlag == 1) {
+            dirArrowIcon = llActivity.getResources().getDrawable(R.drawable.incoming16v2);
+        } else if(directionFlag == 2) {
+            dirArrowIcon = llActivity.getResources().getDrawable(R.drawable.outgoing16v2);
+        }
         for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
             View logEntryView = logDataFeed.getChildAt(vi);
-            if (logDataEntries.get(vi) instanceof LogEntryUI) {
-                boolean isChecked = ((CheckBox) logEntryView.findViewById(R.id.entrySelect)).isChecked();
+            if (logEntryView != null && logDataEntries.get(vi) instanceof LogEntryUI) {
+                CheckBox cb = (CheckBox) logEntryView.findViewById(R.id.entrySelect);
+                if(cb == null) {
+                    continue;
+                }
+                boolean isChecked = cb.isChecked();
                 if (isChecked) {
                     ImageView xferMarker = (ImageView) logEntryView.findViewById(R.id.inputDirIndicatorImg);
-                    xferMarker.setImageDrawable(dirArrowIcon);
+                    if(xferMarker != null) {
+                        xferMarker.setImageDrawable(dirArrowIcon);
+                    }
                 }
             }
         }
@@ -200,23 +238,35 @@ public class MainActivityLogUtils {
      * @param actionFlag
      */
     public static void processBatchOfSelectedLogs(String actionFlag) {
+        if(logDataEntries == null || logDataFeed == null) {
+            return;
+        }
         for (int vi = 0; vi < logDataFeed.getChildCount(); vi++) {
             View logEntryView = logDataFeed.getChildAt(vi);
-            if (logDataEntries.get(vi) instanceof LogEntryUI) {
-                boolean isChecked = ((CheckBox) logEntryView.findViewById(R.id.entrySelect)).isChecked();
-                int recordIdx = ((LogEntryUI) logDataEntries.get(vi)).getRecordIndex();
+            if (logEntryView != null && logDataEntries.get(vi) instanceof LogEntryUI) {
+                CheckBox cb = (CheckBox) logEntryView.findViewById(R.id.entrySelect);
+                if(cb == null) {
+                    continue;
+                }
+                boolean isChecked = cb.isChecked();
+                LogEntryUI logEntryUIInst = (LogEntryUI) logDataEntries.get(vi);
+                if(logEntryUIInst == null) {
+                    continue;
+                }
+                int recordIdx = logEntryUIInst.getRecordIndex();
+                String payloadDataDesc = logEntryUIInst.getPayloadData();
                 if (isChecked && actionFlag.equals("SEND")) {
-                    String byteString = ((LogEntryUI) logDataEntries.get(vi)).getPayloadData();
+                    String byteString = payloadDataDesc;
                     appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("CARD INFO", "Sending: " + byteString + "..."));
                     ChameleonIO.executeChameleonMiniCommand("SEND " + byteString, ChameleonIO.TIMEOUT);
                 }
                 else if(isChecked && actionFlag.equals("SEND_RAW")) {
-                    String byteString = ((LogEntryUI) logDataEntries.get(vi)).getPayloadData();
+                    String byteString = payloadDataDesc;
                     appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("CARD INFO", "Sending: " + byteString + "..."));
                     ChameleonIO.executeChameleonMiniCommand("SEND_RAW " + byteString, ChameleonIO.TIMEOUT);
                 }
                 else if(isChecked && actionFlag.equals("CLONE_UID")) {
-                    String uid = ((LogEntryUI) logDataEntries.get(vi)).getPayloadData();
+                    String uid = payloadDataDesc;
                     if(uid.length() != 2 * ChameleonIO.deviceStatus.UIDSIZE) {
                         appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", String.format("Number of bytes for record #%d != the required %d bytes!", recordIdx, ChameleonIO.deviceStatus.UIDSIZE)));
                     }
@@ -225,7 +275,7 @@ public class MainActivityLogUtils {
                     }
                 }
                 else if(isChecked && actionFlag.equals("PRINT")) {
-                    byte[] rawBytes = ((LogEntryUI) logDataEntries.get(vi)).getEntryData();
+                    byte[] rawBytes = logEntryUIInst.getEntryData();
                     appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("PRINT", Utils.bytes2Hex(rawBytes) + "\n------\n" + Utils.bytes2Ascii(rawBytes)));
                 }
                 else if(isChecked && actionFlag.equals("HIDE")) {
@@ -257,6 +307,9 @@ public class MainActivityLogUtils {
                 .setView(userInput)
                 .setPositiveButton("Submit Message", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
+                        if(userInput == null || userInput.getText() == null || userInputStack == null) {
+                            return;
+                        }
                         userInputStack = userInput.getText().toString();
                         if(!userInputStack.equals("")) {
                             userInputStack += "\n";
@@ -274,57 +327,82 @@ public class MainActivityLogUtils {
 
     public static void performLogSearch() {
         long startTime = System.currentTimeMillis();
-        // clear out the existing search data first:
-        ScrollView searchResultsScroller = (ScrollView) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.searchResultsScrollView);
+        LiveLoggerActivity llActivity = LiveLoggerActivity.getLiveLoggerInstance();
+        if(llActivity == null) {
+            return;
+        } else if(logDataEntries == null) {
+            String toastMsg = "Unable to perform search -- The main activity is not initialized -- Aborting search operation";
+            Utils.displayToastMessage(llActivity, toastMsg, Toast.LENGTH_SHORT);
+        }
+        /* Clear out the existing search data first: */
+        ScrollView searchResultsScroller = (ScrollView) llActivity.findViewById(R.id.searchResultsScrollView);
+        if(searchResultsScroller == null) {
+            String toastMsg = "Unable to perform search -- The main activity is not initialized -- Aborting search operation";
+            Utils.displayToastMessage(llActivity, toastMsg, Toast.LENGTH_SHORT);
+        }
         if(searchResultsScroller.getChildCount() != 0) {
             searchResultsScroller.removeViewAt(0);
         }
-        LinearLayout searchResultsContainer = new LinearLayout(LiveLoggerActivity.getLiveLoggerInstance().getApplicationContext());
+        LinearLayout searchResultsContainer = new LinearLayout(llActivity.getApplicationContext());
         searchResultsContainer.setOrientation(LinearLayout.VERTICAL);
         searchResultsScroller.addView(searchResultsContainer);
-
-        boolean selectedBytes = ((RadioButton) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.radio_search_bytes)).isChecked();
-        String searchString = ((TextView) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.userInputSearchData)).getText().toString();
-        if(searchString.equals(""))
-            return;
-        else if(selectedBytes && !Utils.stringIsHexadecimal(searchString)) {
-            searchResultsContainer.addView(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Not a hexadecimal string.").getLayoutContainer());
+        /* Perform the search: */
+        boolean selectedBytes = false;
+        String searchString = "";
+        boolean searchStatus, searchAPDU, searchLogPayload, searchLogHeaders;
+        try {
+            selectedBytes = ((RadioButton) llActivity.findViewById(R.id.radio_search_bytes)).isChecked();
+            searchString = ((TextView) llActivity.findViewById(R.id.userInputSearchData)).getText().toString();
+            if (searchString.equals(""))
+                return;
+            else if (selectedBytes && !Utils.stringIsHexadecimal(searchString)) {
+                searchResultsContainer.addView(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Not a hexadecimal string.").getLayoutContainer());
+                return;
+            } else if (selectedBytes) {
+                searchString = searchString.replace("[\n\t\r]+", "").replaceAll("..(?!$)", "$0 ");
+            }
+            searchString = searchString.toLowerCase(Locale.getDefault());
+            searchStatus = ((CheckBox) llActivity.findViewById(R.id.entrySearchIncludeStatus)).isChecked();
+            searchAPDU = ((CheckBox) llActivity.findViewById(R.id.entrySearchAPDU)).isChecked();
+            searchLogPayload = ((CheckBox) llActivity.findViewById(R.id.entrySearchRawLogData)).isChecked();
+            searchLogHeaders = ((CheckBox) llActivity.findViewById(R.id.entrySearchLogHeaders)).isChecked();
+        } catch(NullPointerException npe) {
+            npe.printStackTrace();
             return;
         }
-        else if(selectedBytes) {
-            searchString = searchString.replace("[\n\t\r]+", "").replaceAll("..(?!$)", "$0 ");
-        }
-        searchString = searchString.toLowerCase(Locale.getDefault());
-
-        boolean searchStatus = ((CheckBox) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.entrySearchIncludeStatus)).isChecked();
-        boolean searchAPDU = ((CheckBox) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.entrySearchAPDU)).isChecked();
-        boolean searchLogPayload = ((CheckBox) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.entrySearchRawLogData)).isChecked();
-        boolean searchLogHeaders = ((CheckBox) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.entrySearchLogHeaders)).isChecked();
-        int matchCount = 0;
         Log.i(TAG, "Searching for: " + searchString);
+        int matchCount = 0;
         for(int vi = 0; vi < logDataEntries.size(); vi++) {
-            if (logDataEntries.get(vi) instanceof LogEntryMetadataRecord) {
-                if (searchStatus && logDataEntries.get(vi).toString().toLowerCase(Locale.getDefault()).contains(searchString)) {
-                    searchResultsContainer.addView(logDataEntries.get(vi).cloneLayoutContainer());
+            LogEntryBase nextLogEntry = logDataEntries.get(vi);
+            if(nextLogEntry == null) {
+                continue;
+            }
+            if (nextLogEntry instanceof LogEntryMetadataRecord) {
+                if (searchStatus && nextLogEntry.toString().toLowerCase(Locale.getDefault()).contains(searchString)) {
+                    searchResultsContainer.addView(nextLogEntry.cloneLayoutContainer());
                     matchCount++;
                 }
                 continue;
             }
-            Log.i(TAG, ((LogEntryUI) logDataEntries.get(vi)).getPayloadDataString(selectedBytes));
-            if (searchAPDU && ((LogEntryUI) logDataEntries.get(vi)).getAPDUString().toLowerCase(Locale.getDefault()).contains(searchString) ||
-                    searchLogHeaders && ((LogEntryUI) logDataEntries.get(vi)).getLogCodeName().toLowerCase(Locale.getDefault()).contains(searchString) ||
-                    searchLogPayload && ((LogEntryUI) logDataEntries.get(vi)).getPayloadDataString(selectedBytes).toLowerCase(Locale.getDefault()).contains(searchString)) {
-                LinearLayout searchResult = (LinearLayout) logDataEntries.get(vi).cloneLayoutContainer();
-                searchResult.setVisibility(LinearLayout.VISIBLE);
-                searchResult.setEnabled(true);
-                searchResult.setMinimumWidth(350);
-                searchResult.setMinimumHeight(150);
-                LinearLayout.LayoutParams lllp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                searchResultsContainer.addView(searchResult, lllp);
-                Log.i(TAG, "Case II: Record " + vi + " matches");
-                matchCount++;
+            LogEntryUI nextLogEntryUI = (LogEntryUI) nextLogEntry;
+            Log.i(TAG, nextLogEntryUI.getPayloadDataString(selectedBytes));
+            if (searchAPDU && nextLogEntryUI.getAPDUString().toLowerCase(Locale.getDefault()).contains(searchString) ||
+                    searchLogHeaders && nextLogEntryUI.getLogCodeName().toLowerCase(Locale.getDefault()).contains(searchString) ||
+                    searchLogPayload && nextLogEntryUI.getPayloadDataString(selectedBytes).toLowerCase(Locale.getDefault()).contains(searchString)) {
+                LinearLayout searchResult = (LinearLayout) nextLogEntryUI.cloneLayoutContainer();
+                if(searchResult != null) {
+                    searchResult.setVisibility(LinearLayout.VISIBLE);
+                    searchResult.setEnabled(true);
+                    searchResult.setMinimumWidth(350);
+                    searchResult.setMinimumHeight(150);
+                    LinearLayout.LayoutParams lllp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    searchResultsContainer.addView(searchResult, lllp);
+                    Log.i(TAG, "Case II: Record " + vi + " matches");
+                    matchCount++;
+                }
             }
         }
+        /* Report stats on the search time and display the findings: */
         double diffSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
         String resultStr = String.format(Locale.getDefault(), "Explored #%d logs in %4g seconds for a total of #%d matching records.",
                 logDataEntries.size(), diffSeconds, matchCount);

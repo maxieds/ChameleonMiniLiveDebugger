@@ -17,12 +17,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.IntentFilter;
-import android.util.Log;
-
-import java.util.Arrays;
 
 public interface ChameleonSerialIOInterface {
 

@@ -25,10 +25,9 @@ public class ChameleonSettings {
 
     public static boolean allowWiredUSB = true;
     public static boolean allowBluetooth = false;
-    public static int serialBaudRate = 115200;
+    public static int serialBaudRate = ChameleonSerialIOInterface.LIMITED_SPEED_BAUD_RATE;
 
     public static final String CMINI_DEVICE_FIELD_UNKNOWN = "<UNKNOWN>";
-
     public static String chameleonDeviceSerialNumber = CMINI_DEVICE_FIELD_UNKNOWN;
     public static String chameleonDeviceMAC = CMINI_DEVICE_FIELD_UNKNOWN;
     public static String chameleonDeviceNickname = "Chameleon Mini (Default)";

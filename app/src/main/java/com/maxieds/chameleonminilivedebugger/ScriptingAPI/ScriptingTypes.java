@@ -532,11 +532,13 @@ public class ScriptingTypes {
                                               throws ScriptingExceptions.ChameleonScriptingException {
 
             if(opType == Operation.BINOP_PLUS && getType() != VariableType.VariableTypeArrayMap) {
-                // Handle three cases, if the remainder does not degrade nicely to one of these,
-                // then happily, sane mind intact, throw an exception at the non-standard use case:
-                // 1) numeric types; 2) arrays (concat); 3) string handling (append).
-                // Note that when the rhs is an array subclass, need to call the subclass handling
-                // function to store the result by swapping the order of the variables:
+                /*
+                 * Handle three cases, if the remainder does not degrade nicely to one of these,
+                 * then throw an exception at the non-standard use case:
+                 * (1) numeric types; (2) arrays (concat); )3) string handling (append).
+                 * Note that when the rhs is an array subclass, need to call the subclass handling
+                 * function to store the result by swapping the order of the variables:
+                 */
                 if(isArrayType() && rhsVar.isArrayType()) {
                     if(varType != VariableType.VariableTypeArrayMap && rhsVar.getType() != VariableType.VariableTypeArrayMap) {
                         byte[] lhsBytes = getValueAsBytes(), rhsBytes = rhsVar.getValueAsBytes();

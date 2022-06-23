@@ -57,8 +57,8 @@ public class ChameleonCommands {
             cardFilePath = R.raw.mifare_ultralight;
         }
         else if(stockChipType.equals("DESFIRE")) {
-            chipType = "MF_DESFIRE -- TODO";
-            cardFilePath = R.raw.mfdesfire_sample_dump;
+            chipType = "MF_DESFIRE";
+            cardFilePath = R.raw.mfdesfire;
         }
         else if(stockChipType.equals("EM4233")) {
             chipType = "EM4233";
@@ -73,12 +73,6 @@ public class ChameleonCommands {
     }
 
     public static void uploadCardImageByXModem() {
-        // should potentially fix a slight "bug" where the card uploads but fails to get transferred to the
-        // running device profile due to differences in the current configuration's memsize setting.
-        // This might be more of a bug with the Chameleon software, but not entirely sure.
-        // Solution: Clear out the current setting slot to CONFIG=NONE before performing the upload:
-        //getSettingFromDevice(serialPort, "CONFIG=NONE");
-
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setDataAndType(Uri.parse("//sdcard//Download//"), "*/*");

@@ -69,7 +69,7 @@ public class ChameleonIO {
     public static int CHAMELEON_DEVICE_USBVID = 0x00;
     public static int CHAMELEON_DEVICE_USBPID = 0x00;
     public static int CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_UNKNOWN;
-    public static String CHAMELEON_MINI_BOARD_TYPE_DESC = "<UNKNOWN>";
+    public static String CHAMELEON_MINI_BOARD_TYPE_DESC = ChameleonSettings.CMINI_DEVICE_FIELD_UNKNOWN;
 
     public static String getDeviceDescription(int chameleonBoardType) {
         switch(chameleonBoardType) {
@@ -84,9 +84,9 @@ public class ChameleonIO {
             case CHAMELEON_TYPE_KAOS_REVG:
                 return "KAOS RevG Device";
             case CHAMELEON_TYPE_DESFIRE_FWMOD:
-                return "DESFire Firmware Mod (Device ~ RevG)";
+                return "DESFire Firmware Mod (~RevG)";
             default:
-                return "Unknown";
+                return "Unknown Device Type";
         }
     }
 
@@ -290,13 +290,15 @@ public class ChameleonIO {
      */
     public static class DeviceStatusSettings {
 
+        private static final String UNSET_VALUE = "NOT SET";
+
         /**
          * The status settings summarized at the top of the GUI window.
          */
-        public static String CONFIG = "NOT SET";
-        public static String UID = "NOT SET";
-        public static String LASTUID = "NOT SET";
-        public static String LOGMODE = "NOT SET";
+        public static String CONFIG = UNSET_VALUE;
+        public static String UID = UNSET_VALUE;
+        public static String LASTUID = UNSET_VALUE;
+        public static String LOGMODE = UNSET_VALUE;
         public static int UIDSIZE = 0;
         public static int MEMSIZE = 0;
         public static int LOGSIZE = 0;
@@ -305,12 +307,12 @@ public class ChameleonIO {
         public static boolean READONLY = false;
         public static boolean CHARGING = false;
         public static int THRESHOLD = 0;
-        public static String TIMEOUT = "NOT SET";
+        public static String TIMEOUT = UNSET_VALUE;
 
         /**
          * How often do we update / refresh the stats at the top of the window?
          */
-        public static final int STATS_UPDATE_INTERVAL = 6500; // 4.5 seconds
+        public static final int STATS_UPDATE_INTERVAL = 6500; // ~6.5 seconds
         public static boolean postingStatsInProgress = false;
         public static Handler statsUpdateHandler = new Handler();
         public static Runnable statsUpdateRunnable = new Runnable() {
@@ -377,8 +379,8 @@ public class ChameleonIO {
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
+                return false;
             }
-            // setup threshold signal bars:
             LiveLoggerActivity.setSignalStrengthIndicator(THRESHOLD);
             return true;
         }
@@ -471,7 +473,7 @@ public class ChameleonIO {
         byte[] sendBuf = deviceConfigCmd.getBytes(StandardCharsets.UTF_8);
         ChameleonSerialIOInterface serialPort = ChameleonSettings.getActiveSerialIOPort();
         if(serialPort == null) {
-            Log.i(TAG, "serial port is null executing command");
+            Log.i(TAG, "Serial port is null while executing command");
             return null;
         }
         serialPort.sendDataBuffer(sendBuf);

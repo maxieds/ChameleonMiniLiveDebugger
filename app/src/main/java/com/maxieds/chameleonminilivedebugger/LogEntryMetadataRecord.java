@@ -24,6 +24,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -56,26 +58,33 @@ public class LogEntryMetadataRecord extends LogEntryBase {
      * @ref LiveLoggerActivity.defaultInflater
      * @ref LogEntryMetadataRecord.createDefaultEventRecord
      */
-    public LogEntryMetadataRecord(LayoutInflater inflater, String title, String text) {
+    public LogEntryMetadataRecord(@NonNull LayoutInflater inflater, @NonNull String title,@NonNull String text) {
         recordTitle = title;
         recordText = text;
         recordTimestamp = Utils.getTimestamp();
         recordContainer = (LinearLayout) inflater.inflate(R.layout.log_metadata_record, null);
         recordContainer.setAlpha(LOGENTRY_GUI_ALPHA);
         tvRecTitle = (TextView) recordContainer.findViewById(R.id.record_title_text);
-        tvRecTitle.setText(recordTitle + " -- " + recordTimestamp);
+        if(tvRecTitle != null) {
+            tvRecTitle.setText(recordTitle + " -- " + recordTimestamp);
+        }
         tvRecData = (TextView) recordContainer.findViewById(R.id.record_data_text);
-        tvRecData.setText(recordText);
-        tvRecData.setAlpha(LOGENTRY_GUI_ALPHA);
-        if(recordText.equals("")) {
-            tvRecData.setVisibility(TextView.INVISIBLE);
-            tvRecData.setEnabled(false);
-            tvRecData.setHeight(0);
+        if(tvRecData != null) {
+            tvRecData.setText(recordText);
+            tvRecData.setAlpha(LOGENTRY_GUI_ALPHA);
+            if (recordText.equals("")) {
+                tvRecData.setVisibility(TextView.INVISIBLE);
+                tvRecData.setEnabled(false);
+                tvRecData.setHeight(0);
+            }
         }
     }
 
     public View cloneLayoutContainer() {
         LinearLayout recordContainerClone = (LinearLayout) LiveLoggerActivity.defaultInflater.inflate(R.layout.log_metadata_record, null);
+        if(recordContainerClone == null) {
+            return null;
+        }
         TextView tvRecTitleClone = (TextView) recordContainerClone.findViewById(R.id.record_title_text);
         tvRecTitleClone.setText(tvRecTitle.getText());
         tvRecTitleClone.setCompoundDrawables(tvRecTitle.getCompoundDrawables()[0], null, null, null);
@@ -163,15 +172,17 @@ public class LogEntryMetadataRecord extends LogEntryBase {
      */
     public static LogEntryMetadataRecord createDefaultEventRecord(String eventID, String eventMsg) {
 
-        if(eventMsg == null)
+        if (eventMsg == null) {
             eventMsg = "";
+        }
 
         Integer iconResIDInt = prefixIconMap.get(eventID);
         int iconResID = 0;
-        if(iconResIDInt == null)
+        if (iconResIDInt == null) {
             iconResID = R.drawable.msgbubble24;
-        else
+        } else {
             iconResID = iconResIDInt.intValue();
+        }
 
         // some metadata types require preprocessing of the eventMsg:
         if(eventID.equals("LOCATION")) {
@@ -198,7 +209,7 @@ public class LogEntryMetadataRecord extends LogEntryBase {
                 eventMsg = locationDetails + "\n" + eventMsg;
             }
         }
-        else if(eventID.equals("TODO LIST")) { // TODO: SpannableString has a mode for this ...
+        else if(eventID.equals("TODO LIST")) {
             String[] listLines = eventMsg.split("\n");
             eventMsg = "";
             for(int lineNo = 0; lineNo < listLines.length; lineNo++) {

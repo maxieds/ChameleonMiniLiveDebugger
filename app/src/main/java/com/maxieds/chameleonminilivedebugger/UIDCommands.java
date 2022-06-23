@@ -17,13 +17,15 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import androidx.annotation.NonNull;
+
 import java.util.Locale;
 
 public class UIDCommands {
 
     private static final String TAG = UIDCommands.class.getSimpleName();
 
-    public static byte[] processUIDCommand(String uidAction) {
+    public static byte[] processUIDCommand(@NonNull String uidAction) {
         String uidStr = ChameleonIO.deviceStatus.UID;
         uidStr.replace(":", "");
         byte[] uid = Utils.hexString2Bytes(uidStr);
@@ -57,12 +59,12 @@ public class UIDCommands {
         String dataBytesStr = new String();
         if(action.equals("UID") && ChameleonSettings.getActiveSerialIOPort() != null) {
             dataBytesStr = ChameleonIO.deviceStatus.UID;
-        }
-        else if(action.equals("RANDOM")) {
-            if(ChameleonIO.deviceStatus.UIDSIZE == 0)
+        } else if(action.equals("RANDOM")) {
+            if(ChameleonIO.deviceStatus.UIDSIZE == 0) {
                 dataBytesStr = Utils.bytes2Hex(Utils.getRandomBytes(7));
-            else
+            } else {
                 dataBytesStr = Utils.bytes2Hex(Utils.getRandomBytes(ChameleonIO.deviceStatus.UIDSIZE));
+            }
         }
         ApduUtils.apduTransceiveCmd.setPayloadData(dataBytesStr);
         ApduUtils.updateAssembledAPDUCmd();

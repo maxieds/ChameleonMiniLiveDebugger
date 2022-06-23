@@ -19,6 +19,8 @@ package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import java.util.Locale;
 
 public class ScriptingExceptions {
@@ -53,19 +55,19 @@ public class ScriptingExceptions {
 
     public static class ChameleonScriptingException extends RuntimeException {
 
-        public ChameleonScriptingException(ExceptionType exType) {
+        public ChameleonScriptingException(@NonNull ExceptionType exType) {
             super(exType.name());
             Log.i(TAG, exType.name());
             this.printStackTrace();
         }
 
-        public ChameleonScriptingException(ExceptionType exType, String msg) {
+        public ChameleonScriptingException(@NonNull ExceptionType exType, String msg) {
             super(String.format(Locale.getDefault(), "%s => %s", exType.name(), msg));
         }
 
         public int getInvokingLineNumber() {
             StackTraceElement[] stackTraceData = getStackTrace();
-            if(stackTraceData.length > 1) {
+            if(stackTraceData != null && stackTraceData.length > 1) {
                 return stackTraceData[1].getLineNumber();
             }
             return 0;
@@ -73,7 +75,7 @@ public class ScriptingExceptions {
 
         public String getInvokingSourceFile() {
             StackTraceElement[] stackTraceData = getStackTrace();
-            if(stackTraceData.length > 1) {
+            if(stackTraceData != null && stackTraceData.length > 1) {
                 return stackTraceData[1].getFileName();
             }
             return "";
@@ -81,7 +83,7 @@ public class ScriptingExceptions {
 
         public String getInvokingClassName() {
             StackTraceElement[] stackTraceData = getStackTrace();
-            if(stackTraceData.length > 1) {
+            if(stackTraceData != null && stackTraceData.length > 1) {
                 return stackTraceData[1].getClassName();
             }
             return "";
@@ -89,7 +91,7 @@ public class ScriptingExceptions {
 
         public String getInvokingMethodName() {
             StackTraceElement[] stackTraceData = getStackTrace();
-            if(stackTraceData.length > 1) {
+            if(stackTraceData != null && stackTraceData.length > 1) {
                 return stackTraceData[1].getMethodName();
             }
             return "";

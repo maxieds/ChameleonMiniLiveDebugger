@@ -19,6 +19,7 @@ package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
 import com.maxieds.chameleonminilivedebugger.AndroidSettingsStorage;
 import com.maxieds.chameleonminilivedebugger.BuildConfig;
+import com.maxieds.chameleonminilivedebugger.LiveLoggerActivity;
 import com.maxieds.chameleonminilivedebugger.R;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
@@ -87,7 +88,9 @@ public class ScriptingBreakPoint {
             @Override
             public void onClick(View btnView) {
                 ScriptingBreakPoint sbpObj = (ScriptingBreakPoint) btnView.getTag();
-                ScriptingBreakPoint.removeBreakpoint(sbpObj.getGUIContainer());
+                if(sbpObj != null) {
+                    ScriptingBreakPoint.removeBreakpoint(sbpObj.getGUIContainer());
+                }
             }
         });
         ImageView activeImageView = mainGUILayoutView.findViewById(R.id.scriptingGUIBreakpointActiveIcon);
@@ -102,7 +105,9 @@ public class ScriptingBreakPoint {
             @Override
             public void onClick(View btnView) {
                 ScriptingBreakPoint sbpObj = (ScriptingBreakPoint) btnView.getTag();
-                sbpObj.toggleEnabled();
+                if(sbpObj != null) {
+                    sbpObj.toggleEnabled();
+                }
             }
         });
         ImageButton preserveImageButton = mainGUILayoutView.findViewById(R.id.scriptingGUIBreakpointPreserveIcon);
@@ -115,7 +120,9 @@ public class ScriptingBreakPoint {
             @Override
             public void onClick(View btnView) {
                 ScriptingBreakPoint sbpObj = (ScriptingBreakPoint) btnView.getTag();
-                sbpObj.togglePreserved();
+                if(sbpObj != null) {
+                    sbpObj.togglePreserved();
+                }
             }
         });
         TextView tvBpTypeDesc = mainGUILayoutView.findViewById(R.id.scriptingGUIBreakpointTypeDesc);
@@ -129,8 +136,7 @@ public class ScriptingBreakPoint {
         }
         if(isLabelType) {
             tvBpValue.setText(String.format(Locale.getDefault(), "@%s", getLabel()));
-        }
-        else {
+        } else {
             tvBpValue.setText(String.format(Locale.getDefault(), "L%d (0x%02X)", getLineNumber(), getLineNumber()));
         }
     }
@@ -158,11 +164,12 @@ public class ScriptingBreakPoint {
     public boolean toggleEnabled() {
         isEnabled = !isEnabled;
         ImageButton enabledImageButton = mainGUILayoutView.findViewById(R.id.scriptingGUIBreakpointEnableIcon);
-        if(isEnabled) {
+        if(enabledImageButton == null) {
+            return false;
+        } else if(isEnabled) {
             enabledImageButton.setImageDrawable(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT.getResources().getDrawable(R.drawable.breakpoint_enabled_icon24));
             enabledImageButton.setImageAlpha(ENABLED_IMAGE_ALPHA);
-        }
-        else {
+        } else {
             enabledImageButton.setImageDrawable(ScriptingConfig.SCRIPTING_CONFIG_ACTIVITY_CONTEXT.getResources().getDrawable(R.drawable.breakpoint_disabled_icon24));
             enabledImageButton.setImageAlpha(DISABLED_IMAGE_ALPHA);
         }
@@ -172,10 +179,11 @@ public class ScriptingBreakPoint {
     public boolean togglePreserved() {
         isPreserved = !isPreserved;
         ImageButton preserveImageButton = mainGUILayoutView.findViewById(R.id.scriptingGUIBreakpointPreserveIcon);
-        if(isPreserved) {
+        if(preserveImageButton == null) {
+            return false;
+        } else if(isPreserved) {
             preserveImageButton.setImageAlpha(ENABLED_IMAGE_ALPHA);
-        }
-        else {
+        } else {
             preserveImageButton.setImageAlpha(DISABLED_IMAGE_ALPHA);
         }
         return isPreserved;
@@ -188,8 +196,13 @@ public class ScriptingBreakPoint {
         }
         bpActiveIndex = breakpointsGUIViewsList.indexOf(mainGUILayoutView);
         View bpLayoutView = breakpointsObjList.get(bpActiveIndex).getGUIContainer();
+        if(bpLayoutView == null) {
+            return;
+        }
         ImageView activeImageView = bpLayoutView.findViewById(R.id.scriptingGUIBreakpointActiveIcon);
-        if(isActive) {
+        if(activeImageView == null) {
+            return;
+        } else if(isActive) {
             activeImageView.setImageAlpha(ENABLED_IMAGE_ALPHA);
             activeImageView.setVisibility(ImageView.VISIBLE);
         }
@@ -200,12 +213,17 @@ public class ScriptingBreakPoint {
     }
 
     public static boolean removeBreakpoint(View bpGUIView) {
+        if(breakpointsGUIViewsList == null) {
+            return false;
+        }
         int bpIndex = breakpointsGUIViewsList.indexOf(bpGUIView);
         return removeBreakpoint(bpIndex);
     }
 
     public static boolean removeBreakpoint(int bpIndex) {
-        if(bpIndex < 0 || bpIndex >= breakpointsObjList.size()) {
+        if(breakpointsObjList == null || breakpointsGUIViewsList == null || breakpointsGUIDisplayContainer == null) {
+            return false;
+        } else if(bpIndex < 0 || bpIndex >= breakpointsObjList.size()) {
             return false;
         }
         if(bpActiveIndex == bpIndex) {
@@ -218,6 +236,9 @@ public class ScriptingBreakPoint {
     }
 
     private static boolean searchBreakpointByLineNumber(int lineNumber) {
+        if(breakpointsObjList == null || breakpointsGUIViewsList == null || breakpointsGUIDisplayContainer == null) {
+            return false;
+        }
         for(int bpIdx = 0; bpIdx < breakpointsObjList.size(); bpIdx++) {
             if(breakpointsObjList.get(bpIdx).isLineType() && breakpointsObjList.get(bpIdx).getLineNumber() == lineNumber) {
                 return true;
@@ -227,6 +248,9 @@ public class ScriptingBreakPoint {
     }
 
     public static boolean searchBreakpointByLineLabel(String lineLabel) {
+        if(breakpointsObjList == null || breakpointsGUIViewsList == null || breakpointsGUIDisplayContainer == null) {
+            return false;
+        }
         for(int bpIdx = 0; bpIdx < breakpointsObjList.size(); bpIdx++) {
             if(breakpointsObjList.get(bpIdx).isLabelType() && breakpointsObjList.get(bpIdx).getLabel().equals(lineLabel)) {
                 return true;
@@ -236,14 +260,15 @@ public class ScriptingBreakPoint {
     }
 
     public static boolean addBreakpoint(int lineNumber) {
+        if(breakpointsObjList == null || breakpointsGUIViewsList == null || breakpointsGUIDisplayContainer == null) {
+            return false;
+        }
         if(bpDisabled) {
             Utils.displayToastMessageShort("Setting breakpoints is disabled.");
             return false;
-        }
-        else if(lineNumber <= 0) {
+        } else if(lineNumber <= 0) {
             return false;
-        }
-        else if(searchBreakpointByLineNumber(lineNumber)) {
+        } else if(searchBreakpointByLineNumber(lineNumber)) {
             return false;
         }
         ScriptingBreakPoint bp = new ScriptingBreakPoint(lineNumber);
@@ -254,14 +279,14 @@ public class ScriptingBreakPoint {
     }
 
     public static boolean addBreakpoint(String lineLabel) {
-        if(bpDisabled) {
+        if(breakpointsObjList == null || breakpointsGUIViewsList == null || breakpointsGUIDisplayContainer == null) {
+            return false;
+        } else if(bpDisabled) {
             Utils.displayToastMessageShort("Setting breakpoints is disabled.");
             return false;
-        }
-        else if(lineLabel.equals("")) {
+        } else if(lineLabel.equals("")) {
             return false;
-        }
-        else if(searchBreakpointByLineLabel(lineLabel)) {
+        } else if(searchBreakpointByLineLabel(lineLabel)) {
             return false;
         }
         ScriptingBreakPoint bp = new ScriptingBreakPoint(lineLabel);

@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
-import android.util.Log;
 import android.widget.RadioButton;
 
 import com.maxieds.androidfilepickerlightlibrary.FileChooserBuilder;
@@ -89,9 +88,14 @@ public class ExternalFileIO {
         downloadManager.addCompletedDownload(outfile.getName(), outfile.getName(), true, "text/plain",
                                              outfile.getAbsolutePath(), outfile.length(),true);
 
-        boolean saveFileChecked = ((RadioButton) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.radio_save_storage)).isChecked();
-        boolean emailFileChecked = ((RadioButton) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.radio_save_email)).isChecked();
-        boolean shareFileChecked = ((RadioButton) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.radio_save_share)).isChecked();
+        boolean saveFileChecked = false, emailFileChecked = false, shareFileChecked = false;
+        try {
+            saveFileChecked = ((RadioButton) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.radio_save_storage)).isChecked();
+            emailFileChecked = ((RadioButton) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.radio_save_email)).isChecked();
+            shareFileChecked = ((RadioButton) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.radio_save_share)).isChecked();
+        } catch(NullPointerException npe) {
+            npe.printStackTrace();
+        }
         if(emailFileChecked || shareFileChecked) {
             Intent sendIntent = new Intent(Intent.ACTION_SEND);
             sendIntent.setType(mimeType);

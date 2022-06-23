@@ -31,6 +31,8 @@ import java.util.Locale;
 
 import static java.lang.Math.abs;
 
+import androidx.annotation.NonNull;
+
 /**
  * <h1>Log Entry UI Record</h1>
  * Implements a live log data entry.
@@ -77,7 +79,7 @@ public class LogEntryUI extends LogEntryBase {
      * @return LogEntryUI new log entry
      * @ref LiveLoggerActivity.usbReaderCallback
      */
-    public static LogEntryUI newInstance(byte[] rawLogBytes, String logLabel) {
+    public static LogEntryUI newInstance(@NonNull byte[] rawLogBytes, @NonNull String logLabel) {
         if(rawLogBytes.length < 4) {
             Log.w(TAG, "Invalid log tag data sent.");
             return null;
@@ -137,29 +139,37 @@ public class LogEntryUI extends LogEntryBase {
 
     public View cloneLayoutContainer() {
         LinearLayout mainEntryContainerClone = (LinearLayout) LiveLoggerActivity.defaultInflater.inflate(R.layout.log_entry_ui, null);
-        mainEntryContainerClone.setAlpha(LOGENTRY_GUI_ALPHA);
-        ImageView inoutDirIndicatorClone = (ImageView) mainEntryContainerClone.findViewById(R.id.inputDirIndicatorImg);
-        inoutDirIndicatorClone.setImageDrawable(inoutDirIndicator.getDrawable());
-        ImageView apduParseStatusClone = (ImageView) mainEntryContainerClone.findViewById(R.id.apduParseStatusImg);
-        apduParseStatusClone.setImageDrawable(apduParseStatusClone.getDrawable());
-        TextView tvLabelClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_label);
-        tvLabelClone.setText(tvLabel.getText());
-        TextView tvNumBytesClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_data_num_bytes);
-        tvNumBytesClone.setText(tvNumBytes.getText());
-        TextView tvNumMillisClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_offset_millis);
-        tvNumMillisClone.setText(tvNumMillis.getText());
-        TextView tvLogTypeClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_log_type);
-        tvLogTypeClone.setText(tvLogType.getText());
-        TextView tvEntropyClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_entropy_compression_ratio);
-        tvEntropyClone.setText(tvEntropy.getText());
-        TextView tvDataHexBytesClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_logdata_hex);
-        tvDataHexBytesClone.setText(tvDataHexBytes.getText());
-        TextView tvDataAsciiClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_logdata_ascii);
-        tvDataAsciiClone.setText(tvDataAscii.getText());
-        TextView tvApduClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_apdu);
-        tvApduClone.setText(tvApdu.getText());
-        if(tvApduClone.getText().toString().equals("APDU: NONE RECOGNIZED")) {
-            tvApduClone.setVisibility(TextView.GONE);
+        if(mainEntryContainerClone == null) {
+            return null;
+        }
+        try {
+            mainEntryContainerClone.setAlpha(LOGENTRY_GUI_ALPHA);
+            ImageView inoutDirIndicatorClone = (ImageView) mainEntryContainerClone.findViewById(R.id.inputDirIndicatorImg);
+            inoutDirIndicatorClone.setImageDrawable(inoutDirIndicator.getDrawable());
+            ImageView apduParseStatusClone = (ImageView) mainEntryContainerClone.findViewById(R.id.apduParseStatusImg);
+            apduParseStatusClone.setImageDrawable(apduParseStatusClone.getDrawable());
+            TextView tvLabelClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_label);
+            tvLabelClone.setText(tvLabel.getText());
+            TextView tvNumBytesClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_data_num_bytes);
+            tvNumBytesClone.setText(tvNumBytes.getText());
+            TextView tvNumMillisClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_offset_millis);
+            tvNumMillisClone.setText(tvNumMillis.getText());
+            TextView tvLogTypeClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_log_type);
+            tvLogTypeClone.setText(tvLogType.getText());
+            TextView tvEntropyClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_entropy_compression_ratio);
+            tvEntropyClone.setText(tvEntropy.getText());
+            TextView tvDataHexBytesClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_logdata_hex);
+            tvDataHexBytesClone.setText(tvDataHexBytes.getText());
+            TextView tvDataAsciiClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_logdata_ascii);
+            tvDataAsciiClone.setText(tvDataAscii.getText());
+            TextView tvApduClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_apdu);
+            tvApduClone.setText(tvApdu.getText());
+            if (tvApduClone.getText().toString().equals("APDU: NONE RECOGNIZED")) {
+                tvApduClone.setVisibility(TextView.GONE);
+            }
+        } catch(NullPointerException npe) {
+            npe.printStackTrace();
+            return null;
         }
         return mainEntryContainerClone;
     }
@@ -169,37 +179,44 @@ public class LogEntryUI extends LogEntryBase {
      * @param mainContainerRef
      */
     public void configureLayout(LinearLayout mainContainerRef) {
-        mainEntryContainer = mainContainerRef;
-        mainEntryContainer.setAlpha(LOGENTRY_GUI_ALPHA);
-        entrySelect = (CheckBox) mainContainerRef.findViewById(R.id.entrySelect);
-        inoutDirIndicator = (ImageView) mainContainerRef.findViewById(R.id.inputDirIndicatorImg);
-        inoutDirIndicator.setImageDrawable(LiveLoggerActivity.getLiveLoggerInstance().getResources().getDrawable(getDataDirectionMarker()));
-        apduParseStatus = (ImageView) mainContainerRef.findViewById(R.id.apduParseStatusImg);
-        tvLabel = (TextView) mainContainerRef.findViewById(R.id.text_label);
-        recordID = ++MainActivityLogUtils.RECORDID;
-        tvLabel.setText(logLabel + String.format(Locale.getDefault(), "%06d", MainActivityLogUtils.RECORDID));
-        tvNumBytes = (TextView) mainContainerRef.findViewById(R.id.text_data_num_bytes);
-        tvNumBytes.setText(String.valueOf(numBytes) + "B");
-        tvNumMillis = (TextView) mainContainerRef.findViewById(R.id.text_offset_millis);
-        tvNumMillis.setText((diffTimeMillis >=0 ? "+" : "~") + String.valueOf(abs(diffTimeMillis)) + "ms");
-        tvLogType = (TextView) mainContainerRef.findViewById(R.id.text_log_type);
-        tvLogType.setText(ChameleonLogUtils.LogCode.lookupByLogCode(logType).getShortCodeName(logType));
-        tvEntropy = (TextView) mainContainerRef.findViewById(R.id.text_entropy_compression_ratio);
-        tvEntropy.setText(String.format(Locale.getDefault(), "CPR/ENT: %1.4g", Utils.computeByteArrayEntropy(entryData)));
-        tvDataHexBytes = (TextView) mainContainerRef.findViewById(R.id.text_logdata_hex);
-        tvDataHexBytes.setText(Utils.bytes2Hex(entryData));
-        tvDataAscii = (TextView) mainContainerRef.findViewById(R.id.text_logdata_ascii);
-        tvDataAscii.setText(Utils.bytes2Ascii(entryData));
-        tvApdu = (TextView) mainContainerRef.findViewById(R.id.text_apdu);
-        tvApdu.setText(ApduUtils.classifyApdu(entryData));
-        tvDuplicateCount = (TextView) mainEntryContainer.findViewById(R.id.text_duplicate_count);
-        tvDuplicateCount.setVisibility(View.GONE);
-        if(tvApdu.getText().toString().equals("NONE")) {
-            tvApdu.setText("APDU: NONE RECOGNIZED");
-            tvApdu.setVisibility(TextView.GONE);
+        if(mainContainerRef == null) {
+            return;
         }
-        else
-            apduParseStatus.setImageDrawable(LiveLoggerActivity.defaultContext.getResources().getDrawable(R.drawable.known16));
+        try {
+            mainEntryContainer = mainContainerRef;
+            mainEntryContainer.setAlpha(LOGENTRY_GUI_ALPHA);
+            entrySelect = (CheckBox) mainContainerRef.findViewById(R.id.entrySelect);
+            inoutDirIndicator = (ImageView) mainContainerRef.findViewById(R.id.inputDirIndicatorImg);
+            inoutDirIndicator.setImageDrawable(LiveLoggerActivity.getLiveLoggerInstance().getResources().getDrawable(getDataDirectionMarker()));
+            apduParseStatus = (ImageView) mainContainerRef.findViewById(R.id.apduParseStatusImg);
+            tvLabel = (TextView) mainContainerRef.findViewById(R.id.text_label);
+            recordID = ++MainActivityLogUtils.RECORDID;
+            tvLabel.setText(logLabel + String.format(Locale.getDefault(), "%06d", MainActivityLogUtils.RECORDID));
+            tvNumBytes = (TextView) mainContainerRef.findViewById(R.id.text_data_num_bytes);
+            tvNumBytes.setText(String.valueOf(numBytes) + "B");
+            tvNumMillis = (TextView) mainContainerRef.findViewById(R.id.text_offset_millis);
+            tvNumMillis.setText((diffTimeMillis >= 0 ? "+" : "~") + String.valueOf(abs(diffTimeMillis)) + "ms");
+            tvLogType = (TextView) mainContainerRef.findViewById(R.id.text_log_type);
+            tvLogType.setText(ChameleonLogUtils.LogCode.lookupByLogCode(logType).getShortCodeName(logType));
+            tvEntropy = (TextView) mainContainerRef.findViewById(R.id.text_entropy_compression_ratio);
+            tvEntropy.setText(String.format(Locale.getDefault(), "CPR/ENT: %1.4g", Utils.computeByteArrayEntropy(entryData)));
+            tvDataHexBytes = (TextView) mainContainerRef.findViewById(R.id.text_logdata_hex);
+            tvDataHexBytes.setText(Utils.bytes2Hex(entryData));
+            tvDataAscii = (TextView) mainContainerRef.findViewById(R.id.text_logdata_ascii);
+            tvDataAscii.setText(Utils.bytes2Ascii(entryData));
+            tvApdu = (TextView) mainContainerRef.findViewById(R.id.text_apdu);
+            tvApdu.setText(ApduUtils.classifyApdu(entryData));
+            tvDuplicateCount = (TextView) mainEntryContainer.findViewById(R.id.text_duplicate_count);
+            tvDuplicateCount.setVisibility(View.GONE);
+            if (tvApdu.getText().toString().equals("NONE")) {
+                tvApdu.setText("APDU: NONE RECOGNIZED");
+                tvApdu.setVisibility(TextView.GONE);
+            } else {
+                apduParseStatus.setImageDrawable(LiveLoggerActivity.defaultContext.getResources().getDrawable(R.drawable.known16));
+            }
+        } catch(NullPointerException npe) {
+            npe.printStackTrace();
+        }
     }
 
     /**
@@ -338,20 +355,20 @@ public class LogEntryUI extends LogEntryBase {
         if(byteString) {
             Log.i(TAG, "Returning bytes: " + tvDataHexBytes.getText().toString());
             return tvDataHexBytes.getText().toString();
-        }
-        else {
+        } else {
             Log.i(TAG, "Returning ascii: " + tvDataAscii.getText().toString());
             return tvDataAscii.getText().toString();
         }
     }
 
     public int getDataDirectionMarker() {
-        if(dataDirection == ChameleonLogUtils.DATADIR_INCOMING)
+        if(dataDirection == ChameleonLogUtils.DATADIR_INCOMING) {
             return R.drawable.incoming_arrow16;
-        else if(dataDirection == ChameleonLogUtils.DATADIR_OUTGOING)
+        } else if(dataDirection == ChameleonLogUtils.DATADIR_OUTGOING) {
             return R.drawable.outgoing_arrow16;
-        else
+        } else {
             return R.drawable.xfer16;
+        }
     }
 
     /**

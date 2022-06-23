@@ -233,7 +233,7 @@ public class Utils {
      * @see ApduUtils
      * @see res/raw/*
      */
-    public static List<String[]> readCSVFile(InputStream fdStream) throws IOException {
+    public static List<String[]> readCSVFile(@NonNull InputStream fdStream) throws IOException {
         List<String[]> csvLines = new ArrayList<String[]>();
         BufferedReader br = new BufferedReader(new InputStreamReader(fdStream));
         String csvLine;
@@ -404,8 +404,8 @@ public class Utils {
             Log.w(TAG, "Exception getting GPS coords: " + secExcpt.getMessage());
             secExcpt.printStackTrace();
             return new String[] {
-                    "UNK",
-                    "UNK"
+                    "LAT-NONE",
+                    "LONG-NONE"
             };
         }
     }
@@ -496,7 +496,7 @@ public class Utils {
             return new byte[0];
         }
         int byteCount = bufferBytes.length;
-        short workingCRC = (short) 0xffff; // x25 CCITT-CRC16 seed
+        short workingCRC = (short) 0xffff; /* x25 CCITT-CRC16 seed */
         for (int i = 0; i < byteCount; i++) {
             workingCRC = (short) (CRC16_LOOKUP_TABLE[(bufferBytes[i] ^ (workingCRC >>> 8)) & 0xff] ^ (workingCRC << 8));
         }
@@ -540,13 +540,20 @@ public class Utils {
 
     public static void dismissAndroidKeyboard(ChameleonMiniLiveDebuggerActivity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-        if(imm.isAcceptingText()) {
+        if(imm != null && imm.isAcceptingText()) {
             imm.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
         }
     }
 
     public static void copyTextToClipboard(ChameleonMiniLiveDebuggerActivity activityCtx, String textToCopy, boolean showToastStatus) {
         ClipboardManager clipboard = (ClipboardManager) activityCtx.getSystemService(Context.CLIPBOARD_SERVICE);
+        if(clipboard == null) {
+            if(showToastStatus) {
+                String toastMsg = "Unable to initialize system clipboard -- Copy action is invalid -- Nothing copied to clipboard";
+                Utils.displayToastMessage(activityCtx, toastMsg, Toast.LENGTH_SHORT);
+            }
+            return;
+        }
         ClipData clipData = ClipData.newPlainText("CMLD Find Scripts URL", textToCopy);
         clipboard.setPrimaryClip(clipData);
         if(showToastStatus) {

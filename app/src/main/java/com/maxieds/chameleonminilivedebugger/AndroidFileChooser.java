@@ -17,8 +17,9 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
-import android.os.Handler;
+import android.content.Intent;
 import android.os.Looper;
+import android.provider.Settings;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -95,7 +96,17 @@ public class AndroidFileChooser {
         return customThemeBuilder;
     }
 
+    public static final int CMLD_PERMGROUP_STORAGE_REQUEST_CODE = 0x00FA;
+
     public static String runFileChooserForResult(FileChooserBuilder.SelectionModeType selectionMode, @NonNull String baseDirectory, boolean basePathIsRelative) {
+
+        LiveLoggerActivity llActivity = LiveLoggerActivity.getLiveLoggerInstance();
+        if(!llActivity.checkPermissionsAcquired(ActivityPermissions.CMLD_PERMISSIONS_GROUP_STORAGE)) {
+            Utils.displayToastMessageShort("CMLD does not have storage permissions to access the filesystem.");
+            Intent userRequestStoragePermsIntent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+            llActivity.startActivityForResult(userRequestStoragePermsIntent, CMLD_PERMGROUP_STORAGE_REQUEST_CODE);
+            return "";
+        }
 
         int pickerTitleTextResId = 0;
         int activityActionCode = 0;

@@ -38,8 +38,13 @@ public class ApduGUITools {
     }
 
     public static void apduClearCommand() {
+        try {
+            ((LinearLayout) ((ScrollView) ApduUtils.tabView.findViewById(R.id.apduSearchResultsScrollView)).getChildAt(0)).removeAllViewsInLayout();
+        } catch(NullPointerException npe) {
+            npe.printStackTrace();
+            return;
+        }
         ApduUtils.apduTransceiveCmd.clear();
-        ((LinearLayout) ((ScrollView) ApduUtils.tabView.findViewById(R.id.apduSearchResultsScrollView)).getChildAt(0)).removeAllViewsInLayout();
         ApduUtils.updateAssembledAPDUCmd();
     }
 
@@ -129,14 +134,19 @@ public class ApduGUITools {
             String summaryStr = ApduUtils.fullInsList[cmd].getSummary();
             if(summaryStr.toLowerCase(Locale.getDefault()).contains(searchText)) {
                 LinearLayout searchResult = (LinearLayout) LiveLoggerActivity.defaultInflater.inflate(R.layout.apdu_search_item, null);
-                String[] cmdDescParts = ApduUtils.fullInsList[cmd].apduCmdDesc.split("[\\(\\)]");
-                ((TextView) searchResult.findViewById(R.id.apduCmdDesc)).setText(cmdDescParts[0]);
-                ((TextView) searchResult.findViewById(R.id.apduByteData)).setText(summaryStr.toLowerCase().split(" : ")[1]);
-                ((Button) searchResult.findViewById(R.id.copyCmdButton)).setTag(Integer.toString(cmd));
-                layoutList.addView(searchResult);
+                if(searchResult != null) {
+                    String[] cmdDescParts = ApduUtils.fullInsList[cmd].apduCmdDesc.split("[\\(\\)]");
+                    ((TextView) searchResult.findViewById(R.id.apduCmdDesc)).setText(cmdDescParts[0]);
+                    ((TextView) searchResult.findViewById(R.id.apduByteData)).setText(summaryStr.toLowerCase().split(" : ")[1]);
+                    ((Button) searchResult.findViewById(R.id.copyCmdButton)).setTag(Integer.toString(cmd));
+                    layoutList.addView(searchResult);
+                }
             }
         }
-        ((TextView) ApduUtils.tabView.findViewById(R.id.apduSearchText)).setHint("Search by Text or Byte Strings ...");
+        TextView apduSearchText = (TextView) ApduUtils.tabView.findViewById(R.id.apduSearchText);
+        if(apduSearchText != null) {
+            apduSearchText.setHint("Search by Text or Byte Strings ...");
+        }
     }
 
     public static void copyAPDUCommand(int tagIndex) {

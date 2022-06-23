@@ -70,6 +70,14 @@ public class ThemesConfiguration {
      */
     public static int setLocalTheme(String themeDesc, boolean applyTheme, ChameleonMiniLiveDebuggerActivity activity) {
         int themeID;
+        if(activity == null) {
+            if(BuildConfig.FLAVOR.equals("paid")) {
+                themeID = R.style.AppThemeGreenPaid;
+            } else {
+                themeID = R.style.AppThemeGreen;
+            }
+            return themeID;
+        }
         switch(themeDesc) {
             case "Atlanta":
                 themeID = R.style.AppThemeAtlanta;
@@ -102,18 +110,10 @@ public class ThemesConfiguration {
                 themeID = R.style.AppThemeSunshine;
                 break;
             case "Standard Green (Default)":
-                if(BuildConfig.FLAVOR.equals("paid")) {
-                    themeID = R.style.AppThemeGreenPaid;
-                }
-                else {
-                    themeID = R.style.AppThemeGreen;
-                }
-                break;
             case "Standard Green":
                 if(BuildConfig.FLAVOR.equals("paid")) {
                     themeID = R.style.AppThemeGreenPaid;
-                }
-                else {
+                } else {
                     themeID = R.style.AppThemeGreen;
                 }
                 break;
@@ -138,16 +138,21 @@ public class ThemesConfiguration {
     public static void actionButtonAppSettings(View view) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(LiveLoggerActivity.getLiveLoggerInstance(), appThemeResID);
         final View dialogView = LiveLoggerActivity.getLiveLoggerInstance().getLayoutInflater().inflate(R.layout.theme_config, null);
-        // set the correct current theme as the selected radio button:
+        /* Set the correct current theme as the selected radio button: */
         RadioGroup themeRadioGroup = (RadioGroup) dialogView.findViewById(R.id.themeRadioGroup);
+        if(themeRadioGroup == null) {
+            return;
+        }
         for(int rb = 0; rb < themeRadioGroup.getChildCount(); rb++) {
             RadioButton curThemeBtn = (RadioButton) themeRadioGroup.getChildAt(rb);
-            if(curThemeBtn.isEnabled() && curThemeBtn.getText().toString().equals(storedAppTheme)) {
+            if(curThemeBtn == null) {
+                continue;
+            } else if(curThemeBtn.isEnabled() && curThemeBtn.getText().toString().equals(storedAppTheme)) {
                 curThemeBtn.setChecked(true);
                 break;
             }
         }
-        // finish constructing the theme selection dialog:
+        /* Finish constructing the theme selection dialog: */
         ScrollView themesScroller = new ScrollView(LiveLoggerActivity.getLiveLoggerInstance());
         themesScroller.addView(dialogView);
         dialog.setView(themesScroller);
@@ -157,18 +162,19 @@ public class ThemesConfiguration {
         dialog.setPositiveButton( "Set Theme️", new DialogInterface.OnClickListener(){
             @Override
             public void onClick(DialogInterface dialog, int whichBtn) {
-                int getSelectedOption = ((RadioGroup) dialogView.findViewById(R.id.themeRadioGroup)).getCheckedRadioButtonId();
-                String themeID = ((RadioButton) dialogView.findViewById(getSelectedOption)).getText().toString();
-                String themeDesc = themeID;
-                setLocalTheme(themeDesc, true, LiveLoggerActivity.getLiveLoggerInstance());
-                storedAppTheme = themeDesc;
-                // store the theme setting for when the app reopens:
-                ThemesConfiguration.storedAppTheme = themeDesc;
-                AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.THEMEID_PREFERENCE);
-                // finally, apply the theme settings by (essentially) restarting the activity UI:
-                MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("THEME", "New theme installed: " + themeDesc));
-                LiveLoggerActivity.getLiveLoggerInstance().recreate();
-
+                try {
+                    int getSelectedOption = ((RadioGroup) dialogView.findViewById(R.id.themeRadioGroup)).getCheckedRadioButtonId();
+                    String themeID = ((RadioButton) dialogView.findViewById(getSelectedOption)).getText().toString();
+                    String themeDesc = themeID;
+                    setLocalTheme(themeDesc, true, LiveLoggerActivity.getLiveLoggerInstance());
+                    storedAppTheme = themeDesc;
+                    ThemesConfiguration.storedAppTheme = themeDesc;
+                    AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.THEMEID_PREFERENCE);
+                    MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("THEME", "New theme installed: " + themeDesc));
+                    LiveLoggerActivity.getLiveLoggerInstance().recreate();
+                } catch(NullPointerException npe) {
+                    npe.printStackTrace();
+                }
             }
         });
         dialog.setNegativeButton( "Cancel", null);

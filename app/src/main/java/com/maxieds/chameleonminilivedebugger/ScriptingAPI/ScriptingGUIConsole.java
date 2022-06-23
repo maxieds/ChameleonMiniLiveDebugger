@@ -56,6 +56,9 @@ public class ScriptingGUIConsole {
         public ConsoleOutputRecord(String recTitleMsg) {
             LayoutInflater inflater = LiveLoggerActivity.getInstance().getLayoutInflater();
             mainLayoutView = inflater.inflate(R.layout.scripting_console_record_entry_base, null);
+            if(mainLayoutView == null) {
+                return;
+            }
             GradientDrawable gradientBg = new GradientDrawable(
                     GradientDrawable.Orientation.BL_TR,
                     new int[] {
@@ -63,37 +66,46 @@ public class ScriptingGUIConsole {
                             Utils.getColorFromTheme(R.attr.colorAccentHighlight)
                     });
             LinearLayout mainHdrLayout = mainLayoutView.findViewById(R.id.consoleOutputRecordHeaderLayout);
-            mainHdrLayout.setBackground(gradientBg);
+            if(mainHdrLayout != null) {
+                mainHdrLayout.setBackground(gradientBg);
+            }
             setRecordTitle(recTitleMsg);
         }
 
         public ConsoleOutputRecord setRecordTitle(String nextRecTitleMsg) {
             TextView tvRecTitle = (TextView) mainLayoutView.findViewById(R.id.consoleOutputTitleMsgText);
-            tvRecTitle.setText(nextRecTitleMsg);
+            if(tvRecTitle != null) {
+                tvRecTitle.setText(nextRecTitleMsg);
+            }
             return this;
         }
 
         public ConsoleOutputRecord setRecordIcon(@DrawableRes int recIconResID) {
             ImageView ivRecIcon = (ImageView) mainLayoutView.findViewById(R.id.consoleOutputRecordIcon);
-            Drawable recIconImg = LiveLoggerActivity.getInstance().getResources().getDrawable(recIconResID);
-            ivRecIcon.setImageDrawable(recIconImg);
+            if(ivRecIcon != null) {
+                Drawable recIconImg = LiveLoggerActivity.getInstance().getResources().getDrawable(recIconResID);
+                ivRecIcon.setImageDrawable(recIconImg);
+            }
             return this;
         }
 
         public ConsoleOutputRecord setRecordLineOfCode(int nextLoc) {
             TextView tvRecLoc = (TextView) mainLayoutView.findViewById(R.id.consoleOutputRecordLOCText);
-            if(nextLoc <= 0) {
-                tvRecLoc.setText("Line ----  ");
-            }
-            else {
-                tvRecLoc.setText(String.format(Locale.getDefault(), "Line % 3d  ", nextLoc));
+            if(tvRecLoc != null) {
+                if (nextLoc <= 0) {
+                    tvRecLoc.setText("Line ----  ");
+                } else {
+                    tvRecLoc.setText(String.format(Locale.getDefault(), "Line % 3d  ", nextLoc));
+                }
             }
             return this;
         }
 
         public ConsoleOutputRecord setRecordTimestamp(String timeStampData) {
             TextView tvRecTimestamp = (TextView) mainLayoutView.findViewById(R.id.consoleOutputRecordTimestampText);
-            tvRecTimestamp.setText(timeStampData);
+            if(tvRecTimestamp != null) {
+                tvRecTimestamp.setText(timeStampData);
+            }
             return this;
         }
 
@@ -105,14 +117,15 @@ public class ScriptingGUIConsole {
 
         public ConsoleOutputRecord setRecordTypeMarker(String typeMarkerText) {
             TextView tvRecTypeMarker = (TextView) mainLayoutView.findViewById(R.id.consoleOutputRecordTypeText);
-            if(typeMarkerText.length() > RECORD_TYPE_MARKER_CHAR_WIDTH) {
-                typeMarkerText = typeMarkerText.substring(0, RECORD_TYPE_MARKER_CHAR_WIDTH - 1);
+            if(tvRecTypeMarker != null) {
+                if (typeMarkerText.length() > RECORD_TYPE_MARKER_CHAR_WIDTH) {
+                    typeMarkerText = typeMarkerText.substring(0, RECORD_TYPE_MARKER_CHAR_WIDTH - 1);
+                } else {
+                    String fmtString = String.format(Locale.getDefault(), "%%%ds", RECORD_TYPE_MARKER_CHAR_WIDTH);
+                    typeMarkerText = String.format(Locale.getDefault(), fmtString, typeMarkerText);
+                }
+                tvRecTypeMarker.setText(typeMarkerText);
             }
-            else {
-                String fmtString = String.format(Locale.getDefault(), "%%%ds", RECORD_TYPE_MARKER_CHAR_WIDTH);
-                typeMarkerText = String.format(Locale.getDefault(), fmtString, typeMarkerText);
-            }
-            tvRecTypeMarker.setText(typeMarkerText);
             return this;
         }
 
@@ -135,33 +148,40 @@ public class ScriptingGUIConsole {
 
         public ConsoleOutputRecord setMainContentLayout(@LayoutRes int layoutResID) {
             LinearLayout mainLayoutContainer = (LinearLayout) mainLayoutView.findViewById(R.id.consoleOutputRecordMainLayoutContainer);
-            mainLayoutContainer.removeAllViews();
-            LayoutInflater inflater = LiveLoggerActivity.getInstance().getLayoutInflater();
-            View mainLayoutView = inflater.inflate(layoutResID, mainLayoutContainer);
+            if(mainLayoutContainer != null) {
+                mainLayoutContainer.removeAllViews();
+                LayoutInflater inflater = LiveLoggerActivity.getInstance().getLayoutInflater();
+                View mainLayoutInflatedView = inflater.inflate(layoutResID, mainLayoutContainer);
+                if (mainLayoutInflatedView != null) {
+                    mainLayoutView = mainLayoutInflatedView;
+                    mainLayoutContainer.addView(mainLayoutView);
+                }
+            }
             return this;
         }
 
         public ConsoleOutputRecord setRecordMessageText(String msgPrefixData, String[] msgData) {
             TextView tvRecMainMsg = (TextView) mainLayoutView.findViewById(R.id.consoleOutputRecordMainTextBoxData);
-            if(msgData != null && msgData.length > 0) {
-                String nextMsgText = msgPrefixData;
-                for(int mdidx = 0; mdidx < msgData.length; mdidx++) {
-                    nextMsgText += "\n" + msgData[mdidx];
+            if(tvRecMainMsg != null) {
+                if (msgData != null && msgData.length > 0) {
+                    String nextMsgText = msgPrefixData;
+                    for (int mdidx = 0; mdidx < msgData.length; mdidx++) {
+                        nextMsgText += "\n" + msgData[mdidx];
+                    }
+                    SpannableString spanBulletListText = new SpannableString(nextMsgText);
+                    int curBulletPos = msgPrefixData.length();
+                    for (int mdidx = 0; mdidx < msgData.length; mdidx++) {
+                        spanBulletListText.setSpan(
+                                new BulletSpan(15, Utils.getColorFromTheme(R.attr.colorPrimaryDark)),
+                                curBulletPos, curBulletPos + msgData[mdidx].length() + 1,
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                        );
+                        curBulletPos += msgData[mdidx].length() + 1;
+                    }
+                    tvRecMainMsg.setText(spanBulletListText);
+                } else {
+                    tvRecMainMsg.setText(msgPrefixData);
                 }
-                SpannableString spanBulletListText = new SpannableString(nextMsgText);
-                int curBulletPos = msgPrefixData.length() ;
-                for(int mdidx = 0; mdidx < msgData.length; mdidx++) {
-                    spanBulletListText.setSpan(
-                            new BulletSpan(15, Utils.getColorFromTheme(R.attr.colorPrimaryDark)),
-                            curBulletPos, curBulletPos + msgData[mdidx].length() + 1,
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                    );
-                    curBulletPos += msgData[mdidx].length() + 1;
-                }
-                tvRecMainMsg.setText(spanBulletListText);
-            }
-            else {
-                tvRecMainMsg.setText(msgPrefixData);
             }
             return this;
         }
@@ -172,7 +192,9 @@ public class ScriptingGUIConsole {
 
         public ConsoleOutputRecord hideRecordMessageText() {
             LinearLayout llMainMsgContainer = (LinearLayout) mainLayoutView.findViewById(R.id.consoleOutputRecordMainLayoutContainer);
-            llMainMsgContainer.setVisibility(LinearLayout.GONE);
+            if(llMainMsgContainer != null) {
+                llMainMsgContainer.setVisibility(LinearLayout.GONE);
+            }
             return this;
         }
 
@@ -251,29 +273,31 @@ public class ScriptingGUIConsole {
         }
 
         public static ConsoleOutputRecord newChameleonCommandResponseRecordInstance(ScriptingTypes.ScriptVariable scHashedArrayVar, int lineOfCode) {
-
-            ConsoleOutputRecord newCmdRespMsgRecord = new ConsoleOutputRecord(String.format(Locale.getDefault(), "Command Response"));
-            newCmdRespMsgRecord.setMainContentLayout(R.layout.scripting_console_record_cmdresp);
-            newCmdRespMsgRecord.setRecordIcon(R.drawable.scripting_output_icon_cmdresp16_v1);
-            newCmdRespMsgRecord.setRecordLineOfCode(lineOfCode);
-            newCmdRespMsgRecord.setRecordTimestamp();
-            newCmdRespMsgRecord.setRecordTypeMarker(ScriptingConsoleRecordType.SCRECORD_CHAMCMDRESP);
-
-            TextView tvCmdName = (TextView) newCmdRespMsgRecord.getMainLayoutView().findViewById(R.id.localCmdResponseRecordChamCmdNameText);
-            tvCmdName.setText(String.format(Locale.getDefault(), "%s", scHashedArrayVar.getValueAt("cmdName").getValueAsString()).toUpperCase(Locale.getDefault()));
-            TextView tvCmdResp = (TextView) newCmdRespMsgRecord.getMainLayoutView().findViewById(R.id.localCmdResponseRecordChamCmdRespAndCodeText);
-            tvCmdResp.setText(String.format(Locale.getDefault(), "%s (%s)",
-                    scHashedArrayVar.getValueAt("respText").getValueAsString(), scHashedArrayVar.getValueAt("respCode").getValueAsString()));
-            TextView tvCmdDataAscii = (TextView) newCmdRespMsgRecord.getMainLayoutView().findViewById(R.id.localCmdResponseRecordChamCmdReturnDataAsciiText);
-            tvCmdDataAscii.setText(String.format(Locale.getDefault(), "%s", scHashedArrayVar.getValueAt("data").getValueAsString()));
-            TextView tvCmdDataHex = (TextView) newCmdRespMsgRecord.getMainLayoutView().findViewById(R.id.localCmdResponseRecordChamCmdReturnDataHexText);
-            tvCmdDataHex.setText(String.format(Locale.getDefault(), "%s", Utils.bytes2Ascii(scHashedArrayVar.getValueAt("data").getValueAsString().getBytes())));
-            TextView tvCmdDataIsError = (TextView) newCmdRespMsgRecord.getMainLayoutView().findViewById(R.id.localCmdResponseRecordChamCmdIsErrorText);
-            tvCmdDataIsError.setText(String.format(Locale.getDefault(), "%s", scHashedArrayVar.getValueAt("isError").getValueAsBoolean() ? "True" : "False"));
-            TextView tvCmdDataIsTmt = (TextView) newCmdRespMsgRecord.getMainLayoutView().findViewById(R.id.localCmdResponseRecordChamCmdIsTimeoutText);
-            tvCmdDataIsTmt.setText(String.format(Locale.getDefault(), "%s", scHashedArrayVar.getValueAt("isTimeout").getValueAsBoolean() ? "True" : "False"));
-
-            return newCmdRespMsgRecord;
+            try {
+                ConsoleOutputRecord newCmdRespMsgRecord = new ConsoleOutputRecord(String.format(Locale.getDefault(), "Command Response"));
+                newCmdRespMsgRecord.setMainContentLayout(R.layout.scripting_console_record_cmdresp);
+                newCmdRespMsgRecord.setRecordIcon(R.drawable.scripting_output_icon_cmdresp16_v1);
+                newCmdRespMsgRecord.setRecordLineOfCode(lineOfCode);
+                newCmdRespMsgRecord.setRecordTimestamp();
+                newCmdRespMsgRecord.setRecordTypeMarker(ScriptingConsoleRecordType.SCRECORD_CHAMCMDRESP);
+                TextView tvCmdName = (TextView) newCmdRespMsgRecord.getMainLayoutView().findViewById(R.id.localCmdResponseRecordChamCmdNameText);
+                tvCmdName.setText(String.format(Locale.getDefault(), "%s", scHashedArrayVar.getValueAt("cmdName").getValueAsString()).toUpperCase(Locale.getDefault()));
+                TextView tvCmdResp = (TextView) newCmdRespMsgRecord.getMainLayoutView().findViewById(R.id.localCmdResponseRecordChamCmdRespAndCodeText);
+                tvCmdResp.setText(String.format(Locale.getDefault(), "%s (%s)",
+                        scHashedArrayVar.getValueAt("respText").getValueAsString(), scHashedArrayVar.getValueAt("respCode").getValueAsString()));
+                TextView tvCmdDataAscii = (TextView) newCmdRespMsgRecord.getMainLayoutView().findViewById(R.id.localCmdResponseRecordChamCmdReturnDataAsciiText);
+                tvCmdDataAscii.setText(String.format(Locale.getDefault(), "%s", scHashedArrayVar.getValueAt("data").getValueAsString()));
+                TextView tvCmdDataHex = (TextView) newCmdRespMsgRecord.getMainLayoutView().findViewById(R.id.localCmdResponseRecordChamCmdReturnDataHexText);
+                tvCmdDataHex.setText(String.format(Locale.getDefault(), "%s", Utils.bytes2Ascii(scHashedArrayVar.getValueAt("data").getValueAsString().getBytes())));
+                TextView tvCmdDataIsError = (TextView) newCmdRespMsgRecord.getMainLayoutView().findViewById(R.id.localCmdResponseRecordChamCmdIsErrorText);
+                tvCmdDataIsError.setText(String.format(Locale.getDefault(), "%s", scHashedArrayVar.getValueAt("isError").getValueAsBoolean() ? "True" : "False"));
+                TextView tvCmdDataIsTmt = (TextView) newCmdRespMsgRecord.getMainLayoutView().findViewById(R.id.localCmdResponseRecordChamCmdIsTimeoutText);
+                tvCmdDataIsTmt.setText(String.format(Locale.getDefault(), "%s", scHashedArrayVar.getValueAt("isTimeout").getValueAsBoolean() ? "True" : "False"));
+                return newCmdRespMsgRecord;
+            } catch(NullPointerException npe) {
+                npe.printStackTrace();
+                return null;
+            }
 
         }
 
@@ -320,6 +344,9 @@ public class ScriptingGUIConsole {
     }
 
     private static void appendConsoleOutputRecord(ConsoleOutputRecord consoleOutputRecord) {
+        if(consoleOutputRecord == null || TabFragment.UITAB_DATA == null || TabFragment.UITAB_DATA[TabFragment.TAB_SCRIPTING] == null) {
+            return;
+        }
         LiveLoggerActivity.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -334,10 +361,12 @@ public class ScriptingGUIConsole {
                                 return;
                             }
                             LinearLayout lastRecordElt = (LinearLayout) consoleViewMainLayout.getChildAt(consoleViewMainLayout.getChildCount() - 1);
-                            lastRecordElt.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                            int bottomEltHeight = lastRecordElt.getMeasuredHeight();
-                            if (mainLayoutScroller.getBottom() > lastRecordElt.getBottom()) {
-                                mainLayoutScroller.scrollTo(0, mainLayoutScroller.getBottom() + bottomEltHeight);
+                            if(lastRecordElt != null) {
+                                lastRecordElt.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                                int bottomEltHeight = lastRecordElt.getMeasuredHeight();
+                                if (mainLayoutScroller.getBottom() > lastRecordElt.getBottom()) {
+                                    mainLayoutScroller.scrollTo(0, mainLayoutScroller.getBottom() + bottomEltHeight);
+                                }
                             }
                         }
                     }, 75);

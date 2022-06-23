@@ -259,7 +259,9 @@ public class SerialUSBInterface extends SerialIOReceiver {
         return new UsbSerialInterface.UsbReadCallback() {
             @Override
             public void onReceivedData(byte[] liveLogData) {
-                ChameleonSettings.serialIOPorts[ChameleonSettings.USBIO_IFACE_INDEX].onReceivedData(liveLogData);
+                if(ChameleonSettings.serialIOPorts != null && ChameleonSettings.serialIOPorts[ChameleonSettings.USBIO_IFACE_INDEX] != null) {
+                    ChameleonSettings.serialIOPorts[ChameleonSettings.USBIO_IFACE_INDEX].onReceivedData(liveLogData);
+                }
             }
         };
     }
@@ -310,9 +312,8 @@ public class SerialUSBInterface extends SerialIOReceiver {
     public int sendDataBuffer(byte[] dataWriteBuffer) {
         if(dataWriteBuffer == null || dataWriteBuffer.length == 0) {
             return STATUS_OK;
-        }
-        else if(!serialConfigured()) {
-            return STATUS_OK;
+        } else if(!serialConfigured() || serialPort == null) {
+            return STATUS_ERROR;
         }
         Log.d(TAG, "USBReaderCallback Send Data: (HEX) " + Utils.bytes2Hex(dataWriteBuffer));
         Log.d(TAG, "USBReaderCallback Send Data: (TXT) " + Utils.bytes2Ascii(dataWriteBuffer));
@@ -333,7 +334,11 @@ public class SerialUSBInterface extends SerialIOReceiver {
                     SerialUSBInterface.usbPermissionsGranted = true;
                     if (!intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                         UsbDevice usbDev = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                        Log.d(TAG, "Permission denied for USB device " + usbDev);
+                        if(usbDev != null) {
+                            Log.d(TAG, "Permission denied for USB device " + usbDev);
+                        } else {
+                            Log.d(TAG, "Permission denied for NULL USB device ");
+                        }
                     }
                 }
             }
@@ -351,9 +356,17 @@ public class SerialUSBInterface extends SerialIOReceiver {
         Intent broadcastIntent = new Intent(SerialUSBInterface.ACTION_USB_PERMISSION);
         if(intent != null) {
             Parcelable usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-            broadcastIntent.putExtra(UsbManager.EXTRA_DEVICE, usbDevice);
+            if(usbDevice != null) {
+                broadcastIntent.putExtra(UsbManager.EXTRA_DEVICE, usbDevice);
+            }
         }
         LocalBroadcastManager.getInstance(context).sendBroadcast(broadcastIntent);
+        if(ChameleonSettings.serialIOPorts == null ||
+                ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX] == null ||
+                ChameleonSettings.serialIOPorts[ChameleonSettings.USBIO_IFACE_INDEX] == null) {
+            SerialUSBInterface.usbPermissionsGranted = false;
+            return;
+        }
         if (!ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX].serialConfigured()) {
             if (ChameleonSettings.serialIOPorts[ChameleonSettings.USBIO_IFACE_INDEX].configureSerial() != 0) {
                 ChameleonIO.DeviceStatusSettings.stopPostingStats();

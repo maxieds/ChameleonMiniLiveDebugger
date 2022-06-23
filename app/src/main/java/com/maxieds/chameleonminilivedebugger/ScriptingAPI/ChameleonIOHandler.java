@@ -133,11 +133,9 @@ public class ChameleonIOHandler implements ChameleonSerialIOInterface.SerialData
     public static ScriptVariable executeChameleonCommandForResult(String cmdText, int timeout) {
         ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
         if(serialIOPort == null) {
-            // Try to recover in the script semi-gracefully:
+            /* Try to recover in the script with a user friendly error message: */
             return ScriptingTypes.ScriptVariable.newInstance().set("NO DATA -- Chameleon Mini not attached???");
-            //throw new ChameleonScriptingException(ExceptionType.ChameleonDisconnectedException, "Serial port is null -- Is the Chameleon attached?");
-        }
-        if(!serialIOPort.tryAcquireSerialPort(ChameleonIO.LOCK_TIMEOUT)) {
+        } else if(!serialIOPort.tryAcquireSerialPort(ChameleonIO.LOCK_TIMEOUT)) {
             return parseChameleonCommandResponse(cmdText, "", true);
         }
         String sendCmd = cmdText + (ChameleonIO.REVE_BOARD ? "\r\n" : "\n\r");

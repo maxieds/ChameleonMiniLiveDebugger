@@ -17,6 +17,9 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import static android.content.ContentValues.TAG;
+import static android.content.Context.DOWNLOAD_SERVICE;
+
 import android.app.DownloadManager;
 import android.os.Handler;
 import android.util.Log;
@@ -29,9 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
-
-import static android.content.ContentValues.TAG;
-import static android.content.Context.DOWNLOAD_SERVICE;
 
 /**
  * <h1>File Export Tools</h1>
@@ -275,7 +275,7 @@ public class ExportTools {
         }
 
         throwToLive = throwToLiveParam;
-        // turn of logging so the transfer doesn't get accidentally logged:
+        /* Turn off logging for the duration of the transfer: */
         currentLogMode = ChameleonIO.getSettingFromDevice("LOGMODE?");
         ChameleonIO.executeChameleonMiniCommand("LOGMODE=OFF", ChameleonIO.TIMEOUT);
         ChameleonIO.WAITING_FOR_XMODEM = true;
@@ -339,10 +339,12 @@ public class ExportTools {
             return;
         byte statusByte = liveLogData[0];
         if(uploadState == 0 || uploadState == 1 && statusByte == BYTE_ACK) {
-            if(uploadState == 1)
+            if(uploadState == 1) {
                 CurrentFrameNumber++;
-            else
+            }
+            else {
                 uploadState = 1;
+            }
             uploadFramebuffer[0] = BYTE_SOH;
             uploadFramebuffer[1] = CurrentFrameNumber;
             uploadFramebuffer[2] = (byte) (255 - CurrentFrameNumber);

@@ -142,9 +142,10 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       * @ref R.id.statusIconNewXFer
       */
      public void setStatusIcon(int iconID, int iconDrawable) {
-          if(findViewById(iconID) != null) {
-               ((ImageView) findViewById(iconID)).setAlpha(255);
-               ((ImageView) findViewById(iconID)).setImageDrawable(getResources().getDrawable(iconDrawable));
+          ImageView iconView = findViewById(iconID);
+          if(iconView != null) {
+               iconView.setAlpha(255);
+               iconView.setImageDrawable(getResources().getDrawable(iconDrawable));
           }
      }
 
@@ -157,8 +158,9 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       * @ref R.id.statusIconNewXFer
       */
      public void clearStatusIcon(int iconID) {
-          if(findViewById(iconID) != null) {
-               ((ImageView) findViewById(iconID)).setAlpha(127);
+          ImageView iconView = findViewById(iconID);
+          if(iconView != null) {
+               iconView.setAlpha(127);
           }
      }
 
@@ -178,7 +180,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                          thEx.printStackTrace();
                     }
 
-                    // Start the crash report activity to display a pleasant error explanation to users:
+                    // Start the crash report activity to display a frontend error explanation to users:
                     ChameleonIO.DeviceStatusSettings.stopPostingStats();
                     Intent startCrashRptIntent = new Intent(liveLoggerActivityContext, CrashReportActivity.class);
                     startCrashRptIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -267,6 +269,11 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                Runnable configDeviceRunnable = new Runnable() {
                     public void run() {
                          ChameleonIO.detectChameleonType();
+                         if(TabFragment.UITAB_DATA == null ||
+                                 TabFragment.UITAB_DATA[TabFragment.TAB_TOOLS] == null ||
+                                 TabFragment.UITAB_DATA[TabFragment.TAB_CONFIG] == null) {
+                              return;
+                         }
                          TabFragment.UITAB_DATA[TabFragment.TAB_TOOLS].changeMenuItemDisplay(TAB_TOOLS_MITEM_SLOTS, true);
                          TabFragment.UITAB_DATA[TabFragment.TAB_CONFIG].changeMenuItemDisplay(TabFragment.TAB_CONFIG_MITEM_LOGGING, true);
                          ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
@@ -310,8 +317,8 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           }
 
           setUnhandledExceptionHandler();
-          //String generateCrashRptObj = null;
-          //generateCrashRptObj.length();
+          /* Invoke the crash handler activity intentionally for testin purposes: */
+          //((String) null).length();
 
           boolean completeRestart = (getLiveLoggerInstance() == null);
           serialUSBDeviceSettingsNeedUpdate = true;
@@ -418,63 +425,67 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                MainActivityLogUtils.logDataEntries.clear();
 
           viewPager = (ViewPager) findViewById(R.id.tab_pager);
-          viewPager.setId(View.generateViewId());
-          TabFragmentPagerAdapter tfPagerAdapter = new TabFragmentPagerAdapter(getSupportFragmentManager(), LiveLoggerActivity.this);
-          viewPager.setAdapter(tfPagerAdapter);
-          if(tabChangeListener != null) {
-               viewPager.removeOnPageChangeListener(tabChangeListener);
-          }
-          tabChangeListener = new ViewPager.OnPageChangeListener() {
-               @Override
-               public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
-
-               @Override
-               public void onPageSelected(int position) {
-                    if(position < 0) {
-                         LiveLoggerActivity.selectedTab = 0;
-                         return;
-                    }
-                    LiveLoggerActivity.selectedTab = position;
-                    switch (position) {
-                         case TAB_LOG:
-                              LiveLoggerActivity.getLiveLoggerInstance().clearStatusIcon(R.id.statusIconNewMsg);
-                              LiveLoggerActivity.getLiveLoggerInstance().clearStatusIcon(R.id.statusIconNewXFer);
-                              LiveLoggerActivity.getLiveLoggerInstance().clearStatusIcon(R.id.statusIconUlDl);
-                              break;
-                         default:
-                              break;
-                    }
+          if(viewPager != null) {
+               viewPager.setId(View.generateViewId());
+               TabFragmentPagerAdapter tfPagerAdapter = new TabFragmentPagerAdapter(getSupportFragmentManager(), LiveLoggerActivity.this);
+               viewPager.setAdapter(tfPagerAdapter);
+               if (tabChangeListener != null) {
+                    viewPager.removeOnPageChangeListener(tabChangeListener);
                }
+               tabChangeListener = new ViewPager.OnPageChangeListener() {
+                    @Override
+                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                    }
 
-               @Override
-               public void onPageScrollStateChanged(int state) {}
-          };
-          viewPager.addOnPageChangeListener(tabChangeListener);
+                    @Override
+                    public void onPageSelected(int position) {
+                         if (position < 0) {
+                              LiveLoggerActivity.selectedTab = 0;
+                              return;
+                         }
+                         LiveLoggerActivity.selectedTab = position;
+                         switch (position) {
+                              case TAB_LOG:
+                                   LiveLoggerActivity.getLiveLoggerInstance().clearStatusIcon(R.id.statusIconNewMsg);
+                                   LiveLoggerActivity.getLiveLoggerInstance().clearStatusIcon(R.id.statusIconNewXFer);
+                                   LiveLoggerActivity.getLiveLoggerInstance().clearStatusIcon(R.id.statusIconUlDl);
+                                   break;
+                              default:
+                                   break;
+                         }
+                    }
 
-          TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-          tabLayout.removeAllTabs();
-          tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_LOG)));
-          tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_TOOLS)));
-          tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_EXPORT)));
-          tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_SCRIPTING)));
-          tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_CONFIG)));
-          tabLayout.setupWithViewPager(viewPager);
+                    @Override
+                    public void onPageScrollStateChanged(int state) {
+                    }
+               };
+               viewPager.addOnPageChangeListener(tabChangeListener);
 
-          viewPager.setOffscreenPageLimit(TabFragmentPagerAdapter.TAB_COUNT - 1);
-          viewPager.setCurrentItem(selectedTab);
-          tfPagerAdapter.notifyDataSetChanged();
+               TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+               tabLayout.removeAllTabs();
+               tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_LOG)));
+               tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_TOOLS)));
+               tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_EXPORT)));
+               tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_SCRIPTING)));
+               tabLayout.addTab(tabLayout.newTab().setText(tfPagerAdapter.getPageTitle(TAB_CONFIG)));
+               tabLayout.setupWithViewPager(viewPager);
 
-          // the view pager hides the tab icons by default, so we reset them:
-          tabLayout.getTabAt(TAB_LOG).setIcon(tfPagerAdapter.getTabIcon(TAB_LOG));
-          tabLayout.getTabAt(TAB_LOG).setContentDescription(R.string.appGuiTabLogContentDesc);
-          tabLayout.getTabAt(TAB_TOOLS).setIcon(tfPagerAdapter.getTabIcon(TAB_TOOLS));
-          tabLayout.getTabAt(TAB_TOOLS).setContentDescription(R.string.appGuiTabToolsContentDesc);
-          tabLayout.getTabAt(TAB_EXPORT).setIcon(tfPagerAdapter.getTabIcon(TAB_EXPORT));
-          tabLayout.getTabAt(TAB_EXPORT).setContentDescription(R.string.appGuiTabExportContentDesc);
-          tabLayout.getTabAt(TAB_SCRIPTING).setIcon(tfPagerAdapter.getTabIcon(TAB_SCRIPTING));
-          tabLayout.getTabAt(TAB_SCRIPTING).setContentDescription(R.string.appGuiTabScriptingContentDesc);
-          tabLayout.getTabAt(TAB_CONFIG).setIcon(tfPagerAdapter.getTabIcon(TAB_CONFIG));
-          tabLayout.getTabAt(TAB_CONFIG).setContentDescription(R.string.appGuiTabConfigContentDesc);
+               viewPager.setOffscreenPageLimit(TabFragmentPagerAdapter.TAB_COUNT - 1);
+               viewPager.setCurrentItem(selectedTab);
+               tfPagerAdapter.notifyDataSetChanged();
+
+               /*The view pager hides the tab icons by default, so we reset them to custom icons: */
+               tabLayout.getTabAt(TAB_LOG).setIcon(tfPagerAdapter.getTabIcon(TAB_LOG));
+               tabLayout.getTabAt(TAB_LOG).setContentDescription(R.string.appGuiTabLogContentDesc);
+               tabLayout.getTabAt(TAB_TOOLS).setIcon(tfPagerAdapter.getTabIcon(TAB_TOOLS));
+               tabLayout.getTabAt(TAB_TOOLS).setContentDescription(R.string.appGuiTabToolsContentDesc);
+               tabLayout.getTabAt(TAB_EXPORT).setIcon(tfPagerAdapter.getTabIcon(TAB_EXPORT));
+               tabLayout.getTabAt(TAB_EXPORT).setContentDescription(R.string.appGuiTabExportContentDesc);
+               tabLayout.getTabAt(TAB_SCRIPTING).setIcon(tfPagerAdapter.getTabIcon(TAB_SCRIPTING));
+               tabLayout.getTabAt(TAB_SCRIPTING).setContentDescription(R.string.appGuiTabScriptingContentDesc);
+               tabLayout.getTabAt(TAB_CONFIG).setIcon(tfPagerAdapter.getTabIcon(TAB_CONFIG));
+               tabLayout.getTabAt(TAB_CONFIG).setContentDescription(R.string.appGuiTabConfigContentDesc);
+          }
 
      }
 
@@ -758,13 +769,16 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       * @param view
       * @see res/layout/activity_live_logger.xml
       */
-     public void actionButtonExit(View view) {
+     public void actionButtonExit(@NonNull View view) {
           ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
           ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
           if(serialIOPort != null) {
                serialIOPort.shutdownSerial();
           }
-          ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).cancel(1);
+          NotificationManager notifyMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+          if(notifyMgr != null) {
+               notifyMgr.cancel(1);
+          }
           finish();
      }
 
@@ -773,12 +787,12 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       * top right (second rightmost button) of the activity window.
       * @param view
       */
-     public void actionButtonRefreshDeviceStatus(View view) {
+     public void actionButtonRefreshDeviceStatus(@NonNull View view) {
           ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
           ChameleonIO.deviceStatus.updateAllStatusAndPost(false); /* Make sure the device returned the correct data to display */
      }
 
-     public void actionButtonAppSettings(View view) {
+     public void actionButtonAppSettings(@NonNull View view) {
           ThemesConfiguration.actionButtonAppSettings(view);
      }
 
@@ -786,7 +800,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       * Clears all logging data from the Log tab.
       * @param view
       */
-     public void actionButtonClearAllLogs(View view) {
+     public void actionButtonClearAllLogs(@NonNull View view) {
           MainActivityLogUtils.clearAllLogs();
      }
 
@@ -794,13 +808,14 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       * Handles button presses for most of the commands implemented in the Tools Menu.
       * @param view calling Button
       */
-     public void actionButtonCreateNewEvent(View view) {
+     public void actionButtonCreateNewEvent(@NonNull View view) {
           if(ChameleonSettings.getActiveSerialIOPort() == null) {
                MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Cannot run command since serial IO over USB/BT is not configured."));
                return;
           }
-          String createCmd = ((Button) view).getText().toString();
-          String btnTagValue = ((Button) view).getTag() != null ? ((Button) view).getTag().toString() : null;
+          Button srcBtn = (Button) view;
+          String createCmd = srcBtn.getText().toString();
+          String btnTagValue = srcBtn.getTag() != null ? srcBtn.getTag().toString() : null;
           if(btnTagValue != null && !btnTagValue.equals("")) {
                String msgParam = "";
                createCmd = "CONFIG=" + btnTagValue;
@@ -819,9 +834,12 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           }
      }
 
-     public void actionButtonModifyUID(View view) {
-          String uidAction = ((Button) view).getTag().toString();
-          UIDCommands.modifyUID(uidAction);
+     public void actionButtonModifyUID(@NonNull View view) {
+          Button srcBtn = (Button) view;
+          if(srcBtn != null) {
+               String uidAction = srcBtn.getTag().toString();
+               UIDCommands.modifyUID(uidAction);
+          }
      }
 
      /**
@@ -829,7 +847,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       * @param view
       * @ref R.string.aboutapp
       */
-     public void actionButtonAboutTheApp(View view) {
+     public void actionButtonAboutTheApp(@NonNull View view) {
           AlertDialog alertDialog = MainActivityNavActions.getAboutTheAppDialog();
           alertDialog.show();
      }
@@ -838,32 +856,44 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       * Runs a command indicated in the TAG parameter of the pressed button.
       * @param view pressed Button
       */
-     public void actionButtonRunCommand(View view) {
-          String cmCmd = ((Button) view).getTag().toString();
-          ChameleonCommands.runCommand(cmCmd);
+     public void actionButtonRunCommand(@NonNull View view) {
+          Button srcBtn = (Button) view;
+          if(srcBtn != null) {
+               String cmCmd = srcBtn.getTag().toString();
+               ChameleonCommands.runCommand(cmCmd);
+          }
      }
 
-     public void actionButtonCollapseSimilar(View view) {
+     public void actionButtonCollapseSimilar(@NonNull View view) {
           MainActivityLogUtils.collapseSimilarLogs();
      }
 
-     public void actionButtonSelectedHighlight(View view) {
-          int highlightColor = Color.parseColor(((Button) view).getTag().toString());
-          MainActivityLogUtils.selectedHighlightedLogs(highlightColor);
+     public void actionButtonSelectedHighlight(@NonNull View view) {
+          Button srcBtn = (Button) view;
+          if(srcBtn != null) {
+               int highlightColor = Color.parseColor(srcBtn.getTag().toString());
+               MainActivityLogUtils.selectedHighlightedLogs(highlightColor);
+          }
      }
 
-     public void actionButtonUncheckAll(View view) {
+     public void actionButtonUncheckAll(@NonNull View view) {
           MainActivityLogUtils.uncheckAllLogs();
      }
 
-     public void actionButtonSetSelectedXFer(View view) {
-          int directionFlag = Integer.parseInt(((Button) view).getTag().toString());
-          MainActivityLogUtils.setSelectedXFerOnLogs(directionFlag);
+     public void actionButtonSetSelectedXFer(@NonNull View view) {
+          Button srcBtn = (Button) view;
+          if(srcBtn != null) {
+               int directionFlag = Integer.parseInt(srcBtn.getTag().toString());
+               MainActivityLogUtils.setSelectedXFerOnLogs(directionFlag);
+          }
      }
 
-     public void actionButtonProcessBatch(View view) {
-          String actionFlag = ((Button) view).getTag().toString();
-          MainActivityLogUtils.processBatchOfSelectedLogs(actionFlag);
+     public void actionButtonProcessBatch(@NonNull View view) {
+          Button srcBtn = (Button) view;
+          if(srcBtn != null) {
+               String actionFlag = srcBtn.getTag().toString();
+               MainActivityLogUtils.processBatchOfSelectedLogs(actionFlag);
+          }
      }
 
      /**
@@ -871,16 +901,19 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       * logs to Plaintext / HTML / native binary files formats.
       * @param view pressed Button
       */
-     public void actionButtonWriteFile(View view) {
-          String fileType = ((Button) view).getTag().toString();
-          ExternalFileIO.exportOutputFile(fileType);
+     public void actionButtonWriteFile(@NonNull View view) {
+          Button srcBtn = (Button) view;
+          if(srcBtn != null) {
+               String fileType = srcBtn.getTag().toString();
+               ExternalFileIO.exportOutputFile(fileType);
+          }
      }
 
      /**
       * Called when the Export tab button for writing the DUMP_MFU command output is requested by the user.
       * @param view
       */
-     public void actionButtonDumpMFU(View view) {
+     public void actionButtonDumpMFU(@NonNull View view) {
           ExportTools.saveBinaryDumpMFU("mfultralight");
      }
 
@@ -888,7 +921,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       * Called when the Export tab button for cloning the DUMP_MFU command output is requested by the user.
       * @param view
       */
-     public void actionButtonCloneMFU(View view) {
+     public void actionButtonCloneMFU(@NonNull View view) {
           ChameleonCommands.cloneMFU();
      }
 
@@ -896,9 +929,12 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       * Called to load the stock card images from stored in the res/raw/* directory.
       * @param view
       */
-     public void actionButtonCloneStockDumpImages(View view) {
-          String stockChipType = ((Button) view).getTag().toString();
-          ChameleonCommands.cloneStockDumpImages(stockChipType);
+     public void actionButtonCloneStockDumpImages(@NonNull View view) {
+          Button srcBtn = (Button) view;
+          if(srcBtn != null) {
+               String stockChipType = srcBtn.getTag().toString();
+               ChameleonCommands.cloneStockDumpImages(stockChipType);
+          }
      }
 
      /**
@@ -907,12 +943,15 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       * @ref TabFragment.connectCommandListSpinnerAdapter
       * @ref TabFragment.connectPeripheralSpinnerAdapter
       */
-     public static void actionSpinnerSetCommand(View view) {
-          String sopt = ((Spinner) view).getSelectedItem().toString();
-          if(sopt.substring(0, 2).equals("--"))
-               sopt = "NONE";
-          String cmCmd = ((Spinner) view).getTag().toString() + sopt;
-          ChameleonIO.executeChameleonMiniCommand(cmCmd, ChameleonIO.TIMEOUT);
+     public static void actionSpinnerSetCommand(@NonNull View view) {
+          Spinner srcView = (Spinner) view;
+          if(srcView != null) {
+               String sopt = srcView.getSelectedItem().toString();
+               if (sopt.substring(0, 2).equals("--"))
+                    sopt = "NONE";
+               String cmCmd = srcView.getTag().toString() + sopt;
+               ChameleonIO.executeChameleonMiniCommand(cmCmd, ChameleonIO.TIMEOUT);
+          }
      }
 
      /**
@@ -933,28 +972,30 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       * by XModem in the Export tab.
       * @param view
       */
-     public void actionButtonExportLogDownload(View view) {
-          String action = ((Button) view).getTag().toString();
-          ExportTools.exportLogDownload(action);
+     public void actionButtonExportLogDownload(@NonNull View view) {
+          Button srcBtn = (Button) view;
+          if(srcBtn != null) {
+               String action = srcBtn.getTag().toString();
+               ExportTools.exportLogDownload(action);
+          }
      }
 
-     /**
-      * Called after the user chooses a file in the upload card dialog.
-      * @param requestCode
-      * @param resultCode
-      * @param data
-      */
      @Override
      protected void onActivityResult(int requestCode, int resultCode, Intent data) {
           if(resultCode == BluetoothSerialInterface.ACTVITY_REQUEST_BLUETOOTH_ENABLED_CODE) {
                if(resultCode == Activity.RESULT_CANCELED) {
-                    // Bluetooth not enabled.
+                    /* Bluetooth not enabled: */
                     finish();
                     return;
                }
           } else if(resultCode == BluetoothSerialInterface.ACTVITY_REQUEST_BLUETOOTH_DISCOVERABLE_CODE) {
                if(resultCode == Activity.RESULT_CANCELED) {
-                    // Bluetooth discovery not enabled.
+                    /* Bluetooth discovery not enabled: */
+                    finish();
+                    return;
+               }
+          } else if(resultCode == AndroidFileChooser.CMLD_PERMGROUP_STORAGE_REQUEST_CODE) {
+               if(resultCode == Activity.RESULT_CANCELED) {
                     finish();
                     return;
                }
@@ -977,14 +1018,15 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       * initiates the upload with the function in ExportTools.
       * @param view pressed Button
       */
-     public void actionButtonUploadCard(View view) {
-          if(ChameleonSettings.getActiveSerialIOPort() == null)
+     public void actionButtonUploadCard(@NonNull View view) {
+          if(ChameleonSettings.getActiveSerialIOPort() == null) {
                return;
+          }
           ChameleonCommands.uploadCardImageByXModem();
      }
 
-     public void actionButtonPerformSearch(View view) {
-          // hide the search keyboard obstructing the results after the button press:
+     public void actionButtonPerformSearch(@NonNull View view) {
+          /* Hide the search keyboard obstruction on the screen after the button is pressed: */
           View focusView = this.getCurrentFocus();
           if (focusView != null) {
                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -993,51 +1035,69 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           MainActivityLogUtils.performLogSearch();
      }
 
-     public void actionButtonApduCLA(View view) {
-          String CLA = ((Button) view).getTag().toString();
-          ApduGUITools.apduUpdateCLA(CLA);
+     public void actionButtonApduCLA(@NonNull View view) {
+          Button srcBtn = (Button) view;
+          if(srcBtn != null) {
+               String CLA = srcBtn.getTag().toString();
+               ApduGUITools.apduUpdateCLA(CLA);
+          }
      }
 
-     public void actionButtonApduClear(View view) {
+     public void actionButtonApduClear(@NonNull View view) {
           ApduGUITools.apduClearCommand();
      }
 
-     public void actionButtonApduManualDataEntry(View view) {
+     public void actionButtonApduManualDataEntry(@NonNull View view) {
           AlertDialog alertDialog = ApduGUITools.getApduManualDataEntryDialog();
           alertDialog.show();
      }
 
-     public void actionButtonGetBits(View view) {
-          String action = ((Button) view).getTag().toString();
-          UIDCommands.getBitsHelper(action);
+     public void actionButtonGetBits(@NonNull View view) {
+          Button srcBtn = (Button) view;
+          if(srcBtn != null) {
+               String action = srcBtn.getTag().toString();
+               UIDCommands.getBitsHelper(action);
+          }
      }
 
-     public void actionButtonSendAPDU(View view) {
-          String sendMode = ((Button) view).getTag().toString();
-          ApduGUITools.sendAPDUToChameleon(sendMode, false);
+     public void actionButtonSendAPDU(@NonNull View view) {
+          Button srcBtn = (Button) view;
+          if(srcBtn != null) {
+               String sendMode = srcBtn.getTag().toString();
+               ApduGUITools.sendAPDUToChameleon(sendMode, false);
+          }
      }
 
-     public void actionButtonSendRawAPDU(View view) {
-          String sendMode = ((Button) view).getTag().toString();
-          ApduGUITools.sendAPDUToChameleon(sendMode, true);
+     public void actionButtonSendRawAPDU(@NonNull View view) {
+          Button srcBtn = (Button) view;
+          if(srcBtn != null) {
+               String sendMode = srcBtn.getTag().toString();
+               ApduGUITools.sendAPDUToChameleon(sendMode, true);
+          }
      }
 
-     public void actionButtonAPDUSearchCmd(View view) {
-          String searchText = ((TextView) ApduUtils.tabView.findViewById(R.id.apduSearchText)).getText().toString().toLowerCase();
-          ApduGUITools.searchAPDUDatabase(searchText);
+     public void actionButtonAPDUSearchCmd(@NonNull View view) {
+          TextView tvRef = (TextView) ApduUtils.tabView.findViewById(R.id.apduSearchText);
+          if(tvRef != null) {
+               String searchText = tvRef.getText().toString().toLowerCase();
+               ApduGUITools.searchAPDUDatabase(searchText);
+          }
      }
 
-     public void actionButtonAPDUCmd(View view) {
-          String tagIndex = ((Button) view).getTag().toString();
-          int apduCmdIndex = Integer.valueOf(tagIndex);
-          ApduGUITools.copyAPDUCommand(apduCmdIndex);
+     public void actionButtonAPDUCmd(@NonNull View view) {
+          Button srcBtn = (Button) view;
+          if(srcBtn != null) {
+               String tagIndex = srcBtn.getTag().toString();
+               int apduCmdIndex = Integer.valueOf(tagIndex);
+               ApduGUITools.copyAPDUCommand(apduCmdIndex);
+          }
      }
 
      public static void setSignalStrengthIndicator(int threshold) {
           MainActivityNavActions.setSignalStrengthIndicator(threshold);
      }
 
-     public void actionButtonSetMinimumLogDataLength(View view) {
+     public void actionButtonSetMinimumLogDataLength(@NonNull View view) {
           EditText logMinDataLengthField = (EditText) findViewById(R.id.loggingLogDataMinBytesField);
           if(logMinDataLengthField == null) {
                return;
@@ -1062,7 +1122,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           }
      }
 
-     public void actionButtonDESFireTerminalCommand(View view) {
+     public void actionButtonDESFireTerminalCommand(@NonNull View view) {
           Button runCmdBtn = (Button) view;
           if(runCmdBtn == null) {
                return;
@@ -1076,13 +1136,16 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           ChameleonIO.executeChameleonMiniCommand(cmdTag, ChameleonIO.TIMEOUT);
      }
 
-     public void actionButtonScriptingGUIHandlePerformTaskClick(View view) {
+     public void actionButtonScriptingGUIHandlePerformTaskClick(@NonNull View view) {
           ScriptingGUIMain.scriptGUIHandlePerformTaskClick((Button) view, view.getTag().toString());
      }
 
-     public void copyButtonTagToClipboard(View btn) {
-          String clipBoardText = ((Button) btn).getTag().toString();
-          Utils.copyTextToClipboard(this, clipBoardText, true);
+     public void copyButtonTagToClipboard(@NonNull View btn) {
+          Button srcBtn = (Button) btn;
+          if(srcBtn != null) {
+               String clipBoardText = srcBtn.getTag().toString();
+               Utils.copyTextToClipboard(this, clipBoardText, true);
+          }
      }
 
 }

@@ -19,11 +19,8 @@ package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
 import android.os.Handler;
 import android.util.Log;
-import android.view.View;
 import android.widget.LinearLayout;
 
-import com.maxieds.androidfilepickerlightlibrary.FileChooserException;
-import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.ChameleonIO;
 import com.maxieds.chameleonminilivedebugger.ChameleonSerialIOInterface;
 import com.maxieds.chameleonminilivedebugger.ChameleonSettings;
@@ -31,16 +28,11 @@ import com.maxieds.chameleonminilivedebugger.LiveLoggerActivity;
 import com.maxieds.chameleonminilivedebugger.R;
 import com.maxieds.chameleonminilivedebugger.SerialIOReceiver;
 import com.maxieds.chameleonminilivedebugger.TabFragment;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptLexer;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParser;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParserBaseListener;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParserVisitor;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.atn.ATNState;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.FileInputStream;
@@ -57,6 +49,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
+
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParser;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptLexer;
 
 public class ChameleonScripting {
 
@@ -394,7 +389,6 @@ public class ChameleonScripting {
                 }
             };
             ExecutorService thExecPool = Executors.newSingleThreadExecutor(threadFactory);
-            //thExecPool.execute(scriptRunnerThread);
             scriptRunnerThreadExecRef = thExecPool.submit(scriptRunnerThread);
             return true;
 
@@ -419,8 +413,8 @@ public class ChameleonScripting {
         }
 
         public boolean killRunningScript(String scriptKillNotifyMsg) {
-            if(!scriptRunnerThread.isInterrupted()) {
-                if(!scriptRunnerThreadExecRef.isCancelled()) {
+            if(scriptRunnerThread != null && !scriptRunnerThread.isInterrupted()) {
+                if(scriptRunnerThreadExecRef != null && !scriptRunnerThreadExecRef.isCancelled()) {
                     scriptRunnerThreadExecRef.cancel(true);
                 }
                 if(!scriptRunnerThread.isInterrupted()) {
