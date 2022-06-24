@@ -46,6 +46,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
      *       https://punchthrough.com/android-ble-guide/
      * TODO: Check XModem functionality with the BT devices ...
      * TODO: On connect, update the device serial HW/MAC ...
+     * TODO: Make sure that the BLE UUIDs are the same for both of the Proxgrind Tiny and Tiny Professional devices
      */
 
     private static final String TAG = BluetoothSerialInterface.class.getSimpleName();

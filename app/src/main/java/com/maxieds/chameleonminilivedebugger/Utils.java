@@ -225,6 +225,12 @@ public class Utils {
         return currentTime.format("%Y-%m-%d-%T");
     }
 
+    public static String getTimestamp(@NonNull String tsFmt) {
+        Time currentTime = new Time();
+        currentTime.setToNow();
+        return currentTime.format(tsFmt);
+    }
+
     /**
      * Parses a CSV (comma delimited) file.
      * @param fdStream

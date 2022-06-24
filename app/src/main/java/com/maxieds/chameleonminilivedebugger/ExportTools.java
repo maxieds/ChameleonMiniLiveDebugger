@@ -250,7 +250,7 @@ public class ExportTools {
         }
         LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
         String outfilePath = outfilePrefix + "-" + Utils.getTimestamp().replace(":", "") + ".dump";
-        File downloadsFolder = new File("//sdcard//Download//");
+        File downloadsFolder = new File("//sdcard//Download//"); /* TODO: Need to change this path for Android 11+ ??? */
         boolean docsFolderExists = true;
         if (!downloadsFolder.exists()) {
             docsFolderExists = downloadsFolder.mkdir();
@@ -312,7 +312,7 @@ public class ExportTools {
                 System.arraycopy(headerBytes, 0, payloadBytes, 0, 4);
                 fin.read(payloadBytes, 4, dlen);
                 LogEntryUI nextLogEntry = LogEntryUI.newInstance(payloadBytes, "");
-                // highlight the entries so it's clear they're from the device's logs:
+                /* Highlight the entries so it's clear they're from the device's logs: */
                 nextLogEntry.getMainEntryContainer().setBackgroundColor(ThemesConfiguration.getThemeColorVariant(R.attr.deviceMemoryLogHighlight));
                 MainActivityLogUtils.appendNewLog(nextLogEntry);
             }
