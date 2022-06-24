@@ -22,8 +22,6 @@
     package="com.maxieds.chameleonminilivedebugger"
     android:installLocation="preferExternal" >
 
-    <uses-sdk android:targetSdkVersion="30" android:minSdkVersion="30" />
-
     <permission-group
         android:name="CMLD.permission-group.MINIMAL_APP_REQUIREMENTS"
         android:label="@string/cmld_permgroup_minimal"

@@ -82,7 +82,7 @@ android {
         minSdkVersion 30
         targetSdkVersion 30
         compileSdkVersion 30
-        versionCode 108 + 8080
+        versionCode 109 + 8080
         versionName "1.4.3-beta"
         multiDexEnabled true
 

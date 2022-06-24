@@ -72,6 +72,11 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
      *                 and then inspect the live settings that are active for the device.]
      */
 
+    /**
+     * TODO: Make sure that the BLE UUIDs are the same for both of the Proxgrind Tiny and Tiny Professional devices
+     * TODO: More BLE documentation at https://punchthrough.com/android-ble-guide/
+     */
+
     public static final String CHAMELEON_REVG_NAME = "BLE-Chameleon";
     public static final String CHAMELEON_REVG_NAME_ALTERNATE = "Chameleon";
     public static final String CHAMELEON_REVG_SERVICE_UUID = "51510001-7969-6473-6f40-6b6f6c6c6957";
