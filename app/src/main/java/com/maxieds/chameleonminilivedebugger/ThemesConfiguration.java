@@ -127,8 +127,8 @@ public class ThemesConfiguration {
                 return appThemeResID;
         }
         if(applyTheme) {
-            Log.w(TAG, themeDesc);
-            Log.w(TAG, String.valueOf(themeID));
+            AndroidLog.w(TAG, themeDesc);
+            AndroidLog.w(TAG, String.valueOf(themeID));
             activity.getInstance().setTheme(themeID);
             appThemeResID = themeID;
         }
@@ -173,7 +173,7 @@ public class ThemesConfiguration {
                     MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("THEME", "New theme installed: " + themeDesc));
                     LiveLoggerActivity.getLiveLoggerInstance().recreate();
                 } catch(NullPointerException npe) {
-                    npe.printStackTrace();
+                    AndroidLog.printStackTrace(npe);
                 }
             }
         });

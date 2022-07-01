@@ -116,7 +116,7 @@ public class ChameleonIO {
         else {
             String firmwareVersion = getSettingFromDevice("VERSION?");
             String commandsList = getSettingFromDevice("HELP");
-            Log.i(TAG, "CHAMELEON DEVICE TYPE -- " + firmwareVersion + "------" + commandsList);
+            AndroidLog.i(TAG, "CHAMELEON DEVICE TYPE -- " + firmwareVersion + "------" + commandsList);
             if(firmwareVersion.contains("DESFire") ||
                     (deviceConnType.equals("USB") && deviceActiveSerialIOPort.getActiveDeviceInfo().contains("DESFireMod"))) {
                 CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_DESFIRE_FWMOD;
@@ -290,24 +290,39 @@ public class ChameleonIO {
      */
     public static class DeviceStatusSettings {
 
-        private static final String UNSET_VALUE = "NOT SET";
+        private static final String UNSET_VALUE_NONE = "NONE";
+        private static final String UNSET_VALUE_NA = "N/A";
+        private static final String UID_NONE = "No UID";
+
+        public static final String DEFAULT_CONFIG = UNSET_VALUE_NONE;
+        public static final String DEFAULT_UID = UID_NONE;
+        public static final String DEFAULT_LOGMODE = UNSET_VALUE_NA;
+        public static final int DEFAULT_UIDSIZE = 0;
+        public static final int DEFAULT_MEMSIZE = 0;
+        public static final int DEFAULT_LOGSIZE = 0;
+        public static final int DEFAULT_DIP_SETTING = 0;
+        public static final boolean DEFAULT_FIELD = false;
+        public static final boolean DEFAULT_READONLY = false;
+        public static final boolean DEFAULT_CHARGING = false;
+        public static final int DEFAULT_THRESHOLD = 0;
+        public static final String DEFAULT_TIMEOUT = UNSET_VALUE_NA;
 
         /**
          * The status settings summarized at the top of the GUI window.
          */
-        public static String CONFIG = UNSET_VALUE;
-        public static String UID = UNSET_VALUE;
-        public static String LASTUID = UNSET_VALUE;
-        public static String LOGMODE = UNSET_VALUE;
-        public static int UIDSIZE = 0;
-        public static int MEMSIZE = 0;
-        public static int LOGSIZE = 0;
-        public static int DIP_SETTING = 0;
-        public static boolean FIELD = false;
-        public static boolean READONLY = false;
-        public static boolean CHARGING = false;
-        public static int THRESHOLD = 0;
-        public static String TIMEOUT = UNSET_VALUE;
+        public static String CONFIG = DEFAULT_CONFIG;
+        public static String UID = DEFAULT_UID;
+        public static String LASTUID = DEFAULT_UID;
+        public static String LOGMODE = DEFAULT_LOGMODE;
+        public static int UIDSIZE = DEFAULT_UIDSIZE;
+        public static int MEMSIZE = DEFAULT_MEMSIZE;
+        public static int LOGSIZE = DEFAULT_LOGSIZE;
+        public static int DIP_SETTING = DEFAULT_DIP_SETTING;
+        public static boolean FIELD = DEFAULT_FIELD;
+        public static boolean READONLY = DEFAULT_READONLY;
+        public static boolean CHARGING = DEFAULT_CHARGING;
+        public static int THRESHOLD = DEFAULT_THRESHOLD;
+        public static String TIMEOUT = DEFAULT_TIMEOUT;
 
         /**
          * How often do we update / refresh the stats at the top of the window?
@@ -332,6 +347,44 @@ public class ChameleonIO {
             postingStatsInProgress = false;
         }
 
+        public static void setToolbarStatsToDefault() {
+            CONFIG = DEFAULT_CONFIG;
+            UID = LASTUID = DEFAULT_UID;
+            LOGMODE = DEFAULT_LOGMODE;
+            UIDSIZE = DEFAULT_UIDSIZE;
+            MEMSIZE = DEFAULT_MEMSIZE;
+            LOGSIZE = DEFAULT_LOGSIZE;
+            DIP_SETTING = DEFAULT_DIP_SETTING;
+            FIELD = DEFAULT_FIELD;
+            READONLY = DEFAULT_READONLY;
+            CHARGING = DEFAULT_CHARGING;
+            THRESHOLD = DEFAULT_THRESHOLD;
+            TIMEOUT = DEFAULT_TIMEOUT;
+            Thread setToolbarResetDefaultSettingsDataThread = new Thread() {
+                @Override
+                public void run() {
+                    LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(new Runnable() {
+                        public void run() {
+                            try {
+                                ((TextView) LiveLoggerActivity.getContentView(R.id.deviceConfigText)).setText(CONFIG);
+                                ((TextView) LiveLoggerActivity.getContentView(R.id.deviceConfigUID)).setText(UID);
+                                String subStats1 = String.format(Locale.getDefault(), "REV%s|MEM-%dK|LOG-%s-%dK", ChameleonIO.REVE_BOARD ? "E" : "G", round(MEMSIZE / 1024), LOGMODE, round(LOGSIZE / 1024));
+                                ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats1)).setText(subStats1);
+                                String subStats2 = String.format(Locale.getDefault(), "SLOT-%d|%s|FLD-%s|CHRG-%s", DIP_SETTING, READONLY ? "RO" : "RW", FIELD ? "1" : "0", CHARGING ? "1" : "0");
+                                ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats2)).setText(subStats2);
+                                String subStats3 = String.format(Locale.getDefault(), "THRS-%dmv|TMT-%s", THRESHOLD, TIMEOUT.replace(" ", ""));
+                                ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats3)).setText(subStats3);
+                                LiveLoggerActivity.setSignalStrengthIndicator(THRESHOLD);
+                            } catch (Exception ex) {
+                                AndroidLog.printStackTrace(ex);
+                            }
+                        }
+                    });
+                }
+            };
+            setToolbarResetDefaultSettingsDataThread.start();
+        }
+
         public static void startPostingStats(int msDelay) {
             if(postingStatsInProgress || !ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) {
                 statsUpdateHandler.removeCallbacksAndMessages(statsUpdateRunnable);
@@ -350,7 +403,7 @@ public class ChameleonIO {
                     CONFIG = ChameleonIO.getSettingFromDevice("CONFIG?", CONFIG);
                     UID = ChameleonIO.getSettingFromDevice("UID?", UID);
                     if(UID.equals("TIMEOUT")) {
-                        UID = "NO UID.";
+                        UID = UID_NONE;
                     }
                     UIDSIZE = Utils.parseInt(ChameleonIO.getSettingFromDevice("UIDSIZE?", String.format("%d", UIDSIZE)));
                     MEMSIZE = Utils.parseInt(ChameleonIO.getSettingFromDevice("MEMSIZE?", String.format("%d", MEMSIZE)));
@@ -368,17 +421,17 @@ public class ChameleonIO {
                     UID = ChameleonIO.getSettingFromDevice("uid?", UID);
                     UIDSIZE = Utils.parseInt(ChameleonIO.getSettingFromDevice("uidsize?", String.format("%d",UIDSIZE)));
                     MEMSIZE = Utils.parseInt(ChameleonIO.getSettingFromDevice("memsize?", String.format("%d",MEMSIZE)));
-                    LOGMODE = "NONE";
+                    LOGMODE = UNSET_VALUE_NA;
                     LOGSIZE = 0;
                     DIP_SETTING = Utils.parseInt(ChameleonIO.getSettingFromDevice("setting?", String.format("%d", DIP_SETTING)));
                     READONLY = ChameleonIO.getSettingFromDevice("readonly?", String.format("%d", READONLY ? 1 : 0)).equals("1");
                     FIELD = false;
                     CHARGING = false;
                     THRESHOLD = 0;
-                    TIMEOUT = "NA";
+                    TIMEOUT = UNSET_VALUE_NA;
                 }
             } catch (Exception ex) {
-                ex.printStackTrace();
+                AndroidLog.printStackTrace(ex);
                 return false;
             }
             LiveLoggerActivity.setSignalStrengthIndicator(THRESHOLD);
@@ -395,6 +448,7 @@ public class ChameleonIO {
         public static void updateAllStatusAndPost(boolean resetTimer) {
             if(ChameleonSettings.getActiveSerialIOPort() == null) {
                 stopPostingStats();
+                setToolbarStatsToDefault();
                 return;
             }
             Thread setToolbarSettingsDataThread = new Thread() {
@@ -404,7 +458,7 @@ public class ChameleonIO {
                         boolean haveUpdates = updateAllStatus();
                     }
                     catch(Exception nfe) {
-                        nfe.printStackTrace();
+                        AndroidLog.printStackTrace(nfe);
                         stopPostingStats();
                         return;
                     }
@@ -435,7 +489,7 @@ public class ChameleonIO {
                                     ((TextView) LiveLoggerActivity.getContentView(R.id.cmdTimeoutSeekbarValueText)).setText(String.format(Locale.getDefault(), "% 4s (x128) ms", TIMEOUT));
                                 }
                             } catch (Exception ex) {
-                                ex.printStackTrace();
+                                AndroidLog.printStackTrace(ex);
                             }
                         }
                     });
@@ -462,7 +516,7 @@ public class ChameleonIO {
      */
     public static SerialRespCode executeChameleonMiniCommand(String rawCmd, int timeout) {
         if(PAUSED) {
-            Log.i(TAG, "executeChameleonMiniCommand: PAUSED.");
+            AndroidLog.i(TAG, "executeChameleonMiniCommand: PAUSED.");
             return FALSE;
         }
         if (timeout < 0) {
@@ -473,7 +527,7 @@ public class ChameleonIO {
         byte[] sendBuf = deviceConfigCmd.getBytes(StandardCharsets.UTF_8);
         ChameleonSerialIOInterface serialPort = ChameleonSettings.getActiveSerialIOPort();
         if(serialPort == null) {
-            Log.i(TAG, "Serial port is null while executing command");
+            AndroidLog.i(TAG, "Serial port is null while executing command");
             return null;
         }
         serialPort.sendDataBuffer(sendBuf);
@@ -495,11 +549,11 @@ public class ChameleonIO {
         ChameleonIO.LASTCMD = query;
         ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
         if(serialIOPort == null) {
-            Log.i(TAG, "Serial port is null");
+            AndroidLog.i(TAG, "Serial port is null");
             return ChameleonIO.DEVICE_RESPONSE[0];
         }
         else if(!serialIOPort.tryAcquireSerialPort(LOCK_TIMEOUT)) {
-            Log.i(TAG, "Unable to acquire serial port");
+            AndroidLog.i(TAG, "Unable to acquire serial port");
             return ChameleonIO.DEVICE_RESPONSE[0];
         }
         ChameleonIO.WAITING_FOR_RESPONSE = true;
@@ -526,7 +580,7 @@ public class ChameleonIO {
                 deviceRespCode = Integer.valueOf(ChameleonIO.DEVICE_RESPONSE_CODE);
             }
         } catch(NumberFormatException nfe) {
-            nfe.printStackTrace();
+            AndroidLog.printStackTrace(nfe);
             serialIOPort.releaseSerialPortLock();
             return ChameleonIO.DEVICE_RESPONSE_CODE;
         }

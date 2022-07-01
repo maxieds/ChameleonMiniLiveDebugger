@@ -53,6 +53,8 @@ public class AndroidSettingsStorage {
     public static final String LOGGING_CONFIG_ENABLE_LIVE_STATUS_UPDATES = "loggingConfigEnableLiveStatusUpdates";
     public static final String LOGGING_CONFIG_LOGMODE_NOTIFY_CODECRX_EVENTS = "loggingConfigLogModeNotifyCodecRXEvents";
     public static final String LOGGING_CONFIG_LOGMODE_NOTIFY_RDRFLDDETECT_EVENTS = "loggingConfigLogModeNotifyRdrFldDetectEvents";
+    public static final String LOGGING_CONFIG_WRITE_LOGDATA_TO_FILE = "loggingConfigWriteLogDataToFile";
+    public static final String LOGGING_CONFIG_LOGDATA_LEVEL_THRESHOLD = "loggingConfigLogDataLevelThreshold";
     public static final String LOGGING_CONFIG_LOGMODE_NOTIFY_STATE = "loggingConfigLogModeNotifyState";
     public static final String SCRIPTING_CONFIG_SAVE_CONSOLE_OUTPUT_FILE = "scriptingConfigSaveConsoleOutputFile";
     public static final String SCRIPTING_CONFIG_APPEND_CONSOLE_OUTPUT_FILE = "scriptingConfigAppendConsoleOutputFile";
@@ -112,6 +114,8 @@ public class AndroidSettingsStorage {
             updateValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_CODECRX_EVENTS);
             updateValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_RDRFLDDETECT_EVENTS);
             updateValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_STATE);
+            updateValueByKey(profileID, LOGGING_CONFIG_WRITE_LOGDATA_TO_FILE);
+            updateValueByKey(profileID, LOGGING_CONFIG_LOGDATA_LEVEL_THRESHOLD);
             return true;
         }
         else if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.SCRIPTING_CONFIG) {
@@ -170,6 +174,8 @@ public class AndroidSettingsStorage {
                 ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_CODECRX_STATUS_INDICATOR = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_CODECRX_EVENTS));
                 ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_RDRFLDDETECT_STATUS_INDICATOR = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_RDRFLDDETECT_EVENTS));
                 ChameleonLogUtils.LOGMODE_NOTIFY_STATE = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_STATE));
+                AndroidLog.WRITE_LOGDATA_TO_FILE = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_WRITE_LOGDATA_TO_FILE));
+                AndroidLog.LOGDATA_LEVEL_THRESHOLD = AndroidLog.LogLevel.getLogLevelFromOrdinal(Integer.parseInt(getStringValueByKey(profileID, LOGGING_CONFIG_LOGDATA_LEVEL_THRESHOLD)));
                 return true;
             }
             else if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.SCRIPTING_CONFIG) {
@@ -199,7 +205,7 @@ public class AndroidSettingsStorage {
                 return true;
             }
         } catch(Exception ex) {
-            ex.printStackTrace();
+            AndroidLog.printStackTrace(ex);
             return false;
         }
         return false;
@@ -277,6 +283,12 @@ public class AndroidSettingsStorage {
         }
         else if(prefsKey.equals(LOGGING_CONFIG_LOGMODE_NOTIFY_STATE)) {
             spEditor.putBoolean(prefsKey, ChameleonLogUtils.LOGMODE_NOTIFY_STATE);
+        }
+        else if(prefsKey.equals(LOGGING_CONFIG_WRITE_LOGDATA_TO_FILE)) {
+            spEditor.putBoolean(prefsKey, AndroidLog.WRITE_LOGDATA_TO_FILE);
+        }
+        else if(prefsKey.equals(LOGGING_CONFIG_LOGDATA_LEVEL_THRESHOLD)) {
+            spEditor.putInt(prefsKey, AndroidLog.LOGDATA_LEVEL_THRESHOLD.ordinal());
         }
         else if(prefsKey.equals(SCRIPTING_CONFIG_SAVE_CONSOLE_OUTPUT_FILE)) {
             spEditor.putBoolean(prefsKey, ScriptingConfig.SAVE_CONSOLE_OUTPUT_FILE);
@@ -415,6 +427,12 @@ public class AndroidSettingsStorage {
         }
         else if(prefsKey.equals(LOGGING_CONFIG_LOGMODE_NOTIFY_STATE)) {
             return sharedPrefs.getBoolean(prefsKey, ChameleonLogUtils.LOGMODE_NOTIFY_STATE) ? "true" : "false";
+        }
+        else if(prefsKey.equals(LOGGING_CONFIG_WRITE_LOGDATA_TO_FILE)) {
+            return sharedPrefs.getBoolean(prefsKey, AndroidLog.WRITE_LOGDATA_TO_FILE) ? "true" : "false";
+        }
+        else if(prefsKey.equals(LOGGING_CONFIG_LOGDATA_LEVEL_THRESHOLD)) {
+            return String.format(Locale.getDefault(), "%d", sharedPrefs.getInt(prefsKey, AndroidLog.LOGDATA_LEVEL_THRESHOLD.ordinal()));
         }
         else if(prefsKey.equals(SCRIPTING_CONFIG_SAVE_CONSOLE_OUTPUT_FILE)) {
             return sharedPrefs.getBoolean(prefsKey, ScriptingConfig.SAVE_CONSOLE_OUTPUT_FILE) ? "true" : "false";

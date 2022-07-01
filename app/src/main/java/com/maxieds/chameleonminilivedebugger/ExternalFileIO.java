@@ -81,7 +81,7 @@ public class ExternalFileIO {
         } catch(Exception ioe) {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
             LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
-            ioe.printStackTrace();
+            AndroidLog.printStackTrace(ioe);
             return;
         }
         DownloadManager downloadManager = (DownloadManager) LiveLoggerActivity.getLiveLoggerInstance().defaultContext.getSystemService(DOWNLOAD_SERVICE);
@@ -94,7 +94,7 @@ public class ExternalFileIO {
             emailFileChecked = ((RadioButton) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.radio_save_email)).isChecked();
             shareFileChecked = ((RadioButton) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.radio_save_share)).isChecked();
         } catch(NullPointerException npe) {
-            npe.printStackTrace();
+            AndroidLog.printStackTrace(npe);
         }
         if(emailFileChecked || shareFileChecked) {
             Intent sendIntent = new Intent(Intent.ACTION_SEND);
@@ -148,7 +148,7 @@ public class ExternalFileIO {
                 List<String> selectedFilePathsList = FileChooserBuilder.handleActivityResult(activity, chooserRequestCodeAction, resultCode, data);
                 selectedChooserPath = String.format(Locale.getDefault(), AndroidFileChooser.getFileNotifySelectExceptionFormat(), selectedFilePathsList.get(0));
             } catch(Exception ex) {
-                ex.printStackTrace();
+                AndroidLog.printStackTrace(ex);
             }
             throw new RuntimeException(selectedChooserPath);
         }

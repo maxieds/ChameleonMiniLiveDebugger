@@ -19,6 +19,7 @@ package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
 import android.util.Log;
 
+import com.maxieds.chameleonminilivedebugger.AndroidLog;
 import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
@@ -174,7 +175,7 @@ public class ScriptingTypes {
                     return true;
                 }
             } catch(NumberFormatException nfe) {
-                nfe.printStackTrace();
+                AndroidLog.printStackTrace(nfe);
                 return false;
             }
             return false;
@@ -558,7 +559,7 @@ public class ScriptingTypes {
                 else {
                     throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.ArithmeticErrorException);
                 }
-                Log.i(TAG, "BINARY-OP: New Value " + getValueAsString());
+                AndroidLog.i(TAG, "BINARY-OP: New Value " + getValueAsString());
                 return this;
             }
             else if(opType == Operation.BINOP_PLUS) {

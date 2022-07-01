@@ -144,18 +144,18 @@ public class AndroidFileChooser {
                 String replaceRegex = String.format(Locale.getDefault(), getFileNotifySelectExceptionFormat(), "");
                 String[] excptMsgComponents = excptMsg.split(replaceRegex);
                 if(excptMsgComponents.length != 2) {
-                    Log.i(TAG, "USER SELECTED <__NO__> PATH! ... " + ie.getMessage());
+                    AndroidLog.i(TAG, "USER SELECTED <__NO__> PATH! ... " + ie.getMessage());
                     return NULL_FILE_PATH_LABEL;
                 }
                 excptMsg = excptMsgComponents[1];
                 if(excptMsg.length() == 0) {
-                    Log.i(TAG, "USER SELECTED <__EMPTY__> PATH! ... " + ie.getMessage());
+                    AndroidLog.i(TAG, "USER SELECTED <__EMPTY__> PATH! ... " + ie.getMessage());
                     return NULL_FILE_PATH_LABEL;
                 }
                 String fileChooserBaseFolder = getInitialFileChooserBaseFolder();
                 excptMsg = excptMsg.replaceFirst(fileChooserBaseFolder, STORAGE_HOME_PREFIX_SUBST);
                 excptMsg = excptMsg.replaceAll(String.format(Locale.getDefault(), "[%s]+", PATH_SEP), "/");
-                Log.i(TAG, "USER SELECTED PATH: \"" + excptMsg + "\" ...");
+                AndroidLog.i(TAG, "USER SELECTED PATH: \"" + excptMsg + "\" ...");
                 return excptMsg;
             }
         }
@@ -180,10 +180,10 @@ public class AndroidFileChooser {
                 return false;
             }
             String fileMimeType = docRef.getDocumentType();
-            Log.i(TAG, "MIME TYPE: " + fileMimeType);
+            AndroidLog.i(TAG, "MIME TYPE: " + fileMimeType);
             return fileMimeType.toLowerCase(Locale.getDefault()).startsWith("text");
         } catch(Exception ex) {
-            ex.printStackTrace();
+            AndroidLog.printStackTrace(ex);
             return false;
         }
     }
@@ -202,7 +202,7 @@ public class AndroidFileChooser {
             }
             return docRef.readFileContentsAsString().toString();
         } catch(Exception ex) {
-            ex.printStackTrace();
+            AndroidLog.printStackTrace(ex);
             return null;
         }
     }

@@ -146,7 +146,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
-                Log.i(TAG, "btBondReceiver: intent action: " + action);
+                AndroidLog.i(TAG, "btBondReceiver: intent action: " + action);
                 if (action == null || !action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED)) {
                     return;
                 }
@@ -155,7 +155,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     return;
                 }
                 else {
-                    Log.i(TAG, "btBondReceiver: calling notifyBluetoothSerialInterfaceDeviceConnected");
+                    AndroidLog.i(TAG, "btBondReceiver: calling notifyBluetoothSerialInterfaceDeviceConnected");
                     notifyBluetoothSerialInterfaceDeviceConnected(btIntentDevice);
                 }
             }
@@ -197,7 +197,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
             @Override
             public void onServicesDiscovered(BluetoothGatt gatt, int status) {
                 List<BluetoothGattService> services = gatt.getServices();
-                Log.i(TAG,"onServicesDiscovered" + services.toString());
+                AndroidLog.i(TAG,"onServicesDiscovered" + services.toString());
                 gatt.readCharacteristic(services.get(1).getCharacteristics().get(0));
                 if(status == BluetoothGatt.GATT_SUCCESS) {
                     configureNotifyOnSerialBluetoothService(gatt, chameleonDeviceBLERecvChar);
@@ -210,13 +210,13 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                 if(!activeLocalCharUUID.equals(UUID.fromString(CHAMELEON_REVG_CTRL_CHAR_UUID))) {
                     configureNotifyOnSerialBluetoothService(gatt, chameleonDeviceBLERecvChar);
                 }
-                Log.i(TAG, "onDescriptorWrite: [UUID] " + activeLocalCharUUID.toString());
+                AndroidLog.i(TAG, "onDescriptorWrite: [UUID] " + activeLocalCharUUID.toString());
             }
 
             @Override
             public void onCharacteristicChanged(BluetoothGatt gatt, @NonNull BluetoothGattCharacteristic characteristic) {
                 gatt.readCharacteristic(characteristic);
-                Log.d(TAG, "read characteristic: " + characteristic.getValue().toString());
+                AndroidLog.d(TAG, "read characteristic: " + characteristic.getValue().toString());
                 byte[] charData = characteristic.getValue();
                 if (charData == null) {
                     return;
@@ -225,7 +225,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     /* Unpack bytes ?!? */
                     notifyBluetoothSerialInterfaceDataRead(charData);
                 } catch (Exception dinvEx) {
-                    dinvEx.printStackTrace();
+                    AndroidLog.printStackTrace(dinvEx);
                 }
             }
 
@@ -235,8 +235,8 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     byte[] charData = characteristic.getValue();
                     notifyBluetoothSerialInterfaceDataRead(charData);
                 }
-                Log.i(TAG,"onCharacteristicRead" + characteristic.toString());
-                Log.d(TAG, "onCharRead status: " + status);
+                AndroidLog.i(TAG,"onCharacteristicRead" + characteristic.toString());
+                AndroidLog.d(TAG, "onCharRead status: " + status);
                 gatt.disconnect();
             }
 
@@ -276,7 +276,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Log.i(TAG, "BLE device with name " + scanResultData.getDevice().getName() + "scanned");
+                            AndroidLog.i(TAG, "BLE device with name " + scanResultData.getDevice().getName() + "scanned");
                         }
                     });
                 }
@@ -369,7 +369,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         btDevice.connectGatt(btSerialContext, false, this);
         btDevice.createBond();
         String btDeviceName = btDevice.getName();
-        Log.i(TAG, "BT Device Name: " + btDeviceName);
+        AndroidLog.i(TAG, "BT Device Name: " + btDeviceName);
         if(btDeviceName != null && (btDeviceName.equals(CHAMELEON_REVG_NAME) || btDeviceName.equals(CHAMELEON_REVG_NAME_ALTERNATE))) {
             chameleonDeviceBLEService = CHAMELEON_REVG_SERVICE_UUID;
             chameleonDeviceBLESendChar = CHAMELEON_REVG_SEND_CHAR_UUID;
@@ -397,7 +397,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
     }
 
     private void configureNotifyOnSerialBluetoothService(BluetoothGatt btLocalGatt, String gattUUID) {
-        Log.i(TAG, "configureNotifyOnSerialBluetoothService");
+        AndroidLog.i(TAG, "configureNotifyOnSerialBluetoothService");
         BluetoothGattService btgService = btLocalGatt.getService(UUID.fromString(chameleonDeviceBLEService));
         if (btgService == null) {
             return;
@@ -421,12 +421,12 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
     }
 
     public int write(byte[] dataBuf) throws IOException {
-        Log.i(TAG, "write: " + Utils.bytes2Hex(dataBuf));
+        AndroidLog.i(TAG, "write: " + Utils.bytes2Hex(dataBuf));
         if (dataBuf.length > BLUETOOTH_LOCAL_MTU_THRESHOLD) {
             return -1;
         }
         if(btGatt == null) {
-            Log.i(TAG, "write: btGatt == null!");
+            AndroidLog.i(TAG, "write: btGatt == null!");
             disconnectDevice();
             return -1;
         }

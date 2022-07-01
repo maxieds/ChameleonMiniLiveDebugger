@@ -64,11 +64,11 @@ public class ChameleonSettings {
         }
         for(int si = 0; si < serialIOPorts.length; si++) {
             if(si == USBIO_IFACE_INDEX && allowWiredUSB) {
-                Log.i(TAG, "Started scanning for SerialUSB devices ... ");
+                AndroidLog.i(TAG, "Started scanning for SerialUSB devices ... ");
                 serialIOPorts[si].startScanningDevices();
             }
             else if(si == BTIO_IFACE_INDEX && allowBluetooth && ((BluetoothSerialInterface) serialIOPorts[si]).isBluetoothEnabled()) {
-                Log.i(TAG, "Started scanning for SerialBT devices ... ");
+                AndroidLog.i(TAG, "Started scanning for SerialBT devices ... ");
                 serialIOPorts[si].startScanningDevices();
             }
         }

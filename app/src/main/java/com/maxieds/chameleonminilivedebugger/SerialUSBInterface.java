@@ -73,8 +73,8 @@ public class SerialUSBInterface extends SerialIOReceiver {
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED);
         notifyIntent.putExtra("DATA", serialData);
         notifyContext.sendBroadcast(notifyIntent);
-        Log.i(TAG, "SERIALIO_DATA_RECEIVED: (HEX) " + Utils.bytes2Hex(serialData));
-        Log.i(TAG, "SERIALIO_DATA_RECEIVED: (TXT) " + Utils.bytes2Ascii(serialData));
+        AndroidLog.i(TAG, "SERIALIO_DATA_RECEIVED: (HEX) " + Utils.bytes2Hex(serialData));
+        AndroidLog.i(TAG, "SERIALIO_DATA_RECEIVED: (TXT) " + Utils.bytes2Ascii(serialData));
         return true;
     }
 
@@ -85,8 +85,8 @@ public class SerialUSBInterface extends SerialIOReceiver {
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED);
         notifyIntent.putExtra("DATA", serialData);
         notifyContext.sendBroadcast(notifyIntent);
-        Log.i(TAG, "SERIALIO_LOGDATA_RECEIVED: (HEX) " + Utils.bytes2Hex(serialData));
-        Log.i(TAG, "SERIALIO_LOGDATA_RECEIVED: (TXT) " + Utils.bytes2Ascii(serialData));
+        AndroidLog.i(TAG, "SERIALIO_LOGDATA_RECEIVED: (HEX) " + Utils.bytes2Hex(serialData));
+        AndroidLog.i(TAG, "SERIALIO_LOGDATA_RECEIVED: (TXT) " + Utils.bytes2Ascii(serialData));
         return true;
     }
 
@@ -231,8 +231,10 @@ public class SerialUSBInterface extends SerialIOReceiver {
     }
 
     public int shutdownSerial() {
-        if(serialPort != null)
+        ChameleonIO.DeviceStatusSettings.stopPostingStats();
+        if(serialPort != null) {
             serialPort.close();
+        }
         ChameleonIO.PAUSED = true;
         ExportTools.EOT = true;
         ExportTools.transmissionErrorOccurred = true;
@@ -275,7 +277,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
             serialPortLock.acquire();
             return true;
         } catch(Exception inte) {
-            inte.printStackTrace();
+            AndroidLog.printStackTrace(inte);
             serialPortLock.release();
             return false;
         }
@@ -286,7 +288,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
             serialPortLock.acquireUninterruptibly();
             return true;
         } catch(Exception inte) {
-            inte.printStackTrace();
+            AndroidLog.printStackTrace(inte);
             serialPortLock.release();
             return false;
         }
@@ -298,7 +300,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
             status = serialPortLock.tryAcquire(timeout, java.util.concurrent.TimeUnit.MILLISECONDS);
             return status;
         } catch(Exception inte) {
-            inte.printStackTrace();
+            AndroidLog.printStackTrace(inte);
             serialPortLock.release();
             return false;
         }
@@ -315,8 +317,8 @@ public class SerialUSBInterface extends SerialIOReceiver {
         } else if(!serialConfigured() || serialPort == null) {
             return STATUS_ERROR;
         }
-        Log.d(TAG, "USBReaderCallback Send Data: (HEX) " + Utils.bytes2Hex(dataWriteBuffer));
-        Log.d(TAG, "USBReaderCallback Send Data: (TXT) " + Utils.bytes2Ascii(dataWriteBuffer));
+        AndroidLog.d(TAG, "USBReaderCallback Send Data: (HEX) " + Utils.bytes2Hex(dataWriteBuffer));
+        AndroidLog.d(TAG, "USBReaderCallback Send Data: (TXT) " + Utils.bytes2Ascii(dataWriteBuffer));
         serialPort.write(dataWriteBuffer);
         return STATUS_TRUE;
     }
@@ -335,9 +337,9 @@ public class SerialUSBInterface extends SerialIOReceiver {
                     if (!intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                         UsbDevice usbDev = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                         if(usbDev != null) {
-                            Log.d(TAG, "Permission denied for USB device " + usbDev);
+                            AndroidLog.d(TAG, "Permission denied for USB device " + usbDev);
                         } else {
-                            Log.d(TAG, "Permission denied for NULL USB device ");
+                            AndroidLog.d(TAG, "Permission denied for NULL USB device ");
                         }
                     }
                 }

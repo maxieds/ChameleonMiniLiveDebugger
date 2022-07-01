@@ -145,7 +145,7 @@ public class ChameleonConfigSlot {
             isLocked = ChameleonIO.getSettingFromDevice("READONLY?") == "1" ? true : false;
             fieldSetting = ChameleonIO.getSettingFromDevice("FIELD?") == "1" ? true : false;
         } catch(NumberFormatException nfe) {
-            nfe.printStackTrace();
+            AndroidLog.printStackTrace(nfe);
             return false;
         }
         return true;
@@ -164,7 +164,7 @@ public class ChameleonConfigSlot {
             ChameleonIO.getSettingFromDevice(String.format(Locale.getDefault(), "SETTING=%d", nextSlot));
             readParametersFromChameleonSlot();
         } catch(Exception exe) {
-            exe.printStackTrace();
+            AndroidLog.printStackTrace(exe);
             return false;
         }
         return true;
@@ -237,7 +237,7 @@ public class ChameleonConfigSlot {
                 public void afterTextChanged(Editable editStr) {}
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    Log.i(TAG, "Changing Slot #" + slotIndex + " name to " + s);
+                    AndroidLog.i(TAG, "Changing Slot #" + slotIndex + " name to " + s);
                     CHAMELEON_SLOT_NAMES[slotIndex - 1] = s.toString();
                     slotNickname = s.toString();
                     AndroidSettingsStorage.updateValueByKey(ChameleonSettings.chameleonDeviceSerialNumber, AndroidSettingsStorage.CHAMELEON_SLOT_NAMES);
@@ -306,7 +306,7 @@ public class ChameleonConfigSlot {
             isEnabled = false;
             return true;
         } catch(NullPointerException npe) {
-            npe.printStackTrace();
+            AndroidLog.printStackTrace(npe);
             return false;
         }
     }

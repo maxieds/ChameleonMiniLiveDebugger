@@ -17,11 +17,17 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import static android.content.Context.DOWNLOAD_SERVICE;
+
+import android.app.DownloadManager;
+import android.os.Environment;
 import android.util.Log;
+import android.widget.SpinnerAdapter;
 
 import androidx.annotation.NonNull;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -35,23 +41,6 @@ import java.util.Map;
 public class AndroidLog {
 
     private static final String TAG = AndroidLog.class.getSimpleName();
-
-    /*
-     * TODO: Add a settings pref and a checkbox in the settings tab to enable/disable logging to file
-     *       (and same for the level threshold)
-     * TODO: Move all instances of excpt.printStackTrace() to use this new format
-     * TODO: Ditto for Log(TAG, msg) calls in the CMLD source
-     */
-
-    /*
-     * TODO: Update crash handler activity to optionally email the most recent logs
-     * TODO: Config tab option to download these logs to the phone
-     * TODO: Method to email the local log file so can post it with the crash handler issues on GitHub
-     *       (or download to phone -- if the file based logging is enabled, point user to the file name
-     *        with a toast message, and in the GH issue submit innstructions)
-     */
-
-    /* TODO: Make sure to open and close these files on crash handler, app exit / restart, and app start / onCreate() */
 
     public enum LogLevel {
         VERBOSE,
@@ -71,20 +60,32 @@ public class AndroidLog {
         private static final int LOGLEVEL_MIN_ORDINAL = 0;
         private static final int LOGLEVEL_MAX_ORDINAL = 4;
 
-        public LogLevel getLogLevelFromOrdinal(int ordValue) {
+        public static LogLevel getLogLevelFromOrdinal(int ordValue) {
             if(ordValue < LOGLEVEL_MIN_ORDINAL || ordValue > LOGLEVEL_MAX_ORDINAL) {
                 return  LogLevel.VERBOSE;
             }
             return ENUM_INTEGER_VALUE_TO_LOGLEVEL_MAP.get(Integer.valueOf(ordValue));
         }
 
+        public static final Map<String, LogLevel> ENUM_NAMED_VALUE_TO_LOGLEVEL_MAP = new HashMap<>();
+        static {
+            for (LogLevel logLevelSpec : values()) {
+                ENUM_NAMED_VALUE_TO_LOGLEVEL_MAP.put(logLevelSpec.name(), logLevelSpec);
+            }
+        }
+
+        public static LogLevel getLogLevelFromName(@NonNull String logLevelName) {
+            return ENUM_NAMED_VALUE_TO_LOGLEVEL_MAP.get(logLevelName);
+        }
+
     }
 
-    public static boolean WRITE_LOGDATA_TO_FILE = true;
-    public static LogLevel LOGDATA_FILE_LEVEL_THRESHOLD = LogLevel.WARNING;
-
     public static final String LOGDATA_FILE_LOCAL_DIRPATH = "logs";
-    public static final String LOGDATA_FILE_FORMAT = "logdata-%Y-%m-%d";
+    public static final String LOGDATA_FILE_FORMAT = "logdata-%Y-%m-%d.out";
+    public static final LogLevel DEFAULT_LOGDATA_LEVEL = LogLevel.WARNING;
+
+    public static boolean WRITE_LOGDATA_TO_FILE = true;
+    public static LogLevel LOGDATA_LEVEL_THRESHOLD = DEFAULT_LOGDATA_LEVEL;
 
     private static File logDataOutputFileHandle = null;
     private static PrintStream logDataOutputStreamHandle = null;
@@ -93,7 +94,7 @@ public class AndroidLog {
         String logDataOutFilePath = Utils.getTimestamp(LOGDATA_FILE_FORMAT);
         boolean logOutputFolderExists = true;
         String localAppStoragePath = LiveLoggerActivity.getLiveLoggerInstance().getFilesDir().getAbsolutePath();
-        String logDataOutputFilePath = localAppStoragePath + "/" + LOGDATA_FILE_LOCAL_DIRPATH;
+        String logDataOutputFilePath = localAppStoragePath + "//" + LOGDATA_FILE_LOCAL_DIRPATH;
         File logDataOutputFolder = new File(logDataOutputFilePath);
         if (!logDataOutputFolder.exists()) {
             logOutputFolderExists = logDataOutputFolder.mkdir();
@@ -137,14 +138,66 @@ public class AndroidLog {
         return logDataOutputStreamHandle;
     }
 
-    private static void closeLogDataOutputFile() {
-        if(!WRITE_LOGDATA_TO_FILE) {
-            return;
-        } else if(logDataOutputStreamHandle != null) {
+    public static void closeLogDataOutputFile() {
+        if(logDataOutputStreamHandle != null) {
             logDataOutputStreamHandle.close();
         }
-        logDataOutputFileHandle = null;
         logDataOutputStreamHandle = null;
+    }
+
+    public static String downloadCurrentLogFile(boolean updateGUIWithStatus) {
+        if (logDataOutputFileHandle == null) {
+            if (updateGUIWithStatus) {
+                Utils.displayToastMessageShort("Log file download failed.");
+                LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            }
+            return "";
+        } else {
+            closeLogDataOutputFile();
+        }
+        String downloadsFolderBase = LiveLoggerActivity.getLiveLoggerInstance().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+        downloadsFolderBase = downloadsFolderBase.replace("/", "//");
+        String downloadsFolderPath = downloadsFolderBase + "//Download//";
+        File downloadsFolder = new File(downloadsFolderPath);
+        boolean docsFolderExists = true;
+        if (!downloadsFolder.exists()) {
+            docsFolderExists = downloadsFolder.mkdir();
+            if (!docsFolderExists) {
+                if (updateGUIWithStatus) {
+                    Utils.displayToastMessageShort("Log file download failed.");
+                    LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+                }
+                return "";
+            }
+        }
+        String localLogFilePath = logDataOutputFileHandle.getAbsolutePath();
+        String dldLogFileName = logDataOutputFileHandle.getName();
+        File dldOutFile = new File(downloadsFolder.getAbsolutePath(), dldLogFileName);
+        if (!dldOutFile.exists()) {
+            if (updateGUIWithStatus) {
+                Utils.displayToastMessageShort("Log file download failed.");
+                LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            }
+            return "";
+        }
+        try {
+            Utils.copyFile(localLogFilePath, dldOutFile.getAbsolutePath());
+        } catch(Exception ioe) {
+            ioe.printStackTrace();
+            if (updateGUIWithStatus) {
+                Utils.displayToastMessageShort("Log file download failed.");
+                LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            }
+            return "";
+        }
+        String dldLogFileMimeType = "text/*";
+        DownloadManager downloadManager = (DownloadManager) LiveLoggerActivity.defaultContext.getSystemService(DOWNLOAD_SERVICE);
+        downloadManager.addCompletedDownload(dldOutFile.getName(), dldOutFile.getName(), true, dldLogFileMimeType,
+                                             dldOutFile.getAbsolutePath(), dldOutFile.length(),true);
+        if (updateGUIWithStatus) {
+            LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
+        }
+        return dldOutFile.getAbsolutePath();
     }
 
     private static final int LINE_WRAP_CHARACTERS = 80;
@@ -167,7 +220,7 @@ public class AndroidLog {
     private static final String LOGDATA_ITEM_DELIMITER = "   ---- ";
 
     private static void logAtLevel(LogLevel level, String tag, String msg) {
-        if(!WRITE_LOGDATA_TO_FILE || LOGDATA_FILE_LEVEL_THRESHOLD.ordinal() < level.ordinal()) {
+        if(!WRITE_LOGDATA_TO_FILE || LOGDATA_LEVEL_THRESHOLD.ordinal() < level.ordinal()) {
             return;
         }
         PrintStream logDataOutStream = openLogDataOutputFile();
@@ -219,7 +272,6 @@ public class AndroidLog {
         PrintStream outStream = openLogDataOutputFile();
         if(outStream != null) {
             String excptTimeStamp = Utils.getTimestamp();
-            StringBuilder logDataBuilder = new StringBuilder();
             String excptMsgPrefix = String.format(Locale.getDefault(), "%s EXCEPTION STACK TRACE @ %s\n\n", LOGDATA_START_ENTRY_DELIMITER, excptTimeStamp);
             outStream.print(excptMsgPrefix);
             outStream.flush();

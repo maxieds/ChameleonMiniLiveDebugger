@@ -36,7 +36,7 @@ public interface ActivityPermissions {
                 return PERMS_REQUEST_QUEUE_LOCK.tryAcquire(waitTimeout, TimeUnit.MILLISECONDS);
             }
         } catch(Exception excpt) {
-            excpt.printStackTrace();
+            AndroidLog.printStackTrace(excpt);
         }
         return false;
     }
@@ -63,7 +63,7 @@ public interface ActivityPermissions {
         try {
             return Integer.toString(requestCode, REQUEST_QUEUE_KEY_RADIX);
         } catch(Exception excpt) {
-            excpt.printStackTrace();
+            AndroidLog.printStackTrace(excpt);
         }
         return "";
     }
@@ -72,7 +72,7 @@ public interface ActivityPermissions {
         try {
             return (int) Integer.parseInt(key, REQUEST_QUEUE_KEY_RADIX);
         } catch(Exception excpt) {
-            excpt.printStackTrace();
+            AndroidLog.printStackTrace(excpt);
         }
         return 0;
     }

@@ -38,6 +38,129 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:background="?colorAccentLog"
             android:padding="3dp">
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/log24"
+                android:drawablePadding="5dp"
+                android:singleLine="true"
+                android:text="Logging to File Settings: "
+                android:textAllCaps="true"
+                android:textStyle="bold|italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="@android:color/transparent"
+                android:columnCount="2"
+                android:padding="2dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_gravity="center_vertical"
+                    android:background="@android:color/transparent"
+                    android:drawableLeft="@drawable/log24"
+                    android:drawablePadding="5dp"
+                    android:singleLine="true"
+                    android:text="Enable logging to file: "
+                    android:textAllCaps="false"
+                    android:textStyle="bold|italic" />
+
+                <CheckBox
+                    android:theme="@style/CheckBoxTheme"
+                    android:id="@+id/settingsEnableLoggingToFile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="42dp"
+                    android:paddingRight="0dp"
+                    android:layout_gravity="left|center_vertical"
+                    android:text=""
+                    android:checked="true"
+                    android:enabled="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_gravity="center_vertical"
+                    android:background="@android:color/transparent"
+                    android:drawableLeft="@drawable/log24"
+                    android:drawablePadding="5dp"
+                    android:singleLine="true"
+                    android:text="Logging level: "
+                    android:textAllCaps="false"
+                    android:textStyle="bold|italic" />
+
+                <Spinner
+                    style="@style/SpinnerTextSmall"
+                    android:id="@+id/LogToFileLevelThresholdsSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:paddingLeft="0dp"
+                    android:paddingRight="0dp"
+                    android:layout_gravity="left|center_vertical"
+                    android:entries="@array/LoggingLevelThresholdSettings"
+                    android:popupBackground="?colorAccentHighlight"
+                    android:spinnerMode="dropdown" />
+
+                <Button
+                    android:id="@+id/loggingToFileDownloadCurrentLogFileBtn"
+                    style="@style/GridButtonsNoWidth"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawableLeft="@drawable/download_file_icon24"
+                    android:drawablePadding="5dp"
+                    android:onClick="actionButtonDownloadCurrentLogFile"
+                    android:text="Download current log" />
+
+                <Button
+                    android:id="@+id/loggingToFileClearAllLogsBtn"
+                    style="@style/GridButtonsNoWidth"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawableLeft="@drawable/trash_can_icon24"
+                    android:drawablePadding="5dp"
+                    android:onClick="actionButtonClearAllLogFiles"
+                    android:text="Clear all log files" />
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?colorPrimaryDarkLog"
+                android:drawableLeft="@drawable/log24"
+                android:drawablePadding="5dp"
+                android:singleLine="true"
+                android:text="Device connection settings: "
+                android:textAllCaps="true"
+                android:textStyle="bold|italic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
             <GridLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"

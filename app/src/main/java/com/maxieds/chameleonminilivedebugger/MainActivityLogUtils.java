@@ -367,10 +367,10 @@ public class MainActivityLogUtils {
             searchLogPayload = ((CheckBox) llActivity.findViewById(R.id.entrySearchRawLogData)).isChecked();
             searchLogHeaders = ((CheckBox) llActivity.findViewById(R.id.entrySearchLogHeaders)).isChecked();
         } catch(NullPointerException npe) {
-            npe.printStackTrace();
+            AndroidLog.printStackTrace(npe);
             return;
         }
-        Log.i(TAG, "Searching for: " + searchString);
+        AndroidLog.i(TAG, "Searching for: " + searchString);
         int matchCount = 0;
         for(int vi = 0; vi < logDataEntries.size(); vi++) {
             LogEntryBase nextLogEntry = logDataEntries.get(vi);
@@ -385,7 +385,7 @@ public class MainActivityLogUtils {
                 continue;
             }
             LogEntryUI nextLogEntryUI = (LogEntryUI) nextLogEntry;
-            Log.i(TAG, nextLogEntryUI.getPayloadDataString(selectedBytes));
+            AndroidLog.i(TAG, nextLogEntryUI.getPayloadDataString(selectedBytes));
             if (searchAPDU && nextLogEntryUI.getAPDUString().toLowerCase(Locale.getDefault()).contains(searchString) ||
                     searchLogHeaders && nextLogEntryUI.getLogCodeName().toLowerCase(Locale.getDefault()).contains(searchString) ||
                     searchLogPayload && nextLogEntryUI.getPayloadDataString(selectedBytes).toLowerCase(Locale.getDefault()).contains(searchString)) {
@@ -397,7 +397,7 @@ public class MainActivityLogUtils {
                     searchResult.setMinimumHeight(150);
                     LinearLayout.LayoutParams lllp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                     searchResultsContainer.addView(searchResult, lllp);
-                    Log.i(TAG, "Case II: Record " + vi + " matches");
+                    AndroidLog.i(TAG, "Case II: Record " + vi + " matches");
                     matchCount++;
                 }
             }

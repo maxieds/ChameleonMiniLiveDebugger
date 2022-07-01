@@ -52,6 +52,7 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
     public static final String INTENT_CHAMELEON_CONFIG = "Intent.CrashReport.ChameleonConfigType";
     public static final String INTENT_CHAMELEON_LOGMODE = "Intent.CrashReport.ChameleonLogMode";
     public static final String INTENT_CHAMELEON_TIMEOUT = "Intent.CrashReport.ChameleonCmdTimeout";
+    public static final String INTENT_LOG_FILE_DOWNLOAD_PATH = "Intent.CrashReport.LogFileDownloadPath";
 
     public static final String CRASH_REPORT_THEME_NAME = "Standard Green";
 
@@ -63,6 +64,8 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
     private String chameleonConfig;
     private String chameleonLogMode;
     private String chameleonTimeout;
+    private boolean haveLogFileDownload;
+    private String logFileDownloadPath;
 
     private Handler vibrateNotifyHandler;
     private Runnable vibrateNotifyRunnable;
@@ -85,6 +88,8 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
             chameleonConfig = getIntent().getStringExtra(INTENT_CHAMELEON_CONFIG);
             chameleonLogMode = getIntent().getStringExtra(INTENT_CHAMELEON_LOGMODE);
             chameleonTimeout = getIntent().getStringExtra(INTENT_CHAMELEON_TIMEOUT);
+            logFileDownloadPath = getIntent().getStringExtra(INTENT_LOG_FILE_DOWNLOAD_PATH);
+            haveLogFileDownload = logFileDownloadPath != null && logFileDownloadPath.length() > 0;
             configureLayoutDisplay();
         }
         else {
@@ -210,10 +215,16 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
             assembleIssueContentBldr.append("* *" + issueContentsData[sidx][0] + "*: " + issueContentsData[sidx][1] + "\n");
         }
         String issueBodyText = "@maxieds:\n\n" + "**Crash data summary:**\n" + assembleIssueContentBldr.toString();
+        if (haveLogFileDownload) {
+            issueBodyText += "\n**Log Data Associated With the Crash:**\n";
+            issueBodyText += "*Make sure to attach the log file located at ";
+            issueBodyText += logFileDownloadPath;
+            issueBodyText += " on your local Android phone.*\n\n";
+        }
         issueBodyText += "\n**Stack trace:**\n```java" + stackTrace + "\n```\n";
-        issueBodyText += "\n**Additional comments:**\n";
-        issueBodyText += "*NONE -- Please fill in more details about how you generated this error, ";
-        issueBodyText += "like what actions you took before this screen is displayed. Did the error happen on launch of ";
+        issueBodyText += "\n**Additional Information:**\n";
+        issueBodyText += "*PLEASE fill in more details about how you generated this error... ";
+        issueBodyText += "What actions you took before this screen is displayed. Did the error happen on launch of ";
         issueBodyText += "the application? Did you click a button or switch tabs? Any extra details about how the error ";
         issueBodyText += "happened are useful to fixing the issue in future releases.*\n\n";
         int invokingMsgLastItemPos = invokingExcptMsg.lastIndexOf(':');
@@ -228,7 +239,10 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
     private static final long ISSUE_INSTRUCTIONS_TOASTMSG_PAUSE_DURATION = 750; // milliseconds
 
     private boolean sendNewGitHubIssue() {
-        String toastInstMsgToUsers = "Please remember to fill in the extra details section before posting the new issue!";
+        String toastInstMsgToUsers = "Fill in the extra information section before posting the new issue!";
+        if (haveLogFileDownload) {
+            toastInstMsgToUsers += "\nMake sure to attach the local logging file.";
+        }
         Utils.displayToastMessage(this, toastInstMsgToUsers, Toast.LENGTH_LONG);
         SystemClock.sleep(ISSUE_INSTRUCTIONS_TOASTMSG_PAUSE_DURATION);
         String newIssueURL = getEncodedNewGitHubIssueURL();

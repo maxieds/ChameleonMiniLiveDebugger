@@ -41,7 +41,7 @@ public class ApduGUITools {
         try {
             ((LinearLayout) ((ScrollView) ApduUtils.tabView.findViewById(R.id.apduSearchResultsScrollView)).getChildAt(0)).removeAllViewsInLayout();
         } catch(NullPointerException npe) {
-            npe.printStackTrace();
+            AndroidLog.printStackTrace(npe);
             return;
         }
         ApduUtils.apduTransceiveCmd.clear();

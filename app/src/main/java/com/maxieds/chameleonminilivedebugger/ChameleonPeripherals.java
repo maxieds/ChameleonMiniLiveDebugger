@@ -68,7 +68,7 @@ public class ChameleonPeripherals {
                 @Override
                 public void run() {
                     for (int i = 0; i < spinnerIDs.length; i++) {
-                        Log.i(TAG, queryCmds[i]);
+                        AndroidLog.i(TAG, queryCmds[i]);
                         Spinner curSpinner = (Spinner) LiveLoggerActivity.getLiveLoggerInstance().findViewById(spinnerIDs[i]);
                         if (curSpinner == null) {
                             continue;

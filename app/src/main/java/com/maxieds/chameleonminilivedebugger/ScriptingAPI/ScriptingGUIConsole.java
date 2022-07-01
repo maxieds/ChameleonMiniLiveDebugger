@@ -32,6 +32,7 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
 
+import com.maxieds.chameleonminilivedebugger.AndroidLog;
 import com.maxieds.chameleonminilivedebugger.LiveLoggerActivity;
 import com.maxieds.chameleonminilivedebugger.R;
 import com.maxieds.chameleonminilivedebugger.TabFragment;
@@ -295,7 +296,7 @@ public class ScriptingGUIConsole {
                 tvCmdDataIsTmt.setText(String.format(Locale.getDefault(), "%s", scHashedArrayVar.getValueAt("isTimeout").getValueAsBoolean() ? "True" : "False"));
                 return newCmdRespMsgRecord;
             } catch(NullPointerException npe) {
-                npe.printStackTrace();
+                AndroidLog.printStackTrace(npe);
                 return null;
             }
 

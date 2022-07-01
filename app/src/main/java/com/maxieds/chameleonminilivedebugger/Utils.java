@@ -36,9 +36,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -91,8 +95,8 @@ public class Utils {
      */
     public static byte hexString2Byte(String byteStr) {
         if (byteStr.length() != 2) {
-            Log.e(TAG, "Invalid Byte String: " + byteStr);
-            //Crashlytics.log(Log.WARN, TAG, "Invalid Byte String Encountered: " + byteStr);
+            AndroidLog.e(TAG, "Invalid Byte String: " + byteStr);
+            //Crashlytics.log(AndroidLog.wARN, TAG, "Invalid Byte String Encountered: " + byteStr);
             return 0x00;
         }
         int lsb = Character.digit(byteStr.charAt(1), 16);
@@ -305,7 +309,7 @@ public class Utils {
             cmprByteCount += cmpr.deflate(new byte[1024]);
         }
         double entropyRatio = (double) cmprByteCount / inputBytes.length;
-        Log.i(TAG, String.format(Locale.getDefault(), "Compressed #%d bytes to #%d bytes ... Entropy ratio = %1.4g", inputBytes.length, cmprByteCount, entropyRatio));
+        AndroidLog.i(TAG, String.format(Locale.getDefault(), "Compressed #%d bytes to #%d bytes ... Entropy ratio = %1.4g", inputBytes.length, cmprByteCount, entropyRatio));
         return entropyRatio;
     }
 
@@ -330,7 +334,7 @@ public class Utils {
         pp += "=================================================\n";
         for (int page = 0; page < mfuBytes.length(); page += 8) {
             int pageNumber = page / 8;
-            Log.i(TAG, String.format("prettyPrintMFU: page#% 2d, page=% 2d", pageNumber, page));
+            AndroidLog.i(TAG, String.format("prettyPrintMFU: page#% 2d, page=% 2d", pageNumber, page));
             byte[] pageData = Utils.hexString2Bytes(mfuBytes.substring(page, Math.min(page + 8, mfuBytes.length()) - 1));
             if (pageData.length < 4) {
                 byte[] pageDataResized = new byte[4];
@@ -407,8 +411,8 @@ public class Utils {
             };
             return gpsAttrsArray;
         } catch(SecurityException secExcpt) {
-            Log.w(TAG, "Exception getting GPS coords: " + secExcpt.getMessage());
-            secExcpt.printStackTrace();
+            AndroidLog.w(TAG, "Exception getting GPS coords: " + secExcpt.getMessage());
+            AndroidLog.printStackTrace(secExcpt);
             return new String[] {
                     "LAT-NONE",
                     "LONG-NONE"
@@ -446,8 +450,19 @@ public class Utils {
             }
             toastDisplay.getView().setAlpha(0.75f);
         }
-        toastDisplay.show();
-        Log.i(TAG, "TOAST MSG DISPLAYED: " + toastMsg);
+        if(callingActivity != null) {
+            callingActivity.runOnUiThread(new Runnable() {
+                final Toast toastDisplayStatic = toastDisplay;
+
+                @Override
+                public void run() {
+                    toastDisplayStatic.show();
+                }
+            });
+            AndroidLog.i(TAG, "TOAST MSG DISPLAYED: " + toastMsg);
+        } else {
+            AndroidLog.i(TAG, "UNABLE TO DISPLAY TOAST MSG: " + toastMsg);
+        }
     }
 
     private static void displayToastMessage(String toastMsg, int msgDuration) {
@@ -517,8 +532,8 @@ public class Utils {
         try {
             return URLEncoder.encode(inputText, "utf-8");
         } catch(UnsupportedEncodingException uee) {
-            Log.e(TAG, "ERROR: Invalid encoding for the URL string \"" + inputText + "\"");
-            uee.printStackTrace();
+            AndroidLog.e(TAG, "ERROR: Invalid encoding for the URL string \"" + inputText + "\"");
+            AndroidLog.printStackTrace(uee);
         }
         return "";
     }
@@ -573,9 +588,35 @@ public class Utils {
         try {
             return Integer.toString(initObjHash, radix);
         } catch(Exception excpt) {
-            excpt.printStackTrace();
+            AndroidLog.printStackTrace(excpt);
         }
         return "";
+    }
+
+    private static final int FILE_XFER_BLOCK_SIZE = 1024;
+
+    public static boolean copyFile(@NonNull String srcFilePath, @NonNull String destFilePath) throws IOException {
+        File srcFile = new File(srcFilePath);
+        File destFile = new File(destFilePath);
+        InputStream srcFileStream = null;
+        OutputStream destFileStream = null;
+        try {
+            srcFileStream = new FileInputStream(srcFile);
+            try {
+                destFileStream = new FileOutputStream(destFile);
+                byte[] blockBuf = new byte[FILE_XFER_BLOCK_SIZE];
+                int blockBufLength = srcFileStream.read(blockBuf);
+                while (blockBufLength > 0) {
+                    destFileStream.write(blockBuf, 0, blockBufLength);
+                    blockBufLength = srcFileStream.read(blockBuf);
+                }
+            } finally {
+                destFileStream.close();
+            }
+        } finally {
+            srcFileStream.close();
+        }
+        return true;
     }
 
 }

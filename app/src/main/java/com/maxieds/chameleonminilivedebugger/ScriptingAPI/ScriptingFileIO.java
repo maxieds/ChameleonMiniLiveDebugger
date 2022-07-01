@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.maxieds.chameleonminilivedebugger.AndroidFileChooser;
+import com.maxieds.chameleonminilivedebugger.AndroidLog;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
 import java.io.File;
@@ -81,7 +82,7 @@ public class ScriptingFileIO {
             try {
                 Files.createDirectories(storageFile.toPath());
             } catch(IOException ioe) {
-                ioe.printStackTrace();
+                AndroidLog.printStackTrace(ioe);
                 return null;
             }
         }
@@ -90,7 +91,7 @@ public class ScriptingFileIO {
                 Files.createDirectories(storageFile.getParentFile().toPath());
                 storageFile.createNewFile();
             } catch(IOException ioe) {
-                ioe.printStackTrace();
+                AndroidLog.printStackTrace(ioe);
                 return null;
             }
         }
@@ -106,7 +107,7 @@ public class ScriptingFileIO {
                     Files.setPosixFilePermissions(storageFile.toPath(), PosixFilePermissions.fromString("rw-r-----"));
                 }
             } catch(IOException ioe) {
-                ioe.printStackTrace();
+                AndroidLog.printStackTrace(ioe);
                 return null;
             }
         }

@@ -19,6 +19,7 @@ package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
 import android.util.Log;
 
+import com.maxieds.chameleonminilivedebugger.AndroidLog;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingTypes.ScriptVariable;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScripting.ChameleonScriptInstance;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParser;
@@ -40,10 +41,10 @@ public class ChameleonScriptVisitorExtended extends ChameleonScriptParserBaseVis
     @Override
     public ScriptVariable visitWhile_loop(ChameleonScriptParser.While_loopContext ctx) {
         setActiveLineOfCode(ctx);
-        Log.i(TAG, "Before WHILE BLOCK");
+        AndroidLog.i(TAG, "Before WHILE BLOCK");
         while(this.visit(ctx.oe).getValueAsBoolean()) {
             this.visit(ctx.scrLineBlk);
-            Log.i(TAG, "Visiting WHILE BLOCK");
+            AndroidLog.i(TAG, "Visiting WHILE BLOCK");
         }
         return this.visitChildren(ctx);
     }
@@ -54,7 +55,7 @@ public class ChameleonScriptVisitorExtended extends ChameleonScriptParserBaseVis
         ScriptVariable boolPreCond = this.visit(ctx.oe);
         if(boolPreCond.getValueAsBoolean()) {
             this.visit(ctx.scrLineBlk);
-            Log.i(TAG, "Visiting IF (SG) BLOCK");
+            AndroidLog.i(TAG, "Visiting IF (SG) BLOCK");
         }
         return this.visitChildren(ctx);
     }
@@ -64,11 +65,11 @@ public class ChameleonScriptVisitorExtended extends ChameleonScriptParserBaseVis
         setActiveLineOfCode(ctx);
         if(this.visit(ctx.ifoe).getValueAsBoolean()) {
             this.visit(ctx.scrLineBlkIf);
-            Log.i(TAG, "Visiting IF BLOCK");
+            AndroidLog.i(TAG, "Visiting IF BLOCK");
         }
         else {
             this.visit(ctx.scrLineBlkElse);
-            Log.i(TAG, "Visiting ELSE BLOCK");
+            AndroidLog.i(TAG, "Visiting ELSE BLOCK");
         }
         return this.visitChildren(ctx);
     }
@@ -94,7 +95,7 @@ public class ChameleonScriptVisitorExtended extends ChameleonScriptParserBaseVis
             int activeLOC = ((ParserRuleContext) ctx).getStart().getLine();
             ChameleonScripting.getRunningInstance().setActiveLineOfCode(activeLOC);
         } catch(Exception ex) {
-            ex.printStackTrace();
+            AndroidLog.printStackTrace(ex);
             ChameleonScripting.getRunningInstance().setActiveLineOfCode(-1);
         }
     }

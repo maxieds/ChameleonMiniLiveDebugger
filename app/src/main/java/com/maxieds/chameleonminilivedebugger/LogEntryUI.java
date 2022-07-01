@@ -81,7 +81,7 @@ public class LogEntryUI extends LogEntryBase {
      */
     public static LogEntryUI newInstance(@NonNull byte[] rawLogBytes, @NonNull String logLabel) {
         if(rawLogBytes.length < 4) {
-            Log.w(TAG, "Invalid log tag data sent.");
+            AndroidLog.w(TAG, "Invalid log tag data sent.");
             return null;
         }
         int logCode = (int) rawLogBytes[0];
@@ -96,7 +96,7 @@ public class LogEntryUI extends LogEntryBase {
         lastSystemMillis = systemTimeMillis;
         byte[] payloadBytes = new byte[rawLogBytes.length - 4];
         if(payloadBytes.length < payloadNumBytes) {
-            Log.w(TAG, "Invalid payload bytes sent.");
+            AndroidLog.w(TAG, "Invalid payload bytes sent.");
         }
         else
             System.arraycopy(rawLogBytes, 4, payloadBytes, 0, payloadBytes.length);
@@ -168,7 +168,7 @@ public class LogEntryUI extends LogEntryBase {
                 tvApduClone.setVisibility(TextView.GONE);
             }
         } catch(NullPointerException npe) {
-            npe.printStackTrace();
+            AndroidLog.printStackTrace(npe);
             return null;
         }
         return mainEntryContainerClone;
@@ -215,7 +215,7 @@ public class LogEntryUI extends LogEntryBase {
                 apduParseStatus.setImageDrawable(LiveLoggerActivity.defaultContext.getResources().getDrawable(R.drawable.known16));
             }
         } catch(NullPointerException npe) {
-            npe.printStackTrace();
+            AndroidLog.printStackTrace(npe);
         }
     }
 
@@ -353,10 +353,10 @@ public class LogEntryUI extends LogEntryBase {
 
     public String getPayloadDataString(boolean byteString) {
         if(byteString) {
-            Log.i(TAG, "Returning bytes: " + tvDataHexBytes.getText().toString());
+            AndroidLog.i(TAG, "Returning bytes: " + tvDataHexBytes.getText().toString());
             return tvDataHexBytes.getText().toString();
         } else {
-            Log.i(TAG, "Returning ascii: " + tvDataAscii.getText().toString());
+            AndroidLog.i(TAG, "Returning ascii: " + tvDataAscii.getText().toString());
             return tvDataAscii.getText().toString();
         }
     }

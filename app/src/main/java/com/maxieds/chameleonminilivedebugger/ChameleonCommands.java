@@ -86,7 +86,7 @@ public class ChameleonCommands {
             Looper.loop();
         } catch(RuntimeException rte) {
             cardFilePath = rte.getMessage().split("java.lang.RuntimeException: ")[1];
-            Log.i(TAG, "Chosen Card File: " + cardFilePath);
+            AndroidLog.i(TAG, "Chosen Card File: " + cardFilePath);
         }
         ExportTools.uploadCardFileByXModem(cardFilePath);
     }

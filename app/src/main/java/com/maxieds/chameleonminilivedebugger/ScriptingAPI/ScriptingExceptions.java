@@ -21,6 +21,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.maxieds.chameleonminilivedebugger.AndroidLog;
+
 import java.util.Locale;
 
 public class ScriptingExceptions {
@@ -57,8 +59,8 @@ public class ScriptingExceptions {
 
         public ChameleonScriptingException(@NonNull ExceptionType exType) {
             super(exType.name());
-            Log.i(TAG, exType.name());
-            this.printStackTrace();
+            AndroidLog.i(TAG, exType.name());
+            AndroidLog.printStackTrace(this);
         }
 
         public ChameleonScriptingException(@NonNull ExceptionType exType, String msg) {

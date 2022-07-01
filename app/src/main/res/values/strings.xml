@@ -313,4 +313,12 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item>VICINITY</item>
     </string-array>
 
+    <string-array name="LoggingLevelThresholdSettings">
+        <item>VERBOSE</item>
+        <item>DEBUG</item>
+        <item>INFO</item>
+        <item>WARNING</item>
+        <item>ERROR</item>
+    </string-array>
+
 </resources>

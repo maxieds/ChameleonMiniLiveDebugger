@@ -58,6 +58,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingGUIMain;
 
+import java.io.File;
 import java.util.List;
 import java.util.Locale;
 
@@ -199,6 +200,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     startCrashRptIntent.putExtra(CrashReportActivity.INTENT_CHAMELEON_CONFIG, ChameleonIO.DeviceStatusSettings.CONFIG);
                     startCrashRptIntent.putExtra(CrashReportActivity.INTENT_CHAMELEON_LOGMODE, ChameleonIO.DeviceStatusSettings.LOGMODE);
                     startCrashRptIntent.putExtra(CrashReportActivity.INTENT_CHAMELEON_TIMEOUT, ChameleonIO.DeviceStatusSettings.TIMEOUT);
+                    startCrashRptIntent.putExtra(CrashReportActivity.INTENT_LOG_FILE_DOWNLOAD_PATH, AndroidLog.downloadCurrentLogFile(false));
                     startActivity(startCrashRptIntent);
                     liveLoggerActivityContext.finish();
                     System.exit(-1);
@@ -219,7 +221,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                if(serialIOActionReceiver == null) {
                     serialIOActionReceiver = new BroadcastReceiver() {
                          public void onReceive(Context context, Intent intent) {
-                              Log.i(TAG, intent.getAction());
+                              AndroidLog.i(TAG, intent.getAction());
                               if (intent.getAction() == null) {
                                    return;
                               } else if (intent.getAction().equals(SerialUSBInterface.ACTION_USB_PERMISSION)) {
@@ -300,24 +302,24 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
 
           super.onCreate(savedInstanceState);
           if(getInstance() == null) {
-               Log.i(TAG, "Created new activity");
+               AndroidLog.i(TAG, "Created new activity");
           }
           else if(!isTaskRoot()) {
-               Log.i(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
+               AndroidLog.i(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
                final Intent intent = getIntent();
                final String intentAction = intent.getAction();
                if (intentAction != null && (intentAction.equals(UsbManager.ACTION_USB_DEVICE_DETACHED) || intentAction.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED))) {
                     if(LiveLoggerActivity.getLiveLoggerInstance() != null) {
                          LiveLoggerActivity.getLiveLoggerInstance().onNewIntent(intent);
                     }
-                    Log.i(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead of re-launching.");
+                    AndroidLog.i(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead of re-launching.");
                     finish();
                     return;
                }
           }
 
           setUnhandledExceptionHandler();
-          /* Invoke the crash handler activity intentionally for testin purposes: */
+          /* Invoke the crash handler activity intentionally for testing purposes: */
           //((String) null).length();
 
           boolean completeRestart = (getLiveLoggerInstance() == null);
@@ -333,7 +335,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           setContentView(R.layout.activity_live_logger);
 
           Toolbar actionBar = (Toolbar) findViewById(R.id.toolbarActionBar);
-          actionBar.setSubtitle("Portable NFC device logger | v" + String.valueOf(BuildConfig.VERSION_NAME));
+          actionBar.setSubtitle("Portable NFC logger | v" + String.valueOf(BuildConfig.VERSION_NAME));
           clearStatusIcon(R.id.statusIconUlDl);
           getWindow().setTitleColor(ThemesConfiguration.getThemeColorVariant(R.attr.actionBarBackgroundColor));
           getWindow().setStatusBarColor(ThemesConfiguration.getThemeColorVariant(R.attr.colorPrimaryDark));
@@ -360,6 +362,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                          requestPermissions(new String[] { permissionName }, 0);
                     }
                }
+               /* TODO: Use BT like permissions requests for Android 12 (Storage, possibly USB) */
                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR); // keep app from crashing when the screen rotates
           }
@@ -503,7 +506,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           if(intent == null || intent.getAction() == null) {
                return;
           }
-          Log.i(TAG, "NEW INTENT: " + intent.getAction());
+          AndroidLog.i(TAG, "NEW INTENT: " + intent.getAction());
           if(intent.getAction().equals(SerialUSBInterface.ACTION_USB_PERMISSION)) {
                SerialUSBInterface.usbPermissionsGranted = true;
           }
@@ -529,6 +532,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED) ||
                   intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST)) {
                ChameleonIO.DeviceStatusSettings.stopPostingStats();
+               ChameleonIO.DeviceStatusSettings.setToolbarStatsToDefault();
                if(ChameleonIO.WAITING_FOR_RESPONSE) {
                     ChameleonIO.WAITING_FOR_RESPONSE = false;
                }
@@ -542,7 +546,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     int lastActiveSlotNumber = ChameleonIO.DeviceStatusSettings.DIP_SETTING;
                     ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[lastActiveSlotNumber - 1].disableLayout();
                } catch(Exception ex) {
-                    ex.printStackTrace();
+                    AndroidLog.printStackTrace(ex);
                }
                setStatusIcon(R.id.statusIconUSB, R.drawable.usbdisconnected16);
                ChameleonSettings.initializeSerialIOConnections();
@@ -561,6 +565,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           else if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
                   intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED)) {
                ChameleonIO.DeviceStatusSettings.stopPostingStats();
+               ChameleonIO.DeviceStatusSettings.setToolbarStatsToDefault();
                ChameleonSettings.stopSerialIOConnectionDiscovery();
                if(ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX].configureSerial() != 0) {
                     ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = ChameleonSettings.BTIO_IFACE_INDEX;
@@ -584,12 +589,14 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                          }
                     };
                     ChameleonIO.DeviceStatusSettings.stopPostingStats();
+                    ChameleonIO.DeviceStatusSettings.setToolbarStatsToDefault();
                     configDeviceHandler.postDelayed(configDeviceRunnable, 400);
                }
           }
           else if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_DISCONNECTED) ||
                   intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST)) {
                ChameleonIO.DeviceStatusSettings.stopPostingStats();
+               ChameleonIO.DeviceStatusSettings.setToolbarStatsToDefault();
                if(ChameleonIO.WAITING_FOR_RESPONSE) {
                     ChameleonIO.WAITING_FOR_RESPONSE = false;
                }
@@ -645,6 +652,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                ChameleonSettings.getActiveSerialIOPort().shutdownSerial();
                ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
           }
+          AndroidLog.closeLogDataOutputFile();
           super.onPause();
      }
 
@@ -671,6 +679,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                ChameleonSettings.getActiveSerialIOPort().shutdownSerial();
                ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
           }
+          AndroidLog.closeLogDataOutputFile();
           super.onDestroy();
      }
 
@@ -692,7 +701,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                          }
                          return groupPermsArray;
                     } catch (Exception expt) {
-                         expt.printStackTrace();
+                         AndroidLog.printStackTrace(expt);
                     }
                }
           }
@@ -1004,7 +1013,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     ExternalFileIO.handleActivityResult(this, requestCode, resultCode, data);
                } catch(RuntimeException  rte) {
                     if(rte.getMessage() != null && rte.getMessage().length() > 0) {
-                         rte.printStackTrace();
+                         AndroidLog.printStackTrace(rte);
                          return;
                     }
                }
@@ -1116,8 +1125,8 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_MIN_DATA_BYTES);
           }
           catch(Exception ex) {
-               ex.printStackTrace();
-               Log.i(TAG, ex.getMessage());
+               AndroidLog.printStackTrace(ex);
+               AndroidLog.i(TAG, ex.getMessage());
                ChameleonLogUtils.LOGGING_MIN_DATA_BYTES = loggingMinDataLength;
           }
      }
@@ -1129,11 +1138,23 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           }
           String cmdTag = runCmdBtn.getTag().toString();
           EditText piccSetBytesText = (EditText) findViewById(R.id.mfDESFireTagSetPICCDataBytes);
-          String piccSetBytes = "";
           if(piccSetBytesText != null) {
-               cmdTag = String.format(Locale.getDefault(), cmdTag, piccSetBytesText.getText().toString());
+               String piccSetBytes = piccSetBytesText.getText().toString();
+               String[] cmdTagComps = cmdTag.split(":");
+               if (cmdTagComps.length != 2) {
+                    String toastErrorMsg = "Invalid button tag. Consider reporting this as an issue on GitHub.";
+                    Utils.displayToastMessageShort(toastErrorMsg);
+                    return;
+               }
+               int cmdReqNumBytes = Integer.parseInt(cmdTagComps[1]);
+               if (piccSetBytes.length() != 2 * cmdReqNumBytes) {
+                    String toastErrorMsg = String.format(Locale.getDefault(), "Invalid number of bytes. The command requires %d bytes.", cmdReqNumBytes);
+                    Utils.displayToastMessageShort(toastErrorMsg);
+                    return;
+               }
+               String chamCmd = String.format(Locale.getDefault(), cmdTagComps[0], piccSetBytes);
+               ChameleonIO.executeChameleonMiniCommand(chamCmd, ChameleonIO.TIMEOUT);
           }
-          ChameleonIO.executeChameleonMiniCommand(cmdTag, ChameleonIO.TIMEOUT);
      }
 
      public void actionButtonScriptingGUIHandlePerformTaskClick(@NonNull View view) {
@@ -1145,6 +1166,22 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           if(srcBtn != null) {
                String clipBoardText = srcBtn.getTag().toString();
                Utils.copyTextToClipboard(this, clipBoardText, true);
+          }
+     }
+
+     public void actionButtonDownloadCurrentLogFile(@NonNull View btn) {
+          AndroidLog.downloadCurrentLogFile(true);
+     }
+
+     public void actionButtonClearAllLogFiles(@NonNull View btn) {
+          AndroidLog.closeLogDataOutputFile();
+          String localAppStoragePath = LiveLoggerActivity.getLiveLoggerInstance().getFilesDir().getAbsolutePath();
+          String logDataOutputFilePath = localAppStoragePath + "//" + AndroidLog.LOGDATA_FILE_LOCAL_DIRPATH;
+          File logDataOutputFolder = new File(logDataOutputFilePath);
+          if (!logDataOutputFolder.exists() || !logDataOutputFolder.delete()) {
+               Utils.displayToastMessageShort("Error clearing stored log files.");
+          } else {
+               Utils.displayToastMessageShort("Deleted all logs.");
           }
      }
 

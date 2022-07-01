@@ -19,7 +19,7 @@ parser grammar ChameleonScriptParser;
 
 @header {
      import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingTypes.ScriptVariable;
-     import android.util.Log;
+     import com.maxieds.chameleonminilivedebugger.AndroidLog;
 }
 //@rulecatch {}
 
@@ -234,7 +234,7 @@ boolean_valued_operation returns [ScriptVariable  opResult]:
           }
           else if($rhs.svar.isIntegerType()) {
                $opResult=ScriptVariable.newInstance().set($lhs.svar.getValueAsInt() == $rhs.svar.getValueAsInt());
-               Log.i("TAG", "IS INTEGER TYPE!");
+               AndroidLog.i("TAG", "IS INTEGER TYPE!");
           }
           else {
                $opResult=ScriptVariable.newInstance().set($lhs.svar.getValueAsBoolean() == $rhs.svar.getValueAsBoolean());
@@ -360,7 +360,7 @@ array_literal_list returns [List<ScriptVariable> arrElts]:
       curArrElt=operand_expression_v7 CommaSeparator prevArrElts=array_literal_list {
           $prevArrElts.arrElts.add($curArrElt.svar);
           $arrElts=$prevArrElts.arrElts;
-          Log.i("PARSER-G4", $curArrElt.svar.getValueAsString());
+          AndroidLog.i("PARSER-G4", $curArrElt.svar.getValueAsString());
      }
      ;
 
@@ -378,7 +378,7 @@ assignment_operation returns [ScriptVariable svar]:
      lhs=variable_reference DefEqualsOperator rhs=operand_expression_v72 {
           $svar=$rhs.svar;
           ChameleonScripting.getRunningInstance().setVariableByName($lhs.svar.getName(), $svar);
-          Log.i("PARSER-G4", ":= LHS VAR NAME = " + $lhs.svar.getName() + ", NEW VALUE = " + $svar.getValueAsString());
+          AndroidLog.i("PARSER-G4", ":= LHS VAR NAME = " + $lhs.svar.getName() + ", NEW VALUE = " + $svar.getValueAsString());
      }
      |
      lhs=variable_reference PlusEqualsOperator rhs=operand_expression_v72 {

@@ -52,10 +52,10 @@ public class ApduUtils {
         try {
             csvLines = Utils.readCSVFile(LiveLoggerActivity.defaultContext.getResources().openRawResource(R.raw.desfire_ins));
         } catch(NullPointerException npe) {
-            npe.printStackTrace();
+            AndroidLog.printStackTrace(npe);
             return insList;
         } catch(IOException ioe) {
-            ioe.printStackTrace();
+            AndroidLog.printStackTrace(ioe);
             return insList;
         }
         for(int i = 0; i < csvLines.size(); i++) {
@@ -81,10 +81,10 @@ public class ApduUtils {
         try {
             csvLines = Utils.readCSVFile(LiveLoggerActivity.defaultContext.getResources().openRawResource(R.raw.desfire_status));
         } catch(NullPointerException npe) {
-            npe.printStackTrace();
+            AndroidLog.printStackTrace(npe);
             return insList;
         } catch(IOException ioe) {
-            ioe.printStackTrace();
+            AndroidLog.printStackTrace(ioe);
             return insList;
         }
         for(int i = 0; i < csvLines.size(); i++) {
@@ -112,10 +112,10 @@ public class ApduUtils {
         try {
             csvLines = Utils.readCSVFile(LiveLoggerActivity.defaultContext.getResources().openRawResource(R.raw.common_ins));
         } catch(NullPointerException npe) {
-            npe.printStackTrace();
+            AndroidLog.printStackTrace(npe);
             return insList;
         } catch(IOException ioe) {
-            ioe.printStackTrace();
+            AndroidLog.printStackTrace(ioe);
             return insList;
         }
         for(int i = 0; i < csvLines.size(); i++) {
@@ -140,10 +140,10 @@ public class ApduUtils {
         try {
             csvLines = Utils.readCSVFile(LiveLoggerActivity.defaultContext.getResources().openRawResource(R.raw.detailed_common_ins));
         } catch(NullPointerException npe) {
-            npe.printStackTrace();
+            AndroidLog.printStackTrace(npe);
             return insList;
         } catch(IOException ioe) {
-            ioe.printStackTrace();
+            AndroidLog.printStackTrace(ioe);
             return insList;
         }
         for(int i = 0; i < csvLines.size(); i++) {
@@ -179,10 +179,10 @@ public class ApduUtils {
         try {
             csvLines = Utils.readCSVFile(LiveLoggerActivity.defaultContext.getResources().openRawResource(R.raw.response_codes_status));
         } catch(NullPointerException npe) {
-            npe.printStackTrace();
+            AndroidLog.printStackTrace(npe);
             return insList;
         } catch(IOException ioe) {
-            ioe.printStackTrace();
+            AndroidLog.printStackTrace(ioe);
             return insList;
         }
         for(int i = 0; i < csvLines.size(); i++) {
@@ -368,10 +368,10 @@ public class ApduUtils {
             apduStringFormattedSpecs.addAll(Utils.readCSVFile(LiveLoggerActivity.defaultContext.getResources().openRawResource(R.raw.common_ins)));
             apduStringFormattedSpecs.addAll(Utils.readCSVFile(LiveLoggerActivity.defaultContext.getResources().openRawResource(R.raw.detailed_common_ins)));
         } catch(NullPointerException npe) {
-            npe.printStackTrace();
+            AndroidLog.printStackTrace(npe);
             return;
         } catch(IOException ioe) {
-            ioe.printStackTrace();
+            AndroidLog.printStackTrace(ioe);
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
             fullInsList = null;
             return;
@@ -394,7 +394,7 @@ public class ApduUtils {
             String payloadDataText = apduTransceiveCmd.payloadData.equals("") ? "NONE" : apduTransceiveCmd.payloadData;
             ((TextView) tabView.findViewById(R.id.apduPayloadData)).setText(payloadDataText);
         } catch(NullPointerException npe) {
-            npe.printStackTrace();
+            AndroidLog.printStackTrace(npe);
         }
     }
 

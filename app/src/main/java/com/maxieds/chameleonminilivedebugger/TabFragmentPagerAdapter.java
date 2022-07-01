@@ -114,12 +114,12 @@ public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public void destroyItem(View collection, int position, Object view) {
-        Log.w(TAG, "destroyItem called on tab #" + String.valueOf(position));
+        AndroidLog.w(TAG, "destroyItem called on tab #" + String.valueOf(position));
     }
 
     @Override
     public Object instantiateItem(View collection, int position) {
-        Log.w(TAG, "instantiateItem called on tab #" + String.valueOf(position));
+        AndroidLog.w(TAG, "instantiateItem called on tab #" + String.valueOf(position));
         return null;
     }
 

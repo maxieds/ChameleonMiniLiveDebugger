@@ -27,6 +27,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.maxieds.chameleonminilivedebugger.AndroidLog;
 import com.maxieds.chameleonminilivedebugger.AndroidSettingsStorage;
 import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.R;
@@ -104,7 +105,7 @@ public class ScriptingGUIMain {
                     ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLineText)).setText("");
                     ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLineText)).setHint("@line");
                 } catch(Exception nfe) {
-                    nfe.printStackTrace();
+                    AndroidLog.printStackTrace(nfe);
                     return;
                 }
             }
@@ -124,7 +125,7 @@ public class ScriptingGUIMain {
                     ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLabelText)).setText("");
                     ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLabelText)).setHint("@label");
                 } catch(Exception nfe) {
-                    nfe.printStackTrace();
+                    AndroidLog.printStackTrace(nfe);
                     return;
                 }
             }
@@ -326,7 +327,7 @@ public class ScriptingGUIMain {
             etView.setText(textValues[ScriptingFileIO.SHORTENED_PATH_INDEX]);
             etView.setTag(textValues[ScriptingFileIO.COMPLETE_PATH_INDEX]);
         } catch(Exception ex) {
-            ex.printStackTrace();
+            AndroidLog.printStackTrace(ex);
             return false;
         }
         return true;

@@ -216,7 +216,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
             configureSerial();
         }
         activeDevice = btDev;
-        Log.i(TAG, "BTDEV: " + activeDevice.toString());
+        AndroidLog.i(TAG, "BTDEV: " + activeDevice.toString());
         ChameleonIO.REVE_BOARD = false;
         ChameleonIO.PAUSED = false;
         ChameleonSettings.chameleonDeviceMAC = btDev.getAddress();
@@ -226,7 +226,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
         Handler configDeviceHandler = new Handler();
         Runnable configDeviceRunnable = new Runnable() {
             public void run() {
-                Log.i(TAG, ChameleonSettings.getActiveSerialIOPort().toString());
+                AndroidLog.i(TAG, ChameleonSettings.getActiveSerialIOPort().toString());
                 if(ChameleonSettings.getActiveSerialIOPort() != null && btGattConnectorBLEDevice.isDeviceConnected()) {
                     configDeviceHandler.removeCallbacks(this);
                     ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
@@ -235,7 +235,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
                     LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
                 }
                 else {
-                    Log.i(TAG, "BLE device __NOT__ connected! ... Looping");
+                    AndroidLog.i(TAG, "BLE device __NOT__ connected! ... Looping");
                     configDeviceHandler.postDelayed(this, 1000);
                 }
             }
@@ -269,8 +269,8 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
     }
 
     public boolean notifySerialDataReceived(byte[] serialData) {
-        Log.d(TAG, "BTReaderCallback Serial Data: (HEX) " + Utils.bytes2Hex(serialData));
-        Log.d(TAG, "BTReaderCallback Serial Data: (TXT) " + Utils.bytes2Ascii(serialData));
+        AndroidLog.d(TAG, "BTReaderCallback Serial Data: (HEX) " + Utils.bytes2Hex(serialData));
+        AndroidLog.d(TAG, "BTReaderCallback Serial Data: (TXT) " + Utils.bytes2Ascii(serialData));
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED);
         notifyIntent.putExtra("DATA", serialData);
         notifyContext.sendBroadcast(notifyIntent);
@@ -278,8 +278,8 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
     }
 
     public boolean notifyLogDataReceived(byte[] serialData) {
-        Log.d(TAG, "BTReaderCallback Log Data: (HEX) " + Utils.bytes2Hex(serialData));
-        Log.d(TAG, "BTReaderCallback Log Data: (TXT) " + Utils.bytes2Ascii(serialData));
+        AndroidLog.d(TAG, "BTReaderCallback Log Data: (HEX) " + Utils.bytes2Hex(serialData));
+        AndroidLog.d(TAG, "BTReaderCallback Log Data: (TXT) " + Utils.bytes2Ascii(serialData));
         if(serialData.length < ChameleonLogUtils.LOGGING_MIN_DATA_BYTES + 4) {
             return false;
         }
@@ -290,21 +290,21 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
     }
 
     public boolean notifyDeviceFound() {
-        Log.i(TAG, "notifyDeviceFound");
+        AndroidLog.i(TAG, "notifyDeviceFound");
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_DEVICE_FOUND);
         notifyContext.sendBroadcast(notifyIntent);
         return true;
     }
 
     public boolean notifyDeviceConnectionTerminated() {
-        Log.i(TAG, "notifyDeviceConnectionTerminated");
+        AndroidLog.i(TAG, "notifyDeviceConnectionTerminated");
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST);
         notifyContext.sendBroadcast(notifyIntent);
         return true;
     }
 
     public boolean notifyStatus(String msgType, String statusMsg) {
-        Log.i(TAG, "notifyStatus: " + msgType + ": " + statusMsg);
+        AndroidLog.i(TAG, "notifyStatus: " + msgType + ": " + statusMsg);
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_NOTIFY_STATUS);
         notifyIntent.putExtra("STATUS-TYPE", msgType);
         notifyIntent.putExtra("STATUS-MSG", statusMsg);
@@ -313,7 +313,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
     }
 
     public boolean notifyBluetoothChameleonDeviceConnected() {
-        Log.i(TAG, "notifyBluetoothChameleonDeviceConnected");
+        AndroidLog.i(TAG, "notifyBluetoothChameleonDeviceConnected");
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED);
         notifyContext.sendBroadcast(notifyIntent);
         return true;
@@ -374,6 +374,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
     }
 
     public int shutdownSerial() {
+        ChameleonIO.DeviceStatusSettings.stopPostingStats();
         if(btGattConnectorBLEDevice != null) {
             btGattConnectorBLEDevice.disconnectDevice();
         }
@@ -408,7 +409,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
             serialPortLock.acquire();
             return true;
         } catch(Exception inte) {
-            inte.printStackTrace();
+            AndroidLog.printStackTrace(inte);
             serialPortLock.release();
             return false;
         }
@@ -419,7 +420,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
             serialPortLock.acquireUninterruptibly();
             return true;
         } catch(Exception inte) {
-            inte.printStackTrace();
+            AndroidLog.printStackTrace(inte);
             serialPortLock.release();
             return false;
         }
@@ -431,7 +432,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
             status = serialPortLock.tryAcquire(timeout, java.util.concurrent.TimeUnit.MILLISECONDS);
             return status;
         } catch(Exception ie) {
-            ie.printStackTrace();
+            AndroidLog.printStackTrace(ie);
             serialPortLock.release();
             return false;
         }
@@ -443,7 +444,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
     }
 
     public int sendDataBuffer(byte[] dataWriteBuffer) {
-        Log.i(TAG, "write: " + Utils.bytes2Hex(dataWriteBuffer));
+        AndroidLog.i(TAG, "write: " + Utils.bytes2Hex(dataWriteBuffer));
         if(dataWriteBuffer == null || dataWriteBuffer.length == 0) {
             return STATUS_FALSE;
         }
@@ -453,7 +454,7 @@ public class BluetoothSerialInterface extends SerialIOReceiver {
         try {
             btGattConnectorBLEDevice.write(dataWriteBuffer);
         } catch(IOException ioe) {
-            ioe.printStackTrace();
+            AndroidLog.printStackTrace(ioe);
         }
         return STATUS_TRUE;
     }

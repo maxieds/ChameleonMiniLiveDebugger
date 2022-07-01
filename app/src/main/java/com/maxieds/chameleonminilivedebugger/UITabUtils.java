@@ -179,7 +179,7 @@ public class UITabUtils {
                 try {
                     activeSlotNumber = Integer.parseInt(ChameleonIO.getSettingFromDevice("SETTING?"), 10);
                 } catch(NumberFormatException nfe) {
-                    nfe.printStackTrace();
+                    AndroidLog.printStackTrace(nfe);
                     errorOnInit = true;
                 }
             }
@@ -277,8 +277,8 @@ public class UITabUtils {
                                 int nextThreshold = seekBar.getProgress();
                                 LiveLoggerActivity.setSignalStrengthIndicator(nextThreshold);
                                 ChameleonIO.executeChameleonMiniCommand("THRESHOLD=" + String.valueOf(nextThreshold), ChameleonIO.TIMEOUT);
-                                ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-                                ChameleonIO.deviceStatus.updateAllStatusAndPost(false); /* Make sure the device returned the correct data to display */
+                                ChameleonIO.DeviceStatusSettings.updateAllStatusAndPost(false);
+                                ChameleonIO.DeviceStatusSettings.updateAllStatusAndPost(false); /* Make sure the device returned the correct data to display */
                             }
                         });
                         LiveLoggerActivity.setSignalStrengthIndicator(thresholdSeekbar.getProgress());
@@ -380,115 +380,133 @@ public class UITabUtils {
         }
         boolean errorOnInit = false;
         if(menuItemIdx == TAB_CONFIG_MITEM_SETTINGS) {
-             CheckBox cbAllowUSB = tabMainLayoutView.findViewById(R.id.settingsAllowWiredUSB);
-             if(cbAllowUSB == null) {
-                 return false;
-             }
-             cbAllowUSB.setChecked(ChameleonSettings.allowWiredUSB);
-             cbAllowUSB.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
-                 @Override
-                 public void onCheckedChanged(CompoundButton cb, boolean checked) {
-                     try {
-                         ChameleonSettings.allowWiredUSB = checked;
-                         if (ChameleonSettings.getActiveSerialIOPort() == null) {
-                             ChameleonSettings.stopSerialIOConnectionDiscovery();
-                             ChameleonSettings.initializeSerialIOConnections();
-                         }
-                     } catch(Exception ex) {
-                         ex.printStackTrace();
-                     }
-                 }
-             });
-             CheckBox cbAllowBT = tabMainLayoutView.findViewById(R.id.settingsAllowBluetooth);
-             if(cbAllowBT == null) {
-                 return false;
-             }
-             cbAllowBT.setChecked(ChameleonSettings.allowBluetooth);
-             cbAllowBT.setOnClickListener(new View.OnClickListener() {
-                 @Override
-                 public void onClick(View cbView) {
-                     CheckBox cb = (CheckBox) cbView;
-                     try {
-                         LiveLoggerActivity llInst = LiveLoggerActivity.getLiveLoggerInstance();
-                         if(llInst == null) {
-                             return;
-                         }
-                         boolean haveSufficientBTPerms = true;
-                         if(!llInst.checkPermissionsAcquired(ActivityPermissions.CMLD_PERMISSIONS_GROUP_BLUETOOTH, true, cbView)) {
-                             cbView.wait(ActivityPermissions.REQUEST_RESULT_MAX_VIEWOBJ_WAIT_TIMEOUT);
-                             haveSufficientBTPerms = llInst.checkPermissionsAcquired(ActivityPermissions.CMLD_PERMISSIONS_GROUP_BLUETOOTH, false);
-                         }
-                         if (ChameleonSettings.getActiveSerialIOPort() == null) {
-                             ChameleonSettings.stopSerialIOConnectionDiscovery();
-                             ChameleonSettings.initializeSerialIOConnections();
-                         }
-                         BluetoothSerialInterface btSerialInterface = (BluetoothSerialInterface) ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX];
-                         haveSufficientBTPerms = haveSufficientBTPerms && btSerialInterface != null && btSerialInterface.isBluetoothEnabled(false);
-                         if(!cb.isChecked() && !haveSufficientBTPerms) {
-                             String btPermsRequiredResStr = llInst.getResources().getString(R.string.btPermsRequiredMsg);
-                             Utils.displayToastMessageShort(btPermsRequiredResStr);
-                             return;
-                         }
-                         ChameleonSettings.allowBluetooth = cb.isChecked();
-                         AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.ALLOW_BLUETOOTH_PREFERENCE);
-                     } catch(Exception ex) {
-                         ex.printStackTrace();
-                         cb.setChecked(!cb.isChecked());
-                         LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(new Runnable() {
-                             @Override
-                             public void run() {
-                                 String btPermsRequiredResStr = LiveLoggerActivity.getLiveLoggerInstance().getResources().getString(R.string.btPermsRequiredMsg);
-                                 Utils.displayToastMessageShort(btPermsRequiredResStr);
-                             }
-                         });
-                     }
-                 }
-             });
-             CheckBox cbUseBidirSniff = tabMainLayoutView.findViewById(R.id.settingsUseBidirectionalSniffing);
-             if(cbUseBidirSniff != null) {
-                 cbUseBidirSniff.setChecked(ChameleonSettings.sniffingMode == ChameleonSettings.SNIFFING_MODE_BIDIRECTIONAL);
-                 cbUseBidirSniff.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
-                     @Override
-                     public void onCheckedChanged(CompoundButton cb, boolean checked) {
-                         ChameleonSettings.sniffingMode = checked ? ChameleonSettings.SNIFFING_MODE_BIDIRECTIONAL : ChameleonSettings.SNIFFING_MODE_UNIDIRECTIONAL;
-                         // TODO: configure unidirectional versus bidirectional sniffing mode ...
-                     }
-                 });
-             } else {
-                 errorOnInit = true;
-             }
-             Spinner serialBaudRateSpinner = tabMainLayoutView.findViewById(R.id.serialBaudRateSpinner);
-             if(serialBaudRateSpinner != null) {
-                 serialBaudRateSpinner.setAdapter(new ArrayAdapter<Integer>(tabMainLayoutView.getContext(),
-                         android.R.layout.simple_list_item_1, ChameleonSerialIOInterface.UART_BAUD_RATES));
-                 for (int si = 0; si < serialBaudRateSpinner.getAdapter().getCount(); si++) {
-                     if (serialBaudRateSpinner.getAdapter().getItem(si).equals(Integer.valueOf(ChameleonSettings.serialBaudRate))) {
-                         serialBaudRateSpinner.setSelection(si, false);
-                         break;
-                     }
-                 }
-                 serialBaudRateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                     Integer[] localSpinnerList = ChameleonSerialIOInterface.UART_BAUD_RATES;
-                     int lastSelectedPosition = 0;
+            CheckBox cbEnableLoggingToFile = (CheckBox) tabMainLayoutView.findViewById(R.id.settingsEnableLoggingToFile);
+            if(cbEnableLoggingToFile != null) {
+                cbEnableLoggingToFile.setChecked(AndroidLog.WRITE_LOGDATA_TO_FILE);
+                cbEnableLoggingToFile.setOnClickListener(new CheckBox.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        CheckBox cb = (CheckBox) view;
+                        AndroidLog.WRITE_LOGDATA_TO_FILE = cb.isChecked();
+                        AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_WRITE_LOGDATA_TO_FILE);
+                    }
+                });
+            } else {
+                errorOnInit = true;
+            }
+            if(!UITabUtils.connectPeripheralSpinnerAdapterLogToFileLevel(tabMainLayoutView, R.id.LogToFileLevelThresholdsSpinner,
+                                                                         R.array.LoggingLevelThresholdSettings)) {
+                errorOnInit = true;
+            }
+            CheckBox cbAllowUSB = tabMainLayoutView.findViewById(R.id.settingsAllowWiredUSB);
+            if(cbAllowUSB == null) {
+                return false;
+            }
+            cbAllowUSB.setChecked(ChameleonSettings.allowWiredUSB);
+            cbAllowUSB.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton cb, boolean checked) {
+                    try {
+                        ChameleonSettings.allowWiredUSB = checked;
+                        if (ChameleonSettings.getActiveSerialIOPort() == null) {
+                            ChameleonSettings.stopSerialIOConnectionDiscovery();
+                            ChameleonSettings.initializeSerialIOConnections();
+                        }
+                    } catch(Exception ex) {
+                        AndroidLog.printStackTrace(ex);
+                    }
+                }
+            });
+            CheckBox cbAllowBT = tabMainLayoutView.findViewById(R.id.settingsAllowBluetooth);
+            if(cbAllowBT == null) {
+                return false;
+            }
+            cbAllowBT.setChecked(ChameleonSettings.allowBluetooth);
+            cbAllowBT.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View cbView) {
+                    CheckBox cb = (CheckBox) cbView;
+                    try {
+                        LiveLoggerActivity llInst = LiveLoggerActivity.getLiveLoggerInstance();
+                        if(llInst == null) {
+                            return;
+                        }
+                        boolean haveSufficientBTPerms = true;
+                        if(!llInst.checkPermissionsAcquired(ActivityPermissions.CMLD_PERMISSIONS_GROUP_BLUETOOTH, true, cbView)) {
+                            cbView.wait(ActivityPermissions.REQUEST_RESULT_MAX_VIEWOBJ_WAIT_TIMEOUT);
+                            haveSufficientBTPerms = llInst.checkPermissionsAcquired(ActivityPermissions.CMLD_PERMISSIONS_GROUP_BLUETOOTH, false);
+                        }
+                        if (ChameleonSettings.getActiveSerialIOPort() == null) {
+                            ChameleonSettings.stopSerialIOConnectionDiscovery();
+                            ChameleonSettings.initializeSerialIOConnections();
+                        }
+                        BluetoothSerialInterface btSerialInterface = (BluetoothSerialInterface) ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX];
+                        haveSufficientBTPerms = haveSufficientBTPerms && btSerialInterface != null && btSerialInterface.isBluetoothEnabled(false);
+                        if(!cb.isChecked() && !haveSufficientBTPerms) {
+                            String btPermsRequiredResStr = llInst.getResources().getString(R.string.btPermsRequiredMsg);
+                            Utils.displayToastMessageShort(btPermsRequiredResStr);
+                            return;
+                        }
+                        ChameleonSettings.allowBluetooth = cb.isChecked();
+                        AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.ALLOW_BLUETOOTH_PREFERENCE);
+                    } catch(Exception ex) {
+                        AndroidLog.printStackTrace(ex);
+                        cb.setChecked(!cb.isChecked());
+                        LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String btPermsRequiredResStr = LiveLoggerActivity.getLiveLoggerInstance().getResources().getString(R.string.btPermsRequiredMsg);
+                                Utils.displayToastMessageShort(btPermsRequiredResStr);
+                            }
+                        });
+                    }
+                }
+            });
+            CheckBox cbUseBidirSniff = tabMainLayoutView.findViewById(R.id.settingsUseBidirectionalSniffing);
+            if(cbUseBidirSniff != null) {
+                cbUseBidirSniff.setChecked(ChameleonSettings.sniffingMode == ChameleonSettings.SNIFFING_MODE_BIDIRECTIONAL);
+                cbUseBidirSniff.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton cb, boolean checked) {
+                        ChameleonSettings.sniffingMode = checked ? ChameleonSettings.SNIFFING_MODE_BIDIRECTIONAL : ChameleonSettings.SNIFFING_MODE_UNIDIRECTIONAL;
+                        // TODO: configure unidirectional versus bidirectional sniffing mode ...
+                    }
+                });
+            } else {
+                errorOnInit = true;
+            }
+            Spinner serialBaudRateSpinner = tabMainLayoutView.findViewById(R.id.serialBaudRateSpinner);
+            if(serialBaudRateSpinner != null) {
+                serialBaudRateSpinner.setAdapter(new ArrayAdapter<Integer>(tabMainLayoutView.getContext(),
+                        android.R.layout.simple_list_item_1, ChameleonSerialIOInterface.UART_BAUD_RATES));
+                for (int si = 0; si < serialBaudRateSpinner.getAdapter().getCount(); si++) {
+                    if (serialBaudRateSpinner.getAdapter().getItem(si).equals(Integer.valueOf(ChameleonSettings.serialBaudRate))) {
+                        serialBaudRateSpinner.setSelection(si, false);
+                        break;
+                    }
+                }
+                serialBaudRateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    Integer[] localSpinnerList = ChameleonSerialIOInterface.UART_BAUD_RATES;
+                    int lastSelectedPosition = 0;
 
-                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                         if (ChameleonSettings.getActiveSerialIOPort() == null) {
-                             return;
-                         } else if (i == lastSelectedPosition) {
-                             return;
-                         }
-                         lastSelectedPosition = i;
-                         ChameleonSettings.serialBaudRate = localSpinnerList[i].intValue();
-                         ChameleonSettings.getActiveSerialIOPort().setSerialBaudRate(ChameleonSettings.serialBaudRate);
-                     }
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                        if (ChameleonSettings.getActiveSerialIOPort() == null) {
+                            return;
+                        } else if (i == lastSelectedPosition) {
+                            return;
+                        }
+                        lastSelectedPosition = i;
+                        ChameleonSettings.serialBaudRate = localSpinnerList[i].intValue();
+                        ChameleonSettings.getActiveSerialIOPort().setSerialBaudRate(ChameleonSettings.serialBaudRate);
+                    }
 
-                     public void onNothingSelected(AdapterView<?> adapterView) {
-                         return;
-                     }
-                 });
-             } else {
-                 errorOnInit = true;
-             }
+                    public void onNothingSelected(AdapterView<?> adapterView) {
+                        return;
+                    }
+                });
+            } else {
+                errorOnInit = true;
+            }
         }
         else if(menuItemIdx == TAB_CONFIG_MITEM_CONNECT) {
             TextView btStatusText = tabMainLayoutView.findViewById(R.id.androidBluetoothStatusText);
@@ -693,7 +711,7 @@ public class UITabUtils {
                     errorOnInit = true;
                 }
             } catch(Exception ex) {
-                ex.printStackTrace();
+                AndroidLog.printStackTrace(ex);
                 return false;
             }
         }
@@ -741,7 +759,7 @@ public class UITabUtils {
     }
 
     private static void connectPeripheralSpinnerAdapterLogMode(View view, int spinnerID, int spinnerStringList,
-                                                        SpinnerAdapter spinnerAdapter) {
+                                                               SpinnerAdapter spinnerAdapter) {
         final String[] spinnerList = view.getContext().getResources().getStringArray(spinnerStringList);
         spinnerAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, spinnerList);
         Spinner spinner = (Spinner) view.findViewById(spinnerID);
@@ -794,6 +812,32 @@ public class UITabUtils {
                 return;
             }
         });
+    }
+
+    private static boolean connectPeripheralSpinnerAdapterLogToFileLevel(View view, int spinnerID, int spinnerStringList) {
+        final String[] spinnerList = view.getContext().getResources().getStringArray(spinnerStringList);
+        SpinnerAdapter spinnerAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, spinnerList);
+        Spinner spinner = (Spinner) view.findViewById(spinnerID);
+        if(spinner == null) {
+            return false;
+        }
+        spinner.setAdapter(spinnerAdapter);
+        spinner.setSelection(((ArrayAdapter<String>) spinnerAdapter).getPosition(AndroidLog.LOGDATA_LEVEL_THRESHOLD.name()));
+        final Spinner localSpinnerRef = spinner;
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            Spinner localSpinner = localSpinnerRef;
+            String[] localSpinnerList = spinnerList;
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                localSpinner.setSelection(((ArrayAdapter<String>) localSpinner.getAdapter()).getPosition(localSpinnerList[i]));
+                AndroidLog.LOGDATA_LEVEL_THRESHOLD = AndroidLog.LogLevel.getLogLevelFromOrdinal(i);
+                AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_LOGDATA_LEVEL_THRESHOLD);
+                //Utils.displayToastMessageShort("New logging threshold: " + AndroidLog.LOGDATA_LEVEL_THRESHOLD.name());
+            }
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                return;
+            }
+        });
+        return true;
     }
 
 }
