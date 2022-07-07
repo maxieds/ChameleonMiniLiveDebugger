@@ -82,7 +82,7 @@ android {
         minSdkVersion 30
         targetSdkVersion 30
         compileSdkVersion 30
-        versionCode 111 + 8080
+        versionCode 112 + 8080
         versionName "1.4.3"
         multiDexEnabled true
 
