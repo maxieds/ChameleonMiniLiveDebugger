@@ -82,14 +82,14 @@ android {
         minSdkVersion 30
         targetSdkVersion 30
         compileSdkVersion 30
-        versionCode 112 + 8080
-        versionName "1.4.3"
+        versionCode 114 + 8080
+        versionName "1.4.4"
         multiDexEnabled true
 
         buildConfigField "String", "GIT_COMMIT_HASH", "\"" + getGitCommitHash() + "\""
         buildConfigField "String", "GIT_COMMIT_DATE", "\"" + getGitCommitDate() + "\""
 
-        setProperty("archivesBaseName", "ChameleonMiniLiveDebugger-v$versionName-$configBuildTimeStamp")
+        setProperty("archivesBaseName", "ChameleonMiniLiveDebugger-v$versionName-$versionCode-$configBuildTimeStamp")
 
     }
 
