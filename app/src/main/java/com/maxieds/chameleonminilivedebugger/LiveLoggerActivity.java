@@ -17,6 +17,13 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_SCRIPTING;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_SLOTS;
+
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
@@ -31,10 +38,11 @@ import android.content.pm.PermissionGroupInfo;
 import android.content.pm.PermissionInfo;
 import android.graphics.Color;
 import android.hardware.usb.UsbManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
+import android.provider.Settings;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -62,13 +70,6 @@ import java.io.File;
 import java.util.List;
 import java.util.Locale;
 
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_SCRIPTING;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_SLOTS;
-
 /**
  * <h1>Live Logger Activity</h1>
  * Implementation of the main running activity in the application.
@@ -85,6 +86,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       */
      private static ViewPager viewPager;
      private static int selectedTab = TAB_TOOLS;
+     private static final String cmldPackageName = "com.maxieds.chameleonminilivedebugger";
 
      public static LiveLoggerActivity getLiveLoggerInstance() {
           return (LiveLoggerActivity) runningActivity;
@@ -355,6 +357,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                        "android.permission.BLUETOOTH_SCAN",
                        "android.permission.ACCESS_COARSE_LOCATION",
                        "android.permission.ACCESS_FINE_LOCATION",
+                       "android.permission.ACCESS_BACKGROUND_LOCATION",
                        "android.permission.VIBRATE",
                };
                if (android.os.Build.VERSION.SDK_INT >= 23) {
@@ -362,9 +365,26 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                          requestPermissions(new String[] { permissionName }, 0);
                     }
                }
-               /* TODO: Use BT like permissions requests for Android 12 (Storage, possibly USB) */
+               if (!checkPermissionsAcquired(CMLD_PERMISSIONS_GROUP_MINIMAL) ||
+                       !checkPermissionsAcquired(CMLD_PERMISSIONS_GROUP_STORAGE) ||
+                       !checkPermissionsAcquired(CMLD_PERMISSIONS_GROUP_BLUETOOTH)) {
+                    Intent requestCMLDPermsIntent = new Intent(
+                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.fromParts("package", this.cmldPackageName, null)
+                    );
+                    startActivityForResult(requestCMLDPermsIntent, CMLD_PERMS_ALL_REQUEST_CODE);
+
+               }
+               if (!checkPermissionsAcquired(CMLD_PERMISSIONS_GROUP_MINIMAL)) {
+                    Intent userRequestUSBPermsIntent = new Intent(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+                    startActivityForResult(userRequestUSBPermsIntent, CMLD_PERMGROUP_MINIMAL_REQUEST_CODE);
+               }
+               if (!checkPermissionsAcquired(CMLD_PERMISSIONS_GROUP_STORAGE)) {
+                    Intent userRequestStoragePermsIntent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                    startActivityForResult(userRequestStoragePermsIntent, CMLD_PERMGROUP_STORAGE_REQUEST_CODE);
+               }
                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-               setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR); // keep app from crashing when the screen rotates
+               setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR); /* Keep app from crashing when the screen rotates */
           }
 
           clearStatusIcon(R.id.statusIconNewMsg);
@@ -773,6 +793,21 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           ActivityPermissions.PERMS_REQUEST_QUEUE_LOCK.release();
      }
 
+     public void requestAllCMLDPermissionsFromUser() {
+          Intent requestCMLDPermsIntent = new Intent(
+                  Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                  Uri.fromParts("package", this.cmldPackageName, null)
+          );
+          startActivityForResult(requestCMLDPermsIntent, ActivityPermissions.CMLD_PERMS_ALL_REQUEST_CODE);
+          Runnable displayToastMsgRunner = new Runnable() {
+               @Override
+               public void run() {
+                    Utils.displayToastMessageShort("Requested all CMLD permissions.");
+               }
+          };
+          runOnUiThread(displayToastMsgRunner);
+     }
+
      /**
       * Exits the application.
       * @param view
@@ -991,22 +1026,44 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
 
      @Override
      protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-          if(resultCode == BluetoothSerialInterface.ACTVITY_REQUEST_BLUETOOTH_ENABLED_CODE) {
+          String toastStatusMsg = "";
+          if (requestCode == CMLD_PERMS_ALL_REQUEST_CODE) {
+               if(resultCode == Activity.RESULT_CANCELED) {
+                    finish();
+                    return;
+               } else {
+                    toastStatusMsg = "All CMLD app permissions requested. Enable all to ensure the app runs correctly.";
+               }
+          } else if (resultCode == BluetoothSerialInterface.ACTVITY_REQUEST_BLUETOOTH_ENABLED_CODE) {
                if(resultCode == Activity.RESULT_CANCELED) {
                     /* Bluetooth not enabled: */
                     finish();
                     return;
+               } else {
+                    toastStatusMsg = "Bluetooth permissions enabled.";
                }
-          } else if(resultCode == BluetoothSerialInterface.ACTVITY_REQUEST_BLUETOOTH_DISCOVERABLE_CODE) {
+          } else if (resultCode == BluetoothSerialInterface.ACTVITY_REQUEST_BLUETOOTH_DISCOVERABLE_CODE) {
                if(resultCode == Activity.RESULT_CANCELED) {
                     /* Bluetooth discovery not enabled: */
                     finish();
                     return;
+               } else {
+                    toastStatusMsg = "Bluetooth (discoverable) permissions enabled.";
                }
-          } else if(resultCode == AndroidFileChooser.CMLD_PERMGROUP_STORAGE_REQUEST_CODE) {
+          } else if(resultCode == CMLD_PERMGROUP_STORAGE_REQUEST_CODE ||
+                  resultCode == AndroidFileChooser.CMLD_PERMGROUP_STORAGE_REQUEST_CODE) {
                if(resultCode == Activity.RESULT_CANCELED) {
                     finish();
                     return;
+               } else {
+                    toastStatusMsg = "Storage permissions enabled.";
+               }
+          }  else if(resultCode == CMLD_PERMGROUP_MINIMAL_REQUEST_CODE) {
+               if(resultCode == Activity.RESULT_CANCELED) {
+                    finish();
+                    return;
+               } else {
+                    toastStatusMsg = "USB and other minimal CMLD app permissions enabled.";
                }
           } else {
                try {
@@ -1019,6 +1076,17 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                }
           }
           super.onActivityResult(requestCode, resultCode, data);
+          final String toastStatusMsgFinal = toastStatusMsg;
+          if (!toastStatusMsg.equals("")) {
+               Runnable displayToastMsgRunner = new Runnable() {
+                    final String statusMsg = toastStatusMsgFinal;
+                    @Override
+                    public void run() {
+                         Utils.displayToastMessageShort(statusMsg);
+                    }
+               };
+               runOnUiThread(displayToastMsgRunner);
+          }
      }
 
      /**
@@ -1180,6 +1248,11 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           File logDataOutputFolder = new File(logDataOutputFilePath);
           if (!logDataOutputFolder.exists() || !logDataOutputFolder.delete()) {
                Utils.displayToastMessageShort("Error clearing stored log files.");
+               Intent requestCMLDPermsIntent = new Intent(
+                       Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                       Uri.fromParts("package", this.cmldPackageName, null)
+               );
+               startActivityForResult(requestCMLDPermsIntent, CMLD_PERMS_ALL_REQUEST_CODE);
           } else {
                Utils.displayToastMessageShort("Deleted all logs.");
           }

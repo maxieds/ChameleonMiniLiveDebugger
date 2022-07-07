@@ -21,6 +21,7 @@ import android.app.DownloadManager;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.OpenableColumns;
 import android.widget.RadioButton;
 
@@ -50,7 +51,8 @@ public class ExternalFileIO {
         LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
         String mimeType = "message/rfc822";
         String outfilePath = "logdata-" + Utils.getTimestamp().replace(":", "") + "." + fileType;
-        File downloadsFolder = new File("//sdcard//Download//");
+        //File downloadsFolder = new File("//sdcard//Download//");
+        File downloadsFolder = new File(Environment.getStorageDirectory() + "//Download//");
         File outfile = new File(downloadsFolder, outfilePath);
         boolean docsFolderExists = true;
         if (!downloadsFolder.exists()) {
@@ -126,7 +128,8 @@ public class ExternalFileIO {
                     Cursor cursor = activity.getContentResolver().query(data.getData(), null, null, null, null, null);
                     if (cursor != null && cursor.moveToFirst()) {
                         filePath = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                        filePath = "//sdcard//Download//" + filePath;
+                        //filePath = "//sdcard//Download//" + filePath;
+                        filePath = Environment.getStorageDirectory() + "//Download//" + filePath;
                     }
                     throw new RuntimeException(filePath);
                 }

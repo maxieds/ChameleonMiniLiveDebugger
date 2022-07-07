@@ -19,6 +19,7 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.Looper;
 import android.util.Log;
 
@@ -75,7 +76,8 @@ public class ChameleonCommands {
     public static void uploadCardImageByXModem() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setDataAndType(Uri.parse("//sdcard//Download//"), "*/*");
+        //intent.setDataAndType(Uri.parse("//sdcard//Download//"), "*/*");
+        intent.setDataAndType(Uri.parse(Environment.getStorageDirectory() + "//Download//"), "*/*");
         try {
             LiveLoggerActivity.getLiveLoggerInstance().startActivityForResult(Intent.createChooser(intent, "Select a Card File to Upload"), ExternalFileIO.FILE_SELECT_CODE);
         } catch (android.content.ActivityNotFoundException e) {

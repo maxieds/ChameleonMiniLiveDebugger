@@ -17,6 +17,10 @@ public interface ActivityPermissions {
     public static final String CMLD_PERMISSIONS_GROUP_STORAGE = "CMLD.permission-group.FILES_AND_STORAGE";
     public static final String CMLD_PERMISSIONS_GROUP_BLUETOOTH = "CMLD.permission-group.BLUETOOTH_COMPENDIA";
 
+    public static final int CMLD_PERMGROUP_MINIMAL_REQUEST_CODE = 0xFF01;
+    public static final int CMLD_PERMGROUP_STORAGE_REQUEST_CODE = 0x00FA;
+    public static final int CMLD_PERMS_ALL_REQUEST_CODE = 0xFFAB;
+
     public static Map<String,View> REQUEST_QUEUE = new LinkedHashMap<String,View>();
     public static final Semaphore PERMS_REQUEST_QUEUE_LOCK = new Semaphore(1, true);
     public static final int REQUEST_QUEUE_KEY_RADIX = 16;

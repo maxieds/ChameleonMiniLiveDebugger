@@ -20,7 +20,10 @@ package com.maxieds.chameleonminilivedebugger;
 import static android.content.Context.DOWNLOAD_SERVICE;
 
 import android.app.DownloadManager;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.SpinnerAdapter;
 
@@ -147,17 +150,22 @@ public class AndroidLog {
 
     public static String downloadCurrentLogFile(boolean updateGUIWithStatus) {
         if (logDataOutputFileHandle == null) {
-            if (updateGUIWithStatus) {
-                Utils.displayToastMessageShort("Log file download failed.");
-                LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            openLogDataOutputFile();
+            if (logDataOutputFileHandle == null) {
+                if (updateGUIWithStatus) {
+                    Utils.displayToastMessageShort("Log file download failed.");
+                    LiveLoggerActivity llActivity = LiveLoggerActivity.getLiveLoggerInstance();
+                    llActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+                    llActivity.requestAllCMLDPermissionsFromUser();
+                }
+                return "";
             }
-            return "";
         } else {
             closeLogDataOutputFile();
         }
         String downloadsFolderBase = LiveLoggerActivity.getLiveLoggerInstance().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
         downloadsFolderBase = downloadsFolderBase.replace("/", "//");
-        String downloadsFolderPath = downloadsFolderBase + "//Download//";
+        String downloadsFolderPath = downloadsFolderBase;
         File downloadsFolder = new File(downloadsFolderPath);
         boolean docsFolderExists = true;
         if (!downloadsFolder.exists()) {

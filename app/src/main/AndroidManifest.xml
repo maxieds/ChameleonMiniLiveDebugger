@@ -48,6 +48,11 @@
         android:required="false"
         />
     <uses-permission
+        android:name="android.permission.ACCESS_BACKGROUND_LOCATION"
+        android:permissionGroup="CMLD.permission-group.MINIMAL_APP_REQUIREMENTS"
+        android:required="false"
+        />
+    <uses-permission
         android:name="android.permission.VIBRATE"
         android:permissionGroup="CMLD.permission-group.MINIMAL_APP_REQUIREMENTS"
         android:required="true"

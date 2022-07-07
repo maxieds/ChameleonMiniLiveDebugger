@@ -251,7 +251,7 @@ public class ExportTools {
         }
         LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
         String outfilePath = outfilePrefix + "-" + Utils.getTimestamp().replace(":", "") + ".dump";
-        String downloadsFolderBase = LiveLoggerActivity.getLiveLoggerInstance().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+        String downloadsFolderBase = Environment.getStorageDirectory().getAbsolutePath();
         downloadsFolderBase = downloadsFolderBase.replace("/", "//");
         String downloadsFolderPath = downloadsFolderBase + "//Download//";
         File downloadsFolder = new File(downloadsFolderPath);
@@ -548,7 +548,7 @@ public class ExportTools {
         LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
         String mimeType = "application/octet-stream";
         String outfilePath = filePathPrefix + Utils.getTimestamp().replace(":", "") + ".bin";
-        String downloadsFolderBase = LiveLoggerActivity.getLiveLoggerInstance().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+        String downloadsFolderBase = Environment.getStorageDirectory().getAbsolutePath();
         downloadsFolderBase = downloadsFolderBase.replace("/", "//");
         String downloadsFolderPath = downloadsFolderBase + "//Download//";
         File downloadsFolder = new File(downloadsFolderPath);
