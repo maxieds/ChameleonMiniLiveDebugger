@@ -74,12 +74,13 @@ public class ChameleonCommands {
     }
 
     public static void uploadCardImageByXModem() {
+        LiveLoggerActivity llActivity = LiveLoggerActivity.getLiveLoggerInstance();
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         //intent.setDataAndType(Uri.parse("//sdcard//Download//"), "*/*");
-        intent.setDataAndType(Uri.parse(Environment.getStorageDirectory() + "//Download//"), "*/*");
+        intent.setDataAndType(Uri.parse(llActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "//Download//"), "*/*");
         try {
-            LiveLoggerActivity.getLiveLoggerInstance().startActivityForResult(Intent.createChooser(intent, "Select a Card File to Upload"), ExternalFileIO.FILE_SELECT_CODE);
+            llActivity.startActivityForResult(Intent.createChooser(intent, "Select a Card File to Upload"), ExternalFileIO.FILE_SELECT_CODE);
         } catch (android.content.ActivityNotFoundException e) {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to choose card file: " + e.getMessage()));
         }

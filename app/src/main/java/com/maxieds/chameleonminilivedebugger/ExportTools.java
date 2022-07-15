@@ -249,9 +249,10 @@ public class ExportTools {
         if(serialIOPort == null || !serialIOPort.serialConfigured()) {
             return false;
         }
-        LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
+        LiveLoggerActivity llActivity = LiveLoggerActivity.getLiveLoggerInstance();
+        llActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
         String outfilePath = outfilePrefix + "-" + Utils.getTimestamp().replace(":", "") + ".dump";
-        String downloadsFolderBase = Environment.getStorageDirectory().getAbsolutePath();
+        String downloadsFolderBase = llActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
         downloadsFolderBase = downloadsFolderBase.replace("/", "//");
         String downloadsFolderPath = downloadsFolderBase + "//Download//";
         File downloadsFolder = new File(downloadsFolderPath);
@@ -264,7 +265,7 @@ public class ExportTools {
         }
         else {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to save output in Downloads folder."));
-            LiveLoggerActivity.getLiveLoggerInstance().clearStatusIcon(R.id.statusIconUlDl);
+            llActivity.clearStatusIcon(R.id.statusIconUlDl);
             return false;
         }
 
@@ -274,7 +275,7 @@ public class ExportTools {
         } catch(Exception ioe) {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
             AndroidLog.printStackTrace(ioe);
-            LiveLoggerActivity.getLiveLoggerInstance().clearStatusIcon(R.id.statusIconUlDl);
+            llActivity.clearStatusIcon(R.id.statusIconUlDl);
             return false;
         }
 
@@ -545,10 +546,11 @@ public class ExportTools {
      * @ref LiveLoggerActivity.actionButtonDumpMFU
      */
     public static boolean saveBinaryDumpMFU(String filePathPrefix) {
-        LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
+        LiveLoggerActivity llActivity = LiveLoggerActivity.getLiveLoggerInstance();
+        llActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
         String mimeType = "application/octet-stream";
         String outfilePath = filePathPrefix + Utils.getTimestamp().replace(":", "") + ".bin";
-        String downloadsFolderBase = Environment.getStorageDirectory().getAbsolutePath();
+        String downloadsFolderBase = llActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
         downloadsFolderBase = downloadsFolderBase.replace("/", "//");
         String downloadsFolderPath = downloadsFolderBase + "//Download//";
         File downloadsFolder = new File(downloadsFolderPath);
@@ -562,7 +564,7 @@ public class ExportTools {
         }
         else {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to save output in Downloads folder."));
-            LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            llActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             return false;
         }
         try {
@@ -575,7 +577,7 @@ public class ExportTools {
             fout.close();
         } catch(Exception ioe) {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
-            LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            llActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             AndroidLog.printStackTrace(ioe);
             return false;
         }

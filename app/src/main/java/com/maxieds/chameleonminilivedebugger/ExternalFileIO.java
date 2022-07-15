@@ -48,11 +48,12 @@ public class ExternalFileIO {
     public static String FIRMWARE_SUBDIR = "firmware//";
 
     public static void exportOutputFile(String fileType) {
-        LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
+        LiveLoggerActivity llActivity = LiveLoggerActivity.getLiveLoggerInstance();
+        llActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusdownload16);
         String mimeType = "message/rfc822";
         String outfilePath = "logdata-" + Utils.getTimestamp().replace(":", "") + "." + fileType;
         //File downloadsFolder = new File("//sdcard//Download//");
-        File downloadsFolder = new File(Environment.getStorageDirectory() + "//Download//");
+        File downloadsFolder = new File(llActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "//Download//");
         File outfile = new File(downloadsFolder, outfilePath);
         boolean docsFolderExists = true;
         if (!downloadsFolder.exists()) {
@@ -63,7 +64,7 @@ public class ExternalFileIO {
         }
         else {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to save output in Downloads folder."));
-            LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            llActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             return;
         }
         try {
@@ -82,7 +83,7 @@ public class ExternalFileIO {
             }
         } catch(Exception ioe) {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
-            LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
+            llActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             AndroidLog.printStackTrace(ioe);
             return;
         }
@@ -105,7 +106,7 @@ public class ExternalFileIO {
             sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Chameleon Mini Log Data Output (Log Attached)");
             sendIntent.putExtra(Intent.EXTRA_TEXT, "See the subject.");
             sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            LiveLoggerActivity.getLiveLoggerInstance().startActivity(Intent.createChooser(sendIntent, "Share the file ... "));
+            llActivity.startActivity(Intent.createChooser(sendIntent, "Share the file ... "));
         }
         MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("EXPORT", "Saved log file to \"" + outfilePath + "\"."));
     }
@@ -129,7 +130,7 @@ public class ExternalFileIO {
                     if (cursor != null && cursor.moveToFirst()) {
                         filePath = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
                         //filePath = "//sdcard//Download//" + filePath;
-                        filePath = Environment.getStorageDirectory() + "//Download//" + filePath;
+                        filePath = LiveLoggerActivity.getLiveLoggerInstance().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "//Download//" + filePath;
                     }
                     throw new RuntimeException(filePath);
                 }

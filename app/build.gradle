@@ -79,11 +79,11 @@ android {
     defaultConfig {
 
         applicationId "com.maxieds.chameleonminilivedebugger"
-        minSdkVersion 30
+        minSdkVersion 29
         targetSdkVersion 30
-        compileSdkVersion 30
-        versionCode 114 + 8080
-        versionName "1.4.4"
+        compileSdkVersion 29
+        versionCode 115 + 8080
+        versionName "1.4.5"
         multiDexEnabled true
 
         buildConfigField "String", "GIT_COMMIT_HASH", "\"" + getGitCommitHash() + "\""
@@ -98,8 +98,8 @@ android {
          *       Java-11. It is still common to have Java-1.8 installed
          *       as the default runtime.
          */
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     sourceSets {

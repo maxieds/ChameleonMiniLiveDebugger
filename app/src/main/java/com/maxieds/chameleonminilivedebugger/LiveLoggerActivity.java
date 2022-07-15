@@ -379,7 +379,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     startActivityForResult(userRequestUSBPermsIntent, CMLD_PERMGROUP_MINIMAL_REQUEST_CODE);
                }
                if (!checkPermissionsAcquired(CMLD_PERMISSIONS_GROUP_STORAGE)) {
-                    Intent userRequestStoragePermsIntent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                    Intent userRequestStoragePermsIntent = new Intent(Settings.ACTION_SETTINGS);
                     startActivityForResult(userRequestStoragePermsIntent, CMLD_PERMGROUP_STORAGE_REQUEST_CODE);
                }
                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);

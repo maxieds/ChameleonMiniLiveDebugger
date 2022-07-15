@@ -103,7 +103,7 @@ public class AndroidFileChooser {
         LiveLoggerActivity llActivity = LiveLoggerActivity.getLiveLoggerInstance();
         if(!llActivity.checkPermissionsAcquired(ActivityPermissions.CMLD_PERMISSIONS_GROUP_STORAGE)) {
             Utils.displayToastMessageShort("CMLD does not have storage permissions to access the filesystem.");
-            Intent userRequestStoragePermsIntent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+            Intent userRequestStoragePermsIntent = new Intent(Settings.ACTION_SETTINGS);
             llActivity.startActivityForResult(userRequestStoragePermsIntent, CMLD_PERMGROUP_STORAGE_REQUEST_CODE);
             return "";
         }
