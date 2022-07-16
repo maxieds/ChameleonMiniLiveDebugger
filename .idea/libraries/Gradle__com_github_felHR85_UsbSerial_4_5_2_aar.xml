@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Gradle: com.github.felHR85:UsbSerial:4.5.2@aar">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../.gradle/caches/transforms-2/files-2.1/6694777d9dc5c63f9c51a61c5b65a9ad/jetified-UsbSerial-4.5.2/res" />
+      <root url="file://$PROJECT_DIR$/../.gradle/caches/transforms-3/0d88a6197bc176f76259e2c716428d44/transformed/jetified-UsbSerial-4.5.2/res" />
+      <root url="jar://$PROJECT_DIR$/../.gradle/caches/transforms-3/041ac67a436a3800e9e672fbb81171a2/transformed/jetified-UsbSerial-4.5.2/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../.gradle/caches/transforms-3/041ac67a436a3800e9e672fbb81171a2/transformed/jetified-UsbSerial-4.5.2/AndroidManifest.xml" />
+      <root url="file://$PROJECT_DIR$/../.gradle/caches/transforms-3/041ac67a436a3800e9e672fbb81171a2/transformed/jetified-UsbSerial-4.5.2/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../.gradle/caches/modules-2/files-2.1/com.github.felHR85/UsbSerial/4.5.2/160f1fcfa2afa5faf324220ff012433d6fb10fed/UsbSerial-4.5.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
