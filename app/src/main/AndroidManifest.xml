@@ -135,6 +135,11 @@
 
         <uses-library android:name="com.android.future.usb.accessory" />
 
+        <uses-library
+            android:name="com.github.maxieds:AndroidFilePickerLight"
+            android:required="false"
+            />
+
         <activity
             android:name=".LiveLoggerActivity"
             android:screenOrientation="nosensor"

@@ -96,8 +96,8 @@ android {
 
         applicationId "com.maxieds.chameleonminilivedebugger"
 
-        versionCode 116 + 8080
-        versionName "1.4.6"
+        versionCode 117 + 8080
+        versionName "1.4.7"
 
         minSdkVersion 26
         targetSdkVersion 30
@@ -239,7 +239,7 @@ android {
         implementation 'org.antlr:antlr4-runtime:4.9.2'
         implementation 'com.github.felHR85:UsbSerial:4.5.2'
         implementation 'com.shawnlin:number-picker:2.4.9'
-        implementation 'com.github.maxieds:AndroidFilePickerLight:release-v20'
+        implementation 'com.github.maxieds:AndroidFilePickerLight:release-v21'
 
     }
 
