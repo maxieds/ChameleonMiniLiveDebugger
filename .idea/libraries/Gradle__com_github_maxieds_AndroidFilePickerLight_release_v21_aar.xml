@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: com.github.maxieds:AndroidFilePickerLight:release-v21@aar">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../.gradle/caches/transforms-3/f9570cd4a3c5cdc5853780d8805901b0/transformed/jetified-AndroidFilePickerLight-release-v21/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../.gradle/caches/transforms-3/f9570cd4a3c5cdc5853780d8805901b0/transformed/jetified-AndroidFilePickerLight-release-v21/res" />
+      <root url="file://$PROJECT_DIR$/../.gradle/caches/transforms-3/f9570cd4a3c5cdc5853780d8805901b0/transformed/jetified-AndroidFilePickerLight-release-v21/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../.gradle/caches/modules-2/files-2.1/com.github.maxieds/AndroidFilePickerLight/release-v21/8a9d9cadbc922b38dd22216f785ed96884b76eb/AndroidFilePickerLight-release-v21-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

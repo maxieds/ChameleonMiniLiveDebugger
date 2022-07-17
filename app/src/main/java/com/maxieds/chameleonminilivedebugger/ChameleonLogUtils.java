@@ -17,6 +17,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import androidx.annotation.NonNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -100,6 +102,7 @@ public class ChameleonLogUtils {
         LOG_INFO_APP_AUTH_KEY((byte) 0xD0, DATADIR_BIDIRECTIONAL, "The key used for authentication"),
         LOG_INFO_APP_NONCE_B((byte) 0xD1, DATADIR_BIDIRECTIONAL, "Nonce B's value (generated)"),
         LOG_INFO_APP_NONCE_AB((byte) 0xD2, DATADIR_BIDIRECTIONAL, "Nonces A and B values (received)"),
+        LOG_INFO_APP_SESSION_IV((byte) 0xD3, DATADIR_BIDIRECTIONAL, "Session IV buffer"),
         /* ISO14443-3A,4 related logging */
         LOG_INFO_ISO14443_3A_STATE((byte) 0x53, DATADIR_BIDIRECTIONAL, ""),
         LOG_INFO_ISO14443_4_STATE((byte) 0x54, DATADIR_BIDIRECTIONAL, ""),
@@ -184,19 +187,11 @@ public class ChameleonLogUtils {
 
     }
 
-    public static int ResponseIsLiveLoggingBytes(byte[] loggingBytes) {
-         if(loggingBytes.length < 4) {
-              return 0;
-         }
-         byte logCodeByte = loggingBytes[0];
-         int logDataLength = Byte.toUnsignedInt(loggingBytes[1]);
-         if(LogCode.LOG_CODE_MAP.get(logCodeByte) != null) {
-             return 4 + logDataLength;
-         }
-         return 0;
+    public static int ResponseIsLiveLoggingBytes(@NonNull byte[] loggingBytes) {
+        return ResponseIsLiveLoggingBytes(loggingBytes, 0, loggingBytes.length);
     }
 
-    public static int ResponseIsLiveLoggingBytes(byte[] loggingBytes, int startIndex, int logLength) {
+    public static int ResponseIsLiveLoggingBytes(@NonNull byte[] loggingBytes, int startIndex, int logLength) {
         if(logLength < 4) {
             return 0;
         }

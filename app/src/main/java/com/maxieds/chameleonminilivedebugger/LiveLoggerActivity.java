@@ -629,9 +629,10 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           }
           else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED)) {
                byte[] serialByteData = intent.getByteArrayExtra("DATA");
-               String dataMsg = String.format(Locale.getDefault(), "Unexpected serial I/O data received:\n%s\n%s",
-                       Utils.bytes2Hex(serialByteData), Utils.bytes2Ascii(serialByteData));
-               MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", dataMsg));
+               int logCodeByteCount = ChameleonLogUtils.ResponseIsLiveLoggingBytes(serialByteData);
+               String dataMsg = String.format(Locale.getDefault(), "Unexpected serial I/O data received (data as log below)");
+               MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", dataMsg));
+               MainActivityLogUtils.appendNewLog(LogEntryUI.newInstance(serialByteData, ""));
           }
           else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED)) {
                byte[] logDataBytes = intent.getByteArrayExtra("DATA");
