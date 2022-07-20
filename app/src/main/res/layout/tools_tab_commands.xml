@@ -536,28 +536,56 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonDESFireTerminalCommand"
-                    android:tag="DF_SETHDR=HardwareVersion %s:2"
-                    android:text="Set HW-Ver" />
+                    android:tag="DF_SETHDR=Type %s:1"
+                    android:text="Set Tag-Type" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonDESFireTerminalCommand"
-                    android:tag="DF_SETHDR=SoftwareVersion %s:2"
-                    android:text="Set SW-Ver" />
+                    android:tag="DF_SETHDR=Subtype %s:1"
+                    android:text="Set Tag-Subtype" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonDESFireTerminalCommand"
-                    android:tag="DF_SETHDR=BatchNumber %s:5"
+                    android:tag="DF_SETHDR=HwProtoType %s:1"
+                    android:text="Set HW-Proto" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
+                    android:onClick="actionButtonDESFireTerminalCommand"
+                    android:tag="DF_SETHDR=HwVers %s:2"
+                    android:text="Set HW-Vers" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
+                    android:onClick="actionButtonDESFireTerminalCommand"
+                    android:tag="DF_SETHDR=SwProtoType %s:1"
+                    android:text="Set SW-Proto" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
+                    android:onClick="actionButtonDESFireTerminalCommand"
+                    android:tag="DF_SETHDR=SwVers %s:2"
+                    android:text="Set SW-Vers" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
+                    android:onClick="actionButtonDESFireTerminalCommand"
+                    android:tag="DF_SETHDR=BatchNo %s:5"
                     android:text="Set Batch-No" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonDESFireTerminalCommand"
-                    android:tag="DF_SETHDR=ProductionDate %s:2"
+                    android:tag="DF_SETHDR=ProdDate %s:2"
                     android:text="Set Prod-Date" />
 
             </GridLayout>
