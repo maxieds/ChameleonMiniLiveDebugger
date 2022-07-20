@@ -184,12 +184,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/firmwareicon24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="VERSION?" />
-
-                <Button
-                    style="@style/GridButtons"
                     android:drawableLeft="@drawable/versionmy24"
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="memoryinfo (E)" />
@@ -495,6 +489,12 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:singleLine="true"
                     android:textColor="?colorPrimaryDarkLog" />
 
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/firmwareicon24"
+                    android:onClick="actionButtonCreateNewEvent"
+                    android:text="VERSION?" />
+
             </GridLayout>
 
             <View
@@ -536,15 +536,15 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonDESFireTerminalCommand"
-                    android:tag="DF_SETHDR=Type %s:1"
-                    android:text="Set Tag-Type" />
+                    android:tag="DF_SETHDR=HwType %s:1"
+                    android:text="Set HW-Type" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonDESFireTerminalCommand"
-                    android:tag="DF_SETHDR=Subtype %s:1"
-                    android:text="Set Tag-Subtype" />
+                    android:tag="DF_SETHDR=HwSubtype %s:1"
+                    android:text="Set HW-Subtype" />
 
                 <Button
                     style="@style/GridButtons"
@@ -559,6 +559,20 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:onClick="actionButtonDESFireTerminalCommand"
                     android:tag="DF_SETHDR=HwVers %s:2"
                     android:text="Set HW-Vers" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
+                    android:onClick="actionButtonDESFireTerminalCommand"
+                    android:tag="DF_SETHDR=SwType %s:1"
+                    android:text="Set SW-Type" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
+                    android:onClick="actionButtonDESFireTerminalCommand"
+                    android:tag="DF_SETHDR=SwSubtype %s:1"
+                    android:text="Set SW-Subtype" />
 
                 <Button
                     style="@style/GridButtons"
