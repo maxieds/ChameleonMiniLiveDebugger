@@ -21,9 +21,9 @@ gen/*
 *.tokens
 *.iml
 .gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
+local.properties
+.idea/
+.idea/*
 .DS_Store
 /build
 /captures
