@@ -276,6 +276,7 @@ android {
 
     repositories {
 
+        jcenter()
         google()
         mavenCentral()
 
