@@ -58,7 +58,7 @@ public class LogEntryUI extends LogEntryBase {
     private CheckBox entrySelect;
     private ImageView inoutDirIndicator, apduParseStatus;
     private TextView tvLabel, tvNumBytes, tvNumMillis, tvLogType, tvEntropy;
-    private TextView tvDataHexBytes, tvDataAscii, tvApdu, tvDuplicateCount;
+    private TextView tvDataHexBytes, tvDataAscii, tvDataUint32Values, tvApdu, tvDuplicateCount;
 
     /**
      * Metadata associated with the log entry.
@@ -163,6 +163,11 @@ public class LogEntryUI extends LogEntryBase {
             TextView tvDataAsciiClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_logdata_ascii);
             tvDataAsciiClone.setText(tvDataAscii.getText());
             TextView tvApduClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_apdu);
+            TextView tvDataUint32ValuesClone = (TextView) mainEntryContainerClone.findViewById(R.id.text_logdata_uint32_values);
+            tvDataUint32ValuesClone.setText(tvDataUint32Values.getText());
+            if (tvDataUint32Values.getVisibility() == LinearLayout.INVISIBLE) {
+                tvDataUint32ValuesClone.setVisibility(LinearLayout.INVISIBLE);
+            }
             tvApduClone.setText(tvApdu.getText());
             if (tvApduClone.getText().toString().equals("APDU: NONE RECOGNIZED")) {
                 tvApduClone.setVisibility(TextView.GONE);
@@ -191,7 +196,7 @@ public class LogEntryUI extends LogEntryBase {
             apduParseStatus = (ImageView) mainContainerRef.findViewById(R.id.apduParseStatusImg);
             tvLabel = (TextView) mainContainerRef.findViewById(R.id.text_label);
             recordID = ++MainActivityLogUtils.RECORDID;
-            tvLabel.setText(logLabel + String.format(Locale.getDefault(), "%06d", MainActivityLogUtils.RECORDID));
+            tvLabel.setText(logLabel + String.format(BuildConfig.DEFAULT_LOCALE, "%06d", MainActivityLogUtils.RECORDID));
             tvNumBytes = (TextView) mainContainerRef.findViewById(R.id.text_data_num_bytes);
             tvNumBytes.setText(String.valueOf(numBytes) + "B");
             tvNumMillis = (TextView) mainContainerRef.findViewById(R.id.text_offset_millis);
@@ -199,11 +204,33 @@ public class LogEntryUI extends LogEntryBase {
             tvLogType = (TextView) mainContainerRef.findViewById(R.id.text_log_type);
             tvLogType.setText(ChameleonLogUtils.LogCode.lookupByLogCode(logType).getShortCodeName(logType));
             tvEntropy = (TextView) mainContainerRef.findViewById(R.id.text_entropy_compression_ratio);
-            tvEntropy.setText(String.format(Locale.getDefault(), "CPR/ENT: %1.4g", Utils.computeByteArrayEntropy(entryData)));
+            tvEntropy.setText(String.format(BuildConfig.DEFAULT_LOCALE, "CPR/ENT: %1.4g", Utils.computeByteArrayEntropy(entryData)));
             tvDataHexBytes = (TextView) mainContainerRef.findViewById(R.id.text_logdata_hex);
             tvDataHexBytes.setText(Utils.bytes2Hex(entryData));
             tvDataAscii = (TextView) mainContainerRef.findViewById(R.id.text_logdata_ascii);
             tvDataAscii.setText(Utils.bytes2Ascii(entryData));
+            TextView tvDataUint32ValuesClone = (TextView) mainContainerRef.findViewById(R.id.text_logdata_uint32_values);
+            if (entryData.length > 0 && entryData.length <= 4) {
+                final int base10MaxDigitsToPrint = 6;
+
+                long uint32LE = Utils.bytesToUint32LittleEndian(entryData);
+                boolean displayDecimalValuesLE = ((int) Math.ceil(Math.log10(uint32LE))) >= base10MaxDigitsToPrint;
+                String uint32LEDesc = String.format(BuildConfig.DEFAULT_LOCALE, "0x%08X", uint32LE);
+                if (displayDecimalValuesLE) {
+                    uint32LEDesc += String.format(BuildConfig.DEFAULT_LOCALE, ", %d", uint32LE);
+                }
+                uint32LEDesc += String.format(BuildConfig.DEFAULT_LOCALE, " (Little Endian); ");
+                long uint32BE = Utils.bytesToUint32BigEndian(entryData);
+                boolean displayDecimalValuesBE = ((int) Math.ceil(Math.log10(uint32BE))) >= base10MaxDigitsToPrint;
+                String uint32BEDesc = String.format(BuildConfig.DEFAULT_LOCALE, "0x%08X", uint32BE);
+                if (displayDecimalValuesBE) {
+                    uint32BEDesc += String.format(BuildConfig.DEFAULT_LOCALE, ", %d", uint32BE);
+                }
+                uint32BEDesc += String.format(BuildConfig.DEFAULT_LOCALE, " (Big Endian); ");
+                tvDataUint32Values.setText(uint32LEDesc + uint32BEDesc);
+            } else {
+                tvDataUint32Values.setVisibility(LinearLayout.INVISIBLE);
+            }
             tvApdu = (TextView) mainContainerRef.findViewById(R.id.text_apdu);
             tvApdu.setText(ApduUtils.classifyApdu(entryData));
             tvDuplicateCount = (TextView) mainEntryContainer.findViewById(R.id.text_duplicate_count);
@@ -297,10 +324,10 @@ public class LogEntryUI extends LogEntryBase {
         boolean drawCountInHex = Math.log10(numDuplicates) > 5.0 ? true : false;
         String duplicateNumberText = "";
         if(drawCountInHex) {
-            duplicateNumberText = String.format(Locale.getDefault(), "0x%04x", numDuplicates);
+            duplicateNumberText = String.format(BuildConfig.DEFAULT_LOCALE, "0x%04x", numDuplicates);
         }
         else {
-            duplicateNumberText = String.format(Locale.getDefault(), "%06d", numDuplicates);
+            duplicateNumberText = String.format(BuildConfig.DEFAULT_LOCALE, "%06d", numDuplicates);
         }
         duplicateNumberText += " -- IDENTICAL LOGS";
         tvDuplicateCount.setVisibility(View.VISIBLE);
@@ -337,7 +364,7 @@ public class LogEntryUI extends LogEntryBase {
     @Override
     public String toString() {
         ChameleonLogUtils.LogCode logCode = ChameleonLogUtils.LogCode.lookupByLogCode(logType);
-        String recordFmt = String.format(Locale.getDefault(), "%06d -- %-32s [%-3s bytes] (%s%-6s ms) [%s] {%s}", recordID, logCode.name(),
+        String recordFmt = String.format(BuildConfig.DEFAULT_LOCALE, "%06d -- %-32s [%-3s bytes] (%s%-6s ms) [%s] {%s}", recordID, logCode.name(),
                 String.valueOf(entryData.length), diffTimeMillis >= 0 ? "+" : "~", String.valueOf(abs(diffTimeMillis)),
                 Utils.bytes2Hex(entryData), tvApdu.getText().toString());
         return recordFmt;

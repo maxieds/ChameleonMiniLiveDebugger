@@ -188,18 +188,18 @@ public class LogEntryMetadataRecord extends LogEntryBase {
         if(eventID.equals("LOCATION")) {
             String[] locCoords = Utils.getGPSLocationCoordinates();
             String locationDetails = "";
-            locationDetails += String.format(Locale.getDefault(), "Coordinates: (%s lat, %s long)\n", locCoords[0], locCoords[1]);
+            locationDetails += String.format(BuildConfig.DEFAULT_LOCALE, "Coordinates: (%s lat, %s long)\n", locCoords[0], locCoords[1]);
             try {
-                Geocoder gc = new Geocoder(LiveLoggerActivity.getLiveLoggerInstance(), Locale.getDefault());
+                Geocoder gc = new Geocoder(LiveLoggerActivity.getLiveLoggerInstance(), BuildConfig.DEFAULT_LOCALE);
                 List<Address> gcAddrs = gc.getFromLocation(Double.parseDouble(locCoords[0]), Double.parseDouble(locCoords[0]), 1);
                 if (gcAddrs != null && gcAddrs.size() > 0) {
-                    locationDetails += String.format(Locale.getDefault(), "Address: %s, %s, %s %s\n",
+                    locationDetails += String.format(BuildConfig.DEFAULT_LOCALE, "Address: %s, %s, %s %s\n",
                                                      gcAddrs.get(0).getAddressLine(0), gcAddrs.get(0).getLocality(),
                                                      gcAddrs.get(0).getAdminArea(), gcAddrs.get(0).getPostalCode(),
                                                      gcAddrs.get(0).getCountryName());
                     String knownLocID = gcAddrs.get(0).getFeatureName();
                     if(knownLocID != null) {
-                        locationDetails += String.format(Locale.getDefault(), "Known ID: %s", knownLocID);
+                        locationDetails += String.format(BuildConfig.DEFAULT_LOCALE, "Known ID: %s", knownLocID);
                     }
                 }
             } catch (Exception e) {

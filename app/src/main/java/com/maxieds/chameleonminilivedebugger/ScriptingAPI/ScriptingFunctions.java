@@ -152,7 +152,7 @@ public class ScriptingFunctions {
             if(argList.size() != 1) {
                 throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException, "Invalid number of parameters.");
             }
-            String scriptExitMsg = String.format(Locale.getDefault(), "Script exited with CODE = %d.", argList.get(0).getValueAsInt());
+            String scriptExitMsg = String.format(BuildConfig.DEFAULT_LOCALE, "Script exited with CODE = %d.", argList.get(0).getValueAsInt());
             ChameleonScripting.getRunningInstance().killRunningScript(scriptExitMsg);
             return ScriptingTypes.ScriptVariable.newInstance();
         }
@@ -206,7 +206,7 @@ public class ScriptingFunctions {
                     }
                     if(fmtSearchPos == rawStringPart.length()) {
                         ScriptingGUIConsole.appendConsoleOutputRecordErrorWarning(
-                                String.format(Locale.getDefault(), "String format error '%s' is invalid!", rawStringPart),
+                                String.format(BuildConfig.DEFAULT_LOCALE, "String format error '%s' is invalid!", rawStringPart),
                                 null,
                                 ChameleonScripting.getRunningInstance().getExecutingLineOfCode()
                         );
@@ -216,19 +216,19 @@ public class ScriptingFunctions {
                     char fmtSpec = rawStringPart.charAt(fmtSearchPos);
                     try {
                         if(fmtSpec == 's' || fmtSpec == 'S' || fmtSpec == 'c') {
-                            consoleOutput.append(String.format(Locale.getDefault(), rawStringPart, argList.get(varIndex).getValueAsString()));
+                            consoleOutput.append(String.format(BuildConfig.DEFAULT_LOCALE, rawStringPart, argList.get(varIndex).getValueAsString()));
                         }
                         else if(!argList.get(varIndex).isIntegerType()) {
                             rawStringPart = "%s" + rawStringPart.substring(fmtSearchPos + 1);
-                            consoleOutput.append(String.format(Locale.getDefault(), rawStringPart, argList.get(varIndex).getValueAsString()));
+                            consoleOutput.append(String.format(BuildConfig.DEFAULT_LOCALE, rawStringPart, argList.get(varIndex).getValueAsString()));
                         }
                         else {
-                            consoleOutput.append(String.format(Locale.getDefault(), rawStringPart, argList.get(varIndex).getValueAsInt()));
+                            consoleOutput.append(String.format(BuildConfig.DEFAULT_LOCALE, rawStringPart, argList.get(varIndex).getValueAsInt()));
                         }
                     } catch(Exception strFmtEx) {
                         AndroidLog.printStackTrace(strFmtEx);
                         ScriptingGUIConsole.appendConsoleOutputRecordErrorWarning(
-                                String.format(Locale.getDefault(), "String format error '%s' is invalid!", rawStringPart),
+                                String.format(BuildConfig.DEFAULT_LOCALE, "String format error '%s' is invalid!", rawStringPart),
                                 null,
                                 ChameleonScripting.getRunningInstance().getExecutingLineOfCode()
                         );
@@ -377,7 +377,7 @@ public class ScriptingFunctions {
             AndroidLog.i(TAG,"ArrayToString -> Array Length = " + arrLength);
             for(int ai = 0; ai < arrLength; ai++) {
                 String nextSpace = (ai + 1 == arrLength) ? " " : ", ";
-                arrReprStr += String.format(Locale.getDefault(), "%s%s", arrVar.getValueAt(ai).getValueAsString(), nextSpace);
+                arrReprStr += String.format(BuildConfig.DEFAULT_LOCALE, "%s%s", arrVar.getValueAt(ai).getValueAsString(), nextSpace);
             }
             arrReprStr += "}";
             AndroidLog.i(TAG, "ArrayToString -> \"" + arrReprStr + "\"");
@@ -409,9 +409,9 @@ public class ScriptingFunctions {
             case "CMLD.versionName":
                 return BuildConfig.VERSION_NAME;
             case "CMLD.versionCode":
-                return String.format(Locale.getDefault(), "%d", BuildConfig.VERSION_CODE);
+                return String.format(BuildConfig.DEFAULT_LOCALE, "%d", BuildConfig.VERSION_CODE);
             case "CMLD.versionCodeNormalized":
-                return String.format(Locale.getDefault(), "%d", BuildConfig.VERSION_CODE - 8080);
+                return String.format(BuildConfig.DEFAULT_LOCALE, "%d", BuildConfig.VERSION_CODE - 8080);
             case "$env0":
                 return ScriptingConfig.ENV0_VALUE;
             case "$env1":
@@ -427,10 +427,10 @@ public class ScriptingFunctions {
     }
 
     private static void printFunctionArgumentList(String funcName, List<ScriptVariable> svList) {
-        AndroidLog.i(TAG, String.format(Locale.getDefault(), "FUNCTION %s(...) called with ##% 2d ARGS", funcName, svList.size()));
+        AndroidLog.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "FUNCTION %s(...) called with ##% 2d ARGS", funcName, svList.size()));
         int varIndex = 0;
         for(ScriptVariable svar : svList) {
-            AndroidLog.i(TAG, String.format(Locale.getDefault(), "    &&&& [VARIDX=% 2d] '%s' (quoted)", varIndex, svList.get(varIndex++).getValueAsString()));
+            AndroidLog.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "    &&&& [VARIDX=% 2d] '%s' (quoted)", varIndex, svList.get(varIndex++).getValueAsString()));
         }
     }
 

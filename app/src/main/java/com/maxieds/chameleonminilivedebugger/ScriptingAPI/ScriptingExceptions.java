@@ -17,13 +17,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.maxieds.chameleonminilivedebugger.AndroidLog;
-
-import java.util.Locale;
+import com.maxieds.chameleonminilivedebugger.BuildConfig;
 
 public class ScriptingExceptions {
 
@@ -64,7 +61,7 @@ public class ScriptingExceptions {
         }
 
         public ChameleonScriptingException(@NonNull ExceptionType exType, String msg) {
-            super(String.format(Locale.getDefault(), "%s => %s", exType.name(), msg));
+            super(String.format(BuildConfig.DEFAULT_LOCALE, "%s => %s", exType.name(), msg));
         }
 
         public int getInvokingLineNumber() {

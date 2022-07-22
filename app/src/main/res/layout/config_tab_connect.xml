@@ -282,6 +282,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 <Button
                     android:id="@+id/connectToDeviceButton"
                     style="@style/GridButtons"
+                    android:layout_width="match_parent"
                     android:drawableLeft="@drawable/connect_button_logo24"
                     android:text="Connect to Chameleon" />
 

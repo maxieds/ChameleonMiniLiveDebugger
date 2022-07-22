@@ -17,8 +17,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
-import android.util.Log;
-
 public class ChameleonSettings {
 
     private static final String TAG = ChameleonSettings.class.getSimpleName();
@@ -44,7 +42,7 @@ public class ChameleonSettings {
     public static synchronized void initSerialIOPortObjects() {
         serialIOPorts = new SerialIOReceiver[2];
         serialIOPorts[USBIO_IFACE_INDEX] = new SerialUSBInterface(LiveLoggerActivity.getLiveLoggerInstance());
-        serialIOPorts[BTIO_IFACE_INDEX] = new BluetoothSerialInterface(LiveLoggerActivity.getLiveLoggerInstance());
+        serialIOPorts[BTIO_IFACE_INDEX] = new BluetoothBLEInterface(LiveLoggerActivity.getLiveLoggerInstance());
         SERIALIO_IFACE_ACTIVE_INDEX = -1;
     }
 
@@ -67,7 +65,7 @@ public class ChameleonSettings {
                 AndroidLog.i(TAG, "Started scanning for SerialUSB devices ... ");
                 serialIOPorts[si].startScanningDevices();
             }
-            else if(si == BTIO_IFACE_INDEX && allowBluetooth && ((BluetoothSerialInterface) serialIOPorts[si]).isBluetoothEnabled()) {
+            else if(si == BTIO_IFACE_INDEX && allowBluetooth && ((BluetoothBLEInterface) serialIOPorts[si]).isBluetoothEnabled()) {
                 AndroidLog.i(TAG, "Started scanning for SerialBT devices ... ");
                 serialIOPorts[si].startScanningDevices();
             }

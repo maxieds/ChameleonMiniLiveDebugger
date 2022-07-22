@@ -65,6 +65,7 @@ import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_PERIPHERALS;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_SLOTS;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_TAGCONFIG;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.UITAB_DATA;
 
 public class UITabUtils {
 
@@ -160,7 +161,7 @@ public class UITabUtils {
                     if(scrollState == SCROLL_STATE_IDLE) {
                         int previousSlotNumber = ChameleonIO.DeviceStatusSettings.DIP_SETTING;
                         String settingCmd = ChameleonIO.REVE_BOARD ? "setting=" : "SETTING=";
-                        ChameleonIO.getSettingFromDevice(String.format(Locale.getDefault(), "%s%d", settingCmd, numberPicker.getValue()));
+                        ChameleonIO.getSettingFromDevice(String.format(BuildConfig.DEFAULT_LOCALE, "%s%d", settingCmd, numberPicker.getValue()));
                         int activeSlotNumber = numberPicker.getValue();
                         int numSlotsUpperBound = ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOT_COUNT;
                         if(previousSlotNumber != activeSlotNumber &&
@@ -255,7 +256,7 @@ public class UITabUtils {
                         thresholdSeekbar.incrementProgressBy(25);
                         TextView thresholdSeekbarValueText = (TextView) tabMainLayoutView.findViewById(R.id.thresholdSeekbarValueText);
                         if (thresholdSeekbarValueText != null) {
-                            thresholdSeekbarValueText.setText(String.format(Locale.getDefault(), "% 5d mV", threshold));
+                            thresholdSeekbarValueText.setText(String.format(BuildConfig.DEFAULT_LOCALE, "% 5d mV", threshold));
                         }
                         final View seekbarView = tabMainLayoutView;
                         thresholdSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -264,7 +265,7 @@ public class UITabUtils {
                             @Override
                             public void onProgressChanged(@NonNull SeekBar seekBar, int progress, boolean fromUser) {
                                 if (labelText != null) {
-                                    labelText.setText(String.format(Locale.getDefault(), "% 5d mV", progress));
+                                    labelText.setText(String.format(BuildConfig.DEFAULT_LOCALE, "% 5d mV", progress));
                                 }
                             }
 
@@ -296,7 +297,7 @@ public class UITabUtils {
                         timeoutSeekbar.incrementProgressBy(2);
                         TextView cmdTimeoutSeekbarValueText = (TextView) tabMainLayoutView.findViewById(R.id.cmdTimeoutSeekbarValueText);
                         if(cmdTimeoutSeekbarValueText != null) {
-                            cmdTimeoutSeekbarValueText.setText(String.format(Locale.getDefault(), "% 4d (x128) ms", timeout));
+                            cmdTimeoutSeekbarValueText.setText(String.format(BuildConfig.DEFAULT_LOCALE, "% 4d (x128) ms", timeout));
                         }
                         final View tmtSeekbarView = tabMainLayoutView;
                         timeoutSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -305,7 +306,7 @@ public class UITabUtils {
                             @Override
                             public void onProgressChanged(@NonNull SeekBar seekBar, int progress, boolean fromUser) {
                                 if(labelText != null) {
-                                    labelText.setText(String.format(Locale.getDefault(), "% 4d (x128) ms", progress));
+                                    labelText.setText(String.format(BuildConfig.DEFAULT_LOCALE, "% 4d (x128) ms", progress));
                                 }
                             }
 
@@ -374,6 +375,41 @@ public class UITabUtils {
         return true;
     }
 
+    public static boolean updateConfigTabConnDeviceInfo(View parentLayoutView, boolean resetConnection) {
+        if (parentLayoutView == null) {
+            return false;
+        }
+        EditText deviceNameText = parentLayoutView.findViewById(R.id.slotNicknameText);
+        TextView chamTypeText = parentLayoutView.findViewById(R.id.chameleonTypeText);
+        TextView hardwareIDText = parentLayoutView.findViewById(R.id.hardwareSerialIDText);
+        TextView connStatusText = parentLayoutView.findViewById(R.id.connectionStatusText);
+        if(chamTypeText != null && hardwareIDText != null && connStatusText != null) {
+            boolean isChameleonDevConn = ChameleonSettings.getActiveSerialIOPort() != null && !resetConnection;
+            if (isChameleonDevConn) {
+                deviceNameText.setText(ChameleonSettings.getActiveSerialIOPort().getDeviceName());
+                chamTypeText.setText(ChameleonIO.getDeviceDescription(ChameleonIO.CHAMELEON_MINI_BOARD_TYPE));
+                hardwareIDText.setText(ChameleonSettings.chameleonDeviceSerialNumber);
+                connStatusText.setText(ChameleonSettings.getActiveSerialIOPort().isWiredUSB() ? "USB connection" : "BT connection");
+            } else {
+                deviceNameText.setText(ChameleonSettings.chameleonDeviceNickname);
+                chamTypeText.setText("None");
+                hardwareIDText.setText("None");
+                connStatusText.setText("Not connected");
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean updateConfigTabConnDeviceInfo(boolean resetConnection) {
+        if (UITAB_DATA == null || UITAB_DATA.length >= TAB_CONFIG || UITAB_DATA[TAB_CONFIG] == null) {
+            return false;
+        } else {
+            return updateConfigTabConnDeviceInfo(UITAB_DATA[TAB_CONFIG].tabInflatedView, resetConnection);
+        }
+    }
+
     public static boolean initializeConfigTab(int menuItemIdx, View tabMainLayoutView) {
         if(tabMainLayoutView == null) {
             return false;
@@ -440,7 +476,7 @@ public class UITabUtils {
                             ChameleonSettings.stopSerialIOConnectionDiscovery();
                             ChameleonSettings.initializeSerialIOConnections();
                         }
-                        BluetoothSerialInterface btSerialInterface = (BluetoothSerialInterface) ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX];
+                        BluetoothBLEInterface btSerialInterface = (BluetoothBLEInterface) ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX];
                         haveSufficientBTPerms = haveSufficientBTPerms && btSerialInterface != null && btSerialInterface.isBluetoothEnabled(false);
                         if(!cb.isChecked() && !haveSufficientBTPerms) {
                             String btPermsRequiredResStr = llInst.getResources().getString(R.string.btPermsRequiredMsg);
@@ -510,7 +546,7 @@ public class UITabUtils {
         }
         else if(menuItemIdx == TAB_CONFIG_MITEM_CONNECT) {
             TextView btStatusText = tabMainLayoutView.findViewById(R.id.androidBluetoothStatusText);
-            String btStatus = ((BluetoothSerialInterface) ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX]).isBluetoothEnabled() ? "Enabled" : "Disabled";
+            String btStatus = ((BluetoothBLEInterface) ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX]).isBluetoothEnabled() ? "Enabled" : "Disabled";
             btStatusText.setText(btStatus);
             Button btSettingsBtn = tabMainLayoutView.findViewById(R.id.androidBTSettingsButton);
             if(btSettingsBtn == null) {
@@ -519,7 +555,7 @@ public class UITabUtils {
             btSettingsBtn.setOnClickListener(new Button.OnClickListener() {
                 @Override
                 public void onClick(View btn) {
-                    BluetoothSerialInterface.displayAndroidBluetoothSettings();
+                    BluetoothBLEInterface.displayAndroidBluetoothSettings();
                 }
             });
             Button btTroubleshootingBtn = tabMainLayoutView.findViewById(R.id.androidBTTroubleshootingButton);
@@ -529,7 +565,7 @@ public class UITabUtils {
             btTroubleshootingBtn.setOnClickListener(new Button.OnClickListener() {
                 @Override
                 public void onClick(View btn) {
-                    BluetoothSerialInterface.displayAndroidBluetoothTroubleshooting();
+                    BluetoothBLEInterface.displayAndroidBluetoothTroubleshooting();
                 }
             });
             boolean isChameleonDevConn = ChameleonSettings.getActiveSerialIOPort() != null;
@@ -550,22 +586,7 @@ public class UITabUtils {
             } else {
                 errorOnInit = true;
             }
-            TextView chamTypeText = tabMainLayoutView.findViewById(R.id.chameleonTypeText);
-            TextView hardwareIDText = tabMainLayoutView.findViewById(R.id.hardwareSerialIDText);
-            TextView connStatusText = tabMainLayoutView.findViewById(R.id.connectionStatusText);
-            if(chamTypeText != null && hardwareIDText != null && connStatusText != null) {
-                if (isChameleonDevConn) {
-                    deviceNameText.setText(AndroidSettingsStorage.getStringValueByKey(ChameleonSettings.chameleonDeviceSerialNumber, AndroidSettingsStorage.PROFILE_NAME_PREFERENCE));
-                    chamTypeText.setText(ChameleonIO.getDeviceDescription(ChameleonIO.CHAMELEON_MINI_BOARD_TYPE));
-                    hardwareIDText.setText(ChameleonSettings.chameleonDeviceSerialNumber);
-                    connStatusText.setText(ChameleonSettings.getActiveSerialIOPort().isWiredUSB() ? "USB connection" : "BT connection");
-                } else {
-                    deviceNameText.setText(ChameleonSettings.chameleonDeviceNickname);
-                    chamTypeText.setText("None");
-                    hardwareIDText.setText("None");
-                    connStatusText.setText("Not connected");
-                }
-            } else {
+            if (!updateConfigTabConnDeviceInfo(tabMainLayoutView, false)) {
                 errorOnInit = true;
             }
             Button chamConnectBtn = tabMainLayoutView.findViewById(R.id.connectToDeviceButton);
@@ -610,7 +631,7 @@ public class UITabUtils {
             try {
                 UITabUtils.connectPeripheralSpinnerAdapterLogMode(tabMainLayoutView, R.id.LogModeSpinner,
                         R.array.LogModeOptions, ChameleonPeripherals.spinnerLogModeAdapter);
-                String loggingMinDataFieldValue = String.format(Locale.getDefault(), "%d", ChameleonLogUtils.LOGGING_MIN_DATA_BYTES);
+                String loggingMinDataFieldValue = String.format(BuildConfig.DEFAULT_LOCALE, "%d", ChameleonLogUtils.LOGGING_MIN_DATA_BYTES);
                 EditText loggingLogDataMinBytesField = (EditText) tabMainLayoutView.findViewById(R.id.loggingLogDataMinBytesField);
                 if(loggingLogDataMinBytesField != null) {
                     loggingLogDataMinBytesField.setText(loggingMinDataFieldValue);

@@ -72,8 +72,6 @@ public class TabFragment extends Fragment {
     public static final int TAB_TOOLS_MITEM_APDU = 2;
 
     public static final int TAB_EXPORT_MITEM_COLUMNS = TAB_MENU_ITEM_DEFAULT_COLUMNS;
-    public static final int TAB_EXPORT_MITEM_UPLOAD_DOWNLOAD = 0;
-    public static final int TAB_EXPORT_MITEM_CLONE = 1;
 
     public static final int TAB_SCRIPTING_MITEM_COLUMNS = 2;
     public static final int TAB_SCRIPTING_MITEM_LOAD_IMPORT = 0;
@@ -136,7 +134,7 @@ public class TabFragment extends Fragment {
             deselectMenuItem(lastMenuIndex);
             lastMenuIndex = midx;
             GridLayout menuItemsNav = (GridLayout) tabInflatedView.findViewById(R.id.tabMenuItemsNav);
-            String indexRefTag = String.format(Locale.getDefault(), "%d:%d", tabIndex, midx);
+            String indexRefTag = String.format(BuildConfig.DEFAULT_LOCALE, "%d:%d", tabIndex, midx);
             Button menuItem = (Button) menuItemsNav.findViewWithTag(indexRefTag);
             if(menuItem == null) {
                 return false;
@@ -172,7 +170,7 @@ public class TabFragment extends Fragment {
             }
             try {
                 GridLayout menuItemsNav = (GridLayout) tabInflatedView.findViewById(R.id.tabMenuItemsNav);
-                String indexRefTag = String.format(Locale.getDefault(), "%d:%d", tabIndex, midx);
+                String indexRefTag = String.format(BuildConfig.DEFAULT_LOCALE, "%d:%d", tabIndex, midx);
                 Button menuItem = (Button) menuItemsNav.findViewWithTag(indexRefTag);
                 menuItem.setBackgroundColor(tabInflatedView.getContext().getResources().getColor(android.R.color.transparent));
                 menuItem.setTextColor(Utils.getColorFromTheme(R.attr.colorPrimaryDark));
@@ -213,7 +211,7 @@ public class TabFragment extends Fragment {
                 menuItemClick.setPadding(20, 8, 20, 8);
                 menuItemClick.setMaxHeight(100);
                 menuItemClick.setMinWidth(menuItemsNav.getMeasuredWidth() / tabNumColumns);
-                String indexRefTag = String.format(Locale.getDefault(), "%d:%d", tabIndex, totalItems);
+                String indexRefTag = String.format(BuildConfig.DEFAULT_LOCALE, "%d:%d", tabIndex, totalItems);
                 menuItemClick.setTag(indexRefTag);
                 menuItemClick.setOnClickListener(new View.OnClickListener() {
                     @Override

@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 public class ScriptingTypes {
 
@@ -253,7 +252,7 @@ public class ScriptingTypes {
                 case VariableTypeBoolean:
                     return varValueAsBoolean ? "true" : "false";
                 case VariableTypeInteger:
-                    return String.format(Locale.getDefault(), "%d", varValueAsInt);
+                    return String.format(BuildConfig.DEFAULT_LOCALE, "%d", varValueAsInt);
                 case VariableTypeArrayMap:
                     String[] arrayListStrDescList = new String[arrayList.size()];
                     for(int arrListIdx = 0; arrListIdx < arrayList.size(); arrListIdx++) {
@@ -265,7 +264,7 @@ public class ScriptingTypes {
                         hashMapStrDescList[hmCount] = hashMap.get(hashKey).getValueAsString();
                         ++hmCount;
                     }
-                    String arrValueDesc = String.format(Locale.getDefault(), "[ ");
+                    String arrValueDesc = String.format(BuildConfig.DEFAULT_LOCALE, "[ ");
                     if(arrayListStrDescList.length > 0) {
                         arrValueDesc += String.join(", ", arrayListStrDescList);
                         if(hashMapStrDescList.length > 0) {

@@ -92,12 +92,13 @@ clean.dependsOn cleanPreBuildGenAntlr4JavaSources
 android {
 
     def configBuildTimeStamp = getDateTimestamp()
+
     defaultConfig {
 
         applicationId "com.maxieds.chameleonminilivedebugger"
 
-        versionCode 120 + 8080
-        versionName "1.5.0"
+        versionCode 121 + 8080
+        versionName "1.5.1"
 
         minSdkVersion 26
         targetSdkVersion 30
@@ -107,6 +108,7 @@ android {
 
         buildConfigField "String", "GIT_COMMIT_HASH", "\"" + getGitCommitHash() + "\""
         buildConfigField "String", "GIT_COMMIT_DATE", "\"" + getGitCommitDate() + "\""
+        buildConfigField "java.util.Locale", "DEFAULT_LOCALE", "java.util.Locale.ENGLISH"
 
         setProperty("archivesBaseName", "ChameleonMiniLiveDebugger-v$versionName-$versionCode-$configBuildTimeStamp")
 
@@ -133,12 +135,18 @@ android {
 
     }
 
+    aaptOptions {
+
+        noCompress '...'
+
+    }
+
     buildTypes {
 
         release {
 
             minifyEnabled true
-            shrinkResources true
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             crunchPngs false
             debuggable false
@@ -163,12 +171,12 @@ android {
 
         free {
 
-            versionNameSuffix "-free"
+            versionNameSuffix   "-free"
+
             dimension "mode"
 
-            buildConfigField "boolean",            "PAID_APP_VERSION", "false"
-            buildConfigField "boolean",            "REPORT_CRASHES", "false"
             buildConfigField "String",             "BUILD_TIMESTAMP", "\"" + configBuildTimeStamp + "\""
+            buildConfigField "boolean",            "PAID_APP_VERSION", "false"
 
             resConfigs 'en', 'en_US', 'en_UK', 'de', 'fr', 'ru'
 
@@ -178,7 +186,8 @@ android {
                     appRoundIcon       : "@mipmap/chameleon_app_icon_round",
                     appTheme           : "@style/AppThemeGreen",
                     appDebug           : "false",
-                    installLocation    : "preferExternal"
+                    bluetoothRequired  : "false",
+                    installLocation    : "auto"
             ]
 
         }
@@ -186,15 +195,14 @@ android {
         paid {
 
             applicationIdSuffix ".paid"
-            versionNameSuffix "-paid"
-
-            buildConfigField "boolean",            "PAID_APP_VERSION", "true"
-            buildConfigField "boolean",            "REPORT_CRASHES", "false"
-            buildConfigField "String",             "BUILD_TIMESTAMP", "\"" + configBuildTimeStamp + "\""
-
-            resConfigs 'en', 'en_US', 'en_UK', 'de', 'fr', 'ru'
+            versionNameSuffix   "-paid"
 
             dimension "mode"
+
+            buildConfigField "String",             "BUILD_TIMESTAMP", "\"" + configBuildTimeStamp + "\""
+            buildConfigField "boolean",            "PAID_APP_VERSION", "true"
+
+            resConfigs 'en', 'en_US', 'en_UK', 'de', 'fr', 'ru'
 
             manifestPlaceholders = [
                     appLabelDesc       : "@string/app_display_short_name_paid",
@@ -202,6 +210,7 @@ android {
                     appRoundIcon       : "@mipmap/chameleon_app_icon_round_paid",
                     appTheme           : "@style/AppThemeGreenPaid",
                     appDebug           : "false",
+                    bluetoothRequired  : "false",
                     installLocation    : "auto"
             ]
 

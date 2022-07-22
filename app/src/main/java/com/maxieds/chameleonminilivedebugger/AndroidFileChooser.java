@@ -20,7 +20,6 @@ package com.maxieds.chameleonminilivedebugger;
 import android.content.Intent;
 import android.os.Looper;
 import android.provider.Settings;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -28,8 +27,6 @@ import com.maxieds.androidfilepickerlightlibrary.BasicFileProvider;
 import com.maxieds.androidfilepickerlightlibrary.CustomThemeBuilder;
 import com.maxieds.androidfilepickerlightlibrary.FileChooserBuilder;
 import com.maxieds.androidfilepickerlightlibrary.FileUtils;
-
-import java.util.Locale;
 
 public class AndroidFileChooser {
 
@@ -141,7 +138,7 @@ public class AndroidFileChooser {
                 Looper.loop();
             } catch(RuntimeException ie) {
                 String excptMsg = ie.getMessage();
-                String replaceRegex = String.format(Locale.getDefault(), getFileNotifySelectExceptionFormat(), "");
+                String replaceRegex = String.format(BuildConfig.DEFAULT_LOCALE, getFileNotifySelectExceptionFormat(), "");
                 String[] excptMsgComponents = excptMsg.split(replaceRegex);
                 if(excptMsgComponents.length != 2) {
                     AndroidLog.i(TAG, "USER SELECTED <__NO__> PATH! ... " + ie.getMessage());
@@ -154,7 +151,7 @@ public class AndroidFileChooser {
                 }
                 String fileChooserBaseFolder = getInitialFileChooserBaseFolder();
                 excptMsg = excptMsg.replaceFirst(fileChooserBaseFolder, STORAGE_HOME_PREFIX_SUBST);
-                excptMsg = excptMsg.replaceAll(String.format(Locale.getDefault(), "[%s]+", PATH_SEP), "/");
+                excptMsg = excptMsg.replaceAll(String.format(BuildConfig.DEFAULT_LOCALE, "[%s]+", PATH_SEP), "/");
                 AndroidLog.i(TAG, "USER SELECTED PATH: \"" + excptMsg + "\" ...");
                 return excptMsg;
             }
@@ -181,7 +178,7 @@ public class AndroidFileChooser {
             }
             String fileMimeType = docRef.getDocumentType();
             AndroidLog.i(TAG, "MIME TYPE: " + fileMimeType);
-            return fileMimeType.toLowerCase(Locale.getDefault()).startsWith("text");
+            return fileMimeType.toLowerCase(BuildConfig.DEFAULT_LOCALE).startsWith("text");
         } catch(Exception ex) {
             AndroidLog.printStackTrace(ex);
             return false;

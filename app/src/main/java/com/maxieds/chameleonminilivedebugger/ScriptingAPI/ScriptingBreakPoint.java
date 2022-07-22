@@ -135,9 +135,9 @@ public class ScriptingBreakPoint {
             return;
         }
         if(isLabelType) {
-            tvBpValue.setText(String.format(Locale.getDefault(), "@%s", getLabel()));
+            tvBpValue.setText(String.format(BuildConfig.DEFAULT_LOCALE, "@%s", getLabel()));
         } else {
-            tvBpValue.setText(String.format(Locale.getDefault(), "L%d (0x%02X)", getLineNumber(), getLineNumber()));
+            tvBpValue.setText(String.format(BuildConfig.DEFAULT_LOCALE, "L%d (0x%02X)", getLineNumber(), getLineNumber()));
         }
     }
 

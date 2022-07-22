@@ -44,7 +44,7 @@ public class MainActivityNavActions {
         rawAboutStr = rawAboutStr.replace("%%GIT_COMMIT_DATE%%", String.valueOf(BuildConfig.GIT_COMMIT_DATE));
         int aboutLinkColor = LiveLoggerActivity.getLiveLoggerInstance().getTheme().obtainStyledAttributes(new int[] {R.attr.colorAboutLinkColor}).getColor(0,
                              LiveLoggerActivity.getLiveLoggerInstance().getResources().getColor(R.color.colorBigVeryBadError));
-        rawAboutStr = rawAboutStr.replace("%%ABOUTLINKCOLOR%%", String.format(Locale.getDefault(), "#%06X", 0xFFFFFF & aboutLinkColor));
+        rawAboutStr = rawAboutStr.replace("%%ABOUTLINKCOLOR%%", String.format(BuildConfig.DEFAULT_LOCALE, "#%06X", 0xFFFFFF & aboutLinkColor));
 
         WebView wv = new WebView(LiveLoggerActivity.getLiveLoggerInstance());
         wv.getSettings().setJavaScriptEnabled(false);

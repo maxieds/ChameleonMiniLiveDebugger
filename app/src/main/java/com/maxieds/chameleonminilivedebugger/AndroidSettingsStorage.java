@@ -383,7 +383,7 @@ public class AndroidSettingsStorage {
             return sharedPrefs.getString(prefsKey, ChameleonSettings.chameleonDeviceSerialNumber);
         }
         else if(prefsKey.equals(SERIAL_BAUDRATE_PREFERENCE)) {
-            return String.format(Locale.getDefault(), "%d", sharedPrefs.getInt(prefsKey, ChameleonSettings.serialBaudRate));
+            return String.format(BuildConfig.DEFAULT_LOCALE, "%d", sharedPrefs.getInt(prefsKey, ChameleonSettings.serialBaudRate));
         }
         else if(prefsKey.equals(ALLOW_USB_PREFERENCE)) {
             return sharedPrefs.getBoolean(prefsKey, ChameleonSettings.allowWiredUSB) ? "true" : "false";
@@ -395,20 +395,20 @@ public class AndroidSettingsStorage {
             return sharedPrefs.getString(prefsKey, new String(BluetoothGattConnector.btDevicePinDataBytes, StandardCharsets.UTF_8));
         }
         else if(prefsKey.equals(SNIFFING_MODE_PREFERENCE)) {
-            return String.format(Locale.getDefault(), "%d", sharedPrefs.getInt(prefsKey, ChameleonSettings.sniffingMode));
+            return String.format(BuildConfig.DEFAULT_LOCALE, "%d", sharedPrefs.getInt(prefsKey, ChameleonSettings.sniffingMode));
         }
         else if(prefsKey.equals(CWD_PREFERENCE)) {
             sharedPrefs.getString(prefsKey, ExternalFileIO.CURRENT_WORKING_DIRECTORY);
         }
         else if(prefsKey.equals(LAST_TAB_INDEX_PREFERENCE)) {
-            return String.format(Locale.getDefault(), "%d", sharedPrefs.getInt(prefsKey, LiveLoggerActivity.getSelectedTab()));
+            return String.format(BuildConfig.DEFAULT_LOCALE, "%d", sharedPrefs.getInt(prefsKey, LiveLoggerActivity.getSelectedTab()));
         }
         else if(prefsKey.equals(LAST_TAB_SUBMENU_INDEX_PREFERENCE)) {
             int submenuIndex = TabFragment.UITAB_DATA[LiveLoggerActivity.getSelectedTab()].lastMenuIndex;
-            return String.format(Locale.getDefault(), "%d", sharedPrefs.getInt(prefsKey, submenuIndex));
+            return String.format(BuildConfig.DEFAULT_LOCALE, "%d", sharedPrefs.getInt(prefsKey, submenuIndex));
         }
         else if(prefsKey.equals(LOGGING_MIN_DATA_BYTES)) {
-            return String.format(Locale.getDefault(), "%d", sharedPrefs.getInt(prefsKey, 0));
+            return String.format(BuildConfig.DEFAULT_LOCALE, "%d", sharedPrefs.getInt(prefsKey, 0));
         }
         else if(prefsKey.equals(LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE)) {
             return sharedPrefs.getBoolean(prefsKey, ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT) ? "true" : "false";
@@ -432,7 +432,7 @@ public class AndroidSettingsStorage {
             return sharedPrefs.getBoolean(prefsKey, AndroidLog.WRITE_LOGDATA_TO_FILE) ? "true" : "false";
         }
         else if(prefsKey.equals(LOGGING_CONFIG_LOGDATA_LEVEL_THRESHOLD)) {
-            return String.format(Locale.getDefault(), "%d", sharedPrefs.getInt(prefsKey, AndroidLog.LOGDATA_LEVEL_THRESHOLD.ordinal()));
+            return String.format(BuildConfig.DEFAULT_LOCALE, "%d", sharedPrefs.getInt(prefsKey, AndroidLog.LOGDATA_LEVEL_THRESHOLD.ordinal()));
         }
         else if(prefsKey.equals(SCRIPTING_CONFIG_SAVE_CONSOLE_OUTPUT_FILE)) {
             return sharedPrefs.getBoolean(prefsKey, ScriptingConfig.SAVE_CONSOLE_OUTPUT_FILE) ? "true" : "false";
@@ -501,7 +501,7 @@ public class AndroidSettingsStorage {
             return sharedPrefs.getBoolean(prefsKey, ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME) ? "true" : "false";
         }
         else if(prefsKey.equals(SCRIPTING_CONFIG_LIMIT_SCRIPT_EXEC_TIME_SECONDS)) {
-            return String.format(Locale.getDefault(), "%d", sharedPrefs.getInt(prefsKey, ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME_SECONDS));
+            return String.format(BuildConfig.DEFAULT_LOCALE, "%d", sharedPrefs.getInt(prefsKey, ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME_SECONDS));
         }
         return null;
     }

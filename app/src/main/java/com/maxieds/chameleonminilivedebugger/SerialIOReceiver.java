@@ -18,6 +18,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 package com.maxieds.chameleonminilivedebugger;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -34,30 +35,12 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
 
     private static final String TAG = SerialIOReceiver.class.getSimpleName();
 
-    public void setListenerContext(Context context) {}
+    private Context notifyContext;
+
+    public void setListenerContext(Context context) { notifyContext = context; }
 
     public String getInterfaceLoggingTag() {
-        return "AbstractSerialReceiver";
-    }
-
-    public boolean notifySerialDataReceived(byte[] serialData) {
-        return false;
-    }
-
-    public boolean notifyLogDataReceived(byte[] serialData) {
-        return false;
-    }
-
-    public boolean notifyDeviceFound() {
-        return false;
-    }
-
-    public boolean notifyDeviceConnectionTerminated() {
-        return false;
-    }
-
-    public boolean notifyStatus(String msgType, String statusMsg) {
-        return false;
+        return TAG;
     }
 
     public boolean isWiredUSB() {
@@ -73,11 +56,11 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
     }
 
     public int setSerialBaudRateHigh() {
-        return STATUS_ERROR;
+        return setSerialBaudRate(ChameleonSerialIOInterface.HIGH_SPEED_BAUD_RATE);
     }
 
     public int setSerialBaudRateLimited() {
-        return STATUS_ERROR;
+        return setSerialBaudRate(ChameleonSerialIOInterface.LIMITED_SPEED_BAUD_RATE);
     }
 
     public boolean startScanningDevices() {
@@ -87,6 +70,8 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
     public boolean stopScanningDevices() {
         return false;
     }
+
+    public String getDeviceName() { return AndroidSettingsStorage.getStringValueByKey(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE, AndroidSettingsStorage.PROFILE_NAME_PREFERENCE); }
 
     public String getActiveDeviceInfo() {
         return null;
@@ -134,6 +119,41 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
         redirectSerialDataInterface = null;
     }
 
+    public boolean notifySerialDataReceived(byte[] serialData) {
+        Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED);
+        notifyIntent.putExtra("DATA", serialData);
+        notifyContext.sendBroadcast(notifyIntent);
+        AndroidLog.i(TAG, "SERIALIO_DATA_RECEIVED: (HEX) " + Utils.bytes2Hex(serialData));
+        AndroidLog.i(TAG, "SERIALIO_DATA_RECEIVED: (TXT) " + Utils.bytes2Ascii(serialData));
+        return true;
+    }
+
+    public boolean notifyLogDataReceived(byte[] serialData) {
+        if(serialData.length < ChameleonLogUtils.LOGGING_MIN_DATA_BYTES + 4) {
+            return false;
+        }
+        Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED);
+        notifyIntent.putExtra("DATA", serialData);
+        notifyContext.sendBroadcast(notifyIntent);
+        AndroidLog.i(TAG, "SERIALIO_LOGDATA_RECEIVED: (HEX) " + Utils.bytes2Hex(serialData));
+        AndroidLog.i(TAG, "SERIALIO_LOGDATA_RECEIVED: (TXT) " + Utils.bytes2Ascii(serialData));
+        return true;
+    }
+
+    public boolean notifyDeviceConnectionTerminated() {
+        Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST);
+        notifyContext.sendBroadcast(notifyIntent);
+        return true;
+    }
+
+    public boolean notifyStatus(String msgType, String statusMsg) {
+        Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_NOTIFY_STATUS);
+        notifyIntent.putExtra("STATUS-TYPE", msgType);
+        notifyIntent.putExtra("STATUS-MSG", statusMsg);
+        notifyContext.sendBroadcast(notifyIntent);
+        return true;
+    }
+
     public void onReceivedData(byte[] liveLogData) {
 
         if(redirectSerialDataInterface != null) {
@@ -151,7 +171,7 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
         }
         int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData);
         if (loggingRespSize > 0) {
-            AndroidLog.i(TAG, "Received new LogEntry @ " + String.format(Locale.getDefault(), "0x%02x", liveLogData[0]));
+            AndroidLog.i(TAG, "Received new LogEntry @ " + String.format(BuildConfig.DEFAULT_LOCALE, "0x%02x", liveLogData[0]));
             if(ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS) {
                 notifyLogDataReceived(liveLogData);
             }

@@ -150,7 +150,7 @@ public class ExternalFileIO {
             String selectedChooserPath = "";
             try {
                 List<String> selectedFilePathsList = FileChooserBuilder.handleActivityResult(activity, chooserRequestCodeAction, resultCode, data);
-                selectedChooserPath = String.format(Locale.getDefault(), AndroidFileChooser.getFileNotifySelectExceptionFormat(), selectedFilePathsList.get(0));
+                selectedChooserPath = String.format(BuildConfig.DEFAULT_LOCALE, AndroidFileChooser.getFileNotifySelectExceptionFormat(), selectedFilePathsList.get(0));
             } catch(Exception ex) {
                 AndroidLog.printStackTrace(ex);
             }

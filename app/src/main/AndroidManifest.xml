@@ -89,27 +89,102 @@
     <uses-permission
         android:name="android.permission.BLUETOOTH_ADMIN"
         android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
-        android:required="true"
+        android:required="${bluetoothRequired}"
         />
+    <!-- These permissions are new to SDK 31. Declaring them makes Play Store
+         very restrictive about allowing the app to be installed on older phones
     <uses-permission
         android:name="android.permission.BLUETOOTH_CONNECT"
         android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
-        android:required="true"
+        android:required="${bluetoothRequired}"
+        />
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_ADVERTISE"
+        android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
+        android:required="${bluetoothRequired}"
         />
     <uses-permission
         android:name="android.permission.BLUETOOTH_SCAN"
         android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
-        android:required="true"
+        android:required="${bluetoothRequired}"
         />
+    -->
     <!-- Available for SDK>=31 only (good to have set with BLUETOOTH_SCAN permission) :: android:usesPermissionFlags="neverForLocation" -->
 
     <uses-feature android:name="android.hardware.usb.host" android:required="true" />
-    <uses-feature android:name="android.hardware.usb.accessory" android:required="false" />
-    <uses-feature android:name="android.hardware.bluetooth" android:required="true" />
-    <uses-feature android:name="android.hardware.bluetooth_admin" android:required="true" />
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true" />
+    <!--<uses-feature android:name="android.hardware.usb.accessory" android:required="true" />-->
+    <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
+    <uses-feature android:name="android.hardware.bluetooth_admin" android:required="false" />
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="true" />
 
     <protected-broadcast android:name="android.hardware.usb.action.USB_STATE" />
+
+    <!-- From the documentation at:
+         https://developer.android.com/guide/practices/screens-distribution
+    -->
+    <supports-screens
+        android:smallScreens="true"
+        android:normalScreens="true"
+        android:largeScreens="true"
+        android:xlargeScreens="true"
+        />
+
+    <!-- From the documentation at:
+         https://developer.android.com/guide/practices/screens-distribution
+         https://developer.android.com/guide/topics/manifest/compatible-screens-element
+    -->
+    <compatible-screens>
+
+        <screen android:screenSize="small" android:screenDensity="ldpi" />
+        <screen android:screenSize="small" android:screenDensity="mdpi" />
+        <screen android:screenSize="small" android:screenDensity="hdpi" />
+        <screen android:screenSize="small" android:screenDensity="xhdpi" />
+        <screen android:screenSize="small" android:screenDensity="xxhdpi" />
+        <screen android:screenSize="small" android:screenDensity="xxxhdpi" />
+        <screen android:screenSize="small" android:screenDensity="280" />
+        <screen android:screenSize="small" android:screenDensity="360" />
+        <screen android:screenSize="small" android:screenDensity="420" />
+        <screen android:screenSize="small" android:screenDensity="480" />
+        <screen android:screenSize="small" android:screenDensity="560" />
+
+        <screen android:screenSize="normal" android:screenDensity="ldpi" />
+        <screen android:screenSize="normal" android:screenDensity="mdpi" />
+        <screen android:screenSize="normal" android:screenDensity="hdpi" />
+        <screen android:screenSize="normal" android:screenDensity="xhdpi" />
+        <screen android:screenSize="normal" android:screenDensity="xxhdpi" />
+        <screen android:screenSize="normal" android:screenDensity="xxxhdpi" />
+        <screen android:screenSize="normal" android:screenDensity="280" />
+        <screen android:screenSize="normal" android:screenDensity="360" />
+        <screen android:screenSize="normal" android:screenDensity="420" />
+        <screen android:screenSize="normal" android:screenDensity="480" />
+        <screen android:screenSize="normal" android:screenDensity="560" />
+
+        <screen android:screenSize="large" android:screenDensity="ldpi" />
+        <screen android:screenSize="large" android:screenDensity="mdpi" />
+        <screen android:screenSize="large" android:screenDensity="hdpi" />
+        <screen android:screenSize="large" android:screenDensity="xhdpi" />
+        <screen android:screenSize="large" android:screenDensity="xxhdpi" />
+        <screen android:screenSize="large" android:screenDensity="xxxhdpi" />
+        <screen android:screenSize="large" android:screenDensity="280" />
+        <screen android:screenSize="large" android:screenDensity="360" />
+        <screen android:screenSize="large" android:screenDensity="420" />
+        <screen android:screenSize="large" android:screenDensity="480" />
+        <screen android:screenSize="large" android:screenDensity="560" />
+
+        <screen android:screenSize="xlarge" android:screenDensity="ldpi" />
+        <screen android:screenSize="xlarge" android:screenDensity="mdpi" />
+        <screen android:screenSize="xlarge" android:screenDensity="hdpi" />
+        <screen android:screenSize="xlarge" android:screenDensity="xhdpi" />
+        <screen android:screenSize="xlarge" android:screenDensity="xxhdpi" />
+        <screen android:screenSize="xlarge" android:screenDensity="xxxhdpi" />
+        <screen android:screenSize="xlarge" android:screenDensity="280" />
+        <screen android:screenSize="xlarge" android:screenDensity="360" />
+        <screen android:screenSize="xlarge" android:screenDensity="420" />
+        <screen android:screenSize="xlarge" android:screenDensity="480" />
+        <screen android:screenSize="xlarge" android:screenDensity="560" />
+
+    </compatible-screens>
 
     <application
         android:name=".ChameleonMiniLiveDebugger"
@@ -133,7 +208,7 @@
         android:allowBackup="true"
         >
 
-        <uses-library android:name="com.android.future.usb.accessory" />
+        <!--<uses-library android:name="com.android.future.usb.accessory" />-->
 
         <uses-library
             android:name="com.github.maxieds:AndroidFilePickerLight"
@@ -147,9 +222,14 @@
             android:clearTaskOnLaunch="true"
             android:hardwareAccelerated="true"
             android:uiOptions="none"
+            android:configChanges="uiMode"
             android:stateNotNeeded="true"
             android:exported="true"
+            android:resizeableActivity="false"
+            android:maxAspectRatio="2.4"
+            android:supportsPictureInPicture="false"
             >
+            <!-- android:configChanges="uiMode|orientation|keyboard|keyboardHidden|fontScale" -->
 
             <intent-filter android:priority="1000">
                 <action android:name="android.intent.action.MAIN" />
@@ -212,8 +292,12 @@
             android:clearTaskOnLaunch="true"
             android:hardwareAccelerated="true"
             android:uiOptions="none"
+            android:configChanges="uiMode"
             android:stateNotNeeded="true"
             android:exported="true"
+            android:resizeableActivity="false"
+            android:maxAspectRatio="2.4"
+            android:supportsPictureInPicture="false"
             >
 
             <intent-filter>

@@ -361,7 +361,7 @@ public class MainActivityLogUtils {
             } else if (selectedBytes) {
                 searchString = searchString.replace("[\n\t\r]+", "").replaceAll("..(?!$)", "$0 ");
             }
-            searchString = searchString.toLowerCase(Locale.getDefault());
+            searchString = searchString.toLowerCase(BuildConfig.DEFAULT_LOCALE);
             searchStatus = ((CheckBox) llActivity.findViewById(R.id.entrySearchIncludeStatus)).isChecked();
             searchAPDU = ((CheckBox) llActivity.findViewById(R.id.entrySearchAPDU)).isChecked();
             searchLogPayload = ((CheckBox) llActivity.findViewById(R.id.entrySearchRawLogData)).isChecked();
@@ -378,7 +378,7 @@ public class MainActivityLogUtils {
                 continue;
             }
             if (nextLogEntry instanceof LogEntryMetadataRecord) {
-                if (searchStatus && nextLogEntry.toString().toLowerCase(Locale.getDefault()).contains(searchString)) {
+                if (searchStatus && nextLogEntry.toString().toLowerCase(BuildConfig.DEFAULT_LOCALE).contains(searchString)) {
                     searchResultsContainer.addView(nextLogEntry.cloneLayoutContainer());
                     matchCount++;
                 }
@@ -386,9 +386,9 @@ public class MainActivityLogUtils {
             }
             LogEntryUI nextLogEntryUI = (LogEntryUI) nextLogEntry;
             AndroidLog.i(TAG, nextLogEntryUI.getPayloadDataString(selectedBytes));
-            if (searchAPDU && nextLogEntryUI.getAPDUString().toLowerCase(Locale.getDefault()).contains(searchString) ||
-                    searchLogHeaders && nextLogEntryUI.getLogCodeName().toLowerCase(Locale.getDefault()).contains(searchString) ||
-                    searchLogPayload && nextLogEntryUI.getPayloadDataString(selectedBytes).toLowerCase(Locale.getDefault()).contains(searchString)) {
+            if (searchAPDU && nextLogEntryUI.getAPDUString().toLowerCase(BuildConfig.DEFAULT_LOCALE).contains(searchString) ||
+                    searchLogHeaders && nextLogEntryUI.getLogCodeName().toLowerCase(BuildConfig.DEFAULT_LOCALE).contains(searchString) ||
+                    searchLogPayload && nextLogEntryUI.getPayloadDataString(selectedBytes).toLowerCase(BuildConfig.DEFAULT_LOCALE).contains(searchString)) {
                 LinearLayout searchResult = (LinearLayout) nextLogEntryUI.cloneLayoutContainer();
                 if(searchResult != null) {
                     searchResult.setVisibility(LinearLayout.VISIBLE);
@@ -404,7 +404,7 @@ public class MainActivityLogUtils {
         }
         /* Report stats on the search time and display the findings: */
         double diffSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
-        String resultStr = String.format(Locale.getDefault(), "Explored #%d logs in %4g seconds for a total of #%d matching records.",
+        String resultStr = String.format(BuildConfig.DEFAULT_LOCALE, "Explored #%d logs in %4g seconds for a total of #%d matching records.",
                 logDataEntries.size(), diffSeconds, matchCount);
         searchResultsContainer.addView(LogEntryMetadataRecord.createDefaultEventRecord("SEARCH", resultStr).getLayoutContainer());
     }

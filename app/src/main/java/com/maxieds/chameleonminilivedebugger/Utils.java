@@ -35,6 +35,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,6 +50,8 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -152,9 +156,9 @@ public class Utils {
         else if (bytes.length == 0)
             return "";
         StringBuilder hstr = new StringBuilder();
-        hstr.append(String.format(Locale.getDefault(), "%02x", bytes[0]));
+        hstr.append(String.format(BuildConfig.DEFAULT_LOCALE, "%02x", bytes[0]));
         for (int b = 1; b < bytes.length; b++)
-            hstr.append(" " + String.format(Locale.getDefault(), "%02x", bytes[b]));
+            hstr.append(" " + String.format(BuildConfig.DEFAULT_LOCALE, "%02x", bytes[b]));
         return hstr.toString();
     }
 
@@ -170,6 +174,36 @@ public class Utils {
             rint |= ((int) bytesArray[b]) & rintMask;
         }
         return rint;
+    }
+
+    private static long integer32ToUnsignedInteger32(int int32Value) {
+        return (long) (int32Value & 0xffffffffL);
+    }
+
+    private static byte[] bytesToBigEndian(@NonNull byte[] byteBuf, int zeroPadResultOnLeftBy, int zeroPadResultOnRightBy) {
+        zeroPadResultOnLeftBy = (int) Math.max(0, zeroPadResultOnLeftBy);
+        zeroPadResultOnRightBy = (int) Math.max(0, zeroPadResultOnRightBy);
+        int beBufSize = byteBuf.length + zeroPadResultOnLeftBy + zeroPadResultOnRightBy;
+        byte[] beDataBuf = new byte[beBufSize];
+        Arrays.fill(beDataBuf, (byte) 0x00);
+        ArrayUtils.reverse(byteBuf);
+        System.arraycopy(byteBuf, 0, beBufSize, zeroPadResultOnLeftBy, byteBuf.length);
+        return beDataBuf;
+    }
+
+    public static long bytesToUint32LittleEndian(@NonNull byte[] byteBuf) {
+        if (byteBuf == null || byteBuf.length == 0 || byteBuf.length > 4) {
+            return 0xff00000000L;
+        }
+        byte[] leByteBuf = bytesToBigEndian(byteBuf, 4 - byteBuf.length, 0);
+        return integer32ToUnsignedInteger32(bytes2Integer32(leByteBuf));
+    }
+
+    public static long bytesToUint32BigEndian(@NonNull byte[] byteBuf) {
+        if (byteBuf == null || byteBuf.length == 0 || byteBuf.length > 4) {
+            return 0xff00000000L;
+        }
+        return integer32ToUnsignedInteger32(bytes2Integer32(byteBuf));
     }
 
     /**
@@ -309,7 +343,7 @@ public class Utils {
             cmprByteCount += cmpr.deflate(new byte[1024]);
         }
         double entropyRatio = (double) cmprByteCount / inputBytes.length;
-        AndroidLog.i(TAG, String.format(Locale.getDefault(), "Compressed #%d bytes to #%d bytes ... Entropy ratio = %1.4g", inputBytes.length, cmprByteCount, entropyRatio));
+        AndroidLog.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "Compressed #%d bytes to #%d bytes ... Entropy ratio = %1.4g", inputBytes.length, cmprByteCount, entropyRatio));
         return entropyRatio;
     }
 
@@ -406,8 +440,8 @@ public class Utils {
             }
             Location bestLocProvider = (gpsProviderLocTime - netProviderLocTime > 0) ? locGPSProvider : locGPSProvider;
             String[] gpsAttrsArray = new String[]{
-                    String.format(Locale.getDefault(), "%g", bestLocProvider.getLatitude()),
-                    String.format(Locale.getDefault(), "%g", bestLocProvider.getLongitude())
+                    String.format(BuildConfig.DEFAULT_LOCALE, "%g", bestLocProvider.getLatitude()),
+                    String.format(BuildConfig.DEFAULT_LOCALE, "%g", bestLocProvider.getLongitude())
             };
             return gpsAttrsArray;
         } catch(SecurityException secExcpt) {
@@ -422,7 +456,7 @@ public class Utils {
 
     public static String getGPSLocationString() {
         String[] gpsCoords = Utils.getGPSLocationCoordinates();
-        String gpsLocStr = String.format(Locale.getDefault(), " -- Location at %s LONG, %s LAT -- ",
+        String gpsLocStr = String.format(BuildConfig.DEFAULT_LOCALE, " -- Location at %s LONG, %s LAT -- ",
                 gpsCoords[Utils.GPS_LONGITUDE_CINDEX], gpsCoords[Utils.GPS_LATITUDE_CINDEX]);
         return gpsLocStr;
     }

@@ -206,6 +206,20 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:textColor="?colorPrimaryDark" />
 
         <TextView
+            android:id="@+id/text_logdata_uint32_values"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center_vertical"
+            android:gravity="left"
+            android:hint=":LOG DATA UINT32 VALUES TEXT:"
+            android:paddingLeft="35dp"
+            android:singleLine="false"
+            android:textSize="8sp"
+            android:textStyle="bold|normal"
+            android:textColor="?colorPrimaryDark" />
+
+        <TextView
             android:id="@+id/text_apdu"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

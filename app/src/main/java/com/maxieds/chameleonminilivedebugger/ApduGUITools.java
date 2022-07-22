@@ -132,7 +132,7 @@ public class ApduGUITools {
         LinearLayout layoutList = (LinearLayout) ((ScrollView) ApduUtils.tabView.findViewById(R.id.apduSearchResultsScrollView)).getChildAt(0);
         for(int cmd = 0; cmd < ApduUtils.fullInsList.length; cmd++) {
             String summaryStr = ApduUtils.fullInsList[cmd].getSummary();
-            if(summaryStr.toLowerCase(Locale.getDefault()).contains(searchText)) {
+            if(summaryStr.toLowerCase(BuildConfig.DEFAULT_LOCALE).contains(searchText)) {
                 LinearLayout searchResult = (LinearLayout) LiveLoggerActivity.defaultInflater.inflate(R.layout.apdu_search_item, null);
                 if(searchResult != null) {
                     String[] cmdDescParts = ApduUtils.fullInsList[cmd].apduCmdDesc.split("[\\(\\)]");

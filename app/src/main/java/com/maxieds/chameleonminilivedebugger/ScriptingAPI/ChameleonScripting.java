@@ -18,7 +18,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
 import android.os.Handler;
-import android.util.Log;
 import android.widget.LinearLayout;
 
 import com.maxieds.chameleonminilivedebugger.AndroidLog;
@@ -30,6 +29,7 @@ import com.maxieds.chameleonminilivedebugger.R;
 import com.maxieds.chameleonminilivedebugger.SerialIOReceiver;
 import com.maxieds.chameleonminilivedebugger.TabFragment;
 import com.maxieds.chameleonminilivedebugger.Utils;
+import com.maxieds.chameleonminilivedebugger.BuildConfig;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -121,19 +121,19 @@ public class ChameleonScripting {
             ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
             if(serialIOPort != null) {
                 if (!ChameleonIO.REVE_BOARD) {
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "CONFIG=%s", CONFIG));
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "UID=%s", UID));
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "LOGMODE=%s", LOGMODE));
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "SETTING=%s", SETTING));
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "READONLY=%s", READONLY));
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "FIELD=%s", FIELD));
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "THRESHOLD=%s", THRESHOLD));
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "TIMEOUT=%s", TIMEOUT));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "CONFIG=%s", CONFIG));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "UID=%s", UID));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "LOGMODE=%s", LOGMODE));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "SETTING=%s", SETTING));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "READONLY=%s", READONLY));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "FIELD=%s", FIELD));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "THRESHOLD=%s", THRESHOLD));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "TIMEOUT=%s", TIMEOUT));
                 } else {
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "config=%s", CONFIG));
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "uid=%s", UID));
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "setting=%s", SETTING));
-                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(Locale.getDefault(), "readonly=%s", READONLY));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "config=%s", CONFIG));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "uid=%s", UID));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "setting=%s", SETTING));
+                    ChameleonIOHandler.executeChameleonCommandForResult(String.format(BuildConfig.DEFAULT_LOCALE, "readonly=%s", READONLY));
                 }
             }
             if(serialIOPort != null && pop && !SAVED_DEVICE_STATES.empty()) {
@@ -275,13 +275,13 @@ public class ChameleonScripting {
             if(loadedScriptHasSyntaxErrors()) {
                 List<ChameleonScriptErrorListener.SyntaxError> syntaxErrorsList = getSyntaxErrors();
                 for(ChameleonScriptErrorListener.SyntaxError syntaxError : syntaxErrorsList) {
-                    String syntaxErrorNotifyMsg = String.format(Locale.getDefault(), "%s\n%s",
+                    String syntaxErrorNotifyMsg = String.format(BuildConfig.DEFAULT_LOCALE, "%s\n%s",
                             syntaxError.getException().getClass().getSimpleName(), syntaxError.getMessage());
                     String[] syntaxErrorDetailsList = new String[] {
-                            String.format(Locale.getDefault(), "@LINE-NO:  %d", syntaxError.getLine()),
-                            String.format(Locale.getDefault(), "@CHAR-POS: %d", syntaxError.getCharPositionInLine()),
-                            String.format(Locale.getDefault(), "@SYMBOL:   '%s'", syntaxError.getOffendingSymbol().toString()),
-                            String.format(Locale.getDefault(), "@TOKEN:    %s", syntaxError.getException().getOffendingToken().getText())
+                            String.format(BuildConfig.DEFAULT_LOCALE, "@LINE-NO:  %d", syntaxError.getLine()),
+                            String.format(BuildConfig.DEFAULT_LOCALE, "@CHAR-POS: %d", syntaxError.getCharPositionInLine()),
+                            String.format(BuildConfig.DEFAULT_LOCALE, "@SYMBOL:   '%s'", syntaxError.getOffendingSymbol().toString()),
+                            String.format(BuildConfig.DEFAULT_LOCALE, "@TOKEN:    %s", syntaxError.getException().getOffendingToken().getText())
                     };
                     ScriptingGUIConsole.appendConsoleOutputRecordErrorWarning(syntaxErrorNotifyMsg, syntaxErrorDetailsList, syntaxError.getLine());
                     AndroidLog.w(TAG, "SYNTAX ERROR: " + syntaxErrorNotifyMsg + "\n" + String.join("\n  > ", syntaxErrorDetailsList));
@@ -342,13 +342,13 @@ public class ChameleonScripting {
 
                     scriptVisitor.visit(scriptParser.file_contents());
                     //scriptVisitor.visit(scriptParseTree);
-                    writeLogFile(String.format(Locale.getDefault(), "TEXT PARSE TREE for file \"%s\":\n\n%s\n", scriptFilePath, scriptParseTree.toStringTree()));
+                    writeLogFile(String.format(BuildConfig.DEFAULT_LOCALE, "TEXT PARSE TREE for file \"%s\":\n\n%s\n", scriptFilePath, scriptParseTree.toStringTree()));
                     runningTime = System.currentTimeMillis() - lastStartTime;
                     setTimeLimitHandler.removeCallbacks(enforceTimeLimitRunnable);
                     scriptState = ScriptRuntimeState.FINISHED;
                     ScriptingUtils.signalStateChangeByVibration(scriptState);
 
-                    String scriptRuntimeSummaryMsg = String.format(Locale.getDefault(), "The script finished running normally in %g min (%g sec).",
+                    String scriptRuntimeSummaryMsg = String.format(BuildConfig.DEFAULT_LOCALE, "The script finished running normally in %g min (%g sec).",
                             runningTime / 60000.0, runningTime / 1000.0);
                     scriptRuntimeSummaryMsg += "It generated the following output:\n\n";
                     scriptRuntimeSummaryMsg += getConsoleOutput();
@@ -377,7 +377,7 @@ public class ChameleonScripting {
                             String ewarnMsg = "Unexpected exception caught.";
                             try {
                                 RuntimeException rtEx = (RuntimeException) paramExcpt;
-                                ewarnMsg = String.format(Locale.getDefault(), "%s: \n%s", rtEx.getClass().getSimpleName(), rtEx.getMessage());
+                                ewarnMsg = String.format(BuildConfig.DEFAULT_LOCALE, "%s: \n%s", rtEx.getClass().getSimpleName(), rtEx.getMessage());
                                 ScriptingGUIConsole.appendConsoleOutputRecordErrorWarning(ewarnMsg, null, getExecutingLineOfCode());
                             } catch(Exception ex) {
                                 AndroidLog.printStackTrace(ex);
@@ -451,7 +451,7 @@ public class ChameleonScripting {
 
         public ScriptingTypes.ScriptVariable lookupVariableByName(String varName) throws ScriptingExceptions.ChameleonScriptingException {
             ScriptingTypes.ScriptVariable svar = scriptVariablesHashMap.get(varName);
-            AndroidLog.i(TAG, String.format(Locale.getDefault(), "LOOKED UP (%s) -> VARBYNAME = %s", varName, svar.getName()));
+            AndroidLog.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "LOOKED UP (%s) -> VARBYNAME = %s", varName, svar.getName()));
             return svar;
         }
 
@@ -469,7 +469,7 @@ public class ChameleonScripting {
                 return false;
             }
             try {
-                loggingFileStream.write(String.format(Locale.getDefault(), ">> [%s] %s\n", Utils.getTimestamp(), logLine).getBytes());
+                loggingFileStream.write(String.format(BuildConfig.DEFAULT_LOCALE, ">> [%s] %s\n", Utils.getTimestamp(), logLine).getBytes());
                 AndroidLog.i(TAG, "LOG FILE LINE>> " + logLine);
             } catch(IOException ioe) {
                 AndroidLog.printStackTrace(ioe);
@@ -524,7 +524,7 @@ public class ChameleonScripting {
         String scriptPath = ScriptingFileIO.expandStoragePath(ScriptingConfig.LAST_SCRIPT_LOADED_PATH);
         AndroidLog.i(TAG, "Attempting to run script from file path: " + scriptPath);
         if(ScriptingFileIO.getStoragePathFromRelative(scriptPath, false, false) == null) {
-            Utils.displayToastMessageShort(String.format(Locale.getDefault(), "Invalid script file path \"%s\".", scriptPath));
+            Utils.displayToastMessageShort(String.format(BuildConfig.DEFAULT_LOCALE, "Invalid script file path \"%s\".", scriptPath));
             return false;
         }
         if(activeChameleonScript != null && !activeChameleonScript.scriptRunnerThread.isInterrupted()) {

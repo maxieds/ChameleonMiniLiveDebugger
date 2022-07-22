@@ -21,9 +21,6 @@ import android.content.Context;
 
 public interface ChameleonSerialIOInterface {
 
-    void setListenerContext(Context context);
-
-    String SERIALIO_DEVICE_FOUND = "ChameleonSerialIOInterface.SERIALIO_DEVICE_FOUND";
     String SERIALIO_DEVICE_CONNECTION_LOST = "ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST";
     String SERIALIO_DATA_RECEIVED = "ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED";
     String SERIALIO_LOGDATA_RECEIVED = "ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED";
@@ -31,15 +28,18 @@ public interface ChameleonSerialIOInterface {
     String SERIALIO_NOTIFY_BTDEV_CONNECTED = "ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED";
 
     int STATUS_ERROR = -1;
+    int STATUS_NOT_SUPPORTED = -2;
+    int STATUS_RESOURCE_UNAVAILABLE = -3;
     int STATUS_OK = 0;
     int STATUS_TRUE = 1;
     int STATUS_FALSE = 0;
 
     String getInterfaceLoggingTag();
 
+    void setListenerContext(Context context);
+
     boolean notifySerialDataReceived(byte[] serialData);
     boolean notifyLogDataReceived(byte[] serialData);
-    boolean notifyDeviceFound();
     boolean notifyDeviceConnectionTerminated();
     boolean notifyStatus(String msgType, String statusMsg);
 
@@ -75,9 +75,11 @@ public interface ChameleonSerialIOInterface {
     int setSerialBaudRateHigh();
     int setSerialBaudRateLimited();
 
+    String getDeviceName();
+    String getActiveDeviceInfo();
+
     boolean startScanningDevices();
     boolean stopScanningDevices();
-    String getActiveDeviceInfo();
 
     int configureSerial();
     int shutdownSerial();

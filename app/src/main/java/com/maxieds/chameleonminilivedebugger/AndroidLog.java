@@ -211,7 +211,7 @@ public class AndroidLog {
     private static final int LINE_WRAP_CHARACTERS = 80;
 
     private static String wrapDataAt(String linePrefix, String data) {
-        Locale defaultLocale = Locale.getDefault();
+        Locale defaultLocale = BuildConfig.DEFAULT_LOCALE;
         int lineWrapNumChars = (int) (LINE_WRAP_CHARACTERS - linePrefix.length());
         String wrapRegexFmt = String.format(defaultLocale, ".{%d}(?=.)", lineWrapNumChars);
         String replaceLineFmt = String.format(defaultLocale, "%s$0\n", linePrefix);
@@ -238,7 +238,7 @@ public class AndroidLog {
         String logTimeStamp = Utils.getTimestamp();
         String logLevelDesc = level.name();
         StringBuilder logDataBuilder = new StringBuilder();
-        Locale defaultLocale = Locale.getDefault();
+        Locale defaultLocale = BuildConfig.DEFAULT_LOCALE;
         logDataBuilder.append(String.format(defaultLocale, "%s LOG ENTRY @ %s\n", LOGDATA_START_ENTRY_DELIMITER, logTimeStamp));
         logDataBuilder.append(String.format(defaultLocale, "%s LEVEL %s / %s\n", LOGDATA_ITEM_DELIMITER, logLevelDesc, tag));
         logDataBuilder.append(String.format(defaultLocale, wrapDataAt(msg)));
@@ -280,7 +280,7 @@ public class AndroidLog {
         PrintStream outStream = openLogDataOutputFile();
         if(outStream != null) {
             String excptTimeStamp = Utils.getTimestamp();
-            String excptMsgPrefix = String.format(Locale.getDefault(), "%s EXCEPTION STACK TRACE @ %s\n\n", LOGDATA_START_ENTRY_DELIMITER, excptTimeStamp);
+            String excptMsgPrefix = String.format(BuildConfig.DEFAULT_LOCALE, "%s EXCEPTION STACK TRACE @ %s\n\n", LOGDATA_START_ENTRY_DELIMITER, excptTimeStamp);
             outStream.print(excptMsgPrefix);
             outStream.flush();
             e.printStackTrace(outStream);

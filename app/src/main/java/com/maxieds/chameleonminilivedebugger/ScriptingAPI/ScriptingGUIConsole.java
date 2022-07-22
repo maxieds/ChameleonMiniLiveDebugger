@@ -37,8 +37,7 @@ import com.maxieds.chameleonminilivedebugger.LiveLoggerActivity;
 import com.maxieds.chameleonminilivedebugger.R;
 import com.maxieds.chameleonminilivedebugger.TabFragment;
 import com.maxieds.chameleonminilivedebugger.Utils;
-
-import java.util.Locale;
+import com.maxieds.chameleonminilivedebugger.BuildConfig;
 
 public class ScriptingGUIConsole {
 
@@ -96,7 +95,7 @@ public class ScriptingGUIConsole {
                 if (nextLoc <= 0) {
                     tvRecLoc.setText("Line ----  ");
                 } else {
-                    tvRecLoc.setText(String.format(Locale.getDefault(), "Line % 3d  ", nextLoc));
+                    tvRecLoc.setText(String.format(BuildConfig.DEFAULT_LOCALE, "Line % 3d  ", nextLoc));
                 }
             }
             return this;
@@ -122,8 +121,8 @@ public class ScriptingGUIConsole {
                 if (typeMarkerText.length() > RECORD_TYPE_MARKER_CHAR_WIDTH) {
                     typeMarkerText = typeMarkerText.substring(0, RECORD_TYPE_MARKER_CHAR_WIDTH - 1);
                 } else {
-                    String fmtString = String.format(Locale.getDefault(), "%%%ds", RECORD_TYPE_MARKER_CHAR_WIDTH);
-                    typeMarkerText = String.format(Locale.getDefault(), fmtString, typeMarkerText);
+                    String fmtString = String.format(BuildConfig.DEFAULT_LOCALE, "%%%ds", RECORD_TYPE_MARKER_CHAR_WIDTH);
+                    typeMarkerText = String.format(BuildConfig.DEFAULT_LOCALE, fmtString, typeMarkerText);
                 }
                 tvRecTypeMarker.setText(typeMarkerText);
             }
@@ -231,17 +230,17 @@ public class ScriptingGUIConsole {
                 default:
                     String msgPrefixData = "Script Variable Data:";
                     String[] msgDataComponents = new String[] {
-                            String.format(Locale.getDefault(), "AS BOOL:   %s", scrVarData.getValueAsBoolean() ? "TRUE" : "FALSE"),
-                            String.format(Locale.getDefault(), "AS INT32:  %04x (% 6d)", scrVarData.getValueAsInt(), scrVarData.getValueAsInt()),
-                            String.format(Locale.getDefault(), "AS ASCII:  %s", scrVarData.getValueAsString()),
-                            String.format(Locale.getDefault(), "AS HEXSTR: %s", Utils.bytes2Ascii(scrVarData.getValueAsString().getBytes()))
+                            String.format(BuildConfig.DEFAULT_LOCALE, "AS BOOL:   %s", scrVarData.getValueAsBoolean() ? "TRUE" : "FALSE"),
+                            String.format(BuildConfig.DEFAULT_LOCALE, "AS INT32:  %04x (% 6d)", scrVarData.getValueAsInt(), scrVarData.getValueAsInt()),
+                            String.format(BuildConfig.DEFAULT_LOCALE, "AS ASCII:  %s", scrVarData.getValueAsString()),
+                            String.format(BuildConfig.DEFAULT_LOCALE, "AS HEXSTR: %s", Utils.bytes2Ascii(scrVarData.getValueAsString().getBytes()))
                     };
                     return newInfoMessageInstance(msgPrefixData, msgDataComponents, lineOfCode);
             }
         }
 
         public static ConsoleOutputRecord newInfoMessageInstance(String msgDataPrefix, String msgData[], int lineOfCode) {
-            ConsoleOutputRecord newInfoMsgRecord = new ConsoleOutputRecord(String.format(Locale.getDefault(), "Information"));
+            ConsoleOutputRecord newInfoMsgRecord = new ConsoleOutputRecord(String.format(BuildConfig.DEFAULT_LOCALE, "Information"));
             newInfoMsgRecord.setMainContentLayout(R.layout.scripting_console_record_textinfomsg);
             newInfoMsgRecord.setRecordIcon(R.drawable.scripting_output_icon_info16);
             newInfoMsgRecord.setRecordLineOfCode(lineOfCode);
@@ -252,7 +251,7 @@ public class ScriptingGUIConsole {
         }
 
         public static ConsoleOutputRecord newErrorWarningMessageInstance(String msgDataPrefix, String msgData[], int lineOfCode) {
-            ConsoleOutputRecord newEWarnMsgRecord = new ConsoleOutputRecord(String.format(Locale.getDefault(), "Error -- Warning"));
+            ConsoleOutputRecord newEWarnMsgRecord = new ConsoleOutputRecord(String.format(BuildConfig.DEFAULT_LOCALE, "Error -- Warning"));
             newEWarnMsgRecord.setMainContentLayout(R.layout.scripting_console_record_textinfomsg);
             newEWarnMsgRecord.setRecordIcon(R.drawable.scripting_output_icon_error16);
             newEWarnMsgRecord.setRecordLineOfCode(lineOfCode);
@@ -263,7 +262,7 @@ public class ScriptingGUIConsole {
         }
 
         public static ConsoleOutputRecord newBreakpointRecordInstance(String bpLabel, int lineOfCode) {
-            ConsoleOutputRecord newBkptMsgRecord = new ConsoleOutputRecord(String.format(Locale.getDefault(), "Breakpoint '%s'", bpLabel));
+            ConsoleOutputRecord newBkptMsgRecord = new ConsoleOutputRecord(String.format(BuildConfig.DEFAULT_LOCALE, "Breakpoint '%s'", bpLabel));
             newBkptMsgRecord.setMainContentLayout(R.layout.scripting_console_record_textinfomsg);
             newBkptMsgRecord.setRecordIcon(R.drawable.scripting_output_icon_bkpt16);
             newBkptMsgRecord.setRecordLineOfCode(lineOfCode);
@@ -275,25 +274,25 @@ public class ScriptingGUIConsole {
 
         public static ConsoleOutputRecord newChameleonCommandResponseRecordInstance(ScriptingTypes.ScriptVariable scHashedArrayVar, int lineOfCode) {
             try {
-                ConsoleOutputRecord newCmdRespMsgRecord = new ConsoleOutputRecord(String.format(Locale.getDefault(), "Command Response"));
+                ConsoleOutputRecord newCmdRespMsgRecord = new ConsoleOutputRecord(String.format(BuildConfig.DEFAULT_LOCALE, "Command Response"));
                 newCmdRespMsgRecord.setMainContentLayout(R.layout.scripting_console_record_cmdresp);
                 newCmdRespMsgRecord.setRecordIcon(R.drawable.scripting_output_icon_cmdresp16_v1);
                 newCmdRespMsgRecord.setRecordLineOfCode(lineOfCode);
                 newCmdRespMsgRecord.setRecordTimestamp();
                 newCmdRespMsgRecord.setRecordTypeMarker(ScriptingConsoleRecordType.SCRECORD_CHAMCMDRESP);
                 TextView tvCmdName = (TextView) newCmdRespMsgRecord.getMainLayoutView().findViewById(R.id.localCmdResponseRecordChamCmdNameText);
-                tvCmdName.setText(String.format(Locale.getDefault(), "%s", scHashedArrayVar.getValueAt("cmdName").getValueAsString()).toUpperCase(Locale.getDefault()));
+                tvCmdName.setText(String.format(BuildConfig.DEFAULT_LOCALE, "%s", scHashedArrayVar.getValueAt("cmdName").getValueAsString()).toUpperCase(BuildConfig.DEFAULT_LOCALE));
                 TextView tvCmdResp = (TextView) newCmdRespMsgRecord.getMainLayoutView().findViewById(R.id.localCmdResponseRecordChamCmdRespAndCodeText);
-                tvCmdResp.setText(String.format(Locale.getDefault(), "%s (%s)",
+                tvCmdResp.setText(String.format(BuildConfig.DEFAULT_LOCALE, "%s (%s)",
                         scHashedArrayVar.getValueAt("respText").getValueAsString(), scHashedArrayVar.getValueAt("respCode").getValueAsString()));
                 TextView tvCmdDataAscii = (TextView) newCmdRespMsgRecord.getMainLayoutView().findViewById(R.id.localCmdResponseRecordChamCmdReturnDataAsciiText);
-                tvCmdDataAscii.setText(String.format(Locale.getDefault(), "%s", scHashedArrayVar.getValueAt("data").getValueAsString()));
+                tvCmdDataAscii.setText(String.format(BuildConfig.DEFAULT_LOCALE, "%s", scHashedArrayVar.getValueAt("data").getValueAsString()));
                 TextView tvCmdDataHex = (TextView) newCmdRespMsgRecord.getMainLayoutView().findViewById(R.id.localCmdResponseRecordChamCmdReturnDataHexText);
-                tvCmdDataHex.setText(String.format(Locale.getDefault(), "%s", Utils.bytes2Ascii(scHashedArrayVar.getValueAt("data").getValueAsString().getBytes())));
+                tvCmdDataHex.setText(String.format(BuildConfig.DEFAULT_LOCALE, "%s", Utils.bytes2Ascii(scHashedArrayVar.getValueAt("data").getValueAsString().getBytes())));
                 TextView tvCmdDataIsError = (TextView) newCmdRespMsgRecord.getMainLayoutView().findViewById(R.id.localCmdResponseRecordChamCmdIsErrorText);
-                tvCmdDataIsError.setText(String.format(Locale.getDefault(), "%s", scHashedArrayVar.getValueAt("isError").getValueAsBoolean() ? "True" : "False"));
+                tvCmdDataIsError.setText(String.format(BuildConfig.DEFAULT_LOCALE, "%s", scHashedArrayVar.getValueAt("isError").getValueAsBoolean() ? "True" : "False"));
                 TextView tvCmdDataIsTmt = (TextView) newCmdRespMsgRecord.getMainLayoutView().findViewById(R.id.localCmdResponseRecordChamCmdIsTimeoutText);
-                tvCmdDataIsTmt.setText(String.format(Locale.getDefault(), "%s", scHashedArrayVar.getValueAt("isTimeout").getValueAsBoolean() ? "True" : "False"));
+                tvCmdDataIsTmt.setText(String.format(BuildConfig.DEFAULT_LOCALE, "%s", scHashedArrayVar.getValueAt("isTimeout").getValueAsBoolean() ? "True" : "False"));
                 return newCmdRespMsgRecord;
             } catch(NullPointerException npe) {
                 AndroidLog.printStackTrace(npe);

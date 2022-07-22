@@ -346,19 +346,35 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           configureTabViewPager();
 
           if(completeRestart) {
-               String[] permissions = {
-                       "android.permission.READ_EXTERNAL_STORAGE",
-                       "android.permission.WRITE_EXTERNAL_STORAGE",
-                       "android.permission.INTERNET",
-                       "android.permission.USB_PERMISSION",
-                       "android.permission.BLUETOOTH",
-                       "android.permission.BLUETOOTH_CONNECT",
-                       "android.permission.BLUETOOTH_ADMIN",
-                       "android.permission.BLUETOOTH_SCAN",
-                       "android.permission.ACCESS_COARSE_LOCATION",
-                       "android.permission.ACCESS_FINE_LOCATION",
-                       "android.permission.VIBRATE",
-               };
+               String[] permissions;
+               if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+                    permissions = new String[]{
+                            "android.permission.READ_EXTERNAL_STORAGE",
+                            "android.permission.WRITE_EXTERNAL_STORAGE",
+                            "android.permission.INTERNET",
+                            "android.permission.USB_PERMISSION",
+                            "android.permission.ACCESS_COARSE_LOCATION",
+                            "android.permission.ACCESS_FINE_LOCATION",
+                            "android.permission.VIBRATE",
+                            "android.permission.BLUETOOTH",
+                            "android.permission.BLUETOOTH_ADMIN",
+                    };
+               } else {
+                    permissions = new String[] {
+                            "android.permission.READ_EXTERNAL_STORAGE",
+                            "android.permission.WRITE_EXTERNAL_STORAGE",
+                            "android.permission.INTERNET",
+                            "android.permission.USB_PERMISSION",
+                            "android.permission.ACCESS_COARSE_LOCATION",
+                            "android.permission.ACCESS_FINE_LOCATION",
+                            "android.permission.VIBRATE",
+                            "android.permission.BLUETOOTH",
+                            "android.permission.BLUETOOTH_ADMIN",
+                            "android.permission.BLUETOOTH_SCAN",
+                            "android.permission.BLUETOOTH_CONNECT",
+                            "android.permission.BLUETOOTH_ADVERTISE",
+                    };
+               }
                if (android.os.Build.VERSION.SDK_INT >= 23) {
                     for(String permissionName : permissions) {
                          requestPermissions(new String[] { permissionName }, 0);
@@ -393,7 +409,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           clearStatusIcon(R.id.statusCodecRXDataEvent);
           clearStatusIcon(R.id.statusScriptingIsExec);
 
-          if(BuildConfig.FLAVOR.equals("paid")) {
+          if(BuildConfig.PAID_APP_VERSION) {
                String userGreeting = getString(R.string.appInitialUserGreetingMsgPaid);
                MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("WELCOME", userGreeting));
                String disclaimerStmt = getString(R.string.appPaidFlavorDisclaimerEULA);
@@ -571,7 +587,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                ChameleonSettings.initializeSerialIOConnections();
           }
           else if(intent.getAction().equals(BluetoothDevice.ACTION_FOUND)) {
-               BluetoothGattConnector btGattConnect = ((BluetoothSerialInterface) ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX]).getBluetoothGattConnector();
+               BluetoothGattConnector btGattConnect = ((BluetoothBLEInterface) ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX]).getBluetoothGattConnector();
                if(btGattConnect == null) {
                     return;
                }
@@ -579,7 +595,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                if(btLocalDevice == null) {
                     return;
                }
-               btGattConnect.notifyBluetoothSerialInterfaceDeviceConnected(btLocalDevice);
+               btGattConnect.notifyBluetoothBLEDeviceConnected(btLocalDevice);
           }
           else if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
                   intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED)) {
@@ -592,7 +608,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     Runnable configDeviceRunnable = new Runnable() {
                          public void run() {
                               if(ChameleonSettings.getActiveSerialIOPort() != null &&
-                                      ((BluetoothSerialInterface) ChameleonSettings.getActiveSerialIOPort()).isDeviceConnected()) {
+                                      ((BluetoothBLEInterface) ChameleonSettings.getActiveSerialIOPort()).isDeviceConnected()) {
                                    ChameleonIO.detectChameleonType();
                                    ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
                                    TabFragment.UITAB_DATA[TabFragment.TAB_TOOLS].changeMenuItemDisplay(TAB_TOOLS_MITEM_SLOTS, true);
@@ -630,7 +646,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED)) {
                byte[] serialByteData = intent.getByteArrayExtra("DATA");
                int logCodeByteCount = ChameleonLogUtils.ResponseIsLiveLoggingBytes(serialByteData);
-               String dataMsg = String.format(Locale.getDefault(), "Unexpected serial I/O data received (data as log below)");
+               String dataMsg = String.format(BuildConfig.DEFAULT_LOCALE, "Unexpected serial I/O data received (data as log below)");
                MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", dataMsg));
                MainActivityLogUtils.appendNewLog(LogEntryUI.newInstance(serialByteData, ""));
           }
@@ -1034,7 +1050,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                } else {
                     toastStatusMsg = "All CMLD app permissions requested. Enable all to ensure the app runs correctly.";
                }
-          } else if (resultCode == BluetoothSerialInterface.ACTVITY_REQUEST_BLUETOOTH_ENABLED_CODE) {
+          } else if (resultCode == BluetoothBLEInterface.ACTVITY_REQUEST_BLUETOOTH_ENABLED_CODE) {
                if(resultCode == Activity.RESULT_CANCELED) {
                     /* Bluetooth not enabled: */
                     finish();
@@ -1042,7 +1058,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                } else {
                     toastStatusMsg = "Bluetooth permissions enabled.";
                }
-          } else if (resultCode == BluetoothSerialInterface.ACTVITY_REQUEST_BLUETOOTH_DISCOVERABLE_CODE) {
+          } else if (resultCode == BluetoothBLEInterface.ACTVITY_REQUEST_BLUETOOTH_DISCOVERABLE_CODE) {
                if(resultCode == Activity.RESULT_CANCELED) {
                     /* Bluetooth discovery not enabled: */
                     finish();
@@ -1216,11 +1232,11 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                }
                int cmdReqNumBytes = Integer.parseInt(cmdTagComps[1]);
                if (piccSetBytes.length() != 2 * cmdReqNumBytes) {
-                    String toastErrorMsg = String.format(Locale.getDefault(), "Invalid number of bytes. The command requires %d bytes.", cmdReqNumBytes);
+                    String toastErrorMsg = String.format(BuildConfig.DEFAULT_LOCALE, "Invalid number of bytes. The command requires %d bytes.", cmdReqNumBytes);
                     Utils.displayToastMessageShort(toastErrorMsg);
                     return;
                }
-               String chamCmd = String.format(Locale.getDefault(), cmdTagComps[0], piccSetBytes);
+               String chamCmd = String.format(BuildConfig.DEFAULT_LOCALE, cmdTagComps[0], piccSetBytes);
                ChameleonIO.executeChameleonMiniCommand(chamCmd, ChameleonIO.TIMEOUT);
           }
      }

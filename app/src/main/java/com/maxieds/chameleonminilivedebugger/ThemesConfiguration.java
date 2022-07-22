@@ -71,7 +71,7 @@ public class ThemesConfiguration {
     public static int setLocalTheme(String themeDesc, boolean applyTheme, ChameleonMiniLiveDebuggerActivity activity) {
         int themeID;
         if(activity == null) {
-            if(BuildConfig.FLAVOR.equals("paid")) {
+            if(BuildConfig.PAID_APP_VERSION) {
                 themeID = R.style.AppThemeGreenPaid;
             } else {
                 themeID = R.style.AppThemeGreen;
@@ -111,7 +111,7 @@ public class ThemesConfiguration {
                 break;
             case "Standard Green (Default)":
             case "Standard Green":
-                if(BuildConfig.FLAVOR.equals("paid")) {
+                if(BuildConfig.PAID_APP_VERSION) {
                     themeID = R.style.AppThemeGreenPaid;
                 } else {
                     themeID = R.style.AppThemeGreen;
