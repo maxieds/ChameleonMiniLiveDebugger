@@ -62,7 +62,14 @@ def generateAntlrJava(String grammarFile) {
 
 }
 
-task PreBuildGenAntlr4JavaSources {
+task verboseBuildLogs {
+
+    logging.captureStandardOutput LogLevel.DEBUG
+
+}
+preBuild.dependsOn verboseBuildLogs
+
+task preBuildGenAntlr4JavaSources {
 
     println 'REMOVING OLD ANTLR4 JAVA SOURCES ==> '
     file(new File('app/src/main/antlr-gen')).deleteDir()
@@ -73,8 +80,14 @@ task PreBuildGenAntlr4JavaSources {
     outputs.upToDateWhen { false } /* Make the task run every time (no UP-TO-DATE skippage) */
 
 }
+preBuild.dependsOn preBuildGenAntlr4JavaSources
 
-preBuild.dependsOn PreBuildGenAntlr4JavaSources
+task cleanBuildDir {
+
+    delete rootProject.buildDir
+
+}
+clean.dependsOn cleanBuildDir
 
 task cleanPreBuildGenAntlr4JavaSources {
 
@@ -86,7 +99,6 @@ task cleanPreBuildGenAntlr4JavaSources {
     generateAntlrJava("ChameleonScriptParser.g4")
 
 }
-
 clean.dependsOn cleanPreBuildGenAntlr4JavaSources
 
 android {
@@ -111,6 +123,16 @@ android {
         buildConfigField "java.util.Locale", "DEFAULT_LOCALE", "java.util.Locale.ENGLISH"
 
         setProperty("archivesBaseName", "ChameleonMiniLiveDebugger-v$versionName-$versionCode-$configBuildTimeStamp")
+
+    }
+
+    lint {
+
+        abortOnError = true
+        ignoreWarnings = false
+        checkAllWarnings = true
+        explainIssues = true
+        warningsAsErrors = false
 
     }
 
@@ -254,16 +276,21 @@ android {
 
     repositories {
 
-        jcenter()
         google()
         mavenCentral()
+
         maven {
 
             url "https://maven.google.com"
             name 'Google'
 
         }
-        maven { url "https://jitpack.io" }
+        maven {
+
+            url 'https://jitpack.io'
+            name 'JitPack.IO'
+
+        }
 
     }
 
