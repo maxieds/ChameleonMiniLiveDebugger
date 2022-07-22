@@ -68,18 +68,18 @@ ChameleonCommandAndLogFunctions:     CmdDownloadTagFuncName | CmdUploadTagFuncNa
                                      CmdDownloadLogsFuncName ;
 
 /**** String handling functions: ****/
-StringSearchFuncName:              'Find(' ;
-StringContainsFuncName:            'Contains(' ;
-StringReplaceFuncName:             'Replace(' ;
-StringSplitFuncName:               'Split(' ;
-StringStripFuncName:               'Strip(' ;
-SubstrFuncName:                    'Substring(' ;
+StringSearchFuncName:              'StringFind(' ;
+StringContainsFuncName:            'StringContains(' ;
+StringReplaceFuncName:             'StringReplace(' ;
+StringCatFuncName:                 'Strcat(';
+StringSplitFuncName:               'StringSplit(' ;
+StringStripFuncName:               'StringStrip(' ;
+SubstrFuncName:                    'Substr(' ;
 
 StringFunctions:                   StringSearchFuncName | StringContainsFuncName | StringReplaceFuncName |
                                    StringStripFuncName | StringSplitFuncName | SubstrFuncName ;
 
 /**** APDU handling functions: ****/
-AsWrappedAPDUFuncName:                 'AsWrappedAPDU(' ; // ($v -- assumes have prepended CLA,INS); -> ByteArray | ($v, CLA,INS,P1,P2)
 ExtractDataFromWrappedAPDUFuncName:    'ExtractDataFromWrappedAPDU(' ;
 ExtractDataFromNativeAPDUFuncName:     'ExtractDataFromNativeAPDU(' ;
 SplitWrappedAPDUFuncName:              'SplitAPDUResponse(' ;

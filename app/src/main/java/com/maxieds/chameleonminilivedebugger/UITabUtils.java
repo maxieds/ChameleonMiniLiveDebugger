@@ -382,18 +382,26 @@ public class UITabUtils {
         EditText deviceNameText = parentLayoutView.findViewById(R.id.slotNicknameText);
         TextView chamTypeText = parentLayoutView.findViewById(R.id.chameleonTypeText);
         TextView hardwareIDText = parentLayoutView.findViewById(R.id.hardwareSerialIDText);
+        TextView connStrengthText = parentLayoutView.findViewById(R.id.connectionSignalStrength);
         TextView connStatusText = parentLayoutView.findViewById(R.id.connectionStatusText);
-        if(chamTypeText != null && hardwareIDText != null && connStatusText != null) {
+        if(chamTypeText != null && hardwareIDText != null && connStatusText != null && connStrengthText != null) {
             boolean isChameleonDevConn = ChameleonSettings.getActiveSerialIOPort() != null && !resetConnection;
             if (isChameleonDevConn) {
                 deviceNameText.setText(ChameleonSettings.getActiveSerialIOPort().getDeviceName());
                 chamTypeText.setText(ChameleonIO.getDeviceDescription(ChameleonIO.CHAMELEON_MINI_BOARD_TYPE));
                 hardwareIDText.setText(ChameleonSettings.chameleonDeviceSerialNumber);
+                if (ChameleonSettings.getActiveSerialIOPort().isBluetooth()) {
+                    BluetoothBLEInterface btConn = (BluetoothBLEInterface) ChameleonSettings.getActiveSerialIOPort();
+                    connStrengthText.setText(String.format(BuildConfig.DEFAULT_LOCALE, "%d (txPower), %d (RSSI)", btConn.getTxPower(), btConn.getRSSI()));
+                } else {
+                    connStrengthText.setText("N/A");
+                }
                 connStatusText.setText(ChameleonSettings.getActiveSerialIOPort().isWiredUSB() ? "USB connection" : "BT connection");
             } else {
                 deviceNameText.setText(ChameleonSettings.chameleonDeviceNickname);
                 chamTypeText.setText("None");
                 hardwareIDText.setText("None");
+                connStrengthText.setText("None");
                 connStatusText.setText("Not connected");
             }
             return true;

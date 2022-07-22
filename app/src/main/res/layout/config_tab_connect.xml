@@ -219,7 +219,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_gravity="left|center_vertical"
                     android:drawablePadding="3dp"
                     android:singleLine="true"
-                    android:text="Hardware Serial ID: "
+                    android:text="Hardware Serial: "
                     android:textColor="?colorPrimaryDark"
                     android:textStyle="bold|italic" />
 
@@ -240,6 +240,28 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_height="wrap_content"
                     android:paddingRight="3dp"
                     android:src="@drawable/connection_status_logo24" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:singleLine="true"
+                    android:text="Signal Strength (dBm): "
+                    android:textColor="?colorPrimaryDark"
+                    android:textStyle="bold|italic" />
+
+                <TextView
+                    android:id="@+id/connectionSignalStrength"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:drawablePadding="3dp"
+                    android:paddingLeft="8dp"
+                    android:singleLine="true"
+                    android:text="None"
+                    android:textColor="?colorPrimaryDark"
+                    android:textStyle="normal" />
 
                 <TextView
                     android:layout_width="wrap_content"

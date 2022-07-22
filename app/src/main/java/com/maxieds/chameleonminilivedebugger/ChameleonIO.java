@@ -57,15 +57,16 @@ public class ChameleonIO {
     public static final int CHAMELEON_TYPE_KAOS_REVG = 0;
     public static final int CHAMELEON_TYPE_PROXGRIND_REVG = 1;
     public static final int CHAMELEON_TYPE_PROXGRIND_REVG_TINY = 2;
-    public static final int CHAMELEON_TYPE_REVE = 3;
-    public static final int CHAMELEON_TYPE_DFUMODE = 4;
-    public static final int CHAMELEON_TYPE_DESFIRE_FWMOD = 5;
+    public static final int CHAMELEON_TYPE_PROXGRIND_REVG_TINYPRO = 3;
+    public static final int CHAMELEON_TYPE_REVE = 4;
+    public static final int CHAMELEON_TYPE_DFUMODE = 5;
+    public static final int CHAMELEON_TYPE_DESFIRE_FWMOD = 6;
 
     public static boolean REVE_BOARD = false;
     public static int CHAMELEON_DEVICE_USBVID = 0x00;
     public static int CHAMELEON_DEVICE_USBPID = 0x00;
     public static int CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_UNKNOWN;
-    public static String CHAMELEON_MINI_BOARD_TYPE_DESC = ChameleonSettings.CMINI_DEVICE_FIELD_UNKNOWN;
+    public static String CHAMELEON_MINI_BOARD_TYPE_DESC = ChameleonSettings.CMINI_DEVICE_FIELD_NONE;
 
     public static String getDeviceDescription(int chameleonBoardType) {
         switch(chameleonBoardType) {
@@ -77,6 +78,8 @@ public class ChameleonIO {
                 return "Proxgrind RevG Device";
             case CHAMELEON_TYPE_PROXGRIND_REVG_TINY:
                 return "Proxgrind Tiny Device";
+            case CHAMELEON_TYPE_PROXGRIND_REVG_TINYPRO:
+                return "Proxgrind TinyPro Device";
             case CHAMELEON_TYPE_KAOS_REVG:
                 return "KAOS RevG Device";
             case CHAMELEON_TYPE_DESFIRE_FWMOD:

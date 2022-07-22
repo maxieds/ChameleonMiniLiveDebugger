@@ -52,6 +52,12 @@
         android:permissionGroup="CMLD.permission-group.MINIMAL_APP_REQUIREMENTS"
         android:required="true"
         />
+    <uses-permission
+        android:name="android.permission.WAKE_LOCK"
+        android:permissionGroup="CMLD.permission-group.MINIMAL_APP_REQUIREMENTS"
+        android:required="false"
+        />
+
 
     <permission-group
         android:name="CMLD.permission-group.FILES_AND_STORAGE"
@@ -206,6 +212,7 @@
         android:installLocation="${installLocation}"
         tools:replace="android:installLocation"
         android:allowBackup="true"
+        android:keepScreenOn="true"
         >
 
         <!--<uses-library android:name="com.android.future.usb.accessory" />-->

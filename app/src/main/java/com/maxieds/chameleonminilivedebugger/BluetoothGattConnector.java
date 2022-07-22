@@ -17,6 +17,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -36,6 +37,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.ParcelUuid;
+import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 
@@ -51,8 +53,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
 
     private static final String TAG = BluetoothGattConnector.class.getSimpleName();
 
-    /**
-     * OBSERVATIONS / TROUBLESHOOTING NOTES:
+    /* OBSERVATIONS / TROUBLESHOOTING NOTES:
      *     The proprietary Proxgrind / RRG application does something unusual the
      *     first time it tries to connect to the Chameleon over BT when the
      *     Chameleon device is reconnected to power via USB after the battery has
@@ -71,12 +72,9 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
      *             and then inspect the live settings that are active for the device.]
      */
 
-    /**
-     * NOTE: More BLE documentation at https://punchthrough.com/android-ble-guide/
-     */
-
-    /* TODO: Make sure that the BLE UUIDs are the same for both of the
-     *       Proxgrind RevG Tiny and TinyPro devices
+    /*
+     * NOTE: More Android Bluetooth BLE documentation available here:
+     *       https://punchthrough.com/android-ble-guide/
      */
 
     public static final String CHAMELEON_REVG_NAME = "BLE-Chameleon";
@@ -106,33 +104,35 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
     public static final byte[] BLUETOOTH_GATT_ENABLE_NOTIFY_PROP = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE;
     public static final int BLUETOOTH_GATT_CONNECT_PRIORITY_HIGH = BluetoothGatt.CONNECTION_PRIORITY_HIGH;
     public static final int BLUETOOTH_LOCAL_MTU_THRESHOLD = 244;
+    public static final int BLUETOOTH_GATT_RSP_WRITE = 0x13;
+    public static final int BLUETOOTH_GATT_RSP_EXEC_WRITE = 0x19;
+    public static final int BLUETOOTH_GATT_ERROR = 0x85;
 
-    public static final int BLUETOOTH_BLE_GATT_RSP_WRITE = 0x13;
-    public static final int BLUETOOTH_BLE_GATT_RSP_EXEC_WRITE = 0x19;
-    public static final int BLUETOOTH_BLE_GATT_ERROR = 0x85;
-
+    private boolean btPermsObtained;
+    private boolean btNotifyUARTService; /* ??? TODO: Need to set the service UUID for some operations ??? */
+    private boolean btBondRecvRegistered;
+    private boolean isConnected;
     private Context btSerialContext;
     private ParcelUuid chameleonDeviceBLEService;
-    private ParcelUuid chameleonDeviceBLECtrlChar;
+    private ParcelUuid chameleonDeviceBLECtrlChar; /* ??? TODO: Need to set the service UUID for some operations (see local variable above) ??? */
     private ParcelUuid chameleonDeviceBLESendChar;
     private ParcelUuid chameleonDeviceBLERecvChar;
     private BluetoothDevice btDevice;
+    private int bleDeviceTxPower;
+    private int bleDeviceRSSI;
     private BluetoothAdapter btAdapter;
     private BluetoothLeScanner bleScanner;
     private BluetoothGatt btGatt;
     private BluetoothGattCallback btGattCallback;
+    private ScanCallback bleScanCallback;
     private BroadcastReceiver btBondReceiver;
-    private boolean btPermsObtained;
-    private boolean btNotifyUARTService;
-    private boolean btBondRecvRegistered;
     private BluetoothBLEInterface btSerialIface;
-    private boolean isConnected;
     public static byte[] btDevicePinDataBytes = new byte[0];
 
     private static final long BLE_READ_WRITE_OPERATION_TRYLOCK_TIMEOUT = ChameleonIO.LOCK_TIMEOUT;
 
-    private Semaphore bleReadLock = new Semaphore(1, true);
-    private Semaphore bleWriteLock = new Semaphore(1, true);
+    private final Semaphore bleReadLock = new Semaphore(1, true);
+    private final Semaphore bleWriteLock = new Semaphore(1, true);
 
     public BluetoothGattConnector(@NonNull Context localContext) {
         btSerialContext = localContext;
@@ -141,6 +141,8 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         chameleonDeviceBLERecvChar = CHAMELEON_REVG_RECV_CHAR_UUID;
         chameleonDeviceBLECtrlChar = CHAMELEON_REVG_CTRL_CHAR_UUID;
         btDevice = null;
+        bleDeviceTxPower = 0;
+        bleDeviceRSSI = 0;
         btBondReceiver = null;
         btPermsObtained = false;
         btBondRecvRegistered = false;
@@ -149,6 +151,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         btAdapter = configureBluetoothAdapter();
         btGatt = null;
         btGattCallback = configureBluetoothGattCallback();
+        configureBLEScanCallback();
         btSerialIface = (BluetoothBLEInterface) ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX];
         isConnected = false;
         BluetoothGattConnector.btDevicePinDataBytes = getStoredBluetoothDevicePinData();
@@ -158,8 +161,11 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         btSerialIface = btLocalSerialIface;
     }
 
+    @SuppressLint("MissingPermission")
     private BroadcastReceiver configureBluetoothBondReceiver() {
+        final BluetoothGattConnector btGattConnFinal = this;
         BroadcastReceiver btLocalBondReceiver = new BroadcastReceiver() {
+            final BluetoothGattConnector btGattConn = btGattConnFinal;
             @Override
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
@@ -168,10 +174,12 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     return;
                 }
                 BluetoothDevice btIntentDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if (btIntentDevice != null) {
-                    AndroidLog.i(TAG, "btBondReceiver: calling notifyBluetoothSerialInterfaceDeviceConnected");
-                    notifyBluetoothBLEDeviceConnected(btIntentDevice);
+                if (btIntentDevice == null) {
+                    btIntentDevice = btDevice;
                 }
+                AndroidLog.i(TAG, "btBondReceiver: calling notifyBluetoothSerialInterfaceDeviceConnected");
+                btIntentDevice.connectGatt(LiveLoggerActivity.getLiveLoggerInstance().getApplicationContext(), true, btGattConn);
+                notifyBluetoothBLEDeviceConnected(btIntentDevice);
             }
         };
         return btLocalBondReceiver;
@@ -192,16 +200,17 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
     private BluetoothGattCallback configureBluetoothGattCallback() {
         BluetoothGattCallback btLocalGattCallback = new BluetoothGattCallback() {
 
+            @SuppressLint("MissingPermission")
             @Override
             public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
                 if (status != BluetoothGatt.GATT_SUCCESS) {
                     AndroidLog.w(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "onConnectionStateChange: error/status code %d = %04x", status, status));
                 }
-                if(status == BLUETOOTH_BLE_GATT_ERROR) {
+                if(status == BLUETOOTH_GATT_ERROR) {
                     return;
-                } else if (status == BLUETOOTH_BLE_GATT_RSP_WRITE) {
+                } else if (status == BLUETOOTH_GATT_RSP_WRITE) {
                     return;
-                } else if (status == BLUETOOTH_BLE_GATT_RSP_EXEC_WRITE) {
+                } else if (status == BLUETOOTH_GATT_RSP_EXEC_WRITE) {
                     return;
                 }
                 if(newState == BluetoothProfile.STATE_CONNECTED) {
@@ -223,16 +232,12 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                 if (status != BluetoothGatt.GATT_SUCCESS) {
                     AndroidLog.w(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "onServicesDiscovered: error/status code %d = %04x", status, status));
                 }
-                if (status == BLUETOOTH_BLE_GATT_ERROR) {
+                if (status == BLUETOOTH_GATT_ERROR) {
                     return;
                 }
                 List<BluetoothGattService> services = gatt.getServices();
                 AndroidLog.i(TAG,"onServicesDiscovered" + services.toString());
-                /*try {
-                    gatt.readCharacteristic(services.get(1).getCharacteristics().get(0));
-                } catch(SecurityException se) {
-                    AndroidLog.printStackTrace(se);
-                }*/
+                /* ??? TODO: Need to call gatt.readCharacteristic(services.get(1).getCharacteristics().get(0)); ??? */
                 if(status == BluetoothGatt.GATT_SUCCESS) {
                     configureNotifyOnSerialBluetoothService(gatt, chameleonDeviceBLERecvChar.toString());
                 }
@@ -241,16 +246,17 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
             @Override
             public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
                 bleWriteLock.release();
-                if (status == BLUETOOTH_BLE_GATT_ERROR) {
+                if (status == BLUETOOTH_GATT_ERROR) {
                     return;
                 }
                 UUID activeLocalCharUUID = descriptor.getCharacteristic().getUuid();
-                if(!activeLocalCharUUID.equals(CHAMELEON_REVG_CTRL_CHAR_UUID)) {
+                if(!activeLocalCharUUID.equals(CHAMELEON_REVG_CTRL_CHAR_UUID.getUuid())) {
                     configureNotifyOnSerialBluetoothService(gatt, chameleonDeviceBLERecvChar.toString());
                 }
                 AndroidLog.i(TAG, "onDescriptorWrite: [UUID] " + activeLocalCharUUID);
             }
 
+            @SuppressLint("MissingPermission")
             @Override
             public void onCharacteristicChanged(BluetoothGatt gatt, @NonNull BluetoothGattCharacteristic characteristic) {
                 try{
@@ -263,7 +269,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     AndroidLog.d(TAG, "read characteristic: <null>");
                     return;
                 } else {
-                    AndroidLog.d(TAG, "read characteristic: " + String.valueOf(charData));
+                    AndroidLog.d(TAG, "read characteristic: " + new String(charData));
                 }
                 bleReadLock.release();
                 try {
@@ -276,7 +282,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
             @Override
             public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
                 bleReadLock.release();
-                if (status == BLUETOOTH_BLE_GATT_ERROR) {
+                if (status == BLUETOOTH_GATT_ERROR) {
                     return;
                 } else if (status == BluetoothGatt.GATT_SUCCESS) {
                     byte[] charData = characteristic.getValue();
@@ -288,18 +294,14 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     AndroidLog.d(TAG, "read characteristic: <null>");
                     return;
                 } else {
-                    AndroidLog.d(TAG, "read characteristic: " +String.valueOf(charData));
+                    AndroidLog.d(TAG, "read characteristic: " + new String(charData));
                 }
                 try {
                     notifyBluetoothSerialInterfaceDataRead(charData);
                 } catch (Exception dinvEx) {
                     AndroidLog.printStackTrace(dinvEx);
                 }
-                /*try{
-                    gatt.disconnect();
-                } catch(SecurityException se) {
-                    AndroidLog.printStackTrace(se);
-                }*/
+                /* ??? TODO: Need to call gatt.disconnect() here ??? */
             }
 
         };
@@ -308,7 +310,8 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
 
     private void registerBluetoothBondReceiver() {
         btBondReceiver = configureBluetoothBondReceiver();
-        btSerialContext.registerReceiver(btBondReceiver, new IntentFilter(BLUETOOTH_BOND_RECEIVER_ACTION));
+        IntentFilter btBondSuccessIntentFilter = new IntentFilter(BLUETOOTH_BOND_RECEIVER_ACTION);
+        btSerialContext.registerReceiver(btBondReceiver, btBondSuccessIntentFilter);
         btBondRecvRegistered = true;
     }
 
@@ -316,6 +319,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         return isConnected;
     }
 
+    @SuppressLint("MissingPermission")
     public boolean disconnectDevice() {
         if(isDeviceConnected()) {
             btDevice = null;
@@ -329,6 +333,8 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                 }
                 btGatt = null;
             }
+            bleDeviceTxPower = 0;
+            bleDeviceTxPower = 0;
             btBondRecvRegistered = false;
             isConnected = false;
             bleReadLock.release();
@@ -338,45 +344,122 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         return false;
     }
 
-    /* TODO: This is where we need to connect the device / gatt and stop the ongoing scan */
-    private ScanCallback bleScanCallback =
-            new ScanCallback() {
-                @Override
-                public void onScanResult(int callbackType, ScanResult scanResultData) {
-                    LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String bleDeviceName = "<No-Device-Name>";
-                            try {
-                                bleDeviceName = scanResultData.getScanRecord().getDeviceName();
-                                //bleDeviceName = scanResultData.getDevice().getAddress();
-                                //scanResultData.isConnectable()
-                                //scanResultData.getDevice().connectGatt()
-                                //scanResultData.getRssi() // in dBm
-                                //scanResultData.getTxPower() // in dBm
-                                /*scanResultData.getScanRecord().toString();
-                                scanResultData.getScanRecord().getDeviceName();
-                                List<ParcelUuid> svcUUIDList = scanResultData.getScanRecord().getServiceUuids();
-                                SparseArray<byte[]> saDeviceManuData = scanResultData.getScanRecord().getManufacturerSpecificData();
-                                 */
-                            } catch(SecurityException se) {
-                                bleDeviceName = "<No-Device-Name>";
-                                AndroidLog.printStackTrace(se);
-                            } catch(NullPointerException npe) {
-                                AndroidLog.printStackTrace(npe);
-                            }
-                            AndroidLog.i(TAG, "BLE device with name " + bleDeviceName + "scanned");
-                        }
-                    });
-                }
-                @Override
-                public void onBatchScanResults(List<ScanResult> scanResultsLst) {
-                    for(ScanResult scanRes : scanResultsLst) {
-                        this.onScanResult(0, scanRes);
-                    }
-                }
-            };
+    private void setBluetoothDevice(BluetoothDevice btDevLocal) {
+        btDevice = btDevLocal;
+    }
 
+    public int getTxPower() {
+        return bleDeviceTxPower;
+    }
+
+    private void setTxPower(int txPower) {
+        bleDeviceTxPower = txPower;
+    }
+
+    private void setRSSI(int rssi) {
+        bleDeviceRSSI = rssi;
+    }
+
+    public int getRSSI() {
+        return bleDeviceRSSI;
+    }
+
+    @SuppressLint("MissingPermission")
+    public int getChameleonDeviceType() {
+        try {
+            String btDeviceName = btDevice.getName();
+            if (btDeviceName.equals(CHAMELEON_REVG_TINY_NAME)) {
+                /* ??? TODO: Can we distinguish between the Chameleon Tiny and TinyPro devices ??? */
+                return ChameleonIO.CHAMELEON_TYPE_PROXGRIND_REVG_TINY;
+            } else if (btDeviceName.equals(CHAMELEON_REVG_NAME) || btDeviceName.equals(CHAMELEON_REVG_NAME_ALTERNATE)) {
+                return ChameleonIO.CHAMELEON_TYPE_PROXGRIND_REVG;
+            }
+        } catch(Exception excpt) {
+            AndroidLog.printStackTrace(excpt);
+        }
+        return ChameleonIO.CHAMELEON_TYPE_UNKNOWN;
+    }
+
+    @SuppressLint("MissingPermission")
+    private void configureBLEScanCallback() {
+        final BluetoothGattConnector btGattConnectorRefFinal = this;
+        bleScanCallback = new ScanCallback() {
+            final BluetoothGattConnector btGattConnectorRef = btGattConnectorRefFinal;
+            @Override
+            public void onScanResult(int callbackType, ScanResult scanResultData) {
+                LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final String bleDeviceNameNone = "<No-Device-Name>";
+                        String bleDeviceName;
+                        try {
+                            BluetoothDevice btDev = scanResultData.getDevice();
+                            btGattConnectorRef.setBluetoothDevice(btDev);
+                            bleDeviceName = scanResultData.getScanRecord().getDeviceName();
+                            btGattConnectorRef.setTxPower(scanResultData.getTxPower());
+                            btGattConnectorRef.setRSSI(scanResultData.getRssi());
+                            AndroidLog.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "BLE Device: %s @ %s WITH TxPower %d and RSSI %d", bleDeviceName, btDev.getAddress(), scanResultData.getTxPower(), scanResultData.getRssi()));
+                            AndroidLog.d(TAG, "ASSOCIATED FULL SCAN RECORD DATA:\n" + scanResultData.getScanRecord().toString());
+                            List<ParcelUuid> svcUUIDList = scanResultData.getScanRecord().getServiceUuids();
+                            String svcUUIDSummary = "SERVICE UUID LIST:\n";
+                            for (ParcelUuid svcUuid : svcUUIDList) {
+                                svcUUIDSummary += String.format(BuildConfig.DEFAULT_LOCALE, "   > %s\n", svcUuid.getUuid().toString());
+                            }
+                            AndroidLog.i(TAG, svcUUIDSummary);
+                            SparseArray<byte[]> bleDeviceManuDataRaw = scanResultData.getScanRecord().getManufacturerSpecificData();
+                            String bleDeviceManuDataSummary = "BLE DEVICE MANUFACTURER DATA:\n";
+                            for (int saIndex = 0; saIndex < bleDeviceManuDataRaw.size(); saIndex++) {
+                                byte[] mdataBytesAtIndex = bleDeviceManuDataRaw.valueAt(saIndex);
+                                bleDeviceManuDataSummary += String.format(BuildConfig.DEFAULT_LOCALE, "   > %s [%s]\n", Utils.bytes2Hex(mdataBytesAtIndex), Utils.bytes2Ascii(mdataBytesAtIndex));
+                            }
+                            AndroidLog.d(TAG, bleDeviceManuDataSummary);
+                            if (scanResultData.isConnectable()) {
+                                btGattConnectorRef.stopConnectingDevices();
+                                if (!btBondRecvRegistered) {
+                                    btGattConnectorRef.registerBluetoothBondReceiver();
+                                }
+                                int chameleonConnDeviceType = btGattConnectorRef.getChameleonDeviceType();
+                                if (chameleonConnDeviceType == ChameleonIO.CHAMELEON_TYPE_PROXGRIND_REVG_TINY) {
+                                    chameleonDeviceBLEService = CHAMELEON_REVG_TINY_SERVICE_UUID;
+                                    chameleonDeviceBLESendChar = CHAMELEON_REVG_TINY_SEND_CHAR_UUID;
+                                    chameleonDeviceBLERecvChar = CHAMELEON_REVG_TINY_RECV_CHAR_UUID;
+                                } else if (chameleonConnDeviceType == ChameleonIO.CHAMELEON_TYPE_PROXGRIND_REVG_TINYPRO) {
+                                    /* ??? TODO: Do these change from the Tiny to the TinyPro ??? */
+                                    chameleonDeviceBLEService = CHAMELEON_REVG_TINY_SERVICE_UUID;
+                                    chameleonDeviceBLESendChar = CHAMELEON_REVG_TINY_SEND_CHAR_UUID;
+                                    chameleonDeviceBLERecvChar = CHAMELEON_REVG_TINY_RECV_CHAR_UUID;
+                                } else if (chameleonConnDeviceType == ChameleonIO.CHAMELEON_TYPE_PROXGRIND_REVG) {
+                                    chameleonDeviceBLEService = CHAMELEON_REVG_SERVICE_UUID;
+                                    chameleonDeviceBLESendChar = CHAMELEON_REVG_SEND_CHAR_UUID;
+                                    chameleonDeviceBLERecvChar = CHAMELEON_REVG_RECV_CHAR_UUID;
+                                } else {
+                                    /* TODO: Have we caught all possible cases above ??? */
+                                    return;
+                                }
+                                btDev.createBond();
+                                btGattConnectorRef.btSerialIface.configureSerialConnection(btDev);
+                            }
+                        } catch(SecurityException se) {
+                            bleDeviceName = bleDeviceNameNone;
+                            AndroidLog.printStackTrace(se);
+                        } catch(NullPointerException npe) {
+                            bleDeviceName = bleDeviceNameNone;
+                            AndroidLog.printStackTrace(npe);
+                        }
+                        AndroidLog.i(TAG, "BLE device with name " + bleDeviceName + "scanned");
+                    }
+                });
+            }
+            @Override
+            public void onBatchScanResults(List<ScanResult> scanResultsLst) {
+                for(ScanResult scanRes : scanResultsLst) {
+                    this.onScanResult(0, scanRes);
+                }
+            }
+        };
+    }
+
+    @SuppressLint("MissingPermission")
     public boolean startConnectingDevices() {
         if(!btPermsObtained) {
             btPermsObtained = btSerialIface.isBluetoothEnabled(false);
@@ -412,6 +495,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                 bleScanFilters.add(chameleonRevGTinyProDeviceFilter);
                 bleScanFilters.add(chameleonRevGTinyDeviceFilter);
                 try {
+                    configureBLEScanCallback();
                     bleScanner.startScan(bleScanFilters, bleScanSettings, bleScanCallback);
                 } catch(SecurityException se) {
                     AndroidLog.printStackTrace(se);
@@ -422,6 +506,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         return false;
     }
 
+    @SuppressLint("MissingPermission")
     public boolean stopConnectingDevices() {
         if(!btPermsObtained) {
             btPermsObtained = btSerialIface.isBluetoothEnabled(false);
@@ -486,32 +571,8 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         btGattCallback.onCharacteristicRead(gatt, characteristic, status);
     }
 
+    @SuppressLint("MissingPermission")
     public void notifyBluetoothBLEDeviceConnected(@NonNull BluetoothDevice btLocalDevice) {
-        if(isDeviceConnected() || btNotifyUARTService || btAdapter == null) {
-            return;
-        }
-        btDevice = btLocalDevice;
-        stopConnectingDevices();
-        String btDeviceName = "<NONE>";
-        try {
-            btDevice.connectGatt(btSerialContext, false, this);
-            btDevice.createBond();
-            btDeviceName = btDevice.getName();
-        } catch(SecurityException se) {
-            btDeviceName = "<NONE>";
-            AndroidLog.printStackTrace(se);
-        }
-        AndroidLog.i(TAG, "BT Device Name: " + btDeviceName);
-        if(btDeviceName != null && (btDeviceName.equals(CHAMELEON_REVG_NAME) || btDeviceName.equals(CHAMELEON_REVG_NAME_ALTERNATE))) {
-            chameleonDeviceBLEService = CHAMELEON_REVG_SERVICE_UUID;
-            chameleonDeviceBLESendChar = CHAMELEON_REVG_SEND_CHAR_UUID;
-            chameleonDeviceBLERecvChar = CHAMELEON_REVG_RECV_CHAR_UUID;
-        }
-        else {
-            chameleonDeviceBLEService = CHAMELEON_REVG_TINY_SERVICE_UUID;
-            chameleonDeviceBLESendChar = CHAMELEON_REVG_TINY_SEND_CHAR_UUID;
-            chameleonDeviceBLERecvChar = CHAMELEON_REVG_TINY_RECV_CHAR_UUID;
-        }
         isConnected = true;
         Intent notifyMainActivityIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED);
         LiveLoggerActivity.getLiveLoggerInstance().onNewIntent(notifyMainActivityIntent);
@@ -525,6 +586,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         }
     }
 
+    @SuppressLint("MissingPermission")
     private void configureNotifyOnSerialBluetoothService(BluetoothGatt btLocalGatt, String gattUUID) {
         AndroidLog.i(TAG, "configureNotifyOnSerialBluetoothService");
         BluetoothGattService btgService = btLocalGatt.getService(chameleonDeviceBLEService.getUuid());
@@ -546,6 +608,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
 
     }
 
+    @SuppressLint("MissingPermission")
     public boolean requestConnectionPriority(int connectPrioritySetting) {
         if(btGatt == null) {
             return false;
@@ -558,6 +621,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         }
     }
 
+    @SuppressLint("MissingPermission")
     public int write(byte[] dataBuf) throws IOException {
         AndroidLog.i(TAG, "write: " + Utils.bytes2Hex(dataBuf));
         if (dataBuf.length > BLUETOOTH_LOCAL_MTU_THRESHOLD) {
@@ -596,6 +660,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         return ChameleonSerialIOInterface.STATUS_OK;
     }
 
+    @SuppressLint("MissingPermission")
     public int read() throws IOException {
         if(btGatt == null) {
             disconnectDevice();

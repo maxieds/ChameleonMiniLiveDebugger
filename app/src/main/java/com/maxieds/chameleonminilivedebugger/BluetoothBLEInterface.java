@@ -34,7 +34,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 
 import java.io.IOException;
-import java.util.Locale;
 import java.util.concurrent.Semaphore;
 
 public class BluetoothBLEInterface extends SerialIOReceiver {
@@ -139,6 +138,23 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
 
     }
 
+    public int getTxPower() {
+        if (btGattConnectorBLEDevice != null) {
+            return btGattConnectorBLEDevice.getTxPower();
+        } else {
+            return 0;
+        }
+    }
+
+    public int getRSSI() {
+        if (btGattConnectorBLEDevice != null) {
+            return btGattConnectorBLEDevice.getRSSI();
+        } else {
+            return 0;
+        }
+    }
+
+    @SuppressLint("MissingPermission")
     public boolean configureSerialConnection(BluetoothDevice btDev) {
         if (btDev == null) {
             return false;
@@ -148,8 +164,9 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
         activeDevice  = btDev;
         ChameleonIO.REVE_BOARD = false;
         ChameleonIO.PAUSED = false;
-        ChameleonSettings.chameleonDeviceMAC = btDev.getAddress();
-        ChameleonSettings.chameleonDeviceSerialNumber = ChameleonSettings.chameleonDeviceMAC;
+        ChameleonSettings.chameleonDeviceSerialNumber = ChameleonSettings.CMINI_DEVICE_FIELD_NONE;
+        ChameleonSettings.chameleonDeviceAddress = btDev.getAddress();
+        ChameleonIO.CHAMELEON_MINI_BOARD_TYPE = btGattConnectorBLEDevice.getChameleonDeviceType();
 
         Handler configDeviceHandler = new Handler();
         Runnable configDeviceRunnable = new Runnable() {
@@ -157,15 +174,17 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
                 AndroidLog.i(TAG, ChameleonSettings.getActiveSerialIOPort().toString());
                 if(ChameleonSettings.getActiveSerialIOPort() != null && btGattConnectorBLEDevice.isDeviceConnected()) {
                     configDeviceHandler.removeCallbacks(this);
+                    /* Call twice: Make sure the device returned the correct data to display: */
                     ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-                    ChameleonIO.deviceStatus.updateAllStatusAndPost(false); /* Twice: Make sure the device returned the correct data to display */
+                    ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
                     ChameleonIO.DeviceStatusSettings.startPostingStats(0);
                     LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
-                    UITabUtils.updateConfigTabConnDeviceInfo(true);
+                    Utils.displayToastMessageShort(String.format(BuildConfig.DEFAULT_LOCALE, "New Bluetooth BLE device connection:\n%s @ %s\n%s", btDev.getName(), ChameleonSettings.chameleonDeviceAddress, ChameleonIO.getDeviceDescription(ChameleonIO.CHAMELEON_MINI_BOARD_TYPE)));
+                    UITabUtils.updateConfigTabConnDeviceInfo(false);
                 }
                 else {
                     AndroidLog.i(TAG, "BLE device __NOT__ connected! ... Looping");
-                    configDeviceHandler.postDelayed(this, 1000);
+                    configDeviceHandler.postDelayed(this, ChameleonIO.TIMEOUT);
                 }
             }
         };

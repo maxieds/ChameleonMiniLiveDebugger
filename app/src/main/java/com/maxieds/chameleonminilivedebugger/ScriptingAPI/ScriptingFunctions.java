@@ -77,13 +77,11 @@ public class ScriptingFunctions {
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
             case "DownloadLogs":
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
-            case "AsWrappedAPDU":
+            case "ExtractDataFromWrappedAPDU": /* TODO: See https://github.com/maxieds/ChameleonMiniLiveDebugger/projects/3 */
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
-            case "ExtractDataFromWrappedAPDU":
+            case "ExtractDataFromNativeAPDU": /* TODO: See https://github.com/maxieds/ChameleonMiniLiveDebugger/projects/3 */
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
-            case "ExtractDataFromNativeAPDU":
-                throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
-            case "SplitAPDUResponse":
+            case "SplitAPDUResponse":         /* TODO: See https://github.com/maxieds/ChameleonMiniLiveDebugger/projects/3 */
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
             case "SearchAPDUStatusCodes":
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
@@ -127,17 +125,19 @@ public class ScriptingFunctions {
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
             case "IntegerRange":
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
-            case "Find":
+            case "StringFind":
                 return ScriptingFunctions.ScriptingAPIFunctions.Find(funcArgs);
-            case "Contains":
+            case "StringContains":
                 return ScriptingFunctions.ScriptingAPIFunctions.Contains(funcArgs);
-            case "Replace":
+            case "StringReplace":
                 return ScriptingFunctions.ScriptingAPIFunctions.Replace(funcArgs);
-            case "Split":
+            case "Strcat":
+                throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+            case "StringSplit":
                 return ScriptingFunctions.ScriptingAPIFunctions.Split(funcArgs);
-            case "Strip":
+            case "StringStrip":
                 return ScriptingFunctions.ScriptingAPIFunctions.Strip(funcArgs);
-            case "Substring":
+            case "StringSubstring":
                 return ScriptingFunctions.ScriptingAPIFunctions.Substring(funcArgs);
             default:
                 break;
