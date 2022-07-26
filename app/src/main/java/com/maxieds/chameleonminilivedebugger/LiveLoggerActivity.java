@@ -360,11 +360,11 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                             "android.permission.WRITE_EXTERNAL_STORAGE",
                             "android.permission.INTERNET",
                             "android.permission.USB_PERMISSION",
-                            //"android.permission.ACCESS_COARSE_LOCATION",
-                            //"android.permission.ACCESS_FINE_LOCATION",
+                            "android.permission.ACCESS_COARSE_LOCATION",
+                            "android.permission.ACCESS_FINE_LOCATION",
                             "android.permission.VIBRATE",
-                            //"android.permission.BLUETOOTH",
-                            //"android.permission.BLUETOOTH_ADMIN",
+                            "android.permission.BLUETOOTH",
+                            "android.permission.BLUETOOTH_ADMIN",
                             "android.permission.BLUETOOTH_SCAN",
                             "android.permission.BLUETOOTH_CONNECT",
                             "android.permission.BLUETOOTH_ADVERTISE",
@@ -410,7 +410,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     reconfigureSerialIODevices();
                }
           };
-          runAfterGUIInitDeviceHandler.postDelayed(configDeviceRunnable, 500);
+          runAfterGUIInitDeviceHandler.postDelayed(configDeviceRunnable, 300);
 
      }
 
@@ -523,13 +523,11 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           AndroidLog.i(TAG, "NEW INTENT: " + intent.getAction());
           if(intent.getAction().equals(SerialUSBInterface.ACTION_USB_PERMISSION)) {
                SerialUSBInterface.usbPermissionsGranted = true;
-          }
-          else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
+          } else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
                SerialUSBInterface.registerUSBPermission(intent, this);
                if(ChameleonSettings.serialIOPorts[ChameleonSettings.USBIO_IFACE_INDEX].configureSerial() != 0) {
                     ChameleonSettings.stopSerialIOConnectionDiscovery();
                     ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = ChameleonSettings.USBIO_IFACE_INDEX;
-                    Handler configDeviceHandler = new Handler();
                     Runnable configDeviceRunnable = new Runnable() {
                          public void run() {
                               reconfigureSerialIODevices();
@@ -565,50 +563,23 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                setStatusIcon(R.id.statusIconUSB, R.drawable.usbdisconnected16);
                ChameleonSettings.initializeSerialIOConnections();
           }
-          else if(intent.getAction().equals(BluetoothDevice.ACTION_FOUND)) {
-               BluetoothGattConnector btGattConnect = ((BluetoothBLEInterface) ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX]).getBluetoothGattConnector();
-               if(btGattConnect == null) {
-                    return;
-               }
-               BluetoothDevice btLocalDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-               if(btLocalDevice == null) {
-                    return;
-               }
-          }
-          else if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
-                  intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED)) {
-               ChameleonIO.DeviceStatusSettings.stopPostingStats();
-               ChameleonIO.DeviceStatusSettings.setToolbarStatsToDefault();
-               ChameleonSettings.stopSerialIOConnectionDiscovery();
-               if(ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX].configureSerial() != 0) {
-                    ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = ChameleonSettings.BTIO_IFACE_INDEX;
-                    Handler configDeviceHandler = new Handler();
-                    Runnable configDeviceRunnable = new Runnable() {
-                         public void run() {
-                              if(ChameleonSettings.getActiveSerialIOPort() != null &&
-                                      ((BluetoothBLEInterface) ChameleonSettings.getActiveSerialIOPort()).isDeviceConnected()) {
-                                   ChameleonIO.detectChameleonType();
-                                   ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
-                                   TabFragment.UITAB_DATA[TabFragment.TAB_TOOLS].changeMenuItemDisplay(TAB_TOOLS_MITEM_SLOTS, true);
-                                   TabFragment.UITAB_DATA[TabFragment.TAB_CONFIG].changeMenuItemDisplay(TabFragment.TAB_CONFIG_MITEM_LOGGING, true);
-                                   ChameleonIO.DeviceStatusSettings.updateAllStatusAndPost(false);
-                                   ChameleonIO.DeviceStatusSettings.updateAllStatusAndPost(false); /* Make sure the device returned the correct data to display */
-                                   ChameleonIO.DeviceStatusSettings.startPostingStats(0);
-                                   setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
-                              }
-                              else {
-                                   configDeviceHandler.postDelayed(this, 500);
-                              }
-                         }
-                    };
+          else if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_DISCONNECTED) ||
+                  intent.getAction().equals(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED)) {
+               ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
+               if(serialIOPort != null && serialIOPort.isBluetooth()) {
+                    ChameleonSettings.stopSerialIOConnectionDiscovery();
                     ChameleonIO.DeviceStatusSettings.stopPostingStats();
                     ChameleonIO.DeviceStatusSettings.setToolbarStatsToDefault();
-                    configDeviceHandler.postDelayed(configDeviceRunnable, 400);
+                    if(ChameleonIO.WAITING_FOR_RESPONSE) {
+                         ChameleonIO.WAITING_FOR_RESPONSE = false;
+                    }
+                    serialIOPort.shutdownSerial();
+                    ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = -1;
+                    clearStatusIcon(R.id.statusIconBT);
+                    ChameleonSettings.initializeSerialIOConnections();
                }
-          }
-          else if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_DISCONNECTED) ||
-                  intent.getAction().equals(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED) ||
-                  intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST)) {
+          } else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST)) {
+               ChameleonSettings.stopSerialIOConnectionDiscovery();
                ChameleonIO.DeviceStatusSettings.stopPostingStats();
                ChameleonIO.DeviceStatusSettings.setToolbarStatsToDefault();
                if(ChameleonIO.WAITING_FOR_RESPONSE) {

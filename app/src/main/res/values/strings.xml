@@ -164,7 +164,9 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 Make sure you have &lt;i>charged the device&lt;/i> for
                 &lt;b>10-15 minutes>&lt;/b> prior to connecting to phone&lt;/li>
             &lt;li>The Chameleon cannot be connected over BT
-                (or USB) to another app running on the phone&lt;/li>
+                (or USB) to another app running on the phone.
+                Make sure that there are no other Android apps running
+                that are trying to claim Bluetooth devices.&lt;/li>
         &lt;/ul>
     </string>
     <string name="bluetoothExtraConfigInstructions">
