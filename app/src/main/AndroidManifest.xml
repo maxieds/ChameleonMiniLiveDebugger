@@ -115,16 +115,16 @@
         android:required="${bluetoothRequired}"
         />
     -->
-    <!-- Available for SDK>=31 only (good to have set with BLUETOOTH_SCAN permission) :: android:usesPermissionFlags="neverForLocation" -->
 
     <uses-feature android:name="android.hardware.usb.host" android:required="true" />
-    <!--<uses-feature android:name="android.hardware.usb.accessory" android:required="true" />-->
+    <protected-broadcast android:name="android.hardware.usb.action.USB_STATE" />
+
     <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
     <uses-feature android:name="android.hardware.bluetooth_admin" android:required="false" />
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
-    <uses-feature android:name="android.hardware.touchscreen" android:required="true" />
 
-    <protected-broadcast android:name="android.hardware.usb.action.USB_STATE" />
+    <!-- Removing these declarations because they seem to exclude devices on Play Store: -->
+    <!--<uses-feature android:name="android.hardware.touchscreen" android:required="true" />-->
 
     <!-- From the documentation at:
          https://developer.android.com/guide/practices/screens-distribution

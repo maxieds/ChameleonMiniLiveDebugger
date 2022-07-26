@@ -53,7 +53,8 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
 
     private static final String TAG = BluetoothGattConnector.class.getSimpleName();
 
-    /* OBSERVATIONS / TROUBLESHOOTING NOTES:
+    /*
+     * OBSERVATIONS / TROUBLESHOOTING NOTES:
      *     The proprietary Proxgrind / RRG application does something unusual the
      *     first time it tries to connect to the Chameleon over BT when the
      *     Chameleon device is reconnected to power via USB after the battery has
@@ -62,7 +63,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
      *            15 seconds while this initial connection is made.
      *          > The step is skipped upon attempts at BT reconnection so long as the
      *            device has not lost power (disconnected from wired USB, or a
-     *            dead integrated rechargeable battery inside the Tiny series devices)
+     *            dead integrated rechargeable battery inside the Tiny series device)
      *          > Not easy to find out whether a secret PIN is exchanged during the initial
      *            button press period because the BT connection is relinquished by the
      *            RRG brand application every time the app is minimized.
@@ -109,7 +110,6 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
     public static final int BLUETOOTH_GATT_ERROR = 0x85;
 
     private boolean btPermsObtained;
-    private boolean btNotifyUARTService; /* ??? TODO: Need to set the service UUID for some operations ??? */
     private boolean btBondRecvRegistered;
     private boolean isConnected;
     private Context btSerialContext;
@@ -146,7 +146,6 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         btBondReceiver = null;
         btPermsObtained = false;
         btBondRecvRegistered = false;
-        btNotifyUARTService = false;
         bleScanner = null;
         btAdapter = configureBluetoothAdapter();
         btGatt = null;
@@ -174,12 +173,12 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     return;
                 }
                 BluetoothDevice btIntentDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if (btIntentDevice == null) {
-                    btIntentDevice = btDevice;
+                if (btIntentDevice != null) {
+                    btDevice = btIntentDevice;
                 }
                 AndroidLog.i(TAG, "btBondReceiver: calling notifyBluetoothSerialInterfaceDeviceConnected");
                 btIntentDevice.connectGatt(LiveLoggerActivity.getLiveLoggerInstance().getApplicationContext(), true, btGattConn);
-                notifyBluetoothBLEDeviceConnected(btIntentDevice);
+                notifyBluetoothBLEDeviceConnected(btDevice);
             }
         };
         return btLocalBondReceiver;
@@ -298,10 +297,10 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                 }
                 try {
                     notifyBluetoothSerialInterfaceDataRead(charData);
+                    /* ??? TODO: Need to call gatt.disconnect() here ??? */
                 } catch (Exception dinvEx) {
                     AndroidLog.printStackTrace(dinvEx);
                 }
-                /* ??? TODO: Need to call gatt.disconnect() here ??? */
             }
 
         };
@@ -333,7 +332,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                 }
                 btGatt = null;
             }
-            bleDeviceTxPower = 0;
+            bleDeviceRSSI = 0;
             bleDeviceTxPower = 0;
             btBondRecvRegistered = false;
             isConnected = false;
@@ -433,7 +432,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                                     chameleonDeviceBLESendChar = CHAMELEON_REVG_SEND_CHAR_UUID;
                                     chameleonDeviceBLERecvChar = CHAMELEON_REVG_RECV_CHAR_UUID;
                                 } else {
-                                    /* TODO: Have we caught all possible cases above ??? */
+                                    /* ??? Have we caught all possible cases above ??? */
                                     return;
                                 }
                                 btDev.createBond();
@@ -576,7 +575,6 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         isConnected = true;
         Intent notifyMainActivityIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED);
         LiveLoggerActivity.getLiveLoggerInstance().onNewIntent(notifyMainActivityIntent);
-        btNotifyUARTService = true;
         btSerialIface.configureSerialConnection(btDevice);
     }
 
@@ -703,6 +701,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         }
     }
 
+    /* ??? TODO: Remove this code ??? */
     public void setStoredBluetoothDevicePinData(@NonNull String btPinData) {
         AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE, AndroidSettingsStorage.BLUETOOTH_DEVICE_PIN_DATA);
         BluetoothGattConnector.btDevicePinDataBytes = btPinData.getBytes(StandardCharsets.UTF_8);

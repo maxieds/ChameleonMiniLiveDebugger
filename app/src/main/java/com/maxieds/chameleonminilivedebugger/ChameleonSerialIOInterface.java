@@ -46,7 +46,7 @@ public interface ChameleonSerialIOInterface {
     boolean isWiredUSB();
     boolean isBluetooth();
 
-    int HIGH_SPEED_BAUD_RATE = 256000;
+    int HIGH_SPEED_BAUD_RATE = 460800;
     int LIMITED_SPEED_BAUD_RATE = 115200;
     Integer[] UART_BAUD_RATES = {
             50,

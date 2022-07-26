@@ -149,6 +149,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
             serialPort = null;
             return STATUS_ERROR;
         }
+        AndroidLog.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "USB device attached with name %s and product name %d and manu ID %s", device.getProductName(), device.getProductName(), device.getManufacturerName()));
         serialPort = UsbSerialDevice.createUsbSerialDevice(device, connection);
         if(serialPort != null && serialPort.open()) {
             serialPort.setBaudRate(ChameleonSettings.serialBaudRate);
