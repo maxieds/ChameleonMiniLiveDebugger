@@ -138,22 +138,6 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
 
     }
 
-    public int getTxPower() {
-        if (btGattConnectorBLEDevice != null) {
-            return btGattConnectorBLEDevice.getTxPower();
-        } else {
-            return 0;
-        }
-    }
-
-    public int getRSSI() {
-        if (btGattConnectorBLEDevice != null) {
-            return btGattConnectorBLEDevice.getRSSI();
-        } else {
-            return 0;
-        }
-    }
-
     @SuppressLint("MissingPermission")
     public boolean configureSerialConnection(BluetoothDevice btDev) {
         if (btDev == null) {

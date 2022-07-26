@@ -35,8 +35,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
-import java.util.Locale;
-
 public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
 
     private static final String TAG = CrashReportActivity.class.getSimpleName();

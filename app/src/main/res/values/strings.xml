@@ -64,13 +64,13 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                Configure settings within the application.
     </string>
 
-    <string name="btPermsRequiredMsg">CMLD does not have permission to use Bluetooth.\nEnable them in the system settings app.</string>
+    <string name="btPermsRequiredMsg">CMLD does not have permission to use Bluetooth. Enable them in the system settings app.</string>
 
     <string name="aboutapp">
         &lt;h1>About the CMLD application&lt;/h1>
         This application is copyright (&lt;i>© 2017-2020&lt;/i>) and developed in the free time of its author Maxie D. Schmidt
         (&lt;a href="mailto:maxieds@gmail.com">maxieds@gmail.com&lt;/a>).
-        For all intensive reasonable non-commercial applications this Android application is free to use and modify under the
+        For all reasonable non-commercial applications this Android application is free to use and modify under the
         GPL provided a link to the original project webpage and the author information remain intact in the revisions:
         &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger">maxieds/ChameleonMiniLiveDebugger&lt;/a>.&lt;br/>&lt;br/>
 
@@ -168,10 +168,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         &lt;/ul>
     </string>
     <string name="bluetoothExtraConfigInstructions">
-        Press and hold button A for at least 15 seconds.
+        Press and hold button \'A\' for at least 15 seconds while we connect the device ...
     </string>
-
-    <!-- Fields for the default application file provider: -->
 
     <string-array name="RButtonOptions">
         <item>RBUTTON</item>

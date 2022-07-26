@@ -127,8 +127,7 @@ public class ThemesConfiguration {
                 return appThemeResID;
         }
         if(applyTheme) {
-            AndroidLog.w(TAG, themeDesc);
-            AndroidLog.w(TAG, String.valueOf(themeID));
+            AndroidLog.d(TAG, themeDesc);
             activity.getInstance().setTheme(themeID);
             appThemeResID = themeID;
         }

@@ -149,6 +149,7 @@ public class ChameleonIO {
      */
     public static int TIMEOUT = 3000;
     public static final int LOCK_TIMEOUT = 1000;
+    public static final long LONG_USER_TIMEOUT = 10000;
 
     /**
      * Static constants for storing state of the device.

@@ -53,7 +53,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:drawablePadding="5dp"
                 android:gravity="center_vertical"
                 android:singleLine="true"
-                android:text="Phone connection types: "
+                android:text="Connection Status: "
                 android:textAllCaps="true"
                 android:textStyle="bold|italic" />
 
@@ -67,7 +67,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
                 android:background="?colorAccentLog"
-                android:columnCount="5"
+                android:columnCount="3"
                 android:padding="2dp">
 
                 <ImageView
@@ -100,13 +100,21 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:textColor="?android:colorPrimaryDark"
                     android:textStyle="normal" />
 
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|center_vertical"
+                    android:paddingRight="5dp"
+                    android:src="@drawable/bluetooth_icon24"
+                    android:visibility="invisible" />
+
                 <Button
                     android:id="@+id/androidBTSettingsButton"
                     style="@style/GridButtonsNoWidth"
                     android:layout_columnWeight="1"
                     android:drawableLeft="@drawable/info_icon24"
                     android:drawablePadding="3dp"
-                    android:text="View BT Settings" />
+                    android:text="BT Settings" />
 
                 <Button
                     android:id="@+id/androidBTTroubleshootingButton"
@@ -114,7 +122,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_columnWeight="1"
                     android:drawableLeft="@drawable/info_icon24"
                     android:drawablePadding="3dp"
-                    android:text="View BT Troubleshooting/Tips -- TODO" />
+                    android:text="BT Troubleshooting/Tips" />
 
             </GridLayout>
 
@@ -247,28 +255,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_gravity="left|center_vertical"
                     android:drawablePadding="3dp"
                     android:singleLine="true"
-                    android:text="Signal Strength (dBm): "
-                    android:textColor="?colorPrimaryDark"
-                    android:textStyle="bold|italic" />
-
-                <TextView
-                    android:id="@+id/connectionSignalStrength"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left|center_vertical"
-                    android:drawablePadding="3dp"
-                    android:paddingLeft="8dp"
-                    android:singleLine="true"
-                    android:text="None"
-                    android:textColor="?colorPrimaryDark"
-                    android:textStyle="normal" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left|center_vertical"
-                    android:drawablePadding="3dp"
-                    android:singleLine="true"
                     android:text="Connection Status: "
                     android:textColor="?colorPrimaryDark"
                     android:textStyle="bold|italic" />
@@ -303,14 +289,15 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
                 <Button
                     android:id="@+id/connectToDeviceButton"
-                    style="@style/GridButtons"
-                    android:layout_width="match_parent"
+                    style="@style/GridButtonsNoWidth"
+                    android:layout_columnWeight="1"
                     android:drawableLeft="@drawable/connect_button_logo24"
                     android:text="Connect to Chameleon" />
 
                 <Button
                     android:id="@+id/disconnectFromDeviceButton"
-                    style="@style/GridButtons"
+                    style="@style/GridButtonsNoWidth"
+                    android:layout_columnWeight="1"
                     android:drawableLeft="@drawable/disconnect_button_logo24"
                     android:text="Disconnect Device" />
 

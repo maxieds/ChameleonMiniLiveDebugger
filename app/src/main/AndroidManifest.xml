@@ -252,22 +252,6 @@
                 android:name="android.hardware.usb.action.USB_DEVICE_DETACHED"
                 android:resource="@xml/chameleon_usb_device_filter"
                 />
-            <!--<meta-data
-                android:name="android.bluetooth.device.action.ACTION_FOUND"
-                android:resource="@xml/chameleon_bluetooth_device_filter"
-                />
-            <meta-data
-                android:name="android.hardware.usb.action.ACL_CONNECTED"
-                android:resource="@xml/chameleon_bluetooth_device_filter"
-                />
-            <meta-data
-                android:name="android.bluetooth.device.action.ACL_DISCONNECT_REQUESTED"
-                android:resource="@xml/chameleon_bluetooth_device_filter"
-                />
-            <meta-data
-                android:name="android.bluetooth.device.action.ACL_DISCONNECTED"
-                android:resource="@xml/chameleon_bluetooth_device_filter"
-                />-->
 
         </activity>
 
