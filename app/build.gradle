@@ -202,7 +202,6 @@ android {
                     appRoundIcon       : "@mipmap/chameleon_app_icon_round",
                     appTheme           : "@style/AppThemeGreen",
                     appDebug           : "false",
-                    bluetoothRequired  : "false",
                     installLocation    : "auto"
             ]
 
@@ -226,7 +225,6 @@ android {
                     appRoundIcon       : "@mipmap/chameleon_app_icon_round_paid",
                     appTheme           : "@style/AppThemeGreenPaid",
                     appDebug           : "false",
-                    bluetoothRequired  : "false",
                     installLocation    : "auto"
             ]
 

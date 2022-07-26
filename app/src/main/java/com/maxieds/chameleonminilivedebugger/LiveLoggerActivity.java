@@ -321,9 +321,11 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           }
 
           setUnhandledExceptionHandler();
+
           /* Invoke the crash handler activity intentionally for testing purposes: */
           //((String) null).length();
 
+          AndroidLog.activityContext = this;
           boolean completeRestart = (getLiveLoggerInstance() == null);
           serialUSBDeviceSettingsNeedUpdate = true;
 
@@ -365,38 +367,22 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                             "android.permission.WRITE_EXTERNAL_STORAGE",
                             "android.permission.INTERNET",
                             "android.permission.USB_PERMISSION",
-                            "android.permission.ACCESS_COARSE_LOCATION",
-                            "android.permission.ACCESS_FINE_LOCATION",
+                            //"android.permission.ACCESS_COARSE_LOCATION",
+                            //"android.permission.ACCESS_FINE_LOCATION",
                             "android.permission.VIBRATE",
-                            "android.permission.BLUETOOTH",
-                            "android.permission.BLUETOOTH_ADMIN",
+                            //"android.permission.BLUETOOTH",
+                            //"android.permission.BLUETOOTH_ADMIN",
                             "android.permission.BLUETOOTH_SCAN",
                             "android.permission.BLUETOOTH_CONNECT",
                             "android.permission.BLUETOOTH_ADVERTISE",
                     };
                }
                if (android.os.Build.VERSION.SDK_INT >= 23) {
-                    for(String permissionName : permissions) {
-                         requestPermissions(new String[] { permissionName }, 0);
+                    for (int permIdx = 0; permIdx < permissions.length; permIdx++) {
+                         String permission = permissions[permIdx];
+                         ActivityCompat.shouldShowRequestPermissionRationale(this, permission);
+                         ActivityCompat.requestPermissions(this, new String[] { permission }, CMLD_PERMS_ALL_REQUEST_CODE);
                     }
-               }
-               if (!checkPermissionsAcquired(CMLD_PERMISSIONS_GROUP_MINIMAL) ||
-                       !checkPermissionsAcquired(CMLD_PERMISSIONS_GROUP_STORAGE) ||
-                       !checkPermissionsAcquired(CMLD_PERMISSIONS_GROUP_BLUETOOTH)) {
-                    Intent requestCMLDPermsIntent = new Intent(
-                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                            Uri.fromParts("package", this.cmldPackageName, null)
-                    );
-                    startActivityForResult(requestCMLDPermsIntent, CMLD_PERMS_ALL_REQUEST_CODE);
-
-               }
-               if (!checkPermissionsAcquired(CMLD_PERMISSIONS_GROUP_MINIMAL)) {
-                    Intent userRequestUSBPermsIntent = new Intent(UsbManager.ACTION_USB_DEVICE_ATTACHED);
-                    startActivityForResult(userRequestUSBPermsIntent, CMLD_PERMGROUP_MINIMAL_REQUEST_CODE);
-               }
-               if (!checkPermissionsAcquired(CMLD_PERMISSIONS_GROUP_STORAGE)) {
-                    Intent userRequestStoragePermsIntent = new Intent(Settings.ACTION_SETTINGS);
-                    startActivityForResult(userRequestStoragePermsIntent, CMLD_PERMGROUP_STORAGE_REQUEST_CODE);
                }
                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR); /* Keep app from crashing when the screen rotates */
@@ -411,6 +397,8 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
 
           if(BuildConfig.PAID_APP_VERSION) {
                String userGreeting = getString(R.string.appInitialUserGreetingMsgPaid);
+               userGreeting += "\n\n";
+               userGreeting += getString(R.string.appInitialUserGreetingMsg);
                MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("WELCOME", userGreeting));
                String disclaimerStmt = getString(R.string.appPaidFlavorDisclaimerEULA);
                MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("DISCLAIMER", disclaimerStmt));
@@ -733,6 +721,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                          int numGroupPerms = groupPermsList.size();
                          String[] groupPermsArray = new String[numGroupPerms];
                          for(int gpIdx = 0; gpIdx < numGroupPerms; gpIdx++) {
+                              activityPkgMgr.addPermission(groupPermsList.get(gpIdx));
                               groupPermsArray[gpIdx] = groupPermsList.get(gpIdx).loadLabel(activityPkgMgr).toString();
                          }
                          return groupPermsArray;
@@ -811,7 +800,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
 
      public void requestAllCMLDPermissionsFromUser() {
           Intent requestCMLDPermsIntent = new Intent(
-                  Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                  Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS,
                   Uri.fromParts("package", this.cmldPackageName, null)
           );
           startActivityForResult(requestCMLDPermsIntent, ActivityPermissions.CMLD_PERMS_ALL_REQUEST_CODE);

@@ -45,7 +45,7 @@ public class ChameleonConfigSlot {
     public static ChameleonConfigSlot[] CHAMELEON_DEVICE_CONFIG_SLOTS = new ChameleonConfigSlot[CHAMELEON_DEVICE_CONFIG_SLOT_COUNT];
     public static String[] CHAMELEON_SLOT_NAMES = new String[CHAMELEON_DEVICE_CONFIG_SLOT_COUNT];
     static {
-        String[] storedSlotNameSettings = AndroidSettingsStorage.getStringArrayValueByKey(ChameleonSettings.chameleonDeviceSerialNumber, AndroidSettingsStorage.CHAMELEON_SLOT_NAMES);
+        String[] storedSlotNameSettings = AndroidSettingsStorage.getStringArrayValueByKey(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE, AndroidSettingsStorage.CHAMELEON_SLOT_NAMES);
         if(storedSlotNameSettings != null) {
             System.arraycopy(storedSlotNameSettings, 0, CHAMELEON_SLOT_NAMES, 0, storedSlotNameSettings.length);
         }
@@ -240,7 +240,7 @@ public class ChameleonConfigSlot {
                     AndroidLog.i(TAG, "Changing Slot #" + slotIndex + " name to " + s);
                     CHAMELEON_SLOT_NAMES[slotIndex - 1] = s.toString();
                     slotNickname = s.toString();
-                    AndroidSettingsStorage.updateValueByKey(ChameleonSettings.chameleonDeviceSerialNumber, AndroidSettingsStorage.CHAMELEON_SLOT_NAMES);
+                    AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE, AndroidSettingsStorage.CHAMELEON_SLOT_NAMES);
                 }
             });
         }

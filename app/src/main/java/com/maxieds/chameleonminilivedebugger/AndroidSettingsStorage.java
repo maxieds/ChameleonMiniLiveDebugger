@@ -89,14 +89,15 @@ public class AndroidSettingsStorage {
     }
 
     public static boolean saveSettings(String profileID, AndroidSettingsType settingsMask) {
+        boolean status = false;
         if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.APP_STATE) {
             updateValueByKey(profileID, THEMEID_PREFERENCE);
             updateValueByKey(profileID, CWD_PREFERENCE);
             updateValueByKey(profileID, LAST_TAB_INDEX_PREFERENCE);
             updateValueByKey(profileID, LAST_TAB_SUBMENU_INDEX_PREFERENCE);
-            return true;
+            status = true;
         }
-        else if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.GENERAL_SETTINGS_CONFIG) {
+        if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.GENERAL_SETTINGS_CONFIG) {
             updateValueByKey(profileID, PROFILE_SERIALID_PREFERENCE);
             updateValueByKey(profileID, PROFILE_NAME_PREFERENCE);
             updateValueByKey(profileID, SERIAL_BAUDRATE_PREFERENCE);
@@ -104,9 +105,9 @@ public class AndroidSettingsStorage {
             updateValueByKey(profileID, ALLOW_BLUETOOTH_PREFERENCE);
             updateValueByKey(profileID, BLUETOOTH_DEVICE_PIN_DATA);
             updateValueByKey(profileID, SNIFFING_MODE_PREFERENCE);
-            return true;
+            status = true;
         }
-        else if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.LOGGING_CONFIG) {
+        if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.LOGGING_CONFIG) {
             updateValueByKey(profileID, LOGGING_MIN_DATA_BYTES);
             updateValueByKey(profileID, LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE);
             updateValueByKey(profileID, LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES);
@@ -116,9 +117,9 @@ public class AndroidSettingsStorage {
             updateValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_STATE);
             updateValueByKey(profileID, LOGGING_CONFIG_WRITE_LOGDATA_TO_FILE);
             updateValueByKey(profileID, LOGGING_CONFIG_LOGDATA_LEVEL_THRESHOLD);
-            return true;
+            status = true;
         }
-        else if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.SCRIPTING_CONFIG) {
+        if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.SCRIPTING_CONFIG) {
             updateValueByKey(profileID, SCRIPTING_CONFIG_SAVE_CONSOLE_OUTPUT_FILE);
             updateValueByKey(profileID, SCRIPTING_CONFIG_APPEND_CONSOLE_OUTPUT_FILE);
             updateValueByKey(profileID, SCRIPTING_CONFIG_DATESTAMP_OUTPUT_FILES);
@@ -142,21 +143,22 @@ public class AndroidSettingsStorage {
             updateValueByKey(profileID, SCRIPTING_CONFIG_LIMIT_SCRIPT_EXEC_TIME);
             updateValueByKey(profileID, SCRIPTING_CONFIG_LIMIT_SCRIPT_EXEC_TIME_SECONDS);
             updateValueByKey(profileID, SCRIPTING_CONFIG_LAST_SCRIPT_LOADED_PATH);
-            return true;
+            status = true;
         }
-        return false;
+        return status;
     }
 
     public static boolean restorePreviousSettings(String profileID, AndroidSettingsType settingsMask) {
+        boolean status = false;
         try {
             if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.APP_STATE) {
                 ThemesConfiguration.storedAppTheme = getStringValueByKey(profileID, THEMEID_PREFERENCE);
                 ExternalFileIO.CURRENT_WORKING_DIRECTORY = getStringValueByKey(profileID, CWD_PREFERENCE);
                 LiveLoggerActivity.setSelectedTab(Integer.parseInt(getStringValueByKey(profileID, LAST_TAB_INDEX_PREFERENCE)));
                 TabFragment.UITAB_DATA[LiveLoggerActivity.getSelectedTab()].lastMenuIndex = Integer.parseInt(getStringValueByKey(profileID, LAST_TAB_SUBMENU_INDEX_PREFERENCE));
-                return true;
+                status = true;
             }
-            else if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.GENERAL_SETTINGS_CONFIG) {
+            if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.GENERAL_SETTINGS_CONFIG) {
                 ChameleonSettings.chameleonDeviceSerialNumber = getStringValueByKey(profileID, PROFILE_SERIALID_PREFERENCE);
                 ChameleonSettings.chameleonDeviceNickname = getStringValueByKey(profileID, PROFILE_NAME_PREFERENCE);
                 ChameleonSettings.serialBaudRate = Integer.parseInt(getStringValueByKey(profileID, SERIAL_BAUDRATE_PREFERENCE));
@@ -164,9 +166,9 @@ public class AndroidSettingsStorage {
                 ChameleonSettings.allowBluetooth = Boolean.valueOf(getStringValueByKey(profileID, ALLOW_BLUETOOTH_PREFERENCE));
                 ChameleonSettings.sniffingMode = Integer.parseInt(getStringValueByKey(profileID, SNIFFING_MODE_PREFERENCE));
                 BluetoothGattConnector.btDevicePinDataBytes = getStringValueByKey(profileID, BLUETOOTH_DEVICE_PIN_DATA).getBytes(StandardCharsets.UTF_8);
-                return true;
+                status = true;
             }
-            else if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.LOGGING_CONFIG) {
+            if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.LOGGING_CONFIG) {
                 ChameleonLogUtils.LOGGING_MIN_DATA_BYTES = Integer.parseInt(getStringValueByKey(profileID, LOGGING_MIN_DATA_BYTES));
                 ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_CLEAR_LOGS_ON_NEW_DEVICE));
                 ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_COLLAPSE_COMMON_ENTRIES));
@@ -176,9 +178,9 @@ public class AndroidSettingsStorage {
                 ChameleonLogUtils.LOGMODE_NOTIFY_STATE = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_STATE));
                 AndroidLog.WRITE_LOGDATA_TO_FILE = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_WRITE_LOGDATA_TO_FILE));
                 AndroidLog.LOGDATA_LEVEL_THRESHOLD = AndroidLog.LogLevel.getLogLevelFromOrdinal(Integer.parseInt(getStringValueByKey(profileID, LOGGING_CONFIG_LOGDATA_LEVEL_THRESHOLD)));
-                return true;
+                status = true;
             }
-            else if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.SCRIPTING_CONFIG) {
+            if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.SCRIPTING_CONFIG) {
                 ScriptingConfig.SAVE_CONSOLE_OUTPUT_FILE = Boolean.valueOf(getStringValueByKey(profileID, SCRIPTING_CONFIG_SAVE_CONSOLE_OUTPUT_FILE));
                 ScriptingConfig.APPEND_CONSOLE_OUTPUT_FILE = Boolean.valueOf(getStringValueByKey(profileID, SCRIPTING_CONFIG_APPEND_CONSOLE_OUTPUT_FILE));
                 ScriptingConfig.DATESTAMP_OUTPUT_FILES = Boolean.valueOf(getStringValueByKey(profileID, SCRIPTING_CONFIG_DATESTAMP_OUTPUT_FILES));
@@ -202,13 +204,13 @@ public class AndroidSettingsStorage {
                 ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME = Boolean.valueOf(getStringValueByKey(profileID, SCRIPTING_CONFIG_LIMIT_SCRIPT_EXEC_TIME));
                 ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME_SECONDS = Integer.parseInt(getStringValueByKey(profileID, SCRIPTING_CONFIG_LIMIT_SCRIPT_EXEC_TIME_SECONDS));
                 ScriptingConfig.LAST_SCRIPT_LOADED_PATH = getStringValueByKey(profileID, SCRIPTING_CONFIG_LAST_SCRIPT_LOADED_PATH);
-                return true;
+                status = true;
             }
         } catch(Exception ex) {
             AndroidLog.printStackTrace(ex);
             return false;
         }
-        return false;
+        return status;
     }
 
     public static boolean saveAllSettings() {

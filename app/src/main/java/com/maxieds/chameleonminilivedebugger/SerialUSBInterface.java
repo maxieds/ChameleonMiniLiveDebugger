@@ -53,6 +53,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
     private int baudRate;
     private boolean serialConfigured;
     private boolean receiversRegistered;
+    private boolean scanning;
     private Semaphore serialPortLock = new Semaphore(1, true);
 
     public SerialUSBInterface(Context appContext) {
@@ -61,6 +62,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
         baudRate = ChameleonSettings.serialBaudRate;
         serialConfigured = false;
         receiversRegistered = false;
+        scanning = false;
     }
 
     public boolean isWiredUSB() { return true; }
@@ -91,11 +93,16 @@ public class SerialUSBInterface extends SerialIOReceiver {
     private static final int SCAN_POST_TIME_DELAY = 750;
 
     public boolean startScanningDevices() {
+        if (scanning) {
+            return false;
+        }
+        scanning = true;
         scanDeviceHandler.post(scanDeviceRunnable);
         return true;
     }
 
     public boolean stopScanningDevices() {
+        scanning = false;
         scanDeviceHandler.removeCallbacksAndMessages(scanDeviceRunnable);
         return true;
     }

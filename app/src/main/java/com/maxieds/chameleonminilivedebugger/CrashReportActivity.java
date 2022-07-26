@@ -74,6 +74,8 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        AndroidLog.activityContext = this;
+
         AndroidSettingsStorage.loadPreviousSettings();
 
         ThemesConfiguration.setLocalTheme(CRASH_REPORT_THEME_NAME, true, this);

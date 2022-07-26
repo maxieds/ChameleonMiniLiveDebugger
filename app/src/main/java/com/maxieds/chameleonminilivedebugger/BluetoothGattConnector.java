@@ -80,20 +80,20 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
 
     public static final String CHAMELEON_REVG_NAME = "BLE-Chameleon";
     public static final String CHAMELEON_REVG_NAME_ALTERNATE = "Chameleon";
-    public static final String CHAMELEON_REVG_SERVICE_UUID_STRING = "51510001-7969-6473-6f40-6b6f6c6c6957";
+    public static final String CHAMELEON_REVG_UART_SERVICE_UUID_STRING = "51510001-7969-6473-6f40-6b6f6c6c6957";
     public static final String CHAMELEON_REVG_SEND_CHAR_UUID_STRING = "51510002-7969-6473-6f40-6b6f6c6c6957";
     public static final String CHAMELEON_REVG_RECV_CHAR_UUID_STRING = "51510003-7969-6473-6f40-6b6f6c6c6957";
     public static final String CHAMELEON_REVG_TINY_NAME = "ChameleonTiny";
-    public static final String CHAMELEON_REVG_TINY_SERVICE_UUID_STRING = "51510001-7969-6473-6f40-6b6f6c6c6957";
+    public static final String CHAMELEON_REVG_TINY_UART_SERVICE_UUID_STRING = "51510001-7969-6473-6f40-6b6f6c6c6957";
     public static final String CHAMELEON_REVG_TINY_SEND_CHAR_UUID_STRING = "51510002-7969-6473-6f40-6b6f6c6c6957";
     public static final String CHAMELEON_REVG_TINY_RECV_CHAR_UUID_STRING = "51510003-7969-6473-6f40-6b6f6c6c6957";
     public static final String CHAMELEON_REVG_CTRL_CHAR_UUID_STRING = "52520003-7969-6473-6f40-6b6f6c6c6957";
     public static final String CHAMELEON_REVG_RECV_DESC_UUID_STRING = "00002902-0000-1000-8000-00805f9b34fb";
 
-    private static final ParcelUuid CHAMELEON_REVG_SERVICE_UUID = ParcelUuid.fromString(CHAMELEON_REVG_SERVICE_UUID_STRING);
+    private static final ParcelUuid CHAMELEON_REVG_UART_SERVICE_UUID = ParcelUuid.fromString(CHAMELEON_REVG_UART_SERVICE_UUID_STRING);
     private static final ParcelUuid CHAMELEON_REVG_SEND_CHAR_UUID = ParcelUuid.fromString(CHAMELEON_REVG_SEND_CHAR_UUID_STRING);
     private static final ParcelUuid CHAMELEON_REVG_RECV_CHAR_UUID = ParcelUuid.fromString(CHAMELEON_REVG_RECV_CHAR_UUID_STRING);
-    private static final ParcelUuid CHAMELEON_REVG_TINY_SERVICE_UUID = ParcelUuid.fromString(CHAMELEON_REVG_TINY_SERVICE_UUID_STRING);
+    private static final ParcelUuid CHAMELEON_REVG_TINY_UART_SERVICE_UUID = ParcelUuid.fromString(CHAMELEON_REVG_TINY_UART_SERVICE_UUID_STRING);
     private static final ParcelUuid CHAMELEON_REVG_TINY_SEND_CHAR_UUID = ParcelUuid.fromString(CHAMELEON_REVG_TINY_SEND_CHAR_UUID_STRING);
     private static final ParcelUuid CHAMELEON_REVG_TINY_RECV_CHAR_UUID = ParcelUuid.fromString(CHAMELEON_REVG_TINY_RECV_CHAR_UUID_STRING);
     private static final ParcelUuid CHAMELEON_REVG_CTRL_CHAR_UUID = ParcelUuid.fromString(CHAMELEON_REVG_CTRL_CHAR_UUID_STRING);
@@ -114,7 +114,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
     private boolean isConnected;
     private Context btSerialContext;
     private ParcelUuid chameleonDeviceBLEService;
-    private ParcelUuid chameleonDeviceBLECtrlChar; /* ??? TODO: Need to set the service UUID for some operations (see local variable above) ??? */
+    private ParcelUuid chameleonDeviceBLECtrlChar;
     private ParcelUuid chameleonDeviceBLESendChar;
     private ParcelUuid chameleonDeviceBLERecvChar;
     private BluetoothDevice btDevice;
@@ -136,7 +136,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
 
     public BluetoothGattConnector(@NonNull Context localContext) {
         btSerialContext = localContext;
-        chameleonDeviceBLEService = CHAMELEON_REVG_SERVICE_UUID;
+        chameleonDeviceBLEService = CHAMELEON_REVG_UART_SERVICE_UUID;
         chameleonDeviceBLESendChar = CHAMELEON_REVG_SEND_CHAR_UUID;
         chameleonDeviceBLERecvChar = CHAMELEON_REVG_RECV_CHAR_UUID;
         chameleonDeviceBLECtrlChar = CHAMELEON_REVG_CTRL_CHAR_UUID;
@@ -178,6 +178,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                 }
                 AndroidLog.i(TAG, "btBondReceiver: calling notifyBluetoothSerialInterfaceDeviceConnected");
                 btIntentDevice.connectGatt(LiveLoggerActivity.getLiveLoggerInstance().getApplicationContext(), true, btGattConn);
+                btGattConn.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
                 notifyBluetoothBLEDeviceConnected(btDevice);
             }
         };
@@ -217,6 +218,17 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     btGatt = gatt;
                     try {
                         btGatt.discoverServices();
+                        BluetoothGattService txDataService = btGatt.getService(chameleonDeviceBLECtrlChar.getUuid());
+                        BluetoothGattCharacteristic sendChar = txDataService.getCharacteristic(chameleonDeviceBLESendChar.getUuid());
+                        btGatt.setCharacteristicNotification(sendChar, true);
+                        BluetoothGattDescriptor sendCharDesc = sendChar.getDescriptor(CHAMELEON_REVG_RECV_DESC_UUID.getUuid());
+                        sendCharDesc.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                        long startWriteTime = System.currentTimeMillis();
+                        while (!gatt.writeDescriptor(sendCharDesc)) {
+                            if (System.currentTimeMillis() >= startWriteTime + ChameleonIO.TIMEOUT) {
+                                break;
+                            }
+                        }
                     } catch(SecurityException se) {
                         AndroidLog.printStackTrace(se);
                     }
@@ -288,7 +300,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     notifyBluetoothSerialInterfaceDataRead(charData);
                 }
                 AndroidLog.i(TAG,"onCharacteristicRead" + characteristic.toString());
-                byte[] charData = characteristic.getValue();
+                /*byte[] charData = characteristic.getValue();
                 if (charData == null) {
                     AndroidLog.d(TAG, "read characteristic: <null>");
                     return;
@@ -297,10 +309,10 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                 }
                 try {
                     notifyBluetoothSerialInterfaceDataRead(charData);
-                    /* ??? TODO: Need to call gatt.disconnect() here ??? */
+                    // ??? TODO: Need to call gatt.disconnect() here ???
                 } catch (Exception dinvEx) {
                     AndroidLog.printStackTrace(dinvEx);
-                }
+                }*/
             }
 
         };
@@ -419,16 +431,16 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                                 }
                                 int chameleonConnDeviceType = btGattConnectorRef.getChameleonDeviceType();
                                 if (chameleonConnDeviceType == ChameleonIO.CHAMELEON_TYPE_PROXGRIND_REVG_TINY) {
-                                    chameleonDeviceBLEService = CHAMELEON_REVG_TINY_SERVICE_UUID;
+                                    chameleonDeviceBLEService = CHAMELEON_REVG_TINY_UART_SERVICE_UUID;
                                     chameleonDeviceBLESendChar = CHAMELEON_REVG_TINY_SEND_CHAR_UUID;
                                     chameleonDeviceBLERecvChar = CHAMELEON_REVG_TINY_RECV_CHAR_UUID;
                                 } else if (chameleonConnDeviceType == ChameleonIO.CHAMELEON_TYPE_PROXGRIND_REVG_TINYPRO) {
                                     /* ??? TODO: Do these change from the Tiny to the TinyPro ??? */
-                                    chameleonDeviceBLEService = CHAMELEON_REVG_TINY_SERVICE_UUID;
+                                    chameleonDeviceBLEService = CHAMELEON_REVG_TINY_UART_SERVICE_UUID;
                                     chameleonDeviceBLESendChar = CHAMELEON_REVG_TINY_SEND_CHAR_UUID;
                                     chameleonDeviceBLERecvChar = CHAMELEON_REVG_TINY_RECV_CHAR_UUID;
                                 } else if (chameleonConnDeviceType == ChameleonIO.CHAMELEON_TYPE_PROXGRIND_REVG) {
-                                    chameleonDeviceBLEService = CHAMELEON_REVG_SERVICE_UUID;
+                                    chameleonDeviceBLEService = CHAMELEON_REVG_UART_SERVICE_UUID;
                                     chameleonDeviceBLESendChar = CHAMELEON_REVG_SEND_CHAR_UUID;
                                     chameleonDeviceBLERecvChar = CHAMELEON_REVG_RECV_CHAR_UUID;
                                 } else {
@@ -629,7 +641,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
             disconnectDevice();
             return ChameleonSerialIOInterface.STATUS_ERROR;
         }
-        BluetoothGattService txDataService = btGatt.getService(chameleonDeviceBLEService.getUuid());
+        BluetoothGattService txDataService = btGatt.getService(chameleonDeviceBLECtrlChar.getUuid());
         if(txDataService == null) {
             disconnectDevice();
             return ChameleonSerialIOInterface.STATUS_ERROR;

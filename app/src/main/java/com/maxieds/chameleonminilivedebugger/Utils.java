@@ -507,8 +507,16 @@ public class Utils {
          Utils.displayToastMessage(toastMsg, Toast.LENGTH_SHORT);
     }
 
+    public static void displayToastMessageShort(ChameleonMiniLiveDebuggerActivity callingActivity, String toastMsg) {
+        Utils.displayToastMessage(callingActivity, toastMsg, Toast.LENGTH_SHORT);
+    }
+
     public static void displayToastMessageLong(String toastMsg) {
         Utils.displayToastMessage(toastMsg, Toast.LENGTH_LONG);
+    }
+
+    public static void displayToastMessageLong(ChameleonMiniLiveDebuggerActivity callingActivity, String toastMsg) {
+        Utils.displayToastMessage(callingActivity, toastMsg, Toast.LENGTH_LONG);
     }
 
     private static final short[] CRC16_LOOKUP_TABLE = new short[] {

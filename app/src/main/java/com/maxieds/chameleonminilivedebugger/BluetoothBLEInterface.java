@@ -51,19 +51,14 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
 
     private BluetoothDevice activeDevice;
     private BluetoothGattConnector btGattConnectorBLEDevice;
-    private int baudRate;
     private boolean serialConfigured;
     private boolean receiversRegistered;
+    private boolean scanning;
     private Semaphore btDevLock = new Semaphore(1, true);
 
     @SuppressLint("MissingPermission")
     public boolean isBluetoothEnabled(boolean startActivityIfNot) {
         LiveLoggerActivity mainActivityCtx = LiveLoggerActivity.getLiveLoggerInstance();
-        if (!mainActivityCtx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
-            return false;
-        } else if (!mainActivityCtx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            return false;
-        }
         BluetoothAdapter btAdapter = null;
         BluetoothAdapter btAdapterDefault = BluetoothAdapter.getDefaultAdapter();
         BluetoothManager btManager = (BluetoothManager) mainActivityCtx.getSystemService(Context.BLUETOOTH_SERVICE);
@@ -73,26 +68,31 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
         } else if (btAdapterDefault != null) {
             btAdapter = btAdapterDefault;
         }
+        boolean status = true;
         if (btAdapter == null) {
             return false;
         } else if (!btAdapter.isEnabled()) {
             if (startActivityIfNot) {
-                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                try {
                     Intent turnBTOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                     mainActivityCtx.startActivityForResult(turnBTOn, ACTVITY_REQUEST_BLUETOOTH_ENABLED_CODE);
+                } catch (Exception excpt) {
+                    AndroidLog.printStackTrace(excpt);
                 }
             }
+            status = false;
         }
-        if (startActivityIfNot) {
-            Intent btMakeDiscIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-            btMakeDiscIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                if (ActivityCompat.checkSelfPermission(LiveLoggerActivity.getLiveLoggerInstance(), android.Manifest.permission.BLUETOOTH_ADVERTISE) != PackageManager.PERMISSION_GRANTED) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (ActivityCompat.checkSelfPermission(LiveLoggerActivity.getLiveLoggerInstance(), "android.permission.BLUETOOTH_ADVERTISE") != PackageManager.PERMISSION_GRANTED) {
+                if (startActivityIfNot) {
+                    Intent btMakeDiscIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+                    //btMakeDiscIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
                     mainActivityCtx.startActivityForResult(btMakeDiscIntent, ACTVITY_REQUEST_BLUETOOTH_DISCOVERABLE_CODE);
                 }
+                return false;
             }
         }
-        return false;
+        return status;
     }
 
     public boolean isBluetoothEnabled() {
@@ -213,9 +213,9 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
         activeDevice = null;
         btGattConnectorBLEDevice = new BluetoothGattConnector(appContext);
         btGattConnectorBLEDevice.setBluetoothSerialInterface(this);
-        baudRate = ChameleonSettings.serialBaudRate;
         serialConfigured = false;
         receiversRegistered = false;
+        scanning = false;
     }
 
     public boolean isWiredUSB() { return false; }
@@ -236,12 +236,17 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
     }
 
     public boolean startScanningDevices() {
+        if (scanning) {
+            return false;
+        }
+        scanning = true;
         configureSerial();
         btGattConnectorBLEDevice.startConnectingDevices();
         return true;
     }
 
     public boolean stopScanningDevices() {
+        scanning = false;
         btGattConnectorBLEDevice.stopConnectingDevices();
         return true;
     }

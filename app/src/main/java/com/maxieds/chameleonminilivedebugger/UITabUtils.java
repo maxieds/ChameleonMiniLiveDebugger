@@ -480,22 +480,23 @@ public class UITabUtils {
                             cbView.wait(ActivityPermissions.REQUEST_RESULT_MAX_VIEWOBJ_WAIT_TIMEOUT);
                             haveSufficientBTPerms = llInst.checkPermissionsAcquired(ActivityPermissions.CMLD_PERMISSIONS_GROUP_BLUETOOTH, false);
                         }
-                        if (ChameleonSettings.getActiveSerialIOPort() == null) {
-                            ChameleonSettings.stopSerialIOConnectionDiscovery();
-                            ChameleonSettings.initializeSerialIOConnections();
-                        }
                         BluetoothBLEInterface btSerialInterface = (BluetoothBLEInterface) ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX];
-                        haveSufficientBTPerms = haveSufficientBTPerms && btSerialInterface != null && btSerialInterface.isBluetoothEnabled(false);
-                        if(!cb.isChecked() && !haveSufficientBTPerms) {
+                        btSerialInterface.isBluetoothEnabled(true);
+                        if(cb.isChecked() && !haveSufficientBTPerms) {
+                            cb.setChecked(false);
                             String btPermsRequiredResStr = llInst.getResources().getString(R.string.btPermsRequiredMsg);
                             Utils.displayToastMessageShort(btPermsRequiredResStr);
                             return;
                         }
                         ChameleonSettings.allowBluetooth = cb.isChecked();
                         AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.ALLOW_BLUETOOTH_PREFERENCE);
+                        if (ChameleonSettings.allowBluetooth) {
+                            ChameleonSettings.stopSerialIOConnectionDiscovery();
+                            ChameleonSettings.initializeSerialIOConnections();
+                        }
                     } catch(Exception ex) {
                         AndroidLog.printStackTrace(ex);
-                        cb.setChecked(!cb.isChecked());
+                        cb.setChecked(false);
                         LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -588,7 +589,7 @@ public class UITabUtils {
 
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
                         ChameleonSettings.chameleonDeviceNickname = s.toString();
-                        AndroidSettingsStorage.updateValueByKey(ChameleonSettings.chameleonDeviceSerialNumber, AndroidSettingsStorage.PROFILE_NAME_PREFERENCE);
+                        AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE, AndroidSettingsStorage.PROFILE_NAME_PREFERENCE);
                     }
                 });
             } else {

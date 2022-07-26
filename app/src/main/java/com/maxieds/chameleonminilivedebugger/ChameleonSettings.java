@@ -17,6 +17,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import android.os.Handler;
+
 public class ChameleonSettings {
 
     private static final String TAG = ChameleonSettings.class.getSimpleName();
@@ -56,23 +58,38 @@ public class ChameleonSettings {
         return serialIOPorts[SERIALIO_IFACE_ACTIVE_INDEX];
     }
 
+    private static final long REINIT_SCAN_INTERVAL = 6500;
+    private static final Handler initUpdateHandler = new Handler();
+    private static final Runnable initUpdateRunnable = new Runnable() {
+        public void run() {
+            ChameleonSettings.initializeSerialIOConnections();
+        }
+    };
+
     public static void initializeSerialIOConnections() {
         if(serialIOPorts == null) {
             initSerialIOPortObjects();
+        }
+        if (getActiveSerialIOPort() != null) {
+            return;
         }
         for(int si = 0; si < serialIOPorts.length; si++) {
             if(si == USBIO_IFACE_INDEX && allowWiredUSB) {
                 AndroidLog.i(TAG, "Started scanning for SerialUSB devices ... ");
                 serialIOPorts[si].startScanningDevices();
-            }
-            else if(si == BTIO_IFACE_INDEX && allowBluetooth && ((BluetoothBLEInterface) serialIOPorts[si]).isBluetoothEnabled()) {
-                AndroidLog.i(TAG, "Started scanning for SerialBT devices ... ");
+            } else if(si == BTIO_IFACE_INDEX && allowBluetooth && ((BluetoothBLEInterface) serialIOPorts[si]).isBluetoothEnabled(true)) {
+                AndroidLog.i(TAG, "Started scanning for BT/BLE devices ... ");
                 serialIOPorts[si].startScanningDevices();
+                initUpdateHandler.removeCallbacksAndMessages(initUpdateRunnable);
+            } else if (si == BTIO_IFACE_INDEX && allowBluetooth) {
+                AndroidLog.i(TAG, "Repeating initialization of scanning of BT/BLE devices in a few seconds ... ");
+                initUpdateHandler.postDelayed(initUpdateRunnable, ChameleonSettings.REINIT_SCAN_INTERVAL);
             }
         }
     }
 
     public static void stopSerialIOConnectionDiscovery() {
+        initUpdateHandler.removeCallbacksAndMessages(initUpdateRunnable);
         for(int si = 0; si < serialIOPorts.length; si++) {
             serialIOPorts[si].stopScanningDevices();
         }

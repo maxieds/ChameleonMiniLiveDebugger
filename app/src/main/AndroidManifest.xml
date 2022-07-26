@@ -31,6 +31,7 @@
     <uses-permission
         android:name="android.permission.INTERNET"
         android:permissionGroup="CMLD.permission-group.MINIMAL_APP_REQUIREMENTS"
+        android:required="true"
         />
     <uses-permission
         android:name="android.permission.USB_PERMISSION"
@@ -40,12 +41,14 @@
     <uses-permission
         android:name="android.permission.ACCESS_FINE_LOCATION"
         android:permissionGroup="CMLD.permission-group.MINIMAL_APP_REQUIREMENTS"
-        android:required="false"
+        android:required="true"
+        android:maxSdkVersion="30"
         />
     <uses-permission
         android:name="android.permission.ACCESS_COARSE_LOCATION"
         android:permissionGroup="CMLD.permission-group.MINIMAL_APP_REQUIREMENTS"
-        android:required="false"
+        android:required="true"
+        android:maxSdkVersion="30"
         />
     <uses-permission
         android:name="android.permission.VIBRATE"
@@ -75,11 +78,6 @@
         android:permissionGroup="CMLD.permission-group.FILES_AND_STORAGE"
         android:required="true"
         />
-    <!--<uses-permission
-        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
-        android:permissionGroup="CMLD.permission-group.FILES_AND_STORAGE"
-        android:required="true"
-        />-->
 
     <permission-group
         android:name="CMLD.permission-group.BLUETOOTH_COMPENDIA"
@@ -95,33 +93,35 @@
     <uses-permission
         android:name="android.permission.BLUETOOTH_ADMIN"
         android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
-        android:required="${bluetoothRequired}"
+        android:required="true"
+        android:maxSdkVersion="30"
         />
-    <!-- These permissions are new to SDK 31. Declaring them makes Play Store
-         very restrictive about allowing the app to be installed on older phones
     <uses-permission
         android:name="android.permission.BLUETOOTH_CONNECT"
         android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
-        android:required="${bluetoothRequired}"
+        android:required="true"
+        android:minSdkVersion="31"
         />
     <uses-permission
         android:name="android.permission.BLUETOOTH_ADVERTISE"
         android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
-        android:required="${bluetoothRequired}"
+        android:required="true"
+        android:minSdkVersion="31"
         />
     <uses-permission
         android:name="android.permission.BLUETOOTH_SCAN"
         android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
-        android:required="${bluetoothRequired}"
+        android:required="true"
+        android:minSdkVersion="31"
+        android:usesPermissionFlags="neverForLocation"
         />
-    -->
 
     <uses-feature android:name="android.hardware.usb.host" android:required="true" />
     <protected-broadcast android:name="android.hardware.usb.action.USB_STATE" />
 
-    <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
-    <uses-feature android:name="android.hardware.bluetooth_admin" android:required="false" />
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
+    <uses-feature android:name="android.hardware.bluetooth" android:required="true" />
+    <uses-feature android:name="android.hardware.bluetooth_admin" android:maxSdkVersion="30" android:required="true" />
+    <uses-feature android:name="android.hardware.bluetooth_le" android:minSdkVersion="31" android:required="true" />
 
     <!-- Removing these declarations because they seem to exclude devices on Play Store: -->
     <!--<uses-feature android:name="android.hardware.touchscreen" android:required="true" />-->
