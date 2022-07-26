@@ -258,28 +258,35 @@ public class AndroidLog {
         logDataOutputStreamHandle.flush();
     }
 
+    private static String formatLogTag(@NonNull String logTag) {
+        if (activityContext == null) {
+            return logTag;
+        }
+        return String.format(BuildConfig.DEFAULT_LOCALE, "%s/%s", activityContext.getPackageName(), logTag);
+    }
+
     public static void d(String tag, String msg) {
-        Log.d(tag, msg);
+        Log.d(formatLogTag(tag), msg);
         logAtLevel(LogLevel.DEBUG, tag, msg);
     }
 
     public static void e(String tag, String msg) {
-        Log.e(tag, msg);
+        Log.e(formatLogTag(tag), msg);
         logAtLevel(LogLevel.ERROR, tag, msg);
     }
 
     public static void i(String tag, String msg) {
-        Log.i(tag, msg);
+        Log.i(formatLogTag(tag), msg);
         logAtLevel(LogLevel.INFO, tag, msg);
     }
 
     public static void w(String tag, String msg) {
-        Log.w(tag, msg);
+        Log.w(formatLogTag(tag), msg);
         logAtLevel(LogLevel.WARNING, tag, msg);
     }
 
     public static void v(String tag, String msg) {
-        Log.e(tag, msg);
+        Log.e(formatLogTag(tag), msg);
         logAtLevel(LogLevel.VERBOSE, tag, msg);
     }
 

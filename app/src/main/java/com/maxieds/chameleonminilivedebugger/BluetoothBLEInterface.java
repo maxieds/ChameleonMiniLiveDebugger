@@ -71,7 +71,7 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
         boolean status = true;
         if (btAdapter == null) {
             return false;
-        } else if (!btAdapter.isEnabled()) {
+        } else if (!btAdapter.isEnabled() && !btAdapter.enable()) {
             if (startActivityIfNot) {
                 try {
                     Intent turnBTOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -86,7 +86,7 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
             if (ActivityCompat.checkSelfPermission(LiveLoggerActivity.getLiveLoggerInstance(), "android.permission.BLUETOOTH_ADVERTISE") != PackageManager.PERMISSION_GRANTED) {
                 if (startActivityIfNot) {
                     Intent btMakeDiscIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-                    //btMakeDiscIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+                    btMakeDiscIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
                     mainActivityCtx.startActivityForResult(btMakeDiscIntent, ACTVITY_REQUEST_BLUETOOTH_DISCOVERABLE_CODE);
                 }
                 return false;

@@ -215,8 +215,6 @@
         android:keepScreenOn="true"
         >
 
-        <!--<uses-library android:name="com.android.future.usb.accessory" />-->
-
         <uses-library
             android:name="com.github.maxieds:AndroidFilePickerLight"
             android:required="false"
@@ -242,13 +240,6 @@
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
-                <action android:name="android.bluetooth.device.action.ACTION_FOUND" />
-                <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
-                <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
-                <action android:name="ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED" />
-                <action android:name="ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST" />
-                <action android:name="ChameleonSerialIOInterface.SERIALIO_DEVICE_FOUND" />
-                <action android:name="ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED" />
                 <category android:name="android.intent.category.HOME" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -261,7 +252,7 @@
                 android:name="android.hardware.usb.action.USB_DEVICE_DETACHED"
                 android:resource="@xml/chameleon_usb_device_filter"
                 />
-            <meta-data
+            <!--<meta-data
                 android:name="android.bluetooth.device.action.ACTION_FOUND"
                 android:resource="@xml/chameleon_bluetooth_device_filter"
                 />
@@ -270,25 +261,13 @@
                 android:resource="@xml/chameleon_bluetooth_device_filter"
                 />
             <meta-data
+                android:name="android.bluetooth.device.action.ACL_DISCONNECT_REQUESTED"
+                android:resource="@xml/chameleon_bluetooth_device_filter"
+                />
+            <meta-data
                 android:name="android.bluetooth.device.action.ACL_DISCONNECTED"
                 android:resource="@xml/chameleon_bluetooth_device_filter"
-                />
-            <meta-data
-                android:name="ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED"
-                android:resource="@xml/custom_device_filter"
-                />
-            <meta-data
-                android:name="ChameleonSerialIOInterface.SERIALIO_DEVICE_FOUND"
-                android:resource="@xml/custom_device_filter"
-                />
-            <meta-data
-                android:name="ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED"
-                android:resource="@xml/custom_device_filter"
-                />
-            <meta-data
-                android:name="ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST"
-                android:resource="@xml/chameleon_bluetooth_device_filter"
-                />
+                />-->
 
         </activity>
 

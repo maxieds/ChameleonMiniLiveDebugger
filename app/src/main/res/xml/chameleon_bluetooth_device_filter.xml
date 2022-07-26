@@ -19,16 +19,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 <resources>
 
-    <bluetooth-device name="BLE-Chameleon" />
-    <bluetooth-device uuid="51510001-7969-6473-6f40-6b6f6c6c6957" name="BLE-Chameleon" />
-    <bluetooth-device uuid="51510002-7969-6473-6f40-6b6f6c6c6957" name="BLE-Chameleon" />
-    <bluetooth-device uuid="51510003-7969-6473-6f40-6b6f6c6c6957" name="BLE-Chameleon" />
+    <bluetooth-device name="BLE-Chameleon"/>
     <bluetooth-device name="ChameleonTiny" />
-    <bluetooth-device uuid="51510001-7969-6473-6f40-6b6f6c6c6957" name="ChameleonTiny" />
-    <bluetooth-device uuid="51510002-7969-6473-6f40-6b6f6c6c6957" name="ChameleonTiny" />
-    <bluetooth-device uuid="51510003-7969-6473-6f40-6b6f6c6c6957" name="ChameleonTiny" />
     <bluetooth-device name="Chameleon" />
-    <bluetooth-device uuid="52520003-7969-6473-6f40-6b6f6c6c6957" name="Chameleon" />
-    <bluetooth-device uuid="00002902-0000-1000-8000-00805f9b34fb" name="Chameleon" />
 
 </resources>

@@ -28,6 +28,7 @@ import androidx.core.content.ContextCompat;
 
 import com.maxieds.chameleonminilivedebugger.AndroidFileChooser;
 import com.maxieds.chameleonminilivedebugger.AndroidLog;
+import com.maxieds.chameleonminilivedebugger.LiveLoggerActivity;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
 import java.io.File;
@@ -74,7 +75,7 @@ public class ScriptingFileIO {
     }
 
     public static File getStoragePathFromRelative(String filePath, boolean createFile, boolean isDir) {
-        String extStorageDir = (AndroidFileChooser.getInitialFileChooserBaseFolder() + PATH_SEPARATOR).replace("//", "/");
+        String extStorageDir = (LiveLoggerActivity.getLiveLoggerInstance().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).getAbsolutePath() + PATH_SEPARATOR).replace("//", "/");
         filePath = filePath.replaceAll(STORAGE_HOME_PREFIX_SUBST, extStorageDir);
         File storageFile = new File(filePath);
         boolean setPermissions = true;
