@@ -231,12 +231,6 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     serialIOActionFilter.addAction(SerialUSBInterface.ACTION_USB_PERMISSION);
                     serialIOActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
                     serialIOActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
-                    //serialIOActionFilter.addAction(BluetoothDevice.ACTION_FOUND);
-                    //serialIOActionFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
-                    //serialIOActionFilter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
-                    //serialIOActionFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-                    //serialIOActionFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
-                    //serialIOActionFilter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
                     serialIOActionFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
                     serialIOActionFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
                     serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED);
@@ -407,7 +401,10 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     }
                }
           };
-          runAfterGUIInitDeviceHandler.postDelayed(runAfterGUIInitDeviceRunnable, 300);
+          /* Waiting for more than a second to give the GUI time to display on launch
+           * before the BT scanning starts.
+           */
+          runAfterGUIInitDeviceHandler.postDelayed(runAfterGUIInitDeviceRunnable, 1250);
 
      }
 
