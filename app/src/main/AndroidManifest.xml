@@ -89,11 +89,13 @@
         android:name="android.permission.BLUETOOTH"
         android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
         android:required="true"
+        android:maxSdkVersion="30"
         />
     <uses-permission
         android:name="android.permission.BLUETOOTH_ADMIN"
         android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
         android:required="true"
+        android:maxSdkVersion="30"
         />
     <uses-permission
         android:name="android.permission.BLUETOOTH_CONNECT"

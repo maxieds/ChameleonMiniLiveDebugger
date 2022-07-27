@@ -124,6 +124,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
     private final BluetoothAdapter btAdapter;
     private BluetoothLeScanner bleScanner;
     private final ScanCallback bleScanCallback;
+    private boolean bleScanInProgress;
     private BluetoothGatt btGatt;
     private final BluetoothGattCallback btGattCallback;
     private BroadcastReceiver btConnReceiver;
@@ -147,6 +148,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         btConnRecvRegistered = false;
         bleScanner =  null;
         bleScanCallback = configureBLEScanCallback();
+        bleScanInProgress = false;
         btAdapter = configureBluetoothAdapter();
         btGatt = null;
         btGattCallback = configureBluetoothGattCallback();
@@ -184,36 +186,30 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                         return;
                     }
                     btDevice = btIntentDevice;
-                    final String userConnInstMsg = String.format(BuildConfig.DEFAULT_LOCALE, "New %s %s found.\n%s.",
+                    if (btDevice.getBondState() != BluetoothDevice.BOND_BONDED) {
+                        btDevice.createBond();
+                    }
+                    String userConnInstMsg = String.format(BuildConfig.DEFAULT_LOCALE, "New %s %s found.\n%s.",
                             btDevice.getName(), btDevice.getAddress(),
                             btSerialContext.getApplicationContext().getResources().getString(R.string.bluetoothExtraConfigInstructions));
-                    LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(new Runnable() {
-                        final String toastDisplayMsg = userConnInstMsg;
-                        @Override
-                        public void run() {
-                            Utils.displayToastMessageLong(toastDisplayMsg);
-                        }
-                    });
-                    btIntentDevice.connectGatt(btGattConn.btSerialContext, true, btGattConn);
+                    Utils.displayToastMessageLong(userConnInstMsg);
                     btGattConn.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
+                    btDevice.connectGatt(btGattConn.btSerialContext, true, btGattConn);
+                    startBLEDeviceScan();
                 } else if (action.equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
                         (action.equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) && intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1) == BluetoothAdapter.STATE_CONNECTED) ||
                         (action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED) && intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, -1) == BluetoothDevice.BOND_BONDED)) {
                     BluetoothDevice btIntentDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     if (btIntentDevice == null) {
                         return;
-                    } else if (action.equals(BluetoothDevice.ACTION_ACL_CONNECTED)) {
-                        btIntentDevice.createBond(); // ???
-                        long startPairPoll = System.currentTimeMillis();
-                        while (btIntentDevice.getBondState() != BluetoothDevice.BOND_BONDED) { // ??? TODO: Need a thread ???
-                            if (System.currentTimeMillis() >= startPairPoll + ChameleonIO.LONG_USER_TIMEOUT) {
-                                return;
-                            }
-                        }
                     }
                     btDevice = btIntentDevice;
-                    btSerialIface.configureSerialConnection(btDevice);
-                    notifyBluetoothBLEDeviceConnected(btDevice);
+                    if (action.equals(BluetoothDevice.ACTION_ACL_CONNECTED) && btIntentDevice.getBondState() != BluetoothDevice.BOND_BONDED) {
+                        btIntentDevice.createBond();
+                    }
+                    btGattConn.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
+                    btDevice.connectGatt(btGattConn.btSerialContext, true, btGattConn);
+                    startBLEDeviceScan();
                 }
             }
         };
@@ -255,17 +251,18 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                 } else if (status == BLUETOOTH_GATT_RSP_EXEC_WRITE) {
                     return;
                 }
-                if (newState == BluetoothProfile.STATE_CONNECTED) {
-                    requestConnectionPriority(BLUETOOTH_GATT_CONNECT_PRIORITY_HIGH);
+                if (newState == BluetoothGatt.STATE_DISCONNECTED || newState == BluetoothGatt.STATE_DISCONNECTING) {
+                    disconnectDevice();
+                    startConnectingDevices();
+                    return;
+                } else if (newState == BluetoothProfile.STATE_CONNECTED) {
                     btGatt = gatt;
                     try {
+                        stopConnectingDevices();
                         btGatt.discoverServices();
                     } catch (SecurityException se) {
                         AndroidLog.printStackTrace(se);
                     }
-                }
-                if (newState == BluetoothGatt.STATE_DISCONNECTED) {
-                    disconnectDevice();
                 }
             }
 
@@ -273,8 +270,8 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
             public void onServicesDiscovered(BluetoothGatt gatt, int status) {
                 if (status != BluetoothGatt.GATT_SUCCESS) {
                     AndroidLog.w(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "onServicesDiscovered: error/status code %d = %04x", status, status));
-                }
-                if (status == BLUETOOTH_GATT_ERROR) {
+                    return;
+                } else if (status == BLUETOOTH_GATT_ERROR) {
                     return;
                 }
                 final String bleDeviceNameNone = "<No-Device-Name>";
@@ -307,26 +304,13 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     } else {
                         return;
                     }
-                    if (btDev.getBondState() != BluetoothDevice.BOND_BONDED) {
-                        btDev.createBond();
-                        long startBondPoll = System.currentTimeMillis();
-                        while (btDev.getBondState() != BluetoothDevice.BOND_BONDED) { // ??? TODO: Need a thread ???
-                            if (System.currentTimeMillis() >= startBondPoll + ChameleonIO.LONG_USER_TIMEOUT) {
-                                return;
-                            }
-                        }
-                    }
                     BluetoothGattService txDataService = btGatt.getService(chameleonDeviceBLECtrlChar.getUuid());
                     BluetoothGattCharacteristic sendChar = txDataService.getCharacteristic(chameleonDeviceBLESendChar.getUuid());
                     btGatt.setCharacteristicNotification(sendChar, true);
                     BluetoothGattDescriptor sendCharDesc = sendChar.getDescriptor(CHAMELEON_REVG_RECV_DESC_UUID.getUuid());
                     sendCharDesc.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    long startWriteTime = System.currentTimeMillis();
-                    while (!gatt.writeDescriptor(sendCharDesc)) {
-                        if (System.currentTimeMillis() >= startWriteTime + ChameleonIO.TIMEOUT) {
-                            break;
-                        }
-                    }
+                    gatt.writeDescriptor(sendCharDesc);
+                    gatt.executeReliableWrite();
                 } catch (SecurityException se) {
                     bleDeviceName = bleDeviceNameNone;
                     AndroidLog.printStackTrace(se);
@@ -334,18 +318,24 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     bleDeviceName = bleDeviceNameNone;
                     AndroidLog.printStackTrace(npe);
                 }
-                if (status == BluetoothGatt.GATT_SUCCESS) {
-                    configureNotifyOnSerialBluetoothService(gatt, chameleonDeviceBLERecvChar.getUuid().toString());
+                if (configureNotifyOnSerialBluetoothService(gatt, chameleonDeviceBLERecvChar.getUuid().toString())) {
+                    btSerialIface.configureSerialConnection(btDevice);
+                    notifyBluetoothBLEDeviceConnected(btDevice);
                 }
             }
 
             @Override
             public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+                try {
+                    AndroidLog.d(TAG, "onDescriptorWrite: [UUID] " + descriptor.getCharacteristic().getUuid());
+                } catch (NullPointerException npe) {
+                    AndroidLog.printStackTrace(npe);
+                }
                 bleWriteLock.release();
                 if (status == BLUETOOTH_GATT_ERROR) {
-                    return;
+                    /* ??? TODO: Should we return bytes that correspond to a Chameleon terminal error status ??? */
+                    AndroidLog.i(TAG, "onDescriptorWrite: status BLUETOOTH_GATT_ERROR -- TODO");
                 }
-                AndroidLog.i(TAG, "onDescriptorWrite: [UUID] " + descriptor.getCharacteristic().getUuid());
             }
 
             @SuppressLint("MissingPermission")
@@ -373,8 +363,9 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
 
             @Override
             public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-                bleReadLock.release();
                 if (status == BLUETOOTH_GATT_ERROR) {
+                    /* ??? TODO: Should we return bytes that correspond to a Chameleon terminal error status ??? */
+                    AndroidLog.i(TAG, "onCharacteristicRead: status BLUETOOTH_GATT_ERROR -- TODO");
                     return;
                 }
                 AndroidLog.d(TAG, "onCharacteristicRead" + characteristic.toString());
@@ -449,10 +440,10 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                                 } else {
                                     return;
                                 }
-                                Intent notifyDevFoundIntent = new Intent(BluetoothDevice.ACTION_FOUND);
-                                notifyDevFoundIntent.putExtra(BluetoothDevice.EXTRA_DEVICE, btDev);
-                                AndroidLog.d(TAG, "Forwarding ACTION_FOUND onto the connection reciever from the scan result handler.");
-                                btGattConnectorRef.btConnReceiver.onReceive(btGattConnectorRef.btSerialContext, notifyDevFoundIntent);
+                                if (configureNotifyOnSerialBluetoothService(null, chameleonDeviceBLERecvChar.getUuid().toString())) {
+                                    btSerialIface.configureSerialConnection(btDevice);
+                                    notifyBluetoothBLEDeviceConnected(btDevice);
+                                }
                             }
                         } catch (SecurityException se) {
                             bleDeviceName = bleDeviceNameNone;
@@ -476,7 +467,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         btConnReceiver = configureBluetoothConnectionReceiver();
         IntentFilter btConnectIntentFilter = new IntentFilter();
         btConnectIntentFilter.addAction(BluetoothDevice.ACTION_FOUND);
-        btConnectIntentFilter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
+        //btConnectIntentFilter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
         btConnectIntentFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
         btConnectIntentFilter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
         btConnectIntentFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
@@ -513,13 +504,14 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                 }
             }
             try {
-                if (bleScanner != null) {
+                if (bleScanner != null && bleScanInProgress) {
                     bleScanner.stopScan(bleScanCallback);
                     bleScanner.flushPendingScanResults(bleScanCallback);
                 }
             } catch(Exception excpt) {
                 AndroidLog.printStackTrace(excpt);
             }
+            bleScanInProgress = false;
             try {
                 if (btConnRecvRegistered) {
                     btSerialContext.unregisterReceiver(btConnReceiver);
@@ -571,39 +563,68 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         if(btPermsObtained) {
             registerBluetoothConnectionReceiver();
             try {
-                if (btAdapter != null) {
-                    //btAdapter.startDiscovery();
-                }
-                if  (bleScanner != null) {
-                    ScanSettings bleScanSettings = new ScanSettings.Builder()
-                            //.setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
-                            .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                            .setLegacy(false)
-                            .setReportDelay(5000)
-                            .setMatchMode(ScanSettings.MATCH_MODE_STICKY)
-                            .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
-                            .build();
-                    ScanFilter chameleonRevGDeviceFilter = new ScanFilter.Builder()
-                            .setDeviceName(CHAMELEON_REVG_NAME)
-                            .build();
-                    ScanFilter chameleonRevGTinyProDeviceFilter = new ScanFilter.Builder()
-                            .setDeviceName(CHAMELEON_REVG_NAME_ALTERNATE)
-                            .build();
-                    ScanFilter chameleonRevGTinyDeviceFilter = new ScanFilter.Builder()
-                            .setDeviceName(CHAMELEON_REVG_TINY_NAME)
-                            .build();
-                    List<ScanFilter> bleScanFilters = new ArrayList<ScanFilter>();
-                    bleScanFilters.add(chameleonRevGDeviceFilter);
-                    bleScanFilters.add(chameleonRevGTinyProDeviceFilter);
-                    bleScanFilters.add(chameleonRevGTinyDeviceFilter);
-                    try {
-                        bleScanner.startScan(bleScanFilters, bleScanSettings, bleScanCallback);
-                    } catch(SecurityException se) {
-                        AndroidLog.printStackTrace(se);
-                    }
+                if (btAdapter != null && !btAdapter.isDiscovering()) {
+                    btAdapter.startDiscovery();
                 }
             } catch(SecurityException se) {
                 AndroidLog.printStackTrace(se);
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private static int bleScanMode = ScanSettings.SCAN_MODE_LOW_LATENCY;
+    private static int bleMatchMode = ScanSettings.MATCH_MODE_AGGRESSIVE;
+    private static final boolean bleUseLegacyAdvertisements = false;
+    private static final long bleScanReportDelay = 5000;
+
+    public static void setLowPowerBLEScanSettings() {
+        bleScanMode = ScanSettings.SCAN_MODE_LOW_POWER;
+        bleMatchMode = ScanSettings.MATCH_MODE_STICKY;
+    }
+
+    public static void setBalancedPowerBLEScanSettings() {
+        bleScanMode = ScanSettings.SCAN_MODE_BALANCED;
+        bleMatchMode = ScanSettings.MATCH_MODE_AGGRESSIVE;
+    }
+
+    public static void setHighPowerBLEScanSettings() {
+        bleScanMode = ScanSettings.SCAN_MODE_LOW_LATENCY;
+        bleMatchMode = ScanSettings.MATCH_MODE_AGGRESSIVE;
+    }
+
+    public boolean startBLEDeviceScan() {
+        btPermsObtained = btPermsObtained || btSerialIface.isBluetoothEnabled(true);
+        if  (btPermsObtained && bleScanner != null && !bleScanInProgress) {
+            ScanSettings bleScanSettings = new ScanSettings.Builder()
+                    .setScanMode(bleScanMode)
+                    .setLegacy(bleUseLegacyAdvertisements)
+                    .setPhy(ScanSettings.PHY_LE_ALL_SUPPORTED)
+                    .setReportDelay(bleScanReportDelay)
+                    .setMatchMode(bleMatchMode)
+                    .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
+                    .build();
+            ScanFilter chameleonRevGDeviceFilter = new ScanFilter.Builder()
+                    .setDeviceName(CHAMELEON_REVG_NAME)
+                    .build();
+            ScanFilter chameleonRevGTinyProDeviceFilter = new ScanFilter.Builder()
+                    .setDeviceName(CHAMELEON_REVG_NAME_ALTERNATE)
+                    .build();
+            ScanFilter chameleonRevGTinyDeviceFilter = new ScanFilter.Builder()
+                    .setDeviceName(CHAMELEON_REVG_TINY_NAME)
+                    .build();
+            List<ScanFilter> bleScanFilters = new ArrayList<ScanFilter>();
+            bleScanFilters.add(chameleonRevGDeviceFilter);
+            bleScanFilters.add(chameleonRevGTinyProDeviceFilter);
+            bleScanFilters.add(chameleonRevGTinyDeviceFilter);
+            try {
+                bleScanner.startScan(bleScanFilters, bleScanSettings, bleScanCallback);
+                bleScanInProgress = true;
+            } catch(SecurityException se) {
+                AndroidLog.printStackTrace(se);
+                return false;
             }
             return true;
         }
@@ -621,7 +642,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                 if (btAdapter.isDiscovering()) {
                     btAdapter.cancelDiscovery();
                 }
-                if (bleScanner != null) {
+                if (bleScanner != null && bleScanInProgress) {
                     bleScanner.stopScan(bleScanCallback);
                     bleScanner.flushPendingScanResults(bleScanCallback);
                 }
@@ -629,10 +650,12 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                 AndroidLog.printStackTrace(se);
                 status = false;
             }
+            bleScanInProgress = false;
             if (btConnRecvRegistered) {
                 try {
-                    btConnReceiver.clearAbortBroadcast();
+                    btConnReceiver.abortBroadcast();
                     btSerialContext.unregisterReceiver(btConnReceiver);
+                    btConnReceiver.clearAbortBroadcast();
                 } catch (Exception excpt) {
                     AndroidLog.printStackTrace(excpt);
                 }
@@ -695,30 +718,39 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
     }
 
     public void notifyBluetoothSerialInterfaceDataRead(byte[] serialDataRead) {
-        if(btSerialIface != null) {
+        if(btSerialIface != null && serialDataRead != null) {
             btSerialIface.onReceivedData(serialDataRead);
         }
     }
 
     @SuppressLint("MissingPermission")
-    private void configureNotifyOnSerialBluetoothService(BluetoothGatt btLocalGatt, String gattUUID) {
-        BluetoothGattService btgService = btLocalGatt.getService(chameleonDeviceBLEService.getUuid());
+    private boolean configureNotifyOnSerialBluetoothService(BluetoothGatt btLocalGatt, String gattUUID) {
+        BluetoothGattService btgService = null;
+        if (btLocalGatt == null) {
+            btgService = new BluetoothGattService(chameleonDeviceBLEService.getUuid(), BluetoothGattService.SERVICE_TYPE_PRIMARY);
+        } else {
+            btgService = btLocalGatt.getService(chameleonDeviceBLEService.getUuid());
+        }
         if (btgService == null) {
-            return;
+            AndroidLog.i(TAG, "configureNotifyOnSerialBluetoothService: Unable to obtain BLE service");
+            return false;
         }
         BluetoothGattCharacteristic btgChar = btgService.getCharacteristic(UUID.fromString(gattUUID));
         if (btgChar == null) {
-            return;
+            AndroidLog.i(TAG, "configureNotifyOnSerialBluetoothService: Unable to obtain charactristic " + gattUUID);
+            return false;
         }
         try {
             btLocalGatt.setCharacteristicNotification(btgChar, true);
             BluetoothGattDescriptor recvDesc = btgChar.getDescriptor(CHAMELEON_REVG_RECV_DESC_UUID.getUuid());
             recvDesc.setValue(BLUETOOTH_GATT_ENABLE_NOTIFY_PROP);
+            btLocalGatt.writeDescriptor(recvDesc);
             btLocalGatt.executeReliableWrite();
         } catch(SecurityException se) {
             AndroidLog.printStackTrace(se);
+            return false;
         }
-
+        return true;
     }
 
     @SuppressLint("MissingPermission")
@@ -736,22 +768,28 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
 
     @SuppressLint("MissingPermission")
     public int write(byte[] dataBuf) throws IOException {
+        /* ??? TODO: Need to wrap the byte buffer with checksums and/or control characters ??? */
         AndroidLog.i(TAG, "write: " + Utils.bytes2Hex(dataBuf));
         if (dataBuf.length > BLUETOOTH_LOCAL_MTU_THRESHOLD) {
             return ChameleonSerialIOInterface.STATUS_ERROR;
         }
-        if(btGatt == null) {
-            disconnectDevice();
-            return ChameleonSerialIOInterface.STATUS_ERROR;
+        BluetoothGattService txDataService = null;
+        if (btGatt == null) {
+            txDataService = new BluetoothGattService(chameleonDeviceBLEService.getUuid(), BluetoothGattService.SERVICE_TYPE_PRIMARY);
+        } else {
+            txDataService = btGatt.getService(chameleonDeviceBLECtrlChar.getUuid());
         }
-        BluetoothGattService txDataService = btGatt.getService(chameleonDeviceBLECtrlChar.getUuid());
         if(txDataService == null) {
+            AndroidLog.i(TAG, "write: Unable to obtain BLE service");
             disconnectDevice();
+            startConnectingDevices();
             return ChameleonSerialIOInterface.STATUS_ERROR;
         }
         BluetoothGattCharacteristic btGattChar = txDataService.getCharacteristic(chameleonDeviceBLESendChar.getUuid());
         if(btGattChar == null) {
+            AndroidLog.i(TAG, "write: Unable to obtain charactristic " + chameleonDeviceBLESendChar.getUuid().toString());
             disconnectDevice();
+            startConnectingDevices();
             return ChameleonSerialIOInterface.STATUS_ERROR;
         }
         btGattChar.setValue(dataBuf);
@@ -775,18 +813,27 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
 
     @SuppressLint("MissingPermission")
     public int read() throws IOException {
+        /* ??? TODO: Big or little endian byte order of the results returned ??? */
         if(btGatt == null) {
             disconnectDevice();
             return ChameleonSerialIOInterface.STATUS_ERROR;
         }
-        BluetoothGattService rxDataService = btGatt.getService(chameleonDeviceBLEService.getUuid());
+        BluetoothGattService rxDataService = null;
+        if (btGatt == null) {
+            rxDataService = new BluetoothGattService(chameleonDeviceBLEService.getUuid(), BluetoothGattService.SERVICE_TYPE_PRIMARY);
+        } else {
+            rxDataService = btGatt.getService(chameleonDeviceBLEService.getUuid());
+        }
         if(rxDataService == null) {
             disconnectDevice();
+            startConnectingDevices();
             return ChameleonSerialIOInterface.STATUS_ERROR;
         }
         BluetoothGattCharacteristic btGattChar = rxDataService.getCharacteristic(chameleonDeviceBLERecvChar.getUuid());
         if(btGattChar == null) {
+            AndroidLog.i(TAG, "read: Unable to obtain charactristic " + chameleonDeviceBLERecvChar.getUuid().toString());
             disconnectDevice();
+            startConnectingDevices();
             return ChameleonSerialIOInterface.STATUS_ERROR;
         }
         try {
