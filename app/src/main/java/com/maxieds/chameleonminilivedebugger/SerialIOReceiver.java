@@ -121,7 +121,7 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
 
     public boolean notifySerialDataReceived(byte[] serialData) {
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED);
-        notifyIntent.putExtra("DATA", serialData);
+        notifyIntent.putExtra(ChameleonSerialIOInterface.SERIALIO_BYTE_DATA, serialData);
         notifyContext.sendBroadcast(notifyIntent);
         AndroidLog.i(TAG, "SERIALIO_DATA_RECEIVED: (HEX) " + Utils.bytes2Hex(serialData));
         AndroidLog.i(TAG, "SERIALIO_DATA_RECEIVED: (TXT) " + Utils.bytes2Ascii(serialData));
@@ -133,7 +133,7 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
             return false;
         }
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED);
-        notifyIntent.putExtra("DATA", serialData);
+        notifyIntent.putExtra(ChameleonSerialIOInterface.SERIALIO_BYTE_DATA, serialData);
         notifyContext.sendBroadcast(notifyIntent);
         AndroidLog.i(TAG, "SERIALIO_LOGDATA_RECEIVED: (HEX) " + Utils.bytes2Hex(serialData));
         AndroidLog.i(TAG, "SERIALIO_LOGDATA_RECEIVED: (TXT) " + Utils.bytes2Ascii(serialData));
@@ -148,8 +148,8 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
 
     public boolean notifyStatus(String msgType, String statusMsg) {
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_NOTIFY_STATUS);
-        notifyIntent.putExtra("STATUS-TYPE", msgType);
-        notifyIntent.putExtra("STATUS-MSG", statusMsg);
+        notifyIntent.putExtra(ChameleonSerialIOInterface.SERIALIO_STATUS_TYPE, msgType);
+        notifyIntent.putExtra(ChameleonSerialIOInterface.SERIALIO_STATUS_MSG, statusMsg);
         notifyContext.sendBroadcast(notifyIntent);
         return true;
     }
@@ -159,16 +159,14 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
         if(redirectSerialDataInterface != null) {
             redirectSerialDataInterface.onReceivedData(liveLogData);
             return;
-        }
-        if(liveLogData == null || liveLogData.length == 0) {
+        } else if(liveLogData == null || liveLogData.length == 0) {
+            return;
+        } else if (liveLogData.length == 0) {
             return;
         }
         AndroidLog.d(getInterfaceLoggingTag(), "SerialReaderCallback Received Data: (HEX) " + Utils.bytes2Hex(liveLogData));
         AndroidLog.d(getInterfaceLoggingTag(), "SerialReaderCallback Received Data: (TXT) " + Utils.bytes2Ascii(liveLogData));
 
-        if (liveLogData.length == 0) {
-            return;
-        }
         int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData);
         if (loggingRespSize > 0) {
             AndroidLog.i(TAG, "Received new LogEntry @ " + String.format(BuildConfig.DEFAULT_LOCALE, "0x%02x", liveLogData[0]));

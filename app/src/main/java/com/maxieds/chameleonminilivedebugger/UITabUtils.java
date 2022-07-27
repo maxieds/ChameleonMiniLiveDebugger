@@ -480,9 +480,10 @@ public class UITabUtils {
                             Utils.displayToastMessageShort(btPermsRequiredResStr);
                             return;
                         }
+                        boolean btScanPrevEnabled = ChameleonSettings.allowBluetooth;
                         ChameleonSettings.allowBluetooth = cb.isChecked();
                         AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.ALLOW_BLUETOOTH_PREFERENCE);
-                        if (ChameleonSettings.allowBluetooth) {
+                        if (ChameleonSettings.allowBluetooth != btScanPrevEnabled && ChameleonSettings.allowBluetooth) {
                             ChameleonSettings.stopSerialIOConnectionDiscovery();
                             ChameleonSettings.initializeSerialIOConnections();
                         }

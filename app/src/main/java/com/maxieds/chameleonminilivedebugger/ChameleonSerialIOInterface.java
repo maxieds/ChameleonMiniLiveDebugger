@@ -27,6 +27,10 @@ public interface ChameleonSerialIOInterface {
     String SERIALIO_NOTIFY_STATUS = "ChameleonSerialIOInterface.SERIALIO_NOTIFY_STATUS";
     String SERIALIO_NOTIFY_BTDEV_CONNECTED = "ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED";
 
+    String SERIALIO_STATUS_TYPE = "STATUS-TYPE";
+    String SERIALIO_STATUS_MSG = "STATUS-MSG";
+    String SERIALIO_BYTE_DATA = "DATA";
+
     int STATUS_ERROR = -1;
     int STATUS_NOT_SUPPORTED = -2;
     int STATUS_RESOURCE_UNAVAILABLE = -3;

@@ -180,17 +180,6 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
 
     }
 
-    @SuppressLint("MissingPermission")
-    public String getDeviceName() {
-        final String unknownBTDevName = "<UNKNOWN-BTDEV-NAME>";
-        try {
-            return activeDevice != null ? activeDevice.getName() : unknownBTDevName;
-        } catch (SecurityException se) {
-            AndroidLog.printStackTrace(se);
-            return unknownBTDevName;
-        }
-    }
-
     public boolean isWiredUSB() { return false; }
 
     public boolean isBluetooth() { return true; }
@@ -202,6 +191,35 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
 
     public boolean isDeviceConnected() {
         return btGattConnectorBLEDevice != null && btGattConnectorBLEDevice.isDeviceConnected();
+    }
+
+    @SuppressLint("MissingPermission")
+    public String getDeviceName() {
+        final String unknownBTDevName = "<UNKNOWN-BTDEV-NAME>";
+        try {
+            return activeDevice != null ? activeDevice.getName() : unknownBTDevName;
+        } catch (SecurityException se) {
+            AndroidLog.printStackTrace(se);
+            return unknownBTDevName;
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    public String getActiveDeviceInfo() {
+        if(activeDevice == null) {
+            return "<null-device>: No information available.";
+        }
+        String devInfo = "<Device-Info-Unavailable>";
+        try {
+            devInfo = String.format(BuildConfig.DEFAULT_LOCALE, "BT Class: %s\nBond State: %s\nProduct Name: %s\nType: %s\nDevice Address: %s",
+                    activeDevice.getBluetoothClass(), activeDevice.getBondState(),
+                    activeDevice.getName(), activeDevice.getType(),
+                    activeDevice.getAddress());
+        } catch (SecurityException se) {
+            AndroidLog.printStackTrace(se);
+            devInfo = "<Device-Info-Unavailable>";
+        }
+        return devInfo;
     }
 
     public BluetoothGattConnector getBluetoothGattConnector() {
@@ -244,11 +262,9 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
                 AndroidLog.i(TAG, ChameleonSettings.getActiveSerialIOPort().toString());
                 if(ChameleonSettings.getActiveSerialIOPort() != null && btGattConnectorBLEDevice.isDeviceConnected()) {
                     configDeviceHandler.removeCallbacks(this);
-                    /* Call twice: Make sure the device returned the correct data to display: */
-                    ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-                    ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-                    ChameleonIO.DeviceStatusSettings.startPostingStats(0);
-                    LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
+                    LiveLoggerActivity llActivity = LiveLoggerActivity.getLiveLoggerInstance();
+                    llActivity.reconfigureSerialIODevices();
+                    llActivity.setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
                     Utils.displayToastMessageShort(String.format(BuildConfig.DEFAULT_LOCALE, "New Bluetooth BLE device connection:\n%s @ %s\n%s", btDev.getName(), ChameleonSettings.chameleonDeviceAddress, ChameleonIO.getDeviceDescription(ChameleonIO.CHAMELEON_MINI_BOARD_TYPE)));
                     UITabUtils.updateConfigTabConnDeviceInfo(false);
                 }
@@ -263,7 +279,6 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
         ChameleonIO.DeviceStatusSettings.stopPostingStats();
         serialConfigured = true;
         configDeviceHandler.postDelayed(configDeviceRunnable, 500);
-
         return true;
     }
 
@@ -281,24 +296,6 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
         scanning = false;
         btGattConnectorBLEDevice.stopConnectingDevices();
         return true;
-    }
-
-    @SuppressLint("MissingPermission")
-    public String getActiveDeviceInfo() {
-        if(activeDevice == null) {
-            return "<null-device>: No information available.";
-        }
-        String devInfo = "<Device-Info-Unavailable>";
-        try {
-            devInfo = String.format(BuildConfig.DEFAULT_LOCALE, "BT Class: %s\nBond State: %s\nProduct Name: %s\nType: %s\nDevice Address: %s",
-                    activeDevice.getBluetoothClass(), activeDevice.getBondState(),
-                    activeDevice.getName(), activeDevice.getType(),
-                    activeDevice.getAddress());
-        } catch (SecurityException se) {
-            AndroidLog.printStackTrace(se);
-            devInfo = "<Device-Info-Unavailable>";
-        }
-        return devInfo;
     }
 
     public int configureSerial() {
