@@ -163,7 +163,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
      public void clearStatusIcon(int iconID) {
           ImageView iconView = findViewById(iconID);
           if(iconView != null) {
-               iconView.setAlpha(210);
+               iconView.setAlpha(192);
           }
      }
 
@@ -231,12 +231,12 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     serialIOActionFilter.addAction(SerialUSBInterface.ACTION_USB_PERMISSION);
                     serialIOActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
                     serialIOActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
-                    serialIOActionFilter.addAction(BluetoothDevice.ACTION_FOUND);
-                    serialIOActionFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
-                    serialIOActionFilter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
-                    serialIOActionFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-                    serialIOActionFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
-                    serialIOActionFilter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
+                    //serialIOActionFilter.addAction(BluetoothDevice.ACTION_FOUND);
+                    //serialIOActionFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+                    //serialIOActionFilter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
+                    //serialIOActionFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+                    //serialIOActionFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+                    //serialIOActionFilter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
                     serialIOActionFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
                     serialIOActionFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
                     serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED);
@@ -677,8 +677,6 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           AndroidLog.closeLogDataOutputFile();
           super.onDestroy();
      }
-
-     /**** Start implementation of the ActivityPermissions interface: ****/
 
      public String[] getPermissionsByGroup(String groupName) {
           Context activityCtx = getContext();

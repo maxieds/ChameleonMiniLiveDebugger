@@ -27,6 +27,8 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
+import android.bluetooth.BluetoothServerSocket;
+import android.bluetooth.BluetoothSocket;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
@@ -36,6 +38,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.ParcelUuid;
 import android.util.SparseArray;
 
@@ -45,6 +50,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -86,13 +92,15 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
 
     private boolean btPermsObtained;
     private boolean isConnected;
-    private final Context btSerialContext;
-    private BluetoothDevice btDevice;
+    public final Context btSerialContext;
+    public BluetoothDevice btDevice;
     private final BluetoothAdapter btAdapter;
     private BluetoothLeScanner bleScanner;
     private final ScanCallback bleScanCallback;
     private boolean bleScanInProgress;
-    private BluetoothGatt btGatt;
+    private Handler pollBTDevicesFromAdapterHandler;
+    private Runnable pollBTDevicesFromAdapterRunner;
+    public BluetoothGatt btGatt;
     private BroadcastReceiver btConnReceiver;
     private boolean btConnRecvRegistered;
     private BluetoothBLEInterface btSerialIface;
@@ -102,15 +110,18 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
     private final Semaphore bleReadLock = new Semaphore(1, true);
     private final Semaphore bleWriteLock = new Semaphore(1, true);
 
-    public BluetoothGattConnector(@NonNull Context localContext) {
-        btSerialContext = localContext;
+    public BluetoothGattConnector(Context appContext) {
+        btSerialContext = appContext;
         btDevice = null;
-        btConnReceiver = null;
+        btConnReceiver = new BluetoothBroadcastReceiver(this);
         btPermsObtained = false;
         btConnRecvRegistered = false;
-        bleScanner =  null;
+        bleScanner = null;
         bleScanCallback = configureBLEScanCallback();
         bleScanInProgress = false;
+        pollBTDevicesFromAdapterHandler = null;
+        pollBTDevicesFromAdapterRunner = null;
+        initializeBTDevicesFromAdapterPolling();
         btAdapter = configureBluetoothAdapter();
         btGatt = null;
         btSerialIface = ChameleonSettings.getBluetoothIOInterface();
@@ -123,65 +134,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
     }
 
     public void receiveBroadcastIntent(@NonNull Intent bcIntent) {
-        if (btConnReceiver != null) {
-            btConnReceiver.onReceive(btSerialContext, bcIntent);
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    private BroadcastReceiver configureBluetoothConnectionReceiver() {
-        final BluetoothGattConnector btGattConnFinal = this;
-        btConnReceiver = new BroadcastReceiver() {
-            final BluetoothGattConnector btGattConn = btGattConnFinal;
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                if (action == null) {
-                    return;
-                }
-                AndroidLog.i(TAG, "btConnReceiver: intent action: " + action);
-                BluetoothDevice btIntentDevice = intent.getExtras().getParcelable(BluetoothDevice.EXTRA_DEVICE);
-                if (btIntentDevice == null) {
-                    return;
-                }
-                String btDeviceName = btIntentDevice.getName();
-                AndroidLog.i(TAG, "btConnReceiver: intent device name: " + btDeviceName);
-                if (!isChameleonDeviceName(btDeviceName)) {
-                    return;
-                } else if (action.equals(BluetoothDevice.ACTION_FOUND) || action.equals(BluetoothDevice.ACTION_ACL_CONNECTED)) {
-                    /* NOTE: See https://developer.android.com/reference/android/bluetooth/BluetoothDevice#EXTRA_RSSI */
-                    btDevice = btIntentDevice;
-                    String userConnInstMsg = String.format(BuildConfig.DEFAULT_LOCALE, "New %s %s found.\n%s.",
-                            btDevice.getName(), btDevice.getAddress(),
-                            btSerialContext.getApplicationContext().getResources().getString(R.string.bluetoothExtraConfigInstructions));
-                    Utils.displayToastMessageShort(userConnInstMsg);
-                    final long shortPauseDuration = 1500L, threadSleepInterval = 50L;
-                    for (long threadSleepTime = 0L; threadSleepTime <= shortPauseDuration; threadSleepTime += threadSleepInterval) {
-                        try {
-                            Thread.sleep(threadSleepInterval);
-                        } catch (InterruptedException ie) {
-                            AndroidLog.printStackTrace(ie);
-                            break;
-                        }
-                    }
-                    btDevice.createBond();
-                    btGattConn.requestConnectionPriority(BLUETOOTH_GATT_CONNECT_PRIORITY_HIGH);
-                    btDevice.connectGatt(btGattConn.btSerialContext, true, btGattConn);
-                    return;
-                }
-                int intentExtraState = intent.getExtras().getInt(BluetoothAdapter.EXTRA_STATE, -1);
-                int intentExtraBondState = intent.getExtras().getInt(BluetoothDevice.EXTRA_BOND_STATE, -1);
-                if (action.equals(BluetoothDevice.ACTION_PAIRING_REQUEST) ||
-                           (action.equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_CONNECTED) ||
-                           (action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED) && intentExtraBondState == BluetoothDevice.BOND_BONDED) ||
-                           (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_CONNECTED)) {
-                    btDevice = btIntentDevice;
-                    btGattConn.requestConnectionPriority(BLUETOOTH_GATT_CONNECT_PRIORITY_HIGH);
-                    btDevice.connectGatt(btGattConn.btSerialContext, true, btGattConn);
-                }
-            }
-        };
-        return btConnReceiver;
+        btConnReceiver.onReceive(btSerialContext, bcIntent);
     }
 
     private BluetoothAdapter configureBluetoothAdapter() {
@@ -257,11 +210,15 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         return bleLocalScanCallback;
     }
 
+    // ??? TODO: NEEDED ???
+    private void setBluetoothDevice(BluetoothDevice btDevLocal) {
+        btDevice = btDevLocal;
+    }
+
     private void registerBluetoothConnectionReceiver() {
         if (btConnRecvRegistered) {
             return;
         }
-        btConnReceiver = configureBluetoothConnectionReceiver();
         IntentFilter btConnectIntentFilter = new IntentFilter();
         btConnectIntentFilter.addAction(BluetoothDevice.ACTION_FOUND);
         btConnectIntentFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
@@ -269,6 +226,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         btConnectIntentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         btConnectIntentFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         btConnectIntentFilter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
+        btConnectIntentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         btConnectIntentFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
         btSerialContext.registerReceiver(btConnReceiver, btConnectIntentFilter);
         btConnRecvRegistered = true;
@@ -306,7 +264,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     bleScanner.stopScan(bleScanCallback);
                     bleScanner.flushPendingScanResults(bleScanCallback);
                 }
-            } catch(Exception excpt) {
+            } catch (Exception excpt) {
                 AndroidLog.printStackTrace(excpt);
             }
             bleScanInProgress = false;
@@ -314,7 +272,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                 if (btConnRecvRegistered) {
                     btSerialContext.unregisterReceiver(btConnReceiver);
                 }
-            } catch(Exception excpt) {
+            } catch (Exception excpt) {
                 AndroidLog.printStackTrace(excpt);
             }
             btConnRecvRegistered = false;
@@ -324,10 +282,6 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
             return true;
         }
         return false;
-    }
-
-    private void setBluetoothDevice(BluetoothDevice btDevLocal) {
-        btDevice = btDevLocal;
     }
 
     public boolean isChameleonDeviceName(String devName) {
@@ -355,6 +309,138 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
     }
 
     @SuppressLint("MissingPermission")
+    public void notifyBluetoothBLEDeviceConnected(@NonNull BluetoothDevice btLocalDevice) {
+        isConnected = true;
+        Intent notifyMainActivityIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED);
+        LiveLoggerActivity.getLiveLoggerInstance().onNewIntent(notifyMainActivityIntent);
+        btSerialIface.configureSerialConnection(btLocalDevice);
+    }
+
+    public void notifyBluetoothSerialInterfaceDataRead(byte[] serialDataRead) {
+        if (btSerialIface != null && serialDataRead != null) {
+            btSerialIface.onReceivedData(serialDataRead);
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void initializeBTDevicesFromAdapterPolling() {
+        BluetoothGattConnector btGattConnPollingRef = this;
+        pollBTDevicesFromAdapterHandler = new Handler(Looper.getMainLooper());
+        pollBTDevicesFromAdapterRunner = new Runnable() {
+            BluetoothGattConnector btGattConnRef = btGattConnPollingRef;
+            BluetoothAdapter btPollAdapter = btAdapter;
+            final long postDelayInterval = 500L;
+            final int acceptBTSocketConnTimeout = 500;
+            final long pollBTDevicesFromAdapterInterval = 3000L;
+            @Override
+            public void run() {
+                boolean foundChamBTDevice = false;
+                try {
+                    Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
+                    if (pairedDevices != null && pairedDevices.size() > 0) {
+                        ArrayList<BluetoothDevice> devList = new ArrayList<>(pairedDevices);
+                        for (BluetoothDevice btDev : devList) {
+                            String devName = btDev.getName();
+                            if (isChameleonDeviceName(devName)) {
+                                Intent bcDevIntent = new Intent(BluetoothDevice.ACTION_FOUND);
+                                bcDevIntent.putExtra(BluetoothDevice.EXTRA_DEVICE, btDev);
+                                foundChamBTDevice = true;
+                                final Handler postNotifyPairedHandler = new Handler(Looper.getMainLooper());
+                                final Runnable postNotifyPairedRunner = new Runnable() {
+                                    final BluetoothGattConnector btGattConnLocalRef = btGattConnRef;
+
+                                    @Override
+                                    public void run() {
+                                        btGattConnLocalRef.receiveBroadcastIntent(bcDevIntent);
+                                    }
+                                };
+                                postNotifyPairedHandler.postDelayed(postNotifyPairedRunner, postDelayInterval);
+                                break;
+                            }
+                        }
+                    }
+                } catch (SecurityException se) {
+                    AndroidLog.printStackTrace(se);
+                }
+                if (foundChamBTDevice) {
+                    pollBTDevicesFromAdapterHandler.removeCallbacks(pollBTDevicesFromAdapterRunner);
+                    return;
+                }
+                final String[] chamDeviceNames = new String[]{
+                        CHAMELEON_REVG_NAME,
+                        CHAMELEON_REVG_NAME_ALTERNATE,
+                        CHAMELEON_REVG_TINY_NAME
+                };
+                final int NUM_BTSOCK_LISTEN_VARIANTS = 4;
+                for (int chamDevIdx = 0; chamDevIdx < chamDeviceNames.length; chamDevIdx++) {
+                    for (int btsNum = 1; btsNum <= NUM_BTSOCK_LISTEN_VARIANTS; btsNum++) {
+                        BluetoothServerSocket btServerSock = null;
+                        BluetoothSocket btSock = null;
+                        try {
+                            if (btsNum == 1) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                    btServerSock = btAdapter.listenUsingL2capChannel();
+                                }
+                            } else if (btsNum == 2) {
+                                btServerSock = btAdapter.listenUsingRfcommWithServiceRecord(chamDeviceNames[chamDevIdx], CHAMELEON_REVG_UART_SERVICE_UUID.getUuid());
+                            } else if (btsNum == 3) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                    btServerSock = btAdapter.listenUsingInsecureL2capChannel();
+                                }
+                            } else if (btsNum == 4) {
+                                btServerSock = btAdapter.listenUsingInsecureRfcommWithServiceRecord(chamDeviceNames[chamDevIdx], CHAMELEON_REVG_UART_SERVICE_UUID.getUuid());
+                            }
+                            if (btServerSock == null) {
+                                continue;
+                            }
+                            btSock = btServerSock.accept(acceptBTSocketConnTimeout);
+                            if (btSock == null) {
+                                continue;
+                            }
+                            BluetoothDevice btConnDev = btSock.getRemoteDevice();
+                            if (btConnDev == null) {
+                                continue;
+                            }
+                            Intent bcDevIntent = new Intent(BluetoothDevice.ACTION_FOUND);
+                            bcDevIntent.putExtra(BluetoothDevice.EXTRA_DEVICE, btConnDev);
+                            final Handler postNotifySockConnHandler = new Handler(Looper.getMainLooper());
+                            final Runnable postNotifySockConnRunner = new Runnable() {
+                                final BluetoothGattConnector btGattConnLocalRef = btGattConnRef;
+
+                                @Override
+                                public void run() {
+                                    btGattConnLocalRef.receiveBroadcastIntent(bcDevIntent);
+                                }
+                            };
+                            foundChamBTDevice = true;
+                            postNotifySockConnHandler.postDelayed(postNotifySockConnRunner, postDelayInterval);
+                            break;
+                        } catch (Exception seIOE) {
+                            AndroidLog.printStackTrace(seIOE);
+                        }
+                    }
+                    if (foundChamBTDevice) {
+                        break;
+                    }
+                }
+                if (foundChamBTDevice) {
+                    pollBTDevicesFromAdapterHandler.removeCallbacks(pollBTDevicesFromAdapterRunner);
+                } else {
+                    pollBTDevicesFromAdapterHandler.postDelayed(pollBTDevicesFromAdapterRunner, pollBTDevicesFromAdapterInterval);
+                }
+            }
+        };
+    }
+
+    private void startBTDevicesFromAdapterPolling() {
+        pollBTDevicesFromAdapterHandler.post(pollBTDevicesFromAdapterRunner);
+    }
+
+    private void stopBTDevicesFromAdapterPolling() {
+        pollBTDevicesFromAdapterHandler.removeCallbacks(pollBTDevicesFromAdapterRunner);
+    }
+
+    @SuppressLint("MissingPermission")
     public boolean startConnectingDevices() {
         if(!btPermsObtained) {
             btPermsObtained = BluetoothUtils.isBluetoothEnabled(true);
@@ -369,7 +455,8 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                 AndroidLog.printStackTrace(se);
                 return false;
             }
-            return startBLEDeviceScan(); // ??? TODO: Remove ???
+            startBTDevicesFromAdapterPolling();
+            return startBLEDeviceScan(); /* ??? TODO: Remove ??? */
         }
         return false;
     }
@@ -379,7 +466,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
     private static final boolean bleUseLegacyAdvertisements = false;
     private static final long bleScanReportDelay = 5000;
 
-    /*
+    /**
      * TODO: Add a drop down to the BT configuration layout to let the user choose how much power
      *       to drain from the Android device to enumerate BT.
      */
@@ -454,20 +541,12 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     bleScanner.stopScan(bleScanCallback);
                     bleScanner.flushPendingScanResults(bleScanCallback);
                 }
+                stopBTDevicesFromAdapterPolling();
             } catch(SecurityException se) {
                 AndroidLog.printStackTrace(se);
                 status = false;
             }
             bleScanInProgress = false;
-            if (btConnRecvRegistered) {
-                try {
-                    btSerialContext.unregisterReceiver(btConnReceiver);
-                } catch (Exception excpt) {
-                    AndroidLog.printStackTrace(excpt);
-                }
-            }
-            btConnRecvRegistered = false;
-            btConnReceiver = null;
         }
         return status;
     }
@@ -509,7 +588,8 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
             List<BluetoothGattService> svcList = gatt.getServices();
             StringBuilder svcUUIDSummary = new StringBuilder(" ==== \n");
             for (BluetoothGattService svc : svcList) {
-                /* NOTE: BT service data types described in table here:
+                /**
+                 * NOTE: BT service data types described in table here:
                  *       https://btprodspecificationrefs.blob.core.windows.net/assigned-numbers/Assigned%20Number%20Types/Format%20Types.pdf
                  * NOTE: BT GATT characteristic permissions and service type constants are defined here:
                  *       https://developer.android.com/reference/android/bluetooth/BluetoothGattCharacteristic
@@ -527,6 +607,8 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                 btGatt = gatt;
                 if (enableNotifyOnBLEGattService(btGatt, CHAMELEON_REVG_CTRL_CHAR_UUID) &&
                         enableNotifyOnBLEGattService(btGatt, CHAMELEON_REVG_RECV_CHAR_UUID)) {
+                    btSerialIface.configureSerialConnection(btDevice);
+                    notifyBluetoothBLEDeviceConnected(btDevice);
                 }
                 return;
             }
@@ -605,20 +687,6 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
             notifyBluetoothSerialInterfaceDataRead(charData);
         } catch (Exception dinvEx) {
             AndroidLog.printStackTrace(dinvEx);
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    public void notifyBluetoothBLEDeviceConnected(@NonNull BluetoothDevice btLocalDevice) {
-        isConnected = true;
-        Intent notifyMainActivityIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED);
-        LiveLoggerActivity.getLiveLoggerInstance().onNewIntent(notifyMainActivityIntent);
-        btSerialIface.configureSerialConnection(btLocalDevice);
-    }
-
-    public void notifyBluetoothSerialInterfaceDataRead(byte[] serialDataRead) {
-        if(btSerialIface != null && serialDataRead != null) {
-            btSerialIface.onReceivedData(serialDataRead);
         }
     }
 

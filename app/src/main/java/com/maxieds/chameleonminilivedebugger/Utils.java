@@ -17,6 +17,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import android.app.NotificationManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -24,8 +25,10 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.format.Time;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.inputmethod.InputMethodManager;
@@ -33,7 +36,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -51,14 +53,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.Deflater;
-import java.util.UUID;
 
 /**
  * <h1>Utils</h1>
@@ -484,18 +484,14 @@ public class Utils {
             }
             toastDisplay.getView().setAlpha(0.75f);
         }
-        if(callingActivity != null) {
-            callingActivity.runOnUiThread(new Runnable() {
-                final Toast toastDisplayStatic = toastDisplay;
-                @Override
-                public void run() {
-                    toastDisplayStatic.show();
-                }
-            });
-            AndroidLog.i(TAG, "TOAST MSG DISPLAYED: " + toastMsg);
-        } else {
-            AndroidLog.i(TAG, "UNABLE TO DISPLAY TOAST MSG: " + toastMsg);
-        }
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            final Toast toastDisplayStatic = toastDisplay;
+            @Override
+            public void run() {
+                toastDisplayStatic.show();
+            }
+        });
+        AndroidLog.i(TAG, "TOAST MSG PENDING DISPLAY: " + toastMsg);
     }
 
     private static void displayToastMessage(String toastMsg, int msgDuration) {

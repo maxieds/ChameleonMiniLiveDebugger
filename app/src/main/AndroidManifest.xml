@@ -41,13 +41,13 @@
     <uses-permission
         android:name="android.permission.ACCESS_FINE_LOCATION"
         android:permissionGroup="CMLD.permission-group.MINIMAL_APP_REQUIREMENTS"
-        android:required="true"
+        android:required="false"
         android:maxSdkVersion="30"
         />
     <uses-permission
         android:name="android.permission.ACCESS_COARSE_LOCATION"
         android:permissionGroup="CMLD.permission-group.MINIMAL_APP_REQUIREMENTS"
-        android:required="true"
+        android:required="false"
         android:maxSdkVersion="30"
         />
     <uses-permission
@@ -88,31 +88,31 @@
     <uses-permission
         android:name="android.permission.BLUETOOTH"
         android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
-        android:required="true"
+        android:required="false"
         android:maxSdkVersion="30"
         />
     <uses-permission
         android:name="android.permission.BLUETOOTH_ADMIN"
         android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
-        android:required="true"
+        android:required="false"
         android:maxSdkVersion="30"
         />
     <uses-permission
         android:name="android.permission.BLUETOOTH_CONNECT"
         android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
-        android:required="true"
+        android:required="false"
         android:minSdkVersion="31"
         />
     <uses-permission
         android:name="android.permission.BLUETOOTH_ADVERTISE"
         android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
-        android:required="true"
+        android:required="false"
         android:minSdkVersion="31"
         />
     <uses-permission
         android:name="android.permission.BLUETOOTH_SCAN"
         android:permissionGroup="CMLD.permission-group.BLUETOOTH_COMPENDIA"
-        android:required="true"
+        android:required="false"
         android:minSdkVersion="31"
         android:usesPermissionFlags="neverForLocation"
         />
@@ -120,9 +120,10 @@
     <uses-feature android:name="android.hardware.usb.host" android:required="true" />
     <protected-broadcast android:name="android.hardware.usb.action.USB_STATE" />
 
-    <uses-feature android:name="android.hardware.bluetooth" android:required="true" />
-    <uses-feature android:name="android.hardware.bluetooth_admin" android:required="true" />
-    <uses-feature android:name="android.hardware.bluetooth_le" android:minSdkVersion="31" android:required="true" />
+    <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
+    <uses-feature android:name="android.hardware.bluetooth_admin" android:required="false" />
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
+    <uses-feature android:name="android.bluetooth.le" android:required="false" />
 
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
@@ -228,6 +229,7 @@
             android:hardwareAccelerated="true"
             android:uiOptions="none"
             android:configChanges="uiMode|orientation|keyboard|keyboardHidden|fontScale"
+            android:windowSoftInputMode="stateVisible|adjustResize"
             android:stateNotNeeded="true"
             android:exported="true"
             android:resizeableActivity="false"
@@ -239,7 +241,7 @@
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
-                <action android:name="android.bluetooth.device.action.ACTION_FOUND" />
+                <action android:name="android.bluetooth.device.action.FOUND" />
                 <action android:name="android.hardware.usb.action.ACL_CONNECTED" />
                 <category android:name="android.intent.category.HOME" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -254,7 +256,7 @@
                 android:resource="@xml/chameleon_usb_device_filter"
                 />
             <meta-data
-                android:name="android.bluetooth.device.action.ACTION_FOUND"
+                android:name="android.bluetooth.device.action.FOUND"
                 android:resource="@xml/chameleon_bluetooth_device_filter"
                 />
             <meta-data
@@ -264,6 +266,18 @@
 
         </activity>
 
+        <receiver android:name=".BluetoothBroadcastReceiver">
+            <intent-filter android:priority="1000">
+                <action android:name="android.bluetooth.device.action.FOUND"/>
+                <action android:name="android.bluetooth.device.action.PAIRING_REQUEST"/>
+                <action android:name="android.bluetooth.device.action.BOND_STATE_CHANGED"/>
+                <action android:name="android.bluetooth.device.action.ACL_CONNECTED"/>
+                <action android:name="android.bluetooth.adapter.action.CONNECTION_STATE_CHANGED"/>
+                <action android:name="android.bluetooth.adapter.action.STATE_CHANGED"/>
+                <action android:name="android.bluetooth.adapter.action.DISCOVERY_FINISHED"/>
+            </intent-filter>
+        </receiver>
+
         <activity
             android:name=".CrashReportActivity"
             android:screenOrientation="nosensor"
@@ -271,7 +285,8 @@
             android:clearTaskOnLaunch="true"
             android:hardwareAccelerated="true"
             android:uiOptions="none"
-            android:configChanges="uiMode"
+            android:configChanges="uiMode|orientation|keyboard|keyboardHidden|fontScale"
+            android:windowSoftInputMode="stateVisible|adjustResize"
             android:stateNotNeeded="true"
             android:exported="true"
             android:resizeableActivity="false"
