@@ -121,7 +121,7 @@ android {
         buildConfigField "String", "GIT_COMMIT_HASH", "\"" + getGitCommitHash() + "\""
         buildConfigField "String", "GIT_COMMIT_DATE", "\"" + getGitCommitDate() + "\""
         buildConfigField "java.util.Locale", "DEFAULT_LOCALE", "java.util.Locale.ENGLISH"
-
+        buildConfigField "java.nio.charset.Charset", "DEFAULT_CHARSET", "java.nio.charset.StandardCharsets.UTF_8"
         setProperty("archivesBaseName", "ChameleonMiniLiveDebugger-v$versionName-$versionCode-$configBuildTimeStamp")
 
     }

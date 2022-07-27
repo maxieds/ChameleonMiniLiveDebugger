@@ -251,6 +251,10 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     serialIOActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
                     serialIOActionFilter.addAction(BluetoothDevice.ACTION_FOUND);
                     serialIOActionFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+                    serialIOActionFilter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
+                    serialIOActionFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+                    serialIOActionFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+                    serialIOActionFilter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
                     serialIOActionFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
                     serialIOActionFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
                     serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED);
@@ -258,6 +262,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED);
                     serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED);
                     serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_NOTIFY_STATUS);
+                    serialIOActionFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
                     registerReceiver(serialIOActionReceiver, serialIOActionFilter);
                     SerialUSBInterface.registerUSBPermission(null, this);
                     serialIOReceiversRegistered = true;
@@ -536,7 +541,12 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                return;
           }
           AndroidLog.i(TAG, "NEW INTENT: " + intent.getAction());
-          if (intent.getAction().equals(BluetoothDevice.ACTION_FOUND) || intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED)) {
+          if (intent.getAction().equals(BluetoothDevice.ACTION_FOUND) ||
+                  intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
+                  intent.getAction().equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) ||
+                  intent.getAction().equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED) ||
+                  intent.getAction().equals(BluetoothAdapter.ACTION_STATE_CHANGED) ||
+                  intent.getAction().equals(BluetoothDevice.ACTION_PAIRING_REQUEST)) {
                /* We need to pass these onto the Bluetooth connection interface so it can handle them as a part of scanning for new devices: */
                if (ChameleonSettings.getActiveSerialIOPort() != null) {
                     /* Another Chameleon devices is already attached and configured, so we ignore the notification. */

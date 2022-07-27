@@ -54,26 +54,6 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
     private static final String TAG = BluetoothGattConnector.class.getSimpleName();
 
     /*
-     * OBSERVATIONS / TROUBLESHOOTING NOTES:
-     *     The proprietary Proxgrind / RRG application does something unusual the
-     *     first time it tries to connect to the Chameleon over BT when the
-     *     Chameleon device is reconnected to power via USB after the battery has
-     *     completely lost charge:
-     *          > The user is instructed to press and hold button 'A' for at least
-     *            15 seconds while this initial connection is made.
-     *          > The step is skipped upon attempts at BT reconnection so long as the
-     *            device has not lost power (disconnected from wired USB, or a
-     *            dead integrated rechargeable battery inside the Tiny series device)
-     *          > Not easy to find out whether a secret PIN is exchanged during the initial
-     *            button press period because the BT connection is relinquished by the
-     *            RRG brand application every time the app is minimized.
-     *            [The only way to see an active PIN string for a connected BT device on
-     *             Android OS is to open the system Settings app and navigate to
-     *            'Connected devices -> ChameleonDeviceName -> Settings (icon)'
-     *             and then inspect the live settings that are active for the device.]
-     */
-
-    /*
      * NOTE: More Android Bluetooth BLE documentation available here:
      *       https://punchthrough.com/android-ble-guide/
      */
@@ -186,9 +166,8 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                 AndroidLog.i(TAG, "btConnReceiver: intent device name: " + btDeviceName);
                 if (!isChameleonDeviceName(btDeviceName)) {
                     return;
-                } else if (action.equals(BluetoothDevice.ACTION_FOUND) || action.equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
-                        (action.equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) && intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1) == BluetoothAdapter.STATE_CONNECTED) ||
-                        (action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED) && intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, -1) == BluetoothDevice.BOND_BONDED)) {
+                } else if (action.equals(BluetoothDevice.ACTION_FOUND) || action.equals(BluetoothDevice.ACTION_ACL_CONNECTED)) {
+                    /* NOTE: See https://developer.android.com/reference/android/bluetooth/BluetoothDevice#EXTRA_RSSI */
                     btDevice = btIntentDevice;
                     if (btDevice.getBondState() != BluetoothDevice.BOND_BONDED) {
                         btDevice.createBond();
@@ -197,11 +176,19 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                             btDevice.getName(), btDevice.getAddress(),
                             btSerialContext.getApplicationContext().getResources().getString(R.string.bluetoothExtraConfigInstructions));
                     Utils.displayToastMessageLong(userConnInstMsg);
+                    return;
+                }
+                int intentExtraState = intent.getExtras().getInt(BluetoothAdapter.EXTRA_STATE, -1);
+                int intentExtraBondState = intent.getExtras().getInt(BluetoothDevice.EXTRA_BOND_STATE, -1);
+                if (action.equals(BluetoothDevice.ACTION_PAIRING_REQUEST) ||
+                           (action.equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_CONNECTED) ||
+                           (action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED) && intentExtraBondState == BluetoothDevice.BOND_BONDED) ||
+                           (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_CONNECTED)) {
+                    btDevice = btIntentDevice;
                     btGattConn.requestConnectionPriority(BLUETOOTH_GATT_CONNECT_PRIORITY_HIGH);
                     btDevice.connectGatt(btGattConn.btSerialContext, true, btGattConn);
                     startBLEDeviceScan();
-                } else if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
-                    AndroidLog.i(TAG, "btConnReceiver: intent ACTION_STATE_CHANGE =>  " + intent.getParcelableExtra(BluetoothAdapter.EXTRA_STATE));
+                    return;
                 }
             }
         };
@@ -452,11 +439,12 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         btConnReceiver = configureBluetoothConnectionReceiver();
         IntentFilter btConnectIntentFilter = new IntentFilter();
         btConnectIntentFilter.addAction(BluetoothDevice.ACTION_FOUND);
-        //btConnectIntentFilter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
         btConnectIntentFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
         btConnectIntentFilter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
-        btConnectIntentFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         btConnectIntentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+        btConnectIntentFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+        btConnectIntentFilter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
+        btConnectIntentFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
         btSerialContext.registerReceiver(btConnReceiver, btConnectIntentFilter);
         btConnRecvRegistered = true;
     }
