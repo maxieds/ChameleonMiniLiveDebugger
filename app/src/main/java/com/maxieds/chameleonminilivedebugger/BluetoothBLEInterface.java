@@ -30,6 +30,7 @@ import android.os.Handler;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 
@@ -139,6 +140,50 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
     }
 
     @SuppressLint("MissingPermission")
+    public String getDeviceName() {
+        final String unknownBTDevName = "<UNKNOWN-BTDEV-NAME>";
+        try {
+            return activeDevice != null ? activeDevice.getName() : unknownBTDevName;
+        } catch (SecurityException se) {
+            AndroidLog.printStackTrace(se);
+            return unknownBTDevName;
+        }
+    }
+
+    public boolean isWiredUSB() { return false; }
+
+    public boolean isBluetooth() { return true; }
+
+    public int setSerialBaudRate(int bdRate) {
+        AndroidLog.w(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "Attempt to set serial baud rate to %d on a BT connection"));
+        return STATUS_NOT_SUPPORTED;
+    }
+
+    public boolean isDeviceConnected() {
+        return btGattConnectorBLEDevice != null && btGattConnectorBLEDevice.isDeviceConnected();
+    }
+
+    public BluetoothGattConnector getBluetoothGattConnector() {
+        return btGattConnectorBLEDevice;
+    }
+
+    public BluetoothBLEInterface(Context appContext) {
+        setListenerContext(appContext);
+        activeDevice = null;
+        btGattConnectorBLEDevice = new BluetoothGattConnector(appContext);
+        btGattConnectorBLEDevice.setBluetoothSerialInterface(this);
+        serialConfigured = false;
+        receiversRegistered = false;
+        scanning = false;
+    }
+
+    public void broadcastIntent(@NonNull Intent bcIntent) {
+        if (btGattConnectorBLEDevice != null) {
+            btGattConnectorBLEDevice.receiveBroadcastIntent(bcIntent);
+        }
+    }
+
+    @SuppressLint("MissingPermission")
     public boolean configureSerialConnection(BluetoothDevice btDev) {
         if (btDev == null) {
             return false;
@@ -179,44 +224,6 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
         configDeviceHandler.postDelayed(configDeviceRunnable, 500);
 
         return true;
-    }
-
-    @SuppressLint("MissingPermission")
-    public String getDeviceName() {
-        final String unknownBTDevName = "<UNKNOWN-BTDEV-NAME>";
-        try {
-            return activeDevice != null ? activeDevice.getName() : unknownBTDevName;
-        } catch (SecurityException se) {
-            AndroidLog.printStackTrace(se);
-            return unknownBTDevName;
-        }
-    }
-
-    public BluetoothBLEInterface(Context appContext) {
-        setListenerContext(appContext);
-        activeDevice = null;
-        btGattConnectorBLEDevice = new BluetoothGattConnector(appContext);
-        btGattConnectorBLEDevice.setBluetoothSerialInterface(this);
-        serialConfigured = false;
-        receiversRegistered = false;
-        scanning = false;
-    }
-
-    public boolean isWiredUSB() { return false; }
-
-    public boolean isBluetooth() { return true; }
-
-    public int setSerialBaudRate(int bdRate) {
-        AndroidLog.w(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "Attempt to set serial baud rate to %d on a BT connection"));
-        return STATUS_NOT_SUPPORTED;
-    }
-
-    public boolean isDeviceConnected() {
-        return btGattConnectorBLEDevice != null && btGattConnectorBLEDevice.isDeviceConnected();
-    }
-
-    public BluetoothGattConnector getBluetoothGattConnector() {
-        return btGattConnectorBLEDevice;
     }
 
     public boolean startScanningDevices() {

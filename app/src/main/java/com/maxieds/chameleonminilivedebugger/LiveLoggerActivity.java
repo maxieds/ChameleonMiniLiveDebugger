@@ -249,6 +249,8 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     serialIOActionFilter.addAction(SerialUSBInterface.ACTION_USB_PERMISSION);
                     serialIOActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
                     serialIOActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+                    serialIOActionFilter.addAction(BluetoothDevice.ACTION_FOUND);
+                    serialIOActionFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
                     serialIOActionFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
                     serialIOActionFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
                     serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED);
@@ -302,12 +304,19 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           } else if(!isTaskRoot()) {
                AndroidLog.i(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
                final Intent intent = getIntent();
-               final String intentAction = intent.getAction();
+               final String intentAction = intent != null ? intent.getAction() : null;
                if (intentAction != null && (intentAction.equals(UsbManager.ACTION_USB_DEVICE_DETACHED) || intentAction.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED))) {
                     if(LiveLoggerActivity.getLiveLoggerInstance() != null) {
                          LiveLoggerActivity.getLiveLoggerInstance().onNewIntent(intent);
                     }
-                    AndroidLog.i(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead of re-launching.");
+                    AndroidLog.i(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead to handle USB connection instead of re-launching.");
+                    finish();
+                    return;
+               } else if (intentAction != null && (intentAction.equals(BluetoothDevice.ACTION_FOUND) || intentAction.equals(BluetoothDevice.ACTION_ACL_CONNECTED))) {
+                    if(LiveLoggerActivity.getLiveLoggerInstance() != null) {
+                         LiveLoggerActivity.getLiveLoggerInstance().onNewIntent(intent);
+                    }
+                    AndroidLog.i(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead to handle USB connection instead of re-launching.");
                     finish();
                     return;
                }
@@ -399,14 +408,21 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                Utils.displayToastMessageLong("Chameleon Mini Live Debugger recovered from crash.");
           }
 
+          final LiveLoggerActivity llActivityFinal = this;
+          final Intent onCreateActivityIntentFinal = getIntent();
           Handler runAfterGUIInitDeviceHandler = new Handler();
-          Runnable configDeviceRunnable = new Runnable() {
+          Runnable runAfterGUIInitDeviceRunnable = new Runnable() {
+               final LiveLoggerActivity llActivity = llActivityFinal;
+               final Intent onCreateActivityIntent = onCreateActivityIntentFinal;
                public void run() {
                     liveLoggerActivityMainContentView = findViewById(android.R.id.content);
                     reconfigureSerialIODevices();
+                    if (onCreateActivityIntent != null) {
+                         llActivity.onNewIntent(onCreateActivityIntent);
+                    }
                }
           };
-          runAfterGUIInitDeviceHandler.postDelayed(configDeviceRunnable, 300);
+          runAfterGUIInitDeviceHandler.postDelayed(runAfterGUIInitDeviceRunnable, 300);
 
      }
 
@@ -415,6 +431,9 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
      @Override
      public void recreate() {
           Intent intent = getIntent();
+          if (intent == null) {
+               intent = new Intent(Intent.ACTION_MAIN);
+          }
           intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
           intent.addCategory(INTENT_RESTART_ACTIVITY);
           finish();
@@ -487,7 +506,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                viewPager.setCurrentItem(selectedTab);
                tfPagerAdapter.notifyDataSetChanged();
 
-               /*The view pager hides the tab icons by default, so we reset them to custom icons: */
+               /* The view pager hides the tab icons by default, so we reset them to custom icons: */
                tabLayout.getTabAt(TAB_LOG).setIcon(tfPagerAdapter.getTabIcon(TAB_LOG));
                tabLayout.getTabAt(TAB_LOG).setContentDescription(R.string.appGuiTabLogContentDesc);
                tabLayout.getTabAt(TAB_TOOLS).setIcon(tfPagerAdapter.getTabIcon(TAB_TOOLS));
@@ -517,7 +536,18 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                return;
           }
           AndroidLog.i(TAG, "NEW INTENT: " + intent.getAction());
-          if(intent.getAction().equals(SerialUSBInterface.ACTION_USB_PERMISSION)) {
+          if (intent.getAction().equals(BluetoothDevice.ACTION_FOUND) || intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED)) {
+               /* We need to pass these onto the Bluetooth connection interface so it can handle them as a part of scanning for new devices: */
+               if (ChameleonSettings.getActiveSerialIOPort() != null) {
+                    /* Another Chameleon devices is already attached and configured, so we ignore the notification. */
+               } else if (!ChameleonSettings.allowBluetooth) {
+                    /* Warn the user to turn on Bluetooth connections so it is processed: */
+                    String userToastMsg = getResources().getString(R.string.bluetoothEnableConnectionInstructions);
+                    Utils.displayToastMessageShort(userToastMsg);
+               } else if (ChameleonSettings.getBluetoothIOInterface() != null) {
+                    ChameleonSettings.getBluetoothIOInterface().broadcastIntent(intent);
+               }
+          } else if(intent.getAction().equals(SerialUSBInterface.ACTION_USB_PERMISSION)) {
                SerialUSBInterface.usbPermissionsGranted = true;
           } else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
                SerialUSBInterface.registerUSBPermission(intent, this);

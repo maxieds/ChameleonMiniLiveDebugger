@@ -48,6 +48,13 @@ public class ChameleonSettings {
         SERIALIO_IFACE_ACTIVE_INDEX = -1;
     }
 
+    public static BluetoothBLEInterface getBluetoothIOInterface() {
+        if (serialIOPorts != null) {
+            return (BluetoothBLEInterface) serialIOPorts[BTIO_IFACE_INDEX];
+        }
+        return null;
+    }
+
     public static ChameleonSerialIOInterface getActiveSerialIOPort() {
         if(SERIALIO_IFACE_ACTIVE_INDEX < 0) {
             return null;

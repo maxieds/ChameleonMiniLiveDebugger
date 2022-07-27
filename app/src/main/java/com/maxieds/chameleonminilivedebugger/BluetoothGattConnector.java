@@ -161,6 +161,12 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         btSerialIface = btLocalSerialIface;
     }
 
+    public void receiveBroadcastIntent(@NonNull Intent bcIntent) {
+        if (btConnReceiver != null) {
+            btConnReceiver.onReceive(btSerialContext, bcIntent);
+        }
+    }
+    
     @SuppressLint("MissingPermission")
     private BroadcastReceiver configureBluetoothConnectionReceiver() {
         final BluetoothGattConnector btGattConnFinal = this;

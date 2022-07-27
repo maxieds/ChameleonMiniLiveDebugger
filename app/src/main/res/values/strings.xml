@@ -172,6 +172,11 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     <string name="bluetoothExtraConfigInstructions">
         Press and hold button \'A\' for at least 15 seconds while we connect the device ...
     </string>
+    <string name="bluetoothEnableConnectionInstructions">
+        Bluetooth (BT) devices are available. Enable BT connections in the Settings|General tab.
+        Information about troubleshooting Chameleon Mini devices over BT are available in the
+        Settings|Devices tab.
+    </string>
 
     <string-array name="RButtonOptions">
         <item>RBUTTON</item>
