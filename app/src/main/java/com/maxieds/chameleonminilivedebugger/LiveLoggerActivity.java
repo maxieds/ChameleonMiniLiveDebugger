@@ -676,6 +676,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           } else {
                ChameleonSettings.stopSerialIOConnectionDiscovery();
           }
+          BluetoothBLEInterface.resetBluetoothAdapterAtClose(this);
           AndroidLog.closeLogDataOutputFile();
           super.onPause();
      }
@@ -687,6 +688,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
      @Override
      public void onResume() {
           AndroidSettingsStorage.loadPreviousSettings();
+          BluetoothBLEInterface.resetBluetoothAdapterAtStart(this);
           if(ChameleonSettings.getActiveSerialIOPort() != null) {
                reconfigureSerialIODevices();
                ChameleonSettings.getActiveSerialIOPort().startScanningDevices();
@@ -707,6 +709,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           } else {
                ChameleonSettings.stopSerialIOConnectionDiscovery();
           }
+          BluetoothBLEInterface.resetBluetoothAdapterAtClose(this);
           AndroidLog.closeLogDataOutputFile();
           super.onDestroy();
      }

@@ -72,7 +72,9 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
         boolean status = true;
         if (btAdapter == null) {
             return false;
-        } else if (!btAdapter.isEnabled() && !btAdapter.enable()) {
+        }
+        ChameleonSettings.disableBTAdapter = !btAdapter.isEnabled();
+        if (!btAdapter.isEnabled() && !btAdapter.enable()) {
             if (startActivityIfNot) {
                 try {
                     Intent turnBTOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -94,6 +96,45 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
             }
         }
         return status;
+    }
+
+    /**
+     * The developer does not like leaving Bluetooth enabled on the Droid device when it is
+     * unnecessary. These methods are called to disable the Bluetooth adapter after CMLD closes
+     * if BT was enabled on the system by CMLD to facilitate handling Chameleon BLE connections.
+     */
+    public static void resetBluetoothAdapterAtClose(ChameleonMiniLiveDebuggerActivity mainActivityCtx) {
+        resetBluetoothAdapter(mainActivityCtx, false);
+    }
+
+    public static void resetBluetoothAdapterAtStart(ChameleonMiniLiveDebuggerActivity mainActivityCtx) {
+        resetBluetoothAdapter(mainActivityCtx, true);
+    }
+
+    private static void resetBluetoothAdapter(ChameleonMiniLiveDebuggerActivity mainActivityCtx, boolean action) {
+        if (!ChameleonSettings.disableBTAdapter) {
+            return;
+        }
+        BluetoothAdapter btAdapter = null;
+        BluetoothAdapter btAdapterDefault = BluetoothAdapter.getDefaultAdapter();
+        BluetoothManager btManager = (BluetoothManager) mainActivityCtx.getSystemService(Context.BLUETOOTH_SERVICE);
+        BluetoothAdapter btAdapterFromService = btManager != null ? btManager.getAdapter() : null;
+        if (btAdapterFromService != null) {
+            btAdapter = btAdapterFromService;
+        } else if (btAdapterDefault != null) {
+            btAdapter = btAdapterDefault;
+        }
+        if (btAdapter != null) {
+            try {
+                if (action) {
+                    btAdapter.enable();
+                } else {
+                    btAdapter.disable();
+                }
+            } catch (SecurityException se) {
+                AndroidLog.printStackTrace(se);
+            }
+        }
     }
 
     public boolean isBluetoothEnabled() {

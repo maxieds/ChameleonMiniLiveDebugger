@@ -65,8 +65,8 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
     private boolean haveLogFileDownload;
     private String logFileDownloadPath;
 
-    private Handler vibrateNotifyHandler;
-    private Runnable vibrateNotifyRunnable;
+    private Handler notifyCrashReportLaunchHandler;
+    private Runnable notifyCrashReportLaunchRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,14 +95,17 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
         else {
             finish();
         }
-        vibrateNotifyHandler = new Handler();
-        vibrateNotifyRunnable = new Runnable() {
+        final ChameleonMiniLiveDebuggerActivity mainActivityCtxFinal = this;
+        notifyCrashReportLaunchHandler = new Handler();
+        notifyCrashReportLaunchRunnable = new Runnable() {
+            final ChameleonMiniLiveDebuggerActivity mainActivityCtx = mainActivityCtxFinal;
             @Override
             public void run() {
+                BluetoothBLEInterface.resetBluetoothAdapterAtClose(mainActivityCtx);
                 signalCrashByVibration();
             }
         };
-        vibrateNotifyHandler.postDelayed(vibrateNotifyRunnable, 500);
+        notifyCrashReportLaunchHandler.postDelayed(notifyCrashReportLaunchRunnable, 500);
 
     }
 

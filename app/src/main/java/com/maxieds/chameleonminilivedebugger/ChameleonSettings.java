@@ -24,8 +24,9 @@ public class ChameleonSettings {
     private static final String TAG = ChameleonSettings.class.getSimpleName();
 
     public static boolean allowWiredUSB = true;
-    public static boolean allowBluetooth = false;
     public static int serialBaudRate = ChameleonSerialIOInterface.HIGH_SPEED_BAUD_RATE;
+    public static boolean allowBluetooth = false;
+    public static boolean disableBTAdapter = false;
 
     public static final String CMINI_DEVICE_FIELD_NONE = "N/A";
     public static String chameleonDeviceSerialNumber = CMINI_DEVICE_FIELD_NONE;
