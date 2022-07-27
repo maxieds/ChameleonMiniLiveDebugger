@@ -27,7 +27,6 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
-import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
@@ -152,7 +151,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         btAdapter = configureBluetoothAdapter();
         btGatt = null;
         btGattCallback = configureBluetoothGattCallback();
-        btSerialIface = (BluetoothBLEInterface) ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX];
+        btSerialIface = ChameleonSettings.getBluetoothIOInterface();
         isConnected = false;
         BluetoothGattConnector.btDevicePinDataBytes = getStoredBluetoothDevicePinData();
     }
@@ -166,7 +165,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
             btConnReceiver.onReceive(btSerialContext, bcIntent);
         }
     }
-    
+
     @SuppressLint("MissingPermission")
     private BroadcastReceiver configureBluetoothConnectionReceiver() {
         final BluetoothGattConnector btGattConnFinal = this;
@@ -198,7 +197,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                             btDevice.getName(), btDevice.getAddress(),
                             btSerialContext.getApplicationContext().getResources().getString(R.string.bluetoothExtraConfigInstructions));
                     Utils.displayToastMessageLong(userConnInstMsg);
-                    btGattConn.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
+                    btGattConn.requestConnectionPriority(BLUETOOTH_GATT_CONNECT_PRIORITY_HIGH);
                     btDevice.connectGatt(btGattConn.btSerialContext, true, btGattConn);
                     startBLEDeviceScan();
                 } else if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
@@ -247,7 +246,6 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                 if (newState == BluetoothGatt.STATE_DISCONNECTED || newState == BluetoothGatt.STATE_DISCONNECTING) {
                     disconnectDevice();
                     startConnectingDevices();
-                    return;
                 } else if (newState == BluetoothProfile.STATE_CONNECTED) {
                     btGatt = gatt;
                     try {
@@ -263,8 +261,6 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
             public void onServicesDiscovered(BluetoothGatt gatt, int status) {
                 if (status != BluetoothGatt.GATT_SUCCESS) {
                     AndroidLog.w(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "onServicesDiscovered: error/status code %d = %04x", status, status));
-                    return;
-                } else if (status == BLUETOOTH_GATT_ERROR) {
                     return;
                 }
                 final String bleDeviceNameNone = "<No-Device-Name>";
@@ -304,12 +300,9 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     sendCharDesc.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                     gatt.writeDescriptor(sendCharDesc);
                     gatt.executeReliableWrite();
-                } catch (SecurityException se) {
+                } catch (SecurityException seNPE) {
                     bleDeviceName = bleDeviceNameNone;
-                    AndroidLog.printStackTrace(se);
-                } catch (NullPointerException npe) {
-                    bleDeviceName = bleDeviceNameNone;
-                    AndroidLog.printStackTrace(npe);
+                    AndroidLog.printStackTrace(seNPE);
                 }
                 if (configureNotifyOnSerialBluetoothService(gatt, chameleonDeviceBLERecvChar.getUuid().toString())) {
                     btSerialIface.configureSerialConnection(btDevice);
@@ -386,9 +379,11 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         final BluetoothGattConnector btGattConnectorRefFinal = this;
         ScanCallback bleLocalScanCallback = new ScanCallback() {
             final BluetoothGattConnector btGattConnectorRef = btGattConnectorRefFinal;
-
             @Override
             public void onScanResult(int callbackType, ScanResult scanResultData) {
+                if (callbackType== ScanSettings.CALLBACK_TYPE_MATCH_LOST) {
+                    return;
+                }
                 LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -438,12 +433,9 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                                     notifyBluetoothBLEDeviceConnected(btDevice);
                                 }
                             }
-                        } catch (SecurityException se) {
+                        } catch (Exception seNPE) {
                             bleDeviceName = bleDeviceNameNone;
-                            AndroidLog.printStackTrace(se);
-                        } catch (NullPointerException npe) {
-                            bleDeviceName = bleDeviceNameNone;
-                            AndroidLog.printStackTrace(npe);
+                            AndroidLog.printStackTrace(seNPE);
                         }
                         AndroidLog.i(TAG, "BLE device with name " + bleDeviceName + "scanned");
                     }
@@ -573,7 +565,11 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
     private static final boolean bleUseLegacyAdvertisements = false;
     private static final long bleScanReportDelay = 5000;
 
-    /* ??? TODO: Add a drop down to the BT configuration layout to let thee user choose how much power to drain from the Android device to enumerate BT ??? */
+    /*
+     * TODO: Add a drop down to the BT configuration layout to let the user choose how much power
+     *       to drain from the Android device to enumerate BT.
+     */
+
     public static void setLowPowerBLEScanSettings() {
         bleScanMode = ScanSettings.SCAN_MODE_LOW_POWER;
         bleMatchMode = ScanSettings.MATCH_MODE_STICKY;
@@ -634,7 +630,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         if(!btPermsObtained) {
             btPermsObtained = btSerialIface.isBluetoothEnabled(false);
         }
-        boolean status = false;
+        boolean status = true;
         if(btPermsObtained && btAdapter != null) {
             try {
                 if (btAdapter.isDiscovering()) {
@@ -803,11 +799,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
 
     @SuppressLint("MissingPermission")
     public int read() throws IOException {
-        /* ??? TODO: Big or little endian byte order of the results returned ??? */
-        if(btGatt == null) {
-            disconnectDevice();
-            return ChameleonSerialIOInterface.STATUS_ERROR;
-        }
+        /* ??? TODO: Big or little endian byte order of the results returned (Chameleon Mini AVR is LE) ??? */
         BluetoothGattService rxDataService = null;
         if (btGatt == null) {
             rxDataService = new BluetoothGattService(chameleonDeviceBLEService.getUuid(), BluetoothGattService.SERVICE_TYPE_PRIMARY);

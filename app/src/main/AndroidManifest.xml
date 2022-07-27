@@ -124,7 +124,7 @@
     <uses-feature android:name="android.hardware.bluetooth_admin" android:required="true" />
     <uses-feature android:name="android.hardware.bluetooth_le" android:minSdkVersion="31" android:required="true" />
 
-    <!--<uses-feature android:name="android.hardware.touchscreen" android:required="true" />-->
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
     <!-- From the documentation at:
          https://developer.android.com/guide/practices/screens-distribution
@@ -227,14 +227,13 @@
             android:clearTaskOnLaunch="true"
             android:hardwareAccelerated="true"
             android:uiOptions="none"
-            android:configChanges="uiMode"
+            android:configChanges="uiMode|orientation|keyboard|keyboardHidden|fontScale"
             android:stateNotNeeded="true"
             android:exported="true"
             android:resizeableActivity="false"
             android:maxAspectRatio="2.4"
             android:supportsPictureInPicture="false"
             >
-            <!-- android:configChanges="uiMode|orientation|keyboard|keyboardHidden|fontScale" -->
 
             <intent-filter android:priority="1000">
                 <action android:name="android.intent.action.MAIN" />
