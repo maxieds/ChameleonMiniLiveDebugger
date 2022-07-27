@@ -150,6 +150,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     </string>
 
     <string name="bluetoothTroubleshootingInstructionsHTML">
+        &lt;h1>Bluetooth Troubleshooting / Tips:&lt;/h1>
         &lt;ul>
             &lt;li>Enable &lt;b>&lt;i>Bluetooth&lt;/b>&lt;/i> (&lt;b>&lt;i>BT&lt;/b>&lt;/i>) on the phone&lt;/li>
             &lt;li>Give CMLD BT permissions in the system Settings app:&lt;br/>
@@ -159,7 +160,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 manufacturer on the Chameleon first...&lt;br/>
                 This &lt;b>&lt;u>IS NOT&lt;/u>&lt;/b> the same as flashing the\n
                 Chameleon with the firmware (software) binary&lt;/li>
-            &lt;li>Make sure the Chameleon Mini is powered on&lt;/li>
+            &lt;li>Make sure the Chameleon Mini is powered on while pressing button A&lt;/li>
             &lt;li>For Proxgrind Chameleon Tiny devices:&lt;br/>
                 Make sure you have &lt;i>charged the device&lt;/i> for
                 &lt;b>10-15 minutes>&lt;/b> prior to connecting to phone&lt;/li>

@@ -472,8 +472,7 @@ public class UITabUtils {
                             cbView.wait(ActivityPermissions.REQUEST_RESULT_MAX_VIEWOBJ_WAIT_TIMEOUT);
                             haveSufficientBTPerms = llInst.checkPermissionsAcquired(ActivityPermissions.CMLD_PERMISSIONS_GROUP_BLUETOOTH, false);
                         }
-                        BluetoothBLEInterface btSerialInterface = (BluetoothBLEInterface) ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX];
-                        btSerialInterface.isBluetoothEnabled(true);
+                        BluetoothUtils.isBluetoothEnabled(true);
                         if(cb.isChecked() && !haveSufficientBTPerms) {
                             cb.setChecked(false);
                             String btPermsRequiredResStr = llInst.getResources().getString(R.string.btPermsRequiredMsg);
@@ -548,7 +547,7 @@ public class UITabUtils {
         }
         else if(menuItemIdx == TAB_CONFIG_MITEM_CONNECT) {
             TextView btStatusText = tabMainLayoutView.findViewById(R.id.androidBluetoothStatusText);
-            String btStatus = ((BluetoothBLEInterface) ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX]).isBluetoothEnabled() ? "Enabled" : "Disabled";
+            String btStatus = BluetoothUtils.isBluetoothEnabled() ? "Enabled" : "Disabled";
             btStatusText.setText(btStatus);
             Button btSettingsBtn = tabMainLayoutView.findViewById(R.id.androidBTSettingsButton);
             if(btSettingsBtn == null) {
@@ -557,7 +556,7 @@ public class UITabUtils {
             btSettingsBtn.setOnClickListener(new Button.OnClickListener() {
                 @Override
                 public void onClick(View btn) {
-                    BluetoothBLEInterface.displayAndroidBluetoothSettings();
+                    BluetoothUtils.displayAndroidBluetoothSettings();
                 }
             });
             Button btTroubleshootingBtn = tabMainLayoutView.findViewById(R.id.androidBTTroubleshootingButton);
@@ -567,7 +566,7 @@ public class UITabUtils {
             btTroubleshootingBtn.setOnClickListener(new Button.OnClickListener() {
                 @Override
                 public void onClick(View btn) {
-                    BluetoothBLEInterface.displayAndroidBluetoothTroubleshooting();
+                    BluetoothUtils.displayAndroidBluetoothTroubleshooting();
                 }
             });
             boolean isChameleonDevConn = ChameleonSettings.getActiveSerialIOPort() != null;

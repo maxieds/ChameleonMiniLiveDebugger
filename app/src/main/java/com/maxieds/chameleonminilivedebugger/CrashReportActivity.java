@@ -101,7 +101,7 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
             final ChameleonMiniLiveDebuggerActivity mainActivityCtx = mainActivityCtxFinal;
             @Override
             public void run() {
-                BluetoothBLEInterface.resetBluetoothAdapterAtClose(mainActivityCtx);
+                BluetoothUtils.resetBluetoothAdapterAtClose(mainActivityCtx);
                 signalCrashByVibration();
             }
         };

@@ -85,7 +85,7 @@ public class ChameleonSettings {
             if(si == USBIO_IFACE_INDEX && allowWiredUSB) {
                 AndroidLog.i(TAG, "Started scanning for SerialUSB devices ... ");
                 //serialIOPorts[si].startScanningDevices();
-            } else if(si == BTIO_IFACE_INDEX && allowBluetooth && ((BluetoothBLEInterface) serialIOPorts[si]).isBluetoothEnabled(true)) {
+            } else if(si == BTIO_IFACE_INDEX && allowBluetooth && BluetoothUtils.isBluetoothEnabled(true)) {
                 AndroidLog.i(TAG, "Started scanning for BT/BLE devices ... ");
                 serialIOPorts[si].startScanningDevices();
                 initUpdateHandler.removeCallbacksAndMessages(initUpdateRunnable);

@@ -39,12 +39,9 @@ import java.util.concurrent.Semaphore;
 
 public class BluetoothBLEInterface extends SerialIOReceiver {
 
-    /* TODO: Check XModem functionality with the BT devices */
+    /* ??? TODO: Check XModem functionality with the BT devices ??? */
 
     private static final String TAG = BluetoothBLEInterface.class.getSimpleName();
-
-    public static final int ACTVITY_REQUEST_BLUETOOTH_ENABLED_CODE = 0x00B1;
-    public static final int ACTVITY_REQUEST_BLUETOOTH_DISCOVERABLE_CODE = 0x00B1;
 
     public String getInterfaceLoggingTag() {
         return TAG;
@@ -57,129 +54,6 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
     private boolean scanning;
     private Semaphore btDevLock = new Semaphore(1, true);
 
-    @SuppressLint("MissingPermission")
-    public boolean isBluetoothEnabled(boolean startActivityIfNot) {
-        LiveLoggerActivity mainActivityCtx = LiveLoggerActivity.getLiveLoggerInstance();
-        BluetoothAdapter btAdapter = null;
-        BluetoothAdapter btAdapterDefault = BluetoothAdapter.getDefaultAdapter();
-        BluetoothManager btManager = (BluetoothManager) mainActivityCtx.getSystemService(Context.BLUETOOTH_SERVICE);
-        BluetoothAdapter btAdapterFromService = btManager != null ? btManager.getAdapter() : null;
-        if (btAdapterFromService != null) {
-            btAdapter = btAdapterFromService;
-        } else if (btAdapterDefault != null) {
-            btAdapter = btAdapterDefault;
-        }
-        boolean status = true;
-        if (btAdapter == null) {
-            return false;
-        }
-        ChameleonSettings.disableBTAdapter = !btAdapter.isEnabled();
-        if (!btAdapter.isEnabled() && !btAdapter.enable()) {
-            if (startActivityIfNot) {
-                try {
-                    Intent turnBTOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    mainActivityCtx.startActivityForResult(turnBTOn, ACTVITY_REQUEST_BLUETOOTH_ENABLED_CODE);
-                } catch (Exception excpt) {
-                    AndroidLog.printStackTrace(excpt);
-                }
-            }
-            status = false;
-        }
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            if (ActivityCompat.checkSelfPermission(LiveLoggerActivity.getLiveLoggerInstance(), "android.permission.BLUETOOTH_ADVERTISE") != PackageManager.PERMISSION_GRANTED) {
-                if (startActivityIfNot) {
-                    Intent btMakeDiscIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-                    btMakeDiscIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-                    mainActivityCtx.startActivityForResult(btMakeDiscIntent, ACTVITY_REQUEST_BLUETOOTH_DISCOVERABLE_CODE);
-                }
-                return false;
-            }
-        }
-        return status;
-    }
-
-    /**
-     * The developer does not like leaving Bluetooth enabled on the Droid device when it is
-     * unnecessary. These methods are called to disable the Bluetooth adapter after CMLD closes
-     * if BT was enabled on the system by CMLD to facilitate handling Chameleon BLE connections.
-     */
-    public static void resetBluetoothAdapterAtClose(ChameleonMiniLiveDebuggerActivity mainActivityCtx) {
-        resetBluetoothAdapter(mainActivityCtx, false);
-    }
-
-    public static void resetBluetoothAdapterAtStart(ChameleonMiniLiveDebuggerActivity mainActivityCtx) {
-        resetBluetoothAdapter(mainActivityCtx, true);
-    }
-
-    private static void resetBluetoothAdapter(ChameleonMiniLiveDebuggerActivity mainActivityCtx, boolean action) {
-        if (!ChameleonSettings.disableBTAdapter) {
-            return;
-        }
-        BluetoothAdapter btAdapter = null;
-        BluetoothAdapter btAdapterDefault = BluetoothAdapter.getDefaultAdapter();
-        BluetoothManager btManager = (BluetoothManager) mainActivityCtx.getSystemService(Context.BLUETOOTH_SERVICE);
-        BluetoothAdapter btAdapterFromService = btManager != null ? btManager.getAdapter() : null;
-        if (btAdapterFromService != null) {
-            btAdapter = btAdapterFromService;
-        } else if (btAdapterDefault != null) {
-            btAdapter = btAdapterDefault;
-        }
-        if (btAdapter != null) {
-            try {
-                if (action && !btAdapter.isEnabled()) {
-                    btAdapter.enable();
-                } else if (!action && btAdapter.isEnabled()) {
-                    btAdapter.disable();
-                }
-            } catch (SecurityException se) {
-                AndroidLog.printStackTrace(se);
-            }
-        }
-    }
-
-    public boolean isBluetoothEnabled() {
-        return isBluetoothEnabled(false);
-    }
-
-    public static void displayAndroidBluetoothSettings() {
-        Intent intentOpenBluetoothSettings = new Intent();
-        intentOpenBluetoothSettings.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
-        LiveLoggerActivity.getLiveLoggerInstance().startActivity(intentOpenBluetoothSettings);
-    }
-
-    public static void displayAndroidBluetoothTroubleshooting() {
-
-        LiveLoggerActivity llActivity = LiveLoggerActivity.getLiveLoggerInstance();
-        AlertDialog.Builder adBuilder = new AlertDialog.Builder(llActivity, R.style.SpinnerTheme);
-        WebView wv = new WebView(llActivity);
-
-        String dialogMainPointsHTML = llActivity.getString(R.string.bluetoothTroubleshootingInstructionsHTML);
-
-        wv.loadDataWithBaseURL(null, dialogMainPointsHTML, "text/html", "UTF-8", "");
-        wv.getSettings().setJavaScriptEnabled(false);
-        wv.setBackgroundColor(ThemesConfiguration.getThemeColorVariant(R.attr.colorAccentHighlight));
-        wv.getSettings().setLoadWithOverviewMode(true);
-        wv.getSettings().setUseWideViewPort(true);
-        wv.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
-        wv.setInitialScale(10);
-
-        adBuilder.setCancelable(true);
-        adBuilder.setTitle("Bluetooth Troubleshooting / Tips:");
-        adBuilder.setPositiveButton(
-                "Back to Previous",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
-        adBuilder.setView(wv);
-        adBuilder.setInverseBackgroundForced(true);
-
-        AlertDialog alertDialog = adBuilder.create();
-        alertDialog.show();
-
-    }
-
     public boolean isWiredUSB() { return false; }
 
     public boolean isBluetooth() { return true; }
@@ -187,10 +61,6 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
     public int setSerialBaudRate(int bdRate) {
         AndroidLog.w(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "Attempt to set serial baud rate to %d on a BT connection"));
         return STATUS_NOT_SUPPORTED;
-    }
-
-    public boolean isDeviceConnected() {
-        return btGattConnectorBLEDevice != null && btGattConnectorBLEDevice.isDeviceConnected();
     }
 
     @SuppressLint("MissingPermission")
@@ -220,10 +90,6 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
             devInfo = "<Device-Info-Unavailable>";
         }
         return devInfo;
-    }
-
-    public BluetoothGattConnector getBluetoothGattConnector() {
-        return btGattConnectorBLEDevice;
     }
 
     public BluetoothBLEInterface(Context appContext) {

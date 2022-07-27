@@ -640,7 +640,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           } else {
                ChameleonSettings.stopSerialIOConnectionDiscovery();
           }
-          BluetoothBLEInterface.resetBluetoothAdapterAtClose(this);
+          BluetoothUtils.resetBluetoothAdapterAtClose(this);
           AndroidLog.closeLogDataOutputFile();
           super.onPause();
      }
@@ -653,7 +653,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
      public void onResume() {
           super.onResume();
           AndroidSettingsStorage.loadPreviousSettings();
-          BluetoothBLEInterface.resetBluetoothAdapterAtStart(this);
+          BluetoothUtils.resetBluetoothAdapterAtStart(this);
           if(ChameleonSettings.getActiveSerialIOPort() != null) {
                reconfigureSerialIODevices();
                ChameleonSettings.getActiveSerialIOPort().startScanningDevices();
@@ -673,7 +673,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           } else {
                ChameleonSettings.stopSerialIOConnectionDiscovery();
           }
-          BluetoothBLEInterface.resetBluetoothAdapterAtClose(this);
+          BluetoothUtils.resetBluetoothAdapterAtClose(this);
           AndroidLog.closeLogDataOutputFile();
           super.onDestroy();
      }
@@ -1010,7 +1010,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                } else {
                     toastStatusMsg = "All CMLD app permissions requested. Enable all to ensure the app runs correctly.";
                }
-          } else if (resultCode == BluetoothBLEInterface.ACTVITY_REQUEST_BLUETOOTH_ENABLED_CODE) {
+          } else if (resultCode == BluetoothUtils.ACTVITY_REQUEST_BLUETOOTH_ENABLED_CODE) {
                if(resultCode == Activity.RESULT_CANCELED) {
                     /* Bluetooth not enabled: */
                     finish();
@@ -1018,7 +1018,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                } else {
                     toastStatusMsg = "Bluetooth permissions enabled.";
                }
-          } else if (resultCode == BluetoothBLEInterface.ACTVITY_REQUEST_BLUETOOTH_DISCOVERABLE_CODE) {
+          } else if (resultCode == BluetoothUtils.ACTVITY_REQUEST_BLUETOOTH_DISCOVERABLE_CODE) {
                if(resultCode == Activity.RESULT_CANCELED) {
                     /* Bluetooth discovery not enabled: */
                     finish();

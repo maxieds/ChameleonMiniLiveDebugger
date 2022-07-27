@@ -553,7 +553,7 @@ public class Utils {
             (short) 0x7BC7, (short) 0x6A4E, (short) 0x58D5, (short) 0x495C, (short) 0x3DE3, (short) 0x2C6A, (short) 0x1EF1, (short) 0x0F78
     };
 
-    public static byte[] calculateByteBufferCRC16(byte[] bufferBytes) {
+    public static byte[] calculateByteBufferCRC16(@NonNull byte[] bufferBytes) {
         if(bufferBytes == null || bufferBytes.length == 0) {
             return new byte[0];
         }
@@ -567,6 +567,31 @@ public class Utils {
                 (byte) ((workingCRC >> 8) & 0x00ff)
         };
         return crcBytes;
+    }
+
+    public static boolean checkByteBufferCRC16(@NonNull byte[] bufferBytes) {
+        if (bufferBytes.length < 2) {
+            return false;
+        }
+        int dataLength = bufferBytes.length - 2;
+        byte[] dataBytes = new byte[dataLength];
+        System.arraycopy(dataBytes, 0, bufferBytes, 0, dataLength);
+        byte[] dataCRCBytes = calculateByteBufferCRC16(dataBytes);
+        if (bufferBytes[dataLength] == dataCRCBytes[0] && bufferBytes[dataLength + 1] == dataCRCBytes[1]) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static byte[] trimByteBufferCRC16(@NonNull byte[] bufferBytes) {
+        if (bufferBytes.length < 2) {
+            return null;
+        }
+        int dataLength = bufferBytes.length - 2;
+        byte[] dataBytes = new byte[dataLength];
+        System.arraycopy(dataBytes, 0, bufferBytes, 0, dataLength);
+        return dataBytes;
     }
 
     public static String encodeAsciiToURL(String inputText) {
