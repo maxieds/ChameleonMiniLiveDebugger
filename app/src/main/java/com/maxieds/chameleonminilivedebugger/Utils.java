@@ -487,7 +487,6 @@ public class Utils {
         if(callingActivity != null) {
             callingActivity.runOnUiThread(new Runnable() {
                 final Toast toastDisplayStatic = toastDisplay;
-
                 @Override
                 public void run() {
                     toastDisplayStatic.show();

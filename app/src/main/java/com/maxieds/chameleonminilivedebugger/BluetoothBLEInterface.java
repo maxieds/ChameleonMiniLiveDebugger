@@ -126,9 +126,9 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
         }
         if (btAdapter != null) {
             try {
-                if (action) {
+                if (action && !btAdapter.isEnabled()) {
                     btAdapter.enable();
-                } else {
+                } else if (!action && btAdapter.isEnabled()) {
                     btAdapter.disable();
                 }
             } catch (SecurityException se) {
