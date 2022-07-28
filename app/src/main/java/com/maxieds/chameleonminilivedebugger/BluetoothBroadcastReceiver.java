@@ -46,14 +46,9 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
             return;
         }
         AndroidLog.d(TAG, "btConnReceiver: intent action: " + action);
-        if (action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)) {
-            //btGattConn.stopConnectingDevices();
-            //if (!btGattConn.isDeviceConnected()) {
-            //    btGattConn.startConnectingDevices();
-            //}
+        if (intent.getExtras() == null) {
             return;
         }
-        AndroidLog.i(TAG, "btConnReceiver: intent extras = " + intent.getExtras().toString());
         BluetoothDevice btIntentDevice = intent.getExtras().getParcelable(BluetoothDevice.EXTRA_DEVICE);
         if (btIntentDevice == null) {
             return;
@@ -62,45 +57,24 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         AndroidLog.i(TAG, "btConnReceiver: intent device name: " + btDeviceName);
         if (btGattConn == null || !BluetoothUtils.isChameleonDeviceName(btDeviceName)) {
             return;
-        } else if (action.equals(BluetoothDevice.ACTION_FOUND)) { // ???  || action.equals(BluetoothDevice.ACTION_ACL_CONNECTED)
+        } else if (action.equals(BluetoothDevice.ACTION_FOUND)) {
             /** NOTE: See https://developer.android.com/reference/android/bluetooth/BluetoothDevice#EXTRA_RSSI */
             btGattConn.btDevice = btIntentDevice;
             String userConnInstMsg = String.format(BuildConfig.DEFAULT_LOCALE, "New %s %s found.",
                     btGattConn.btDevice.getName(), btGattConn.btDevice.getAddress());
             Utils.displayToastMessage(userConnInstMsg, Toast.LENGTH_SHORT);
             btGattConn.btDevice.createBond();
-            //btGattConn.requestConnectionPriority(BluetoothGattConnector.BLUETOOTH_GATT_CONNECT_PRIORITY_HIGH);
+            btGattConn.requestConnectionPriority(BluetoothGattConnector.BLUETOOTH_GATT_CONNECT_PRIORITY_HIGH);
             btGattConn.btGatt = btGattConn.btDevice.connectGatt(btGattConn.btSerialContext, true, btGattConn);
-            if (btGattConn.btGatt != null) {
-                // ??? TODO: Remove the code below ???
-                if (btGattConn.btAdapter != null && btGattConn.btAdapter.isDiscovering()) {
-                    btGattConn.btAdapter.cancelDiscovery();
-                }
-                btGattConn.btGatt.discoverServices();
-                btGattConn.stopRestartCancelledBTDiscRuntime();
-                // ??? TODO: Handle the onDiscoverServices setup from GattConn here ???
-            }
-            return;
         }
-        /*int intentExtraState = intent.getExtras().getInt(BluetoothAdapter.EXTRA_STATE, -1);
+        int intentExtraState = intent.getExtras().getInt(BluetoothAdapter.EXTRA_STATE, -1);
         int intentExtraBondState = intent.getExtras().getInt(BluetoothDevice.EXTRA_BOND_STATE, -1);
-        if (action.equals(BluetoothDevice.ACTION_PAIRING_REQUEST) ||
-                (action.equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_CONNECTED) ||
+        AndroidLog.d(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "EXTRA BOND STATE: %d", intentExtraBondState));
+        if ((action.equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_CONNECTED) ||
                 (action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED) && intentExtraBondState == BluetoothDevice.BOND_BONDED) ||
                 (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_CONNECTED)) {
-            btGattConn.btDevice = btIntentDevice;
-            if (btGattConn.btDevice == null) {
-                return;
-            }
-            if (btGattConn.btGatt == null) {
-                btGattConn.requestConnectionPriority(BluetoothGattConnector.BLUETOOTH_GATT_CONNECT_PRIORITY_HIGH);
-                btGattConn.btGatt = btGattConn.btDevice.connectGatt(btGattConn.btSerialContext, true, btGattConn);
-            }
-            if (btGattConn.btGatt != null) {
-                btGattConn.btGatt.discoverServices();
-                btGattConn.stopRestartCancelledBTDiscRuntime();
-            }
-        }*/
+            //btGattConn.btGatt.discoverServices();
+            btGattConn.btGatt.
+        }
     }
-
 }

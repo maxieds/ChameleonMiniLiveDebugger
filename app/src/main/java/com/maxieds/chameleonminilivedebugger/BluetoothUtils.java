@@ -193,6 +193,27 @@ public class BluetoothUtils {
      *       that provides the Manufacturer Name String.
      */
 
+    /* CHAMELEON TINY PRO:
+     *       > SERVICE 00001800-0000-1000-8000-00805f9b34fb [type 00]
+     *          -- SVC-CHAR 00002a00-0000-1000-8000-00805f9b34fb
+     *          -- SVC-CHAR 00002a01-0000-1000-8000-00805f9b34fb
+     *       > SERVICE 00001801-0000-1000-8000-00805f9b34fb [type 00]
+     *       > SERVICE 0000180a-0000-1000-8000-00805f9b34fb [type 00]
+     *          -- SVC-CHAR 00002a29-0000-1000-8000-00805f9b34fb
+     *          -- SVC-CHAR 00002a24-0000-1000-8000-00805f9b34fb
+     *          -- SVC-CHAR 00002a25-0000-1000-8000-00805f9b34fb
+     *          -- SVC-CHAR 00002a27-0000-1000-8000-00805f9b34fb
+     *          -- SVC-CHAR 00002a26-0000-1000-8000-00805f9b34fb
+     *          -- SVC-CHAR 00002a28-0000-1000-8000-00805f9b34fb
+     *          -- SVC-CHAR 00002a23-0000-1000-8000-00805f9b34fb
+     *          -- SVC-CHAR 00002a2a-0000-1000-8000-00805f9b34fb
+     *          -- SVC-CHAR 00002a50-0000-1000-8000-00805f9b34fb
+     *       > SERVICE 51510001-7969-6473-6f40-6b6f6c6c6957 [type 00]
+     *          -- SVC-CHAR 51510002-7969-6473-6f40-6b6f6c6c6957
+     *          -- SVC-CHAR 51510003-7969-6473-6f40-6b6f6c6c6957
+     *          -- SVC-CHAR 51510004-7969-6473-6f40-6b6f6c6c6957
+     */
+
     /* TODO: Extract the data from all of these characteristics given an input list of BluetoothGattService objects */
     /* TODO: Extract more manufacturer information about the BT device using these commands and
      *       the byte order for which device properties are mapped onto which bytes:

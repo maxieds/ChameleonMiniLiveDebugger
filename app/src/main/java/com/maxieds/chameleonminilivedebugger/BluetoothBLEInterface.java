@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -122,8 +123,7 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
         ChameleonSettings.chameleonDeviceSerialNumber = ChameleonSettings.CMINI_DEVICE_FIELD_NONE;
         ChameleonSettings.chameleonDeviceAddress = btDev.getAddress();
         ChameleonIO.CHAMELEON_MINI_BOARD_TYPE = BluetoothUtils.getChameleonDeviceType(btDev.getName());
-
-        Handler configDeviceHandler = new Handler();
+        Handler configDeviceHandler = new Handler(Looper.getMainLooper());
         Runnable configDeviceRunnable = new Runnable() {
             public void run() {
                 AndroidLog.i(TAG, ChameleonSettings.getActiveSerialIOPort().toString());
