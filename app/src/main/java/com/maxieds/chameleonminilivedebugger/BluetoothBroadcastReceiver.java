@@ -20,10 +20,14 @@ package com.maxieds.chameleonminilivedebugger;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
+
+import java.util.List;
 
 public class BluetoothBroadcastReceiver extends BroadcastReceiver {
 
@@ -64,8 +68,6 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
                     btGattConn.btDevice.getName(), btGattConn.btDevice.getAddress());
             Utils.displayToastMessage(userConnInstMsg, Toast.LENGTH_SHORT);
             btGattConn.btDevice.createBond();
-            btGattConn.requestConnectionPriority(BluetoothGattConnector.BLUETOOTH_GATT_CONNECT_PRIORITY_HIGH);
-            btGattConn.btGatt = btGattConn.btDevice.connectGatt(btGattConn.btSerialContext, true, btGattConn);
         }
         int intentExtraState = intent.getExtras().getInt(BluetoothAdapter.EXTRA_STATE, -1);
         int intentExtraBondState = intent.getExtras().getInt(BluetoothDevice.EXTRA_BOND_STATE, -1);
@@ -73,8 +75,33 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         if ((action.equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_CONNECTED) ||
                 (action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED) && intentExtraBondState == BluetoothDevice.BOND_BONDED) ||
                 (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_CONNECTED)) {
+            btGattConn.requestConnectionPriority(BluetoothGattConnector.BLUETOOTH_GATT_CONNECT_PRIORITY_HIGH);
+            btGattConn.btGatt = btGattConn.btDevice.connectGatt(btGattConn.btSerialContext, true, btGattConn);
+            btGattConn.btGatt.requestMtu(BluetoothGattConnector.BLUETOOTH_LOCAL_MTU_THRESHOLD);
             //btGattConn.btGatt.discoverServices();
-            btGattConn.btGatt.
+            if (!btGattConn.enumerateBLEGattComms(btGattConn.btGatt) || !btGattConn.enableNotifyOnBLEGattService(btGattConn.btGatt)) {
+                btGattConn.disconnectDevice();
+                btGattConn.stopConnectingDevices();
+                btGattConn.startConnectingDevices();
+                return;
+            }
+            List<BluetoothGattService> svcList = btGattConn.btGatt.getServices();
+            StringBuilder svcUUIDSummary = new StringBuilder(" ==== \n");
+            for (BluetoothGattService svc : svcList) {
+                /**
+                 * NOTE: BT service data types described in table here:
+                 *       https://btprodspecificationrefs.blob.core.windows.net/assigned-numbers/Assigned%20Number%20Types/Format%20Types.pdf
+                 * NOTE: BT GATT characteristic permissions and service type constants are defined here:
+                 *       https://developer.android.com/reference/android/bluetooth/BluetoothGattCharacteristic
+                 */
+                svcUUIDSummary.append(String.format(BuildConfig.DEFAULT_LOCALE, "   > SERVICE %s [type %02x]\n", svc.getUuid().toString(), svc.getType()));
+                List<BluetoothGattCharacteristic> svcCharList = svc.getCharacteristics();
+                for (BluetoothGattCharacteristic svcChar : svcCharList) {
+                    svcUUIDSummary.append(String.format(BuildConfig.DEFAULT_LOCALE, "      -- SVC-CHAR %s\n", svcChar.getUuid().toString()));
+                }
+                svcUUIDSummary.append("\n");
+            }
+            AndroidLog.i(TAG, svcUUIDSummary.toString());
         }
     }
 }

@@ -175,7 +175,7 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
 
     public int shutdownSerial() {
         ChameleonIO.DeviceStatusSettings.stopPostingStats();
-        if(btGattConnectorBLEDevice != null) {
+        if(btGattConnectorBLEDevice != null && btGattConnectorBLEDevice.isDeviceConnected()) {
             btGattConnectorBLEDevice.disconnectDevice();
         }
         stopScanningDevices();
