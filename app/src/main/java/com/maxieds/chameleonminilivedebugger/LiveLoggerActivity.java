@@ -163,7 +163,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
      public void clearStatusIcon(int iconID) {
           ImageView iconView = findViewById(iconID);
           if(iconView != null) {
-               iconView.setAlpha(192);
+               iconView.setAlpha(156);
           }
      }
 
@@ -185,6 +185,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
 
                     // Start the crash report activity to display a frontend error explanation to users:
                     ChameleonIO.DeviceStatusSettings.stopPostingStats();
+                    Utils.clearToastMessage();
                     Intent startCrashRptIntent = new Intent(liveLoggerActivityContext, CrashReportActivity.class);
                     startCrashRptIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startCrashRptIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -306,13 +307,13 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           /* Invoke the crash handler activity intentionally for testing purposes: */
           //((String) null).length();
 
-          AndroidLog.activityContext = this;
           boolean completeRestart = (getLiveLoggerInstance() == null);
 
           AndroidSettingsStorage.loadPreviousSettings();
           if(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT) {
                MainActivityLogUtils.clearAllLogs();
           }
+          Utils.clearToastMessage();
           ThemesConfiguration.setLocalTheme(ThemesConfiguration.storedAppTheme, true, this); // set the base colors, not the backgrounds initially
           ThemesConfiguration.setThemeHandler.postDelayed(ThemesConfiguration.setThemeRunner, 400);
 
@@ -630,6 +631,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
      @Override
      public void onPause() {
           AndroidSettingsStorage.saveAllSettings();
+          Utils.clearToastMessage();
           if(ChameleonSettings.getActiveSerialIOPort() != null) {
                ChameleonSettings.getActiveSerialIOPort().stopScanningDevices();
                ChameleonSettings.getActiveSerialIOPort().shutdownSerial();
@@ -649,6 +651,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
      @Override
      public void onResume() {
           super.onResume();
+          Utils.clearToastMessage();
           AndroidSettingsStorage.loadPreviousSettings();
           BluetoothUtils.resetBluetoothAdapterAtStart(this);
           if(ChameleonSettings.getActiveSerialIOPort() != null) {
@@ -663,6 +666,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
      @Override
      public void onDestroy() {
           AndroidSettingsStorage.saveAllSettings();
+          Utils.clearToastMessage();
           if(ChameleonSettings.getActiveSerialIOPort() != null) {
                ChameleonSettings.getActiveSerialIOPort().stopScanningDevices();
                ChameleonSettings.getActiveSerialIOPort().shutdownSerial();

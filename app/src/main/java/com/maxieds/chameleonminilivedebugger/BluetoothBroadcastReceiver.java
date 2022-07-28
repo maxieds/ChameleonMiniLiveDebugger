@@ -23,6 +23,7 @@ import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.widget.Toast;
 
 public class BluetoothBroadcastReceiver extends BroadcastReceiver {
 
@@ -44,14 +45,15 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         if (action == null) {
             return;
         }
-        AndroidLog.i(TAG, "btConnReceiver: intent action: " + action);
+        AndroidLog.d(TAG, "btConnReceiver: intent action: " + action);
         if (action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)) {
-            btGattConn.stopConnectingDevices();
-            if (!btGattConn.isDeviceConnected()) {
-                btGattConn.startConnectingDevices();
-            }
+            //btGattConn.stopConnectingDevices();
+            //if (!btGattConn.isDeviceConnected()) {
+            //    btGattConn.startConnectingDevices();
+            //}
             return;
         }
+        AndroidLog.i(TAG, "btConnReceiver: intent extras = " + intent.getExtras().toString());
         BluetoothDevice btIntentDevice = intent.getExtras().getParcelable(BluetoothDevice.EXTRA_DEVICE);
         if (btIntentDevice == null) {
             return;
@@ -60,32 +62,27 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         AndroidLog.i(TAG, "btConnReceiver: intent device name: " + btDeviceName);
         if (btGattConn == null || !BluetoothUtils.isChameleonDeviceName(btDeviceName)) {
             return;
-        } else if (action.equals(BluetoothDevice.ACTION_FOUND) || action.equals(BluetoothDevice.ACTION_ACL_CONNECTED)) {
+        } else if (action.equals(BluetoothDevice.ACTION_FOUND)) { // ???  || action.equals(BluetoothDevice.ACTION_ACL_CONNECTED)
             /** NOTE: See https://developer.android.com/reference/android/bluetooth/BluetoothDevice#EXTRA_RSSI */
             btGattConn.btDevice = btIntentDevice;
-            /**
-             * NOTE: Given the long pairing times with the Chameleon BLE interface while holding down button 'A',
-             *       it is a good idea to remind the user to keep the button pressed until the connection is
-             *       finally established. This means we want the next Toast message to persist for a while.
-             *       There are a few solid options:
-             *       (1) Something like: https://stackoverflow.com/a/45922317/10661959
-             *       (2) Use the Toast.setCallback(Callback) method to communicate with the Toast object created by the
-             *           Utils functions.
-             */
-            String userConnInstMsg = String.format(BuildConfig.DEFAULT_LOCALE, "New %s %s found.\n%s.",
-                    btGattConn.btDevice.getName(), btGattConn.btDevice.getAddress(),
-                    btGattConn.btSerialContext.getApplicationContext().getResources().getString(R.string.bluetoothExtraConfigInstructions));
-            Utils.displayToastMessageLong(userConnInstMsg);
-            final long shortPauseDuration = 1500L, threadSleepInterval = 50L;
+            String userConnInstMsg = String.format(BuildConfig.DEFAULT_LOCALE, "New %s %s found.",
+                    btGattConn.btDevice.getName(), btGattConn.btDevice.getAddress());
+            Utils.displayToastMessage(userConnInstMsg, Toast.LENGTH_SHORT);
             btGattConn.btDevice.createBond();
-            btGattConn.requestConnectionPriority(BluetoothGattConnector.BLUETOOTH_GATT_CONNECT_PRIORITY_HIGH);
+            //btGattConn.requestConnectionPriority(BluetoothGattConnector.BLUETOOTH_GATT_CONNECT_PRIORITY_HIGH);
             btGattConn.btGatt = btGattConn.btDevice.connectGatt(btGattConn.btSerialContext, true, btGattConn);
             if (btGattConn.btGatt != null) {
+                // ??? TODO: Remove the code below ???
+                if (btGattConn.btAdapter != null && btGattConn.btAdapter.isDiscovering()) {
+                    btGattConn.btAdapter.cancelDiscovery();
+                }
                 btGattConn.btGatt.discoverServices();
+                btGattConn.stopRestartCancelledBTDiscRuntime();
+                // ??? TODO: Handle the onDiscoverServices setup from GattConn here ???
             }
             return;
         }
-        int intentExtraState = intent.getExtras().getInt(BluetoothAdapter.EXTRA_STATE, -1);
+        /*int intentExtraState = intent.getExtras().getInt(BluetoothAdapter.EXTRA_STATE, -1);
         int intentExtraBondState = intent.getExtras().getInt(BluetoothDevice.EXTRA_BOND_STATE, -1);
         if (action.equals(BluetoothDevice.ACTION_PAIRING_REQUEST) ||
                 (action.equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_CONNECTED) ||
@@ -101,8 +98,9 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
             }
             if (btGattConn.btGatt != null) {
                 btGattConn.btGatt.discoverServices();
+                btGattConn.stopRestartCancelledBTDiscRuntime();
             }
-        }
+        }*/
     }
 
 }

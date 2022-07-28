@@ -20,18 +20,12 @@ package com.maxieds.chameleonminilivedebugger;
 import static android.content.Context.DOWNLOAD_SERVICE;
 
 import android.app.DownloadManager;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Environment;
-import android.provider.Settings;
 import android.util.Log;
-import android.widget.SpinnerAdapter;
 
 import androidx.annotation.NonNull;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -46,7 +40,9 @@ public class AndroidLog {
 
     private static final String TAG = AndroidLog.class.getSimpleName();
 
-    public static ChameleonMiniLiveDebuggerActivity activityContext;
+    public static ChameleonMiniLiveDebuggerActivity getActivityContext() {
+        return ChameleonMiniLiveDebuggerActivity.getInstance();
+    }
 
     public enum LogLevel {
         VERBOSE,
@@ -99,7 +95,7 @@ public class AndroidLog {
     private static PrintStream openLogDataOutputFile() {
         String logDataOutFilePath = Utils.getTimestamp(LOGDATA_FILE_FORMAT);
         boolean logOutputFolderExists = true;
-        String localAppStoragePath = activityContext.getFilesDir().getAbsolutePath();
+        String localAppStoragePath = getActivityContext().getFilesDir().getAbsolutePath();
         String logDataOutputFilePath = localAppStoragePath + "//" + LOGDATA_FILE_LOCAL_DIRPATH;
         File logDataOutputFolder = new File(logDataOutputFilePath);
         if (!logDataOutputFolder.exists()) {
@@ -156,7 +152,7 @@ public class AndroidLog {
             openLogDataOutputFile();
             if (logDataOutputFileHandle == null) {
                 if (updateGUIWithStatus) {
-                    Utils.displayToastMessageShort(activityContext, "Log file download failed.");
+                    Utils.displayToastMessageShort(getActivityContext(), "Log file download failed.");
                     LiveLoggerActivity llActivity = LiveLoggerActivity.getLiveLoggerInstance();
                     if (llActivity != null) {
                         llActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
@@ -168,7 +164,7 @@ public class AndroidLog {
         } else {
             closeLogDataOutputFile();
         }
-        String downloadsFolderBase = activityContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+        String downloadsFolderBase = getActivityContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
         downloadsFolderBase = downloadsFolderBase.replace("/", "//");
         String downloadsFolderPath = downloadsFolderBase;
         File downloadsFolder = new File(downloadsFolderPath);
@@ -177,7 +173,7 @@ public class AndroidLog {
             docsFolderExists = downloadsFolder.mkdir();
             if (!docsFolderExists) {
                 if (updateGUIWithStatus) {
-                    Utils.displayToastMessageShort(activityContext, "Log file download failed.");
+                    Utils.displayToastMessageShort(getActivityContext(), "Log file download failed.");
                     if (LiveLoggerActivity.getLiveLoggerInstance() != null) {
                         LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
                     }
@@ -190,7 +186,7 @@ public class AndroidLog {
         File dldOutFile = new File(downloadsFolder.getAbsolutePath(), dldLogFileName);
         if (!dldOutFile.exists()) {
             if (updateGUIWithStatus) {
-                Utils.displayToastMessageShort(activityContext, "Log file download failed.");
+                Utils.displayToastMessageShort(getActivityContext(), "Log file download failed.");
                 if (LiveLoggerActivity.getLiveLoggerInstance() != null) {
                     LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
                 }
@@ -202,7 +198,7 @@ public class AndroidLog {
         } catch(Exception ioe) {
             ioe.printStackTrace();
             if (updateGUIWithStatus) {
-                Utils.displayToastMessageShort(activityContext, "Log file download failed.");
+                Utils.displayToastMessageShort(getActivityContext(), "Log file download failed.");
                 if (LiveLoggerActivity.getLiveLoggerInstance() != null) {
                     LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
                 }
@@ -259,10 +255,10 @@ public class AndroidLog {
     }
 
     private static String formatLogTag(@NonNull String logTag) {
-        if (activityContext == null) {
+        if (getActivityContext() == null) {
             return logTag;
         }
-        return String.format(BuildConfig.DEFAULT_LOCALE, "%s/%s", activityContext.getPackageName(), logTag);
+        return String.format(BuildConfig.DEFAULT_LOCALE, "%s/%s", getActivityContext().getPackageName(), logTag);
     }
 
     public static void d(String tag, String msg) {

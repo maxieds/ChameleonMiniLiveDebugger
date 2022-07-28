@@ -72,7 +72,6 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        AndroidLog.activityContext = this;
 
         AndroidSettingsStorage.loadPreviousSettings();
 
@@ -174,7 +173,7 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
 
     protected void signalCrashByVibration() {
         Vibrator deviceVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        long[] vibratePattern = { 0, 350, 500, 350, 500, 1250 };
+        long[] vibratePattern = new long[] { 0, 350, 500, 350, 500, 1250 };
         if(!deviceVibrator.hasVibrator()) {
             return;
         }
@@ -271,6 +270,7 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
         restartCMLDMainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         restartCMLDMainActivityIntent.setAction(CrashReportActivity.INTENT_ACTION_RESTART_CMLD_ACTIVITY);
         restartCMLDMainActivityIntent.putExtra(INTENT_CMLD_RECOVERED_FROM_CRASH, true);
+        Utils.clearToastMessage();
         startActivity(restartCMLDMainActivityIntent);
         finish();
         System.exit(-2);

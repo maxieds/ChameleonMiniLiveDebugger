@@ -17,7 +17,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
-import android.app.NotificationManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -28,6 +27,8 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.text.format.Time;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -461,6 +462,17 @@ public class Utils {
         return gpsLocStr;
     }
 
+    private static Toast lastDisplayedToast = null;
+    private static Handler displayToastHandler = null;
+    private static Runnable displayToastRunner = null;
+
+    public static void clearToastMessage() {
+        if (lastDisplayedToast != null) {
+            lastDisplayedToast.cancel();
+            displayToastHandler.removeCallbacks(displayToastRunner);
+        }
+    }
+
     public static void displayToastMessage(ChameleonMiniLiveDebuggerActivity callingActivity, String toastMsg, int msgDuration) {
         Toast toastDisplay = Toast.makeText(
                 callingActivity,
@@ -484,17 +496,22 @@ public class Utils {
             }
             toastDisplay.getView().setAlpha(0.75f);
         }
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            final Toast toastDisplayStatic = toastDisplay;
+        clearToastMessage();
+        lastDisplayedToast = toastDisplay;
+        if (displayToastHandler == null) {
+            displayToastHandler = new Handler(Looper.getMainLooper());
+        }
+        displayToastRunner = new Runnable() {
             @Override
             public void run() {
-                toastDisplayStatic.show();
+                lastDisplayedToast.show();
             }
-        });
+        };
+        displayToastHandler.post(displayToastRunner);
         AndroidLog.i(TAG, "TOAST MSG PENDING DISPLAY: " + toastMsg);
     }
 
-    private static void displayToastMessage(String toastMsg, int msgDuration) {
+    public static void displayToastMessage(String toastMsg, int msgDuration) {
         displayToastMessage(LiveLoggerActivity.getLiveLoggerInstance(), toastMsg, msgDuration);
     }
 
@@ -510,8 +527,22 @@ public class Utils {
         Utils.displayToastMessage(toastMsg, Toast.LENGTH_LONG);
     }
 
-    public static void displayToastMessageLong(ChameleonMiniLiveDebuggerActivity callingActivity, String toastMsg) {
-        Utils.displayToastMessage(callingActivity, toastMsg, Toast.LENGTH_LONG);
+    public static void vibrateAlert(@NonNull long[] vibratePattern) {
+        Vibrator deviceVibrator = (Vibrator) ChameleonMiniLiveDebuggerActivity.getInstance().getSystemService(Context.VIBRATOR_SERVICE);
+        if(!deviceVibrator.hasVibrator()) {
+            return;
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            deviceVibrator.vibrate(VibrationEffect.createWaveform(vibratePattern, -1));
+        }
+        else {
+            deviceVibrator.vibrate(vibratePattern, -1);
+        }
+    }
+
+    public static void vibrateAlertShort() {
+        long[] vibratePatternShort = new long[] { 0, 350, 500, 350 };
+        vibrateAlert(vibratePatternShort);
     }
 
     private static final short[] CRC16_LOOKUP_TABLE = new short[] {

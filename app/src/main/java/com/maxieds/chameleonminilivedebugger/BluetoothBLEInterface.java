@@ -115,6 +115,7 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
         } else if (!receiversRegistered) {
             configureSerial();
         }
+        Utils.clearToastMessage();
         activeDevice  = btDev;
         ChameleonIO.REVE_BOARD = false;
         ChameleonIO.PAUSED = false;
