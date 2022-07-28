@@ -404,7 +404,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           /* Waiting for more than a second to give the GUI time to display on launch
            * before the BT scanning starts.
            */
-          runAfterGUIInitDeviceHandler.postDelayed(runAfterGUIInitDeviceRunnable, 1250);
+          runAfterGUIInitDeviceHandler.postDelayed(runAfterGUIInitDeviceRunnable, 100);
 
      }
 

@@ -120,7 +120,7 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
         ChameleonIO.PAUSED = false;
         ChameleonSettings.chameleonDeviceSerialNumber = ChameleonSettings.CMINI_DEVICE_FIELD_NONE;
         ChameleonSettings.chameleonDeviceAddress = btDev.getAddress();
-        ChameleonIO.CHAMELEON_MINI_BOARD_TYPE = btGattConnectorBLEDevice.getChameleonDeviceType();
+        ChameleonIO.CHAMELEON_MINI_BOARD_TYPE = BluetoothUtils.getChameleonDeviceType(btDev.getName());
 
         Handler configDeviceHandler = new Handler();
         Runnable configDeviceRunnable = new Runnable() {

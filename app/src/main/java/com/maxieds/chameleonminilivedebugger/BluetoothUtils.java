@@ -161,6 +161,30 @@ public class BluetoothUtils {
 
     }
 
+    public static boolean isChameleonDeviceName(String devName) {
+        if (devName == null) {
+            return false;
+        }
+        return devName.equals(BluetoothGattConnector.CHAMELEON_REVG_NAME) ||
+                devName.equals(BluetoothGattConnector.CHAMELEON_REVG_NAME_ALTERNATE) ||
+                devName.equals(BluetoothGattConnector.CHAMELEON_REVG_TINY_NAME);
+    }
+
+    @SuppressLint("MissingPermission")
+    public static int getChameleonDeviceType(String btDeviceName) {
+        try {
+            if (btDeviceName.equals(BluetoothGattConnector.CHAMELEON_REVG_TINY_NAME)) {
+                return ChameleonIO.CHAMELEON_TYPE_PROXGRIND_REVG_TINY;
+            } else if (btDeviceName.equals(BluetoothGattConnector.CHAMELEON_REVG_NAME) ||
+                    btDeviceName.equals(BluetoothGattConnector.CHAMELEON_REVG_NAME_ALTERNATE)) {
+                return ChameleonIO.CHAMELEON_TYPE_PROXGRIND_REVG;
+            }
+        } catch (Exception excpt) {
+            AndroidLog.printStackTrace(excpt);
+        }
+        return ChameleonIO.CHAMELEON_TYPE_UNKNOWN;
+    }
+
     /* NOTE: The UUID strings for the GATT characteristics associated with each service can be
      *       parsed by observing that the first part of the UUID is of the form '0000XXXX-' where
      *       the 16-bit 'XXXX' hexadecimal codes are standardized here:

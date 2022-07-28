@@ -47,6 +47,9 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         AndroidLog.i(TAG, "btConnReceiver: intent action: " + action);
         if (action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)) {
             btGattConn.stopConnectingDevices();
+            if (!btGattConn.isDeviceConnected()) {
+                btGattConn.startConnectingDevices();
+            }
             return;
         }
         BluetoothDevice btIntentDevice = intent.getExtras().getParcelable(BluetoothDevice.EXTRA_DEVICE);
@@ -55,7 +58,7 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         }
         String btDeviceName = btIntentDevice.getName();
         AndroidLog.i(TAG, "btConnReceiver: intent device name: " + btDeviceName);
-        if (btGattConn == null || !btGattConn.isChameleonDeviceName(btDeviceName)) {
+        if (btGattConn == null || !BluetoothUtils.isChameleonDeviceName(btDeviceName)) {
             return;
         } else if (action.equals(BluetoothDevice.ACTION_FOUND) || action.equals(BluetoothDevice.ACTION_ACL_CONNECTED)) {
             /** NOTE: See https://developer.android.com/reference/android/bluetooth/BluetoothDevice#EXTRA_RSSI */
@@ -72,19 +75,14 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
             String userConnInstMsg = String.format(BuildConfig.DEFAULT_LOCALE, "New %s %s found.\n%s.",
                     btGattConn.btDevice.getName(), btGattConn.btDevice.getAddress(),
                     btGattConn.btSerialContext.getApplicationContext().getResources().getString(R.string.bluetoothExtraConfigInstructions));
-            Utils.displayToastMessageShort(userConnInstMsg);
+            Utils.displayToastMessageLong(userConnInstMsg);
             final long shortPauseDuration = 1500L, threadSleepInterval = 50L;
-            for (long threadSleepTime = 0L; threadSleepTime <= shortPauseDuration; threadSleepTime += threadSleepInterval) {
-                try {
-                    Thread.sleep(threadSleepInterval);
-                } catch (InterruptedException ie) {
-                    AndroidLog.printStackTrace(ie);
-                    break;
-                }
-            }
             btGattConn.btDevice.createBond();
             btGattConn.requestConnectionPriority(BluetoothGattConnector.BLUETOOTH_GATT_CONNECT_PRIORITY_HIGH);
             btGattConn.btGatt = btGattConn.btDevice.connectGatt(btGattConn.btSerialContext, true, btGattConn);
+            if (btGattConn.btGatt != null) {
+                btGattConn.btGatt.discoverServices();
+            }
             return;
         }
         int intentExtraState = intent.getExtras().getInt(BluetoothAdapter.EXTRA_STATE, -1);
@@ -94,9 +92,15 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
                 (action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED) && intentExtraBondState == BluetoothDevice.BOND_BONDED) ||
                 (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_CONNECTED)) {
             btGattConn.btDevice = btIntentDevice;
+            if (btGattConn.btDevice == null) {
+                return;
+            }
             if (btGattConn.btGatt == null) {
                 btGattConn.requestConnectionPriority(BluetoothGattConnector.BLUETOOTH_GATT_CONNECT_PRIORITY_HIGH);
                 btGattConn.btGatt = btGattConn.btDevice.connectGatt(btGattConn.btSerialContext, true, btGattConn);
+            }
+            if (btGattConn.btGatt != null) {
+                btGattConn.btGatt.discoverServices();
             }
         }
     }
