@@ -243,7 +243,7 @@
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
                 <action android:name="android.bluetooth.device.action.FOUND" />
                 <action android:name="android.hardware.usb.action.ACL_CONNECTED" />
-                <category android:name="android.intent.category.HOME" />
+                <!--<category android:name="android.intent.category.HOME" />-->
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
