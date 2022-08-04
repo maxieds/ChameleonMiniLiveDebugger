@@ -589,12 +589,11 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                             disconnectDevice();
                             stopConnectingDevices();
                             startConnectingDevices();
-                        } else if (!btGattRef.discoverServices()) {
-                            discoverServicesHandler.postDelayed(this, BluetoothBroadcastReceiver.CHECK_DISCOVER_SVCS_INTERVAL);
                         } else if (configureGattConnector()) {
                             BluetoothBroadcastReceiver.printServicesSummaryListToLog(btGattRef);
                             notifyBluetoothBLEDeviceConnected();
                         } else {
+                            btGattRef.discoverServices();
                             discoverServicesHandler.postDelayed(this, BluetoothBroadcastReceiver.CHECK_DISCOVER_SVCS_INTERVAL);
                         }
                     }
