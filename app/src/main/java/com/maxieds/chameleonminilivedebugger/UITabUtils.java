@@ -542,7 +542,7 @@ public class UITabUtils {
             } else {
                 errorOnInit = true;
             }
-            if (!connectSpinnerAdapter(tabMainLayoutView, R.id.btConnPrioritySpinner, R.array.BluetoothConnectionPriority, AndroidSettingsStorage.BLUETOOTH_CONNECTION_PRIORITY, ChameleonSettings.bluetoothConnectionPriority)) {
+            if (!connectSpinnerAdapterBluetoothConnectionPriority(tabMainLayoutView, R.id.btConnPrioritySpinner, R.array.BluetoothConnectionPriority, AndroidSettingsStorage.BLUETOOTH_CONNECTION_PRIORITY, ChameleonSettings.bluetoothConnectionPriority)) {
                 errorOnInit = true;
             }
         }
@@ -863,7 +863,7 @@ public class UITabUtils {
         return true;
     }
 
-    private static boolean connectSpinnerAdapter(View view, int spinnerID, int spinnerStringList, String settingsStorageKey, int defaultValue) {
+    private static boolean connectSpinnerAdapterBluetoothConnectionPriority(View view, int spinnerID, int spinnerStringList, String settingsStorageKey, int defaultValue) {
         final String[] spinnerList = view.getContext().getResources().getStringArray(spinnerStringList);
         SpinnerAdapter spinnerAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, spinnerList);
         Spinner spinner = (Spinner) view.findViewById(spinnerID);
@@ -878,8 +878,9 @@ public class UITabUtils {
             String[] localSpinnerList = spinnerList;
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 localSpinner.setSelection(((ArrayAdapter<String>) localSpinner.getAdapter()).getPosition(localSpinnerList[i]));
+                ChameleonSettings.bluetoothConnectionPriority = i;
+                BluetoothGattConnector.requestConnectionPriority(ChameleonSettings.bluetoothConnectionPriority);
                 AndroidSettingsStorage.updateValueByKey(settingsStorageKey);
-                AndroidSettingsStorage.loadPreviousSettings();
             }
             public void onNothingSelected(AdapterView<?> adapterView) {
                 return;
