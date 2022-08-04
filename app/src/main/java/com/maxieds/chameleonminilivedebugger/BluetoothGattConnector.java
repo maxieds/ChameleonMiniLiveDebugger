@@ -128,6 +128,9 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
     private BluetoothBLEInterface btSerialIface;
     public static byte[] btDevicePinDataBytes = new byte[0];
 
+    private Handler discoverServicesHandler;
+    private Runnable discoverServicesRunner;
+
     private BluetoothGattService rxtxDataService;
     private BluetoothGattCharacteristic ctrlGattChar;
     private BluetoothGattCharacteristic sendGattChar;
@@ -171,6 +174,8 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         initializeRestartCancelledBTDiscRuntime();
         isConnected = false;
         BluetoothGattConnector.btDevicePinDataBytes = getStoredBluetoothDevicePinData();
+        discoverServicesHandler = null;
+        discoverServicesRunner = null;
         rxtxDataService = null;
         ctrlGattChar = null;
         sendGattChar = null;
@@ -260,6 +265,11 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                 if (btAdapter.isDiscovering()) {
                     btAdapter.cancelDiscovery();
                 }
+                if (discoverServicesHandler != null && discoverServicesRunner != null) {
+                    discoverServicesHandler.removeCallbacks(discoverServicesRunner);
+                }
+                discoverServicesHandler = null;
+                discoverServicesRunner = null;
                 stopRestartCancelledBTDiscRuntime();
                 stopBTDevicesFromAdapterPolling();
             } catch(SecurityException se) {
@@ -289,6 +299,11 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     if (btAdapter.isDiscovering()) {
                         btAdapter.cancelDiscovery();
                     }
+                    if (discoverServicesHandler != null && discoverServicesRunner != null) {
+                        discoverServicesHandler.removeCallbacks(discoverServicesRunner);
+                    }
+                    discoverServicesHandler = null;
+                    discoverServicesRunner = null;
                 } catch (SecurityException se) {
                     AndroidLog.printStackTrace(se);
                 }
@@ -450,8 +465,11 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
     @SuppressLint("MissingPermission")
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-        if (status != BluetoothGatt.GATT_SUCCESS) {
+        if (status != BluetoothGatt.GATT_SUCCESS || newState == BluetoothGatt.STATE_DISCONNECTED) {
             AndroidLog.w(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "onConnectionStateChange: error/status code %d = %04x", status, status));
+            if (gatt != null) {
+                gatt.close();
+            }
         } else if (newState == BluetoothGatt.STATE_CONNECTED && btGatt == null) {
             btGatt = gatt;
             configureGattConnector();
@@ -549,41 +567,56 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         if (btGatt == null) {
             return null;
         }
-        boolean needToEnumerateBTServices = false;
         if (btDevice == null) {
             btDevice = btGatt.getDevice();
-            needToEnumerateBTServices = true;
         }
-        if (needToEnumerateBTServices) {
-            if (btDevice != null) {
-                btGatt.disconnect();
-                btDevice.fetchUuidsWithSdp();
-                btGatt = btDevice.connectGatt(btSerialContext, true, this);
-            }
-        }
+        //if (btDevice != null && DISCOVER_SERVICES) {
+        //    btDevice.fetchUuidsWithSdp();
+        //}
         if (btGatt != null) {
             btGatt.requestMtu(BLUETOOTH_LOCAL_MTU_THRESHOLD);
             requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
-            btGatt.readRemoteRssi();
-            btGatt.discoverServices();
+            //btGatt.readRemoteRssi();
+            if (discoverServicesHandler == null || discoverServicesRunner == null) {
+                discoverServicesHandler = new Handler(Looper.getMainLooper());
+                discoverServicesRunner = new Runnable() {
+                    final BluetoothGatt btGattRef = btGatt;
+                    @Override
+                    public void run() {
+                        if (!btGattRef.discoverServices()) {
+                            discoverServicesHandler.postDelayed(this, BluetoothBroadcastReceiver.CHECK_DISCOVER_SVCS_INTERVAL);
+                        }
+                    }
+                };
+            } else {
+                discoverServicesHandler.removeCallbacks(discoverServicesRunner);
+            }
+            discoverServicesHandler.post(discoverServicesRunner);
         }
         return btGatt;
     }
 
     @SuppressLint("MissingPermission")
     private boolean enumerateBLEGattComms(BluetoothGatt gatt) {
-        rxtxDataService = new BluetoothGattService(BleUuidType.getUuidByType(BleUuidType.UART_SERVICE_UUID), BluetoothGattService.SERVICE_TYPE_PRIMARY);
-        if (rxtxDataService == null && gatt != null) {
+        if (gatt != null) {
             rxtxDataService = gatt.getService(BleUuidType.getUuidByType(BleUuidType.UART_SERVICE_UUID));
+            if (rxtxDataService == null) {
+                rxtxDataService = new BluetoothGattService(BleUuidType.getUuidByType(BleUuidType.UART_SERVICE_UUID), BluetoothGattService.SERVICE_TYPE_PRIMARY);
+            }
         } else {
+            rxtxDataService = new BluetoothGattService(BleUuidType.getUuidByType(BleUuidType.UART_SERVICE_UUID), BluetoothGattService.SERVICE_TYPE_PRIMARY);
+        }
+        if (rxtxDataService == null) {
             return false;
         }
-        ctrlGattChar = rxtxDataService.getCharacteristic(BleUuidType.getUuidByType(BleUuidType.CTRL_CHAR_UUID));
-        ctrlGattCharDesc = ctrlGattChar.getDescriptor(BleUuidType.getUuidByType(BleUuidType.CTRL_CHAR_UUID));
-        sendGattChar = rxtxDataService.getCharacteristic(BleUuidType.getUuidByType(BleUuidType.SEND_CHAR_UUID));
-        sendGattCharDesc = sendGattChar.getDescriptor(BleUuidType.getUuidByType(BleUuidType.SEND_CHAR_UUID));
-        recvGattChar = rxtxDataService.getCharacteristic(BleUuidType.getUuidByType(BleUuidType.RECV_CHAR_UUID));
-        recvGattCharDesc = recvGattChar.getDescriptor(BleUuidType.getUuidByType(BleUuidType.RECV_CHAR_UUID));
+        try {
+            ctrlGattChar = rxtxDataService.getCharacteristic(BleUuidType.getUuidByType(BleUuidType.CTRL_CHAR_UUID));
+            ctrlGattCharDesc = ctrlGattChar.getDescriptor(BleUuidType.getUuidByType(BleUuidType.CTRL_CHAR_UUID));
+            sendGattChar = rxtxDataService.getCharacteristic(BleUuidType.getUuidByType(BleUuidType.SEND_CHAR_UUID));
+            sendGattCharDesc = sendGattChar.getDescriptor(BleUuidType.getUuidByType(BleUuidType.SEND_CHAR_UUID));
+            recvGattChar = rxtxDataService.getCharacteristic(BleUuidType.getUuidByType(BleUuidType.RECV_CHAR_UUID));
+            recvGattCharDesc = recvGattChar.getDescriptor(BleUuidType.getUuidByType(BleUuidType.RECV_CHAR_UUID));
+        } catch (NullPointerException npe) {}
         return ctrlGattChar != null && ctrlGattCharDesc != null && sendGattChar != null &&
                 sendGattCharDesc != null && recvGattChar != null && recvGattCharDesc != null;
     }

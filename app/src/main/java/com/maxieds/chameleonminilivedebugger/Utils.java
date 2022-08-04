@@ -211,7 +211,7 @@ public class Utils {
     }
 
     public static String byteSubarrayToString(@NonNull byte[] bytesArray, int lowerPos, int upperPos) {
-        return new String(getByteSubarray(bytesArray, lowerPos, upperPos), StandardCharsets.UTF_8);
+        return new String(getByteSubarray(bytesArray, lowerPos, upperPos), StandardCharsets.US_ASCII);
     }
 
     public static byte[] reverseByteArray(byte[] bytesArray) {
@@ -559,7 +559,7 @@ public class Utils {
                 toastTextMsg.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
                 toastTextMsg.setTypeface(toastTextMsg.getTypeface(), Typeface.BOLD_ITALIC);
             }
-            toastDisplay.getView().setAlpha(0.75f);
+            toastDisplay.getView().setAlpha(0.85f);
         }
         clearToastMessage();
         lastDisplayedToast = toastDisplay;
@@ -606,7 +606,7 @@ public class Utils {
     }
 
     public static void vibrateAlertShort() {
-        long[] vibratePatternShort = new long[] { 0, 350, 500, 350 };
+        long[] vibratePatternShort = new long[] { 0, 200, 250, 200 };
         vibrateAlert(vibratePatternShort);
     }
 

@@ -22,6 +22,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
+import android.bluetooth.BluetoothProfile;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -30,6 +31,7 @@ import android.os.Looper;
 import android.widget.Toast;
 
 import java.util.List;
+import java.util.UUID;
 
 public class BluetoothBroadcastReceiver extends BroadcastReceiver {
 
@@ -63,19 +65,25 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
             List<BluetoothGattService> svcList = btGattConn.btGatt.getServices();
             StringBuilder svcUUIDSummary = new StringBuilder(" ==== \n");
             for (BluetoothGattService svc : svcList) {
-                /**
-                 * NOTE: BT service data types described in table here:
+                /* NOTE: BT service data types described in table here:
                  *       https://btprodspecificationrefs.blob.core.windows.net/assigned-numbers/Assigned%20Number%20Types/Format%20Types.pdf
                  * NOTE: BT GATT characteristic permissions and service type constants are defined here:
                  *       https://developer.android.com/reference/android/bluetooth/BluetoothGattCharacteristic
                  */
-                if (!PRINT_SERVICES_LIST_FULL && !svc.getUuid().toString().equals(BluetoothGattConnector.BleUuidType.getUuidByType(BluetoothGattConnector.BleUuidType.UART_SERVICE_UUID).toString())) {
+                UUID svcUuid = svc.getUuid();
+                if (!PRINT_SERVICES_LIST_FULL && svcUuid != null && !svcUuid.toString().equals(BluetoothGattConnector.BleUuidType.getUuidByType(BluetoothGattConnector.BleUuidType.UART_SERVICE_UUID).toString())) {
                     continue;
                 }
-                svcUUIDSummary.append(String.format(BuildConfig.DEFAULT_LOCALE, "   > SERVICE %s [type %02x]\n", svc.getUuid().toString(), svc.getType()));
+                if (svcUuid == null) {
+                    continue;
+                }
+                svcUUIDSummary.append(String.format(BuildConfig.DEFAULT_LOCALE, "   > SERVICE %s [type %02x]\n", svcUuid.toString(), svc.getType()));
                 List<BluetoothGattCharacteristic> svcCharList = svc.getCharacteristics();
                 for (BluetoothGattCharacteristic svcChar : svcCharList) {
-                    svcUUIDSummary.append(String.format(BuildConfig.DEFAULT_LOCALE, "      -- SVC-CHAR %s\n", svcChar.getUuid().toString()));
+                    UUID svcCharUuid = svcChar.getUuid();
+                    if (svcCharUuid != null) {
+                        svcUUIDSummary.append(String.format(BuildConfig.DEFAULT_LOCALE, "      -- SVC-CHAR %s\n", svcCharUuid.toString()));
+                    }
                 }
                 svcUUIDSummary.append("\n");
             }
@@ -83,8 +91,8 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
-    private static final int DISCOVER_SVCS_ATTEMPT_COUNT = 5;
-    private static final long CHECK_DISCOVER_SVCS_INTERVAL = 1000L;
+    private static final int DISCOVER_SVCS_ATTEMPT_COUNT = 5 * 60;
+    public static final long CHECK_DISCOVER_SVCS_INTERVAL = 4000L;
 
     @SuppressLint("MissingPermission")
     public void onReceive(Context context, Intent intent) {
@@ -111,22 +119,30 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
             if (btDeviceRSSI != DEFAULT_BTDEV_RSSI) {
                 rssiInfoStr = String.format(BuildConfig.DEFAULT_LOCALE, " at RSSI of %d dBm", btDeviceRSSI);
             }
+            String btConnInst = btGattConn.btSerialContext.getString(R.string.bluetoothExtraConfigInstructions);
             btGattConn.btDevice = btIntentDevice;
-            String userConnInstMsg = String.format(BuildConfig.DEFAULT_LOCALE, "New %s %s found%s.",
-                    btGattConn.btDevice.getName(), btGattConn.btDevice.getAddress(), rssiInfoStr);
-            Utils.displayToastMessage(userConnInstMsg, Toast.LENGTH_SHORT);
+            String userConnInstMsg = String.format(BuildConfig.DEFAULT_LOCALE, "%s %s found%s. Establishing connection.\n%s",
+                    btGattConn.btDevice.getName(), btGattConn.btDevice.getAddress(), rssiInfoStr, btConnInst);
+            Utils.displayToastMessage(userConnInstMsg, Toast.LENGTH_LONG);
+            Utils.vibrateAlertShort();
             btGattConn.btDevice.createBond();
         }
         int intentExtraState = intent.getExtras().getInt(BluetoothAdapter.EXTRA_STATE, -1);
         int intentExtraBondState = intent.getExtras().getInt(BluetoothDevice.EXTRA_BOND_STATE, -1);
-        AndroidLog.d(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "EXTRA BOND STATE: %d", intentExtraBondState));
-        if ((action.equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_CONNECTED) ||
+        if (btGattConn.btDevice.getBondState() == BluetoothDevice.BOND_BONDED ||
+                (action.equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_CONNECTED) ||
                 (action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED) && intentExtraBondState == BluetoothDevice.BOND_BONDED) ||
                 (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_CONNECTED)) {
             btGattConn.btGatt = btGattConn.btDevice.connectGatt(btGattConn.btSerialContext, true, btGattConn);
+            if (btGattConn.btGatt == null || btGattConn.btGatt.getConnectionState(btGattConn.btDevice) != BluetoothProfile.STATE_CONNECTED) {
+                if (btGattConn.btGatt != null) {
+                    btGattConn.btGatt.close();
+                    btGattConn.btGatt = null;
+                }
+                return;
+            }
             btGattConn.btGatt = btGattConn.configureGattDataConnection();
-            btGattConn.stopBTDevicesFromAdapterPolling();
-            btGattConn.stopRestartCancelledBTDiscRuntime();
+            btGattConn.stopConnectingDevices();
             final Handler discoverSvcsHandler = new Handler(Looper.getMainLooper());
             Runnable discoverSvcsRunner = new Runnable() {
                 int retryAttempts = 0;
