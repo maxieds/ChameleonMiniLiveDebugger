@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothStatusCodes;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -993,7 +994,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       */
      public void actionButtonExportLogDownload(@NonNull View view) {
           Button srcBtn = (Button) view;
-          if(srcBtn != null) {
+          if (srcBtn != null) {
                String action = srcBtn.getTag().toString();
                ExportTools.exportLogDownload(action);
           }
@@ -1003,25 +1004,23 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
      protected void onActivityResult(int requestCode, int resultCode, Intent data) {
           String toastStatusMsg = "";
           if (requestCode == CMLD_PERMS_ALL_REQUEST_CODE) {
-               if(resultCode == Activity.RESULT_CANCELED) {
+               if(BluetoothUtils.isStatusResultCodeError(resultCode)) {
+                    toastStatusMsg = BluetoothUtils.getStatusResultCodeErrorString(resultCode);
                     finish();
-                    return;
                } else {
                     toastStatusMsg = "All CMLD app permissions requested. Enable all to ensure the app runs correctly.";
                }
           } else if (resultCode == BluetoothUtils.ACTVITY_REQUEST_BLUETOOTH_ENABLED_CODE) {
-               if(resultCode == Activity.RESULT_CANCELED) {
-                    /* Bluetooth not enabled: */
+               if(BluetoothUtils.isStatusResultCodeError(resultCode)) {
+                    toastStatusMsg = BluetoothUtils.getStatusResultCodeErrorString(resultCode);
                     finish();
-                    return;
                } else {
                     toastStatusMsg = "Bluetooth permissions enabled.";
                }
           } else if (resultCode == BluetoothUtils.ACTVITY_REQUEST_BLUETOOTH_DISCOVERABLE_CODE) {
-               if(resultCode == Activity.RESULT_CANCELED) {
-                    /* Bluetooth discovery not enabled: */
+               if(BluetoothUtils.isStatusResultCodeError(resultCode)) {
+                    toastStatusMsg = BluetoothUtils.getStatusResultCodeErrorString(resultCode);
                     finish();
-                    return;
                } else {
                     toastStatusMsg = "Bluetooth (discoverable) permissions enabled.";
                }

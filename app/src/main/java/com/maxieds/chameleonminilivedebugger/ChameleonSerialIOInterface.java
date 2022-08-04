@@ -34,6 +34,7 @@ public interface ChameleonSerialIOInterface {
     int STATUS_ERROR = -1;
     int STATUS_NOT_SUPPORTED = -2;
     int STATUS_RESOURCE_UNAVAILABLE = -3;
+    int STATUS_RESOURCE_PERMISSIONS_ERROR = -4;
     int STATUS_OK = 0;
     int STATUS_TRUE = 1;
     int STATUS_FALSE = 0;

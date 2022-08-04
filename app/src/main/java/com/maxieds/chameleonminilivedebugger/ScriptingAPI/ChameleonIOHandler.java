@@ -92,7 +92,7 @@ public class ChameleonIOHandler implements ChameleonSerialIOInterface.SerialData
         int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(dataBytes);
         if(loggingRespSize > 0) {
             if(!ScriptingConfig.IGNORE_LIVE_LOGGING) {
-                AndroidLog.i(TAG, "Received LIVE logging data [" + ChameleonLogUtils.LogCode.lookupByLogCode(dataBytes[0]).toString() + "]");
+                AndroidLog.d(TAG, "Received LIVE logging data [" + ChameleonLogUtils.LogCode.lookupByLogCode(dataBytes[0]).toString() + "]");
             }
         }
         else if(PAUSED) {}
@@ -120,7 +120,7 @@ public class ChameleonIOHandler implements ChameleonSerialIOInterface.SerialData
             statusConfigLock.unlock();
         }
         else {
-            AndroidLog.i(TAG, "Received unexpected Serial I/O @ " + Utils.bytes2Hex(dataBytes));
+            AndroidLog.d(TAG, "Received unexpected Serial I/O @ " + Utils.bytes2Hex(dataBytes));
         }
     }
 

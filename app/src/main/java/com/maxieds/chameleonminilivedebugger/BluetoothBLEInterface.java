@@ -40,7 +40,7 @@ import java.util.concurrent.Semaphore;
 
 public class BluetoothBLEInterface extends SerialIOReceiver {
 
-    /* ??? TODO: Check XModem functionality with the BT devices ??? */
+    /** TODO: Check XModem functionality with the BT devices ??? */
 
     private static final String TAG = BluetoothBLEInterface.class.getSimpleName();
 
@@ -134,6 +134,12 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
                     llActivity.setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
                     Utils.displayToastMessageShort(String.format(BuildConfig.DEFAULT_LOCALE, "New Bluetooth BLE device connection:\n%s @ %s\n%s", btDev.getName(), ChameleonSettings.chameleonDeviceAddress, ChameleonIO.getDeviceDescription(ChameleonIO.CHAMELEON_MINI_BOARD_TYPE)));
                     UITabUtils.updateConfigTabConnDeviceInfo(false);
+                    notifyStatus("BLUETOOTH STATUS: ", "Chameleon:     " + getActiveDeviceInfo());
+                    /**
+                     * TODO: Extract more manufacturer information about the BT device using these commands and
+                     *       the byte order for which device properties are mapped onto which bytes:
+                     *       https://github.com/RfidResearchGroup/ChameleonBLEAPI/blob/master/appmain/devices/BleCMDControl.java#L52
+                     */
                 }
                 else {
                     AndroidLog.i(TAG, "BLE device __NOT__ connected! ... Looping");
@@ -213,6 +219,7 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
             return true;
         } catch(Exception inte) {
             AndroidLog.printStackTrace(inte);
+            btGattConnectorBLEDevice.releaseAllLocks();
             btDevLock.release();
             return false;
         }
@@ -225,6 +232,7 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
         } catch(Exception inte) {
             AndroidLog.printStackTrace(inte);
             btDevLock.release();
+            btGattConnectorBLEDevice.releaseAllLocks();
             return false;
         }
     }
@@ -235,12 +243,14 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
         } catch(Exception ie) {
             AndroidLog.printStackTrace(ie);
             btDevLock.release();
+            btGattConnectorBLEDevice.releaseAllLocks();
             return false;
         }
     }
 
     public boolean releaseSerialPortLock() {
         btDevLock.release();
+        btGattConnectorBLEDevice.releaseAllLocks();
         return true;
     }
 

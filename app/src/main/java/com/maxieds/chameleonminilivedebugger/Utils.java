@@ -52,6 +52,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -93,6 +94,9 @@ public class Utils {
         return hexBytesStr.replaceAll("..(?!$)", "$0" + delim);
     }
 
+    private static final String NULL_STRING = "<NULL>";
+    private static final String EMPTY_STRING = "<EMPTY>";
+
     /**
      * Converts a string representation of a two-digit byte into a corresponding byte type.
      * @param byteStr
@@ -101,7 +105,6 @@ public class Utils {
     public static byte hexString2Byte(String byteStr) {
         if (byteStr.length() != 2) {
             AndroidLog.e(TAG, "Invalid Byte String: " + byteStr);
-            //Crashlytics.log(AndroidLog.wARN, TAG, "Invalid Byte String Encountered: " + byteStr);
             return 0x00;
         }
         int lsb = Character.digit(byteStr.charAt(1), 16);
@@ -124,13 +127,12 @@ public class Utils {
      * @param b
      * @return char print character (or '.')
      */
-    public static char byte2Ascii(byte b) {
-        int decAsciiCode = (int) b;
-        if (b >= 32 && b <= 127) {
-            char ch = (char) b;
-            return ch;
-        } else
-            return '.';
+    public static byte byte2Ascii(byte b) {
+        if (b >= 0x20 && b <= 0x7e) {
+            return Byte.valueOf(new String(new byte[] { b }, StandardCharsets.US_ASCII)).byteValue();
+        } else {
+            return Byte.valueOf(new String(new byte[] { (byte) '�' }, StandardCharsets.UTF_8)).byteValue();
+        }
     }
 
     /**
@@ -139,10 +141,21 @@ public class Utils {
      * @return String ascii representation of the byte array
      */
     public static String bytes2Ascii(byte[] bytes) {
+        if (bytes == null) {
+            return NULL_STRING;
+        } else if (bytes.length == 0) {
+            return EMPTY_STRING;
+        }
         StringBuilder byteStr = new StringBuilder();
-        for (int b = 0; b < bytes.length; b++)
+        for (int b = 0; b < bytes.length; b++) {
             byteStr.append(String.valueOf(byte2Ascii(bytes[b])));
+        }
         return byteStr.toString();
+    }
+
+    public static byte byteToHex(byte b) {
+        String byteStr = new String(new byte[] { b }, StandardCharsets.UTF_8);
+        return Byte.valueOf(byteStr).byteValue();
     }
 
     /**
@@ -150,17 +163,41 @@ public class Utils {
      * hexadecimal format.
      * @param bytes
      * @return String hex string representation
+     *
+     *
+     *
      */
-    public static String bytes2Hex(byte[] bytes) {
-        if (bytes == null)
-            return "<NULL>";
-        else if (bytes.length == 0)
-            return "";
+    public static String bytes2Hex(byte[] bytes, @NonNull String printDelim) {
+        if (bytes == null) {
+            return NULL_STRING;
+        } else if (bytes.length == 0) {
+            return EMPTY_STRING;
+        }
         StringBuilder hstr = new StringBuilder();
         hstr.append(String.format(BuildConfig.DEFAULT_LOCALE, "%02x", bytes[0]));
-        for (int b = 1; b < bytes.length; b++)
-            hstr.append(" " + String.format(BuildConfig.DEFAULT_LOCALE, "%02x", bytes[b]));
+        for (int b = 1; b < bytes.length; b++) {
+            hstr.append(String.format(BuildConfig.DEFAULT_LOCALE, "%s%02x", printDelim, byteToHex(bytes[b])));
+        }
         return hstr.toString();
+    }
+
+    public static String bytes2Hex(byte[] bytes) {
+        final String printDelim = " ";
+        return bytes2Hex(bytes, printDelim);
+    }
+
+    public static byte[] mergeBytes(byte[] arr1, byte[] arr2) {
+        if (arr1 == null && arr2 == null) {
+            return null;
+        } else if (arr1 == null || arr1.length == 0) {
+            return arr2;
+        } else if (arr2 == null || arr2.length == 0) {
+            return arr1;
+        }
+        byte[] mergedBytesArr = new byte[arr1.length + arr2.length];
+        System.arraycopy(mergedBytesArr, 0, arr1, 0, arr1.length);
+        System.arraycopy(mergedBytesArr, arr1.length, arr2, 0, arr2.length);
+        return mergedBytesArr;
     }
 
     /**
@@ -189,7 +226,12 @@ public class Utils {
         Arrays.fill(beDataBuf, (byte) 0x00);
         ArrayUtils.reverse(byteBuf);
         System.arraycopy(byteBuf, 0, beBufSize, zeroPadResultOnLeftBy, byteBuf.length);
-        return beDataBuf;
+        String beDataStr = new String(beDataBuf, StandardCharsets.UTF_16BE);
+        return beDataStr.getBytes(StandardCharsets.UTF_16BE);
+    }
+
+    public static byte[] bytesToBigEndian(@NonNull byte[] byteBuf) {
+        return bytesToBigEndian(byteBuf, 0, 0);
     }
 
     public static long bytesToUint32LittleEndian(@NonNull byte[] byteBuf) {

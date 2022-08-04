@@ -79,7 +79,7 @@ public class ExportTools {
     public static InputStream streamSrc;
     public static File outfile;
     private static String currentLogMode = "LIVE";
-    private static boolean throwToLive = false;
+    private static boolean throwToLive = true;
     public static byte CurrentFrameNumber;
     public static byte Checksum;
     public static int currentNAKCount;
@@ -628,7 +628,7 @@ public class ExportTools {
 
     public static void exportLogDownload(String action) {
         if(action.equals("LOGDOWNLOAD"))
-            ExportTools.downloadByXModem("LOGDOWNLOAD", "devicelog", false);
+            ExportTools.downloadByXModem("LOGDOWNLOAD", "devicelog", true);
         else if(action.equals("LOGDOWNLOAD2LIVE"))
             ExportTools.downloadByXModem("LOGDOWNLOAD", "devicelog", true);
         else if(action.equals("DOWNLOAD")) {

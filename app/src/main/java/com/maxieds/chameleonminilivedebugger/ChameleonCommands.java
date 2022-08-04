@@ -97,7 +97,7 @@ public class ChameleonCommands {
     public static void runCommand(String cmCmd) {
         if (!ChameleonIO.REVE_BOARD && (cmCmd.equals("DUMP_MFU") || cmCmd.equals("IDENTIFY") || cmCmd.equals("CLONE"))) {
             int oldTimeout = ChameleonIO.TIMEOUT;
-            ChameleonIO.TIMEOUT = 5000; // extend the timeout on these long commands
+            ChameleonIO.TIMEOUT = ChameleonIO.LONG_USER_TIMEOUT; /* Extend the timeout on these long commands */
             String mfuBytes = ChameleonIO.getSettingFromDevice(cmCmd);
             ChameleonIO.TIMEOUT = oldTimeout;
             ChameleonIO.DEVICE_RESPONSE[0] = Arrays.toString(ChameleonIO.DEVICE_RESPONSE);

@@ -18,8 +18,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 package com.maxieds.chameleonminilivedebugger;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothStatusCodes;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -30,6 +32,11 @@ import android.webkit.WebView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
+
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.util.Arrays;
+import java.util.Locale;
 
 public class BluetoothUtils {
 
@@ -120,6 +127,47 @@ public class BluetoothUtils {
         }
     }
 
+    public static boolean isStatusResultCodeError(int resultCode) {
+        switch (resultCode) {
+            case Activity.RESULT_CANCELED:
+            case BluetoothStatusCodes.ERROR_BLUETOOTH_NOT_ALLOWED:
+            case BluetoothStatusCodes.ERROR_BLUETOOTH_NOT_ENABLED:
+            case BluetoothStatusCodes.ERROR_DEVICE_NOT_BONDED:
+            case BluetoothStatusCodes.ERROR_MISSING_BLUETOOTH_CONNECT_PERMISSION:
+            case BluetoothStatusCodes.ERROR_UNKNOWN:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public static String getStatusResultCodeErrorString(int resultCode) {
+        String errorDesc = "NO-ERROR";
+        switch (resultCode) {
+            case Activity.RESULT_CANCELED:
+                errorDesc = "OPEERATION-CANCELED";
+                break;
+            case BluetoothStatusCodes.ERROR_BLUETOOTH_NOT_ALLOWED:
+                errorDesc = "BLUETOOTH-NOT-ALLOWED";
+                break;
+            case BluetoothStatusCodes.ERROR_BLUETOOTH_NOT_ENABLED:
+                errorDesc = "BLUETOOTH-NOT-ENABLED";
+                break;
+            case BluetoothStatusCodes.ERROR_DEVICE_NOT_BONDED:
+                errorDesc = "DEVICE-NOT-BONDED";
+                break;
+            case BluetoothStatusCodes.ERROR_MISSING_BLUETOOTH_CONNECT_PERMISSION:
+                errorDesc = "MISSING-CONNECT-PERMISSION";
+                break;
+            case BluetoothStatusCodes.ERROR_UNKNOWN:
+                errorDesc = "ERROR-UNKNOWN";
+                break;
+            default:
+                break;
+        }
+        return String.format(Locale.getDefault(), "Bluetooth reequest error: %s.", errorDesc);
+    }
+
     public static void displayAndroidBluetoothSettings() {
         Intent intentOpenBluetoothSettings = new Intent();
         intentOpenBluetoothSettings.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
@@ -191,9 +239,8 @@ public class BluetoothUtils {
      *       https://btprodspecificationrefs.blob.core.windows.net/assigned-values/16-bit%20UUID%20Numbers%20Document.pdf
      *       For example, the UUID '00002a29-0000-1000-8000-00805f9b34fb' is an identifier for the characteristic
      *       that provides the Manufacturer Name String.
-     */
-
-    /* CHAMELEON TINY PRO:
+     *
+     * EXAMPLE (CHAMELEON TINY PRO):
      *       > SERVICE 00001800-0000-1000-8000-00805f9b34fb [type 00]
      *          -- SVC-CHAR 00002a00-0000-1000-8000-00805f9b34fb
      *          -- SVC-CHAR 00002a01-0000-1000-8000-00805f9b34fb
@@ -212,40 +259,31 @@ public class BluetoothUtils {
      *          -- SVC-CHAR 51510002-7969-6473-6f40-6b6f6c6c6957
      *          -- SVC-CHAR 51510003-7969-6473-6f40-6b6f6c6c6957
      *          -- SVC-CHAR 51510004-7969-6473-6f40-6b6f6c6c6957
-     */
-
-    /* TODO: Extract the data from all of these characteristics given an input list of BluetoothGattService objects */
-    /* TODO: Extract more manufacturer information about the BT device using these commands and
-     *       the byte order for which device properties are mapped onto which bytes:
-     *       https://github.com/RfidResearchGroup/ChameleonBLEAPI/blob/master/appmain/devices/BleCMDControl.java#L52
+     *
+     * See: https://github.com/NordicSemiconductor/Android-Scanner-Compat-Library/blob/master/scanner/src/main/java/no/nordicsemi/android/support/v18/scanner/ScanRecord.java
+     * public static final int DATA_TYPE_LOCAL_NAME_SHORT = 0x08;
+     * public static final int DATA_TYPE_LOCAL_NAME_COMPLETE = 0x09;
+     * public static final int DATA_TYPE_TX_POWER_LEVEL = 0x0A;
+     * public static final int DATA_TYPE_MANUFACTURER_SPECIFIC_DATA = 0xFF;
      */
 
     public static class BLEPacket {
 
-        public static final int PACKET_TYPE_NO_FORMAT = -1;
-        public static final int PACKET_TYPE_XFER_OUTGOING_RAW = 0;
-        public static final int PACKET_TYPE_XFER_INCOMING_RAW = 1;
-        public static final int PACKET_TYPE_WRAPPED_SEND = 2;
-        public static final int PACKET_TYPE_WRAPPED_RECV = 3;
+        private static String TAG = BLEPacket.class.getSimpleName();
 
         /**
          * NOTE: BLE device command and control codes taken from:
          *       https://github.com/RfidResearchGroup/ChameleonMini/blob/proxgrind/Firmware/Chameleon-Mini/uartcmd.h
          *       https://github.com/RfidResearchGroup/ChameleonBLEAPI/blob/master/appmain/devices/BleCMDControl.java
          *       https://github.com/RfidResearchGroup/ChameleonBLEAPI/blob/master/packets/src/main/java/com/proxgrind/chameleon/packets/DataPackets.java
-         *       https://github.com/NordicSemiconductor/Android-Scanner-Compat-Library/blob/master/scanner/src/main/java/no/nordicsemi/android/support/v18/scanner/ScanRecord.java
          */
-        public static final int CMD_HEAD_SIGN = 0xA5;      /* Command header ID */
-        public static final int CMD_UART_RXTX = 0x75;      /* UART data command 'U' */
-        public static final int CMD_BLE_INFO = 0x69;       /* Extra info about the Mini devices */
-        public static final int CMD_SEND_ACK = 0x80;       /* Command reply ID */
-        public static final int CMD_BLE_TEST = 0x74;       /* TEST data command 't' */
-        public static final int CMD_TYPE_ALIVE = 0x61;     /* Heartbeat command 'a' */
-        public static final int CMD_TYPE_POWERDOWN = 0x70; /* Power down command 'p' */
-        public static final int DATA_TYPE_LOCAL_NAME_SHORT = 0x08;
-        public static final int DATA_TYPE_LOCAL_NAME_COMPLETE = 0x09;
-        public static final int DATA_TYPE_TX_POWER_LEVEL = 0x0A;
-        public static final int DATA_TYPE_MANUFACTURER_SPECIFIC_DATA = 0xFF;
+        public static final byte CMD_HEAD_SIGN = (byte) 0xA5; /* Command header ID */
+        public static final byte CMD_UART_RXTX = 0x75;        /* UART data command 'U' */
+        public static final byte CMD_BLE_INFO = 0x69;         /* Extra info about the Mini devices */
+        public static final byte CMD_SEND_ACK = (byte) 0x80;  /* Command reply ID */
+        public static final byte CMD_BLE_TEST = 0x74;         /* TEST data command 't' */
+        public static final byte CMD_TYPE_ALIVE = 0x61;       /* Heartbeat command 'a' */
+        public static final byte CMD_TYPE_POWERDOWN = 0x70;   /* Power down command 'p' */
 
         public enum DataEncodeMode {
             AUTO,
@@ -253,75 +291,153 @@ public class BluetoothUtils {
             UNPACK
         }
 
+        public static class BlePacketHeader {
+
+            private byte sign;
+            private byte command;
+            private byte length;
+            private byte status;
+
+            public BlePacketHeader() {
+                sign = CMD_HEAD_SIGN;
+                command = CMD_UART_RXTX;
+                length = 0x00;
+                status = 0x00;
+            }
+
+            BlePacketHeader setCommand(byte cmd) {
+                command = cmd;
+                return this;
+            }
+
+            BlePacketHeader setLength(byte len) {
+                length = len;
+                return this;
+            }
+
+            BlePacketHeader setStatus(byte st) {
+                status = st;
+                return this;
+            }
+
+            byte[] getHeaderData() {
+                return new byte[] { sign, command, length, status };
+            }
+
+        }
+
+        public static byte[] packageData(byte[] dataBytes) {
+            if (dataBytes == null) {
+                dataBytes = new byte[0];
+            }
+            return new Builder(dataBytes)
+                    .setEncodeMode(DataEncodeMode.DOPACK)
+                    .build();
+        }
+
+        public static byte[] unpackageData(byte[] dataBytes) {
+            if (dataBytes == null) {
+                return null;
+            }
+            return new Builder(dataBytes)
+                    .setEncodeMode(DataEncodeMode.UNPACK)
+                    .build();
+        }
+
+        private static byte calculateChecksum(byte initCheckSum, byte[] bytesArr, boolean subOp) {
+            if (bytesArr == null) {
+                return (byte) 0x00;
+            }
+            byte checksum = initCheckSum;
+            int bufPos = 0;
+            int byteCount = bytesArr.length;
+            while (byteCount-- > 0) {
+                byte b = bytesArr[bufPos++];
+                if (!subOp) {
+                    checksum += b;
+                } else {
+                    checksum -= b;
+                }
+            }
+            return checksum;
+        }
+
+        private static byte calculateChecksum(byte[] bytesArr) {
+            return calculateChecksum((byte) 0x00, bytesArr, false);
+        }
+
         public static class Builder {
 
-            private int packetFormatType;
+            private static String TAG = BLEPacket.class.getSimpleName() + "." + Builder.class.getSimpleName();
+
             private boolean autoCRLF;
             private DataEncodeMode dataEncodeMode;
-            private int cmdCode;
+            private byte cmdCode;
             private byte[] rawData;
-            private byte[] checksum;
 
-            public Builder() {
-                packetFormatType = PACKET_TYPE_NO_FORMAT;
+            public Builder(byte[] dataBytes) {
                 autoCRLF = true;
                 dataEncodeMode = DataEncodeMode.AUTO;
-                cmdCode = 0x00;
-                rawData = null;
+                cmdCode = CMD_UART_RXTX;
+                rawData = dataBytes;
             }
 
-            public void setPacketFormatType(int fmtType) {
-                packetFormatType = fmtType;
-            }
-
-            public void setAutoCRLF(boolean auto) {
+            public Builder setAutoCRLF(boolean auto) {
                 autoCRLF = auto;
+                return this;
             }
 
-            public void setEncodeMode(DataEncodeMode mode) {
+            public Builder setEncodeMode(DataEncodeMode mode) {
                 dataEncodeMode = mode;
+                return this;
             }
 
-            public void setCommandCode(int code) {
+            public Builder setCommandCode(byte code) {
                 cmdCode = code;
+                return this;
             }
 
-            public byte[] getData() {
-                /* TODO:
-                 * //#pragma pack(push,1)
-                 * //    GCC Use another alignment command  __attribute__ ((aligned (1)))
-                 * //    Command structure
-                 * typedef struct {
-                 *     uint8_t bSign;          //    Head sign
-                 *     uint8_t bCmd;           //    Command type
-                 *     uint8_t bCmdLen;        //    Command length (without header)
-                 *     uint8_t bChkSum;        //    Command checksum
-                 * } CMD_HEAD, *PCMD_HEAD __attribute__((aligned(1)));
-                 *
-                 * //    Serial data transmission
-                 * typedef struct {
-                 *     uint16_t wBitCount;     //    Length of data sent, unit: bit
-                 *     uint8_t bFlag;          //    Generate check bit, CRC and other flags
-                 * } CMD_SEND_DATA, *PCMD_SEND_DATA __attribute__((aligned(1)));
-                 *
-                 * //    Check Summing
-                 * uint8_t GetChkSum(PCMD_HEAD pCmdHead, uint8_t *DataPtr) {
-                 *     uint8_t bRet = 0;
-                 *
-                 *     if (!DataPtr)
-                 *         DataPtr = (uint8_t *)(pCmdHead + 1);
-                 *
-                 *     bRet -= pCmdHead->bSign;
-                 *     bRet -= pCmdHead->bCmd;
-                 *     bRet -= pCmdHead->bCmdLen;
-                 *
-                 *     for (uint8_t i = 0; i < pCmdHead->bCmdLen; i++) {
-                 *         bRet -= DataPtr[i];
-                 *     }
-                 *
-                 *     return bRet;
-                 * }
-                 */
+            public byte[] build() {
+                if (dataEncodeMode == DataEncodeMode.AUTO) {
+                    dataEncodeMode = DataEncodeMode.UNPACK;
+                }
+                if (rawData == null) {
+                    rawData = new byte[0];
+                }
+                if (dataEncodeMode == DataEncodeMode.DOPACK) {
+                    if (cmdCode == CMD_UART_RXTX && autoCRLF) {
+                        final byte[] crlfBytes = new byte[] { 0x0d, 0x0a };
+                        rawData = Utils.mergeBytes(rawData, crlfBytes);
+                    }
+                    BlePacketHeader pktHeaderData = new BlePacketHeader()
+                            .setCommand(cmdCode)
+                            .setLength((byte) rawData.length);
+                    byte checksum = calculateChecksum(Utils.mergeBytes(pktHeaderData.getHeaderData(), rawData));
+                    pktHeaderData.setStatus((byte) (0x00 - checksum));
+                    return Utils.mergeBytes(pktHeaderData.getHeaderData(), rawData);
+                } else if (dataEncodeMode == DataEncodeMode.UNPACK) {
+                    if (rawData.length < 4) {
+                        return null;
+                    }
+                    byte pktLength = rawData[2];
+                    if (pktLength + 4 != rawData.length) {
+                        return null;
+                    }
+                    byte[] pktPayloadData = new byte[pktLength];
+                    System.arraycopy(pktPayloadData, 0, rawData, 4, pktLength);
+                    byte pktHeadStatus = rawData[3];
+                    byte[] pktPackagedBytes = rawData.clone();
+                    pktPackagedBytes[3] = (byte) 0x00; /* Reset the status byte so it does not contribute to the checksum */
+                    byte pktChecksum = calculateChecksum(pktHeadStatus, pktPackagedBytes, false);
+                    if (pktChecksum != (byte) 0x00) {
+                        AndroidLog.d(TAG, "Incoming BT bytes to unpack: " + Utils.bytes2Hex(rawData));
+                        AndroidLog.w(TAG, "Packet checksum does not match for raw byte data " + Utils.bytes2Ascii(pktPayloadData));
+                        return null;
+                    }
+                    /** ??? TODO: Big or little endian byte order of the results returned (Chameleon Mini AVR is LE) ??? */
+                    //return ArrayUtils.reverse(pktPayloadData);
+                    return pktPayloadData;
+                }
                 return null;
             }
 

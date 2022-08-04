@@ -39,6 +39,17 @@ public class ChameleonLogUtils {
 
     private static final String TAG = ChameleonLogUtils.class.getSimpleName();
 
+    public static final String LOGMODE_OFF = "OFF";
+    public static final String LOGMODE_MEM = "MEMORY";
+    public static final String LOGMODE_LIVE = "LIVE";
+    public static final String LOGMODE_OFF_WITH_NOTIFY_SELECT_STATE = "OFF-NOTIFY";
+    public static final String LOGMODE_LIVE_WITH_NOTIFY_SELECT_STATE = "LIVE-NOTIFY";
+
+    public static boolean LOGMODE_NOTIFY_STATE = false;
+    public static boolean LOGMODE_ENABLE_PRINTING_LIVE_LOGS = true;
+    public static boolean LOGMODE_NOTIFY_ENABLE_CODECRX_STATUS_INDICATOR = true;
+    public static boolean LOGMODE_NOTIFY_ENABLE_RDRFLDDETECT_STATUS_INDICATOR = true;
+
     public static int LOGGING_MIN_DATA_BYTES = 0;
     public static boolean CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT = false;
     public static boolean CONFIG_COLLAPSE_COMMON_LOG_ENTRIES = false;
@@ -49,13 +60,13 @@ public class ChameleonLogUtils {
     public static final int DATADIR_BIDIRECTIONAL = 2;
 
     public enum LogCode {
-        /* Generic */
+        /** Generic info */
         LOG_INFO_GENERIC((byte) 0x10, DATADIR_BIDIRECTIONAL, "Unspecific log entry."),
         LOG_INFO_CONFIG_SET((byte) 0x11, DATADIR_BIDIRECTIONAL, "Configuration change."),
         LOG_INFO_SETTING_SET((byte) 0x12, DATADIR_BIDIRECTIONAL, "Setting change."),
         LOG_INFO_UID_SET((byte) 0x13, DATADIR_BIDIRECTIONAL, "UID change."),
         LOG_INFO_RESET_APP((byte) 0x20, DATADIR_BIDIRECTIONAL, "Application reset."),
-        /* Codec */
+        /** Codec */
         LOG_INFO_CODEC_RX_DATA((byte) 0x40, DATADIR_INCOMING, "Currently active codec received data."),
         LOG_INFO_CODEC_TX_DATA((byte) 0x41, DATADIR_OUTGOING, "Currently active codec sent data."),
         LOG_INFO_CODEC_RX_DATA_W_PARITY((byte) 0x42, DATADIR_INCOMING, "Currently active codec received data."),
@@ -65,7 +76,7 @@ public class ChameleonLogUtils {
         LOG_INFO_CODEC_SNI_CARD_DATA((byte) 0x46, DATADIR_INCOMING, "Sniffing codec receive data from card."),
         LOG_INFO_CODEC_SNI_CARD_DATA_W_PARITY((byte) 0x47, DATADIR_INCOMING, "Sniffing codec receive data from card."),
         LOG_INFO_CODEC_READER_FIELD_DETECTED((byte) 0x48, DATADIR_BIDIRECTIONAL, "Indicates whether a reader FIELD_DETECTED has been detected"),
-        /* App */
+        /** App */
         LOG_INFO_APP_CMD_READ((byte) 0x80, DATADIR_BIDIRECTIONAL, "Application processed read command."),
         LOG_INFO_APP_CMD_WRITE((byte) 0x81, DATADIR_BIDIRECTIONAL, "Application processed write command."),
         LOG_INFO_APP_CMD_INC((byte) 0x84, DATADIR_BIDIRECTIONAL, "Application processed increment command."),
@@ -80,11 +91,11 @@ public class ChameleonLogUtils {
         LOG_INFO_APP_CMD_DESELECT((byte) 0x95, DATADIR_BIDIRECTIONAL, "Application processed a DESELECT (ISO14443A) command."),
         LOG_INFO_APP_AUTHING((byte) 0xA0, DATADIR_BIDIRECTIONAL, "Application is in `authing` state."),
         LOG_INFO_APP_AUTHED((byte) 0xA1, DATADIR_BIDIRECTIONAL, "Application is in `auth` state."),
-        /* Log errors */
+        /** Log errors */
         LOG_ERR_APP_AUTH_FAIL((byte) 0xC0, DATADIR_BIDIRECTIONAL, "Application authentication failed."),
         LOG_ERR_APP_CHECKSUM_FAIL((byte) 0xC1, DATADIR_BIDIRECTIONAL, "Application had a checksum fail."),
         LOG_ERR_APP_NOT_AUTHED((byte) 0xC2, DATADIR_BIDIRECTIONAL, "Application is not authenticated."),
-        /* DESFire firmware stack specific */
+        /** DESFire firmware stack specific */
         LOG_ERR_DESFIRE_GENERIC_ERROR((byte) 0xE0, DATADIR_BIDIRECTIONAL, ""),
         LOG_INFO_DESFIRE_STATUS_INFO((byte) 0xE1, DATADIR_BIDIRECTIONAL, ""),
         LOG_INFO_DESFIRE_DEBUGGING_OUTPUT((byte) 0xE2, DATADIR_BIDIRECTIONAL, ""),
@@ -103,10 +114,10 @@ public class ChameleonLogUtils {
         LOG_INFO_APP_NONCE_B((byte) 0xD1, DATADIR_BIDIRECTIONAL, "Nonce B's value (generated)"),
         LOG_INFO_APP_NONCE_AB((byte) 0xD2, DATADIR_BIDIRECTIONAL, "Nonces A and B values (received)"),
         LOG_INFO_APP_SESSION_IV((byte) 0xD3, DATADIR_BIDIRECTIONAL, "Session IV buffer"),
-        /* ISO14443-3A,4 related logging */
+        /** ISO14443-3A,4 related logging */
         LOG_INFO_ISO14443_3A_STATE((byte) 0x53, DATADIR_BIDIRECTIONAL, ""),
         LOG_INFO_ISO14443_4_STATE((byte) 0x54, DATADIR_BIDIRECTIONAL, ""),
-        /* Other Chameleon-specific */
+        /** Other Chameleon-specific */
         LOG_INFO_SYSTEM_BOOT((byte) 0xFF, DATADIR_BIDIRECTIONAL, "Chameleon boots"),
         LOG_EMPTY((byte) 0x00, DATADIR_BIDIRECTIONAL, "Empty Log Entry. This is not followed by a length byte nor the two systick bytes nor any data."),
         LOG_CODE_DNE((byte) 0xff, DATADIR_BIDIRECTIONAL, "This is a dummy log code entry for matching where the input code does not exist.");
@@ -210,21 +221,93 @@ public class ChameleonLogUtils {
      */
     public static int getDataDirection(int lcode) {
         LogCode lc = LogCode.lookupByLogCode(lcode);
-        if(lc == null) {
+        if (lc == null) {
             return DATADIR_BIDIRECTIONAL;
         }
         return lc.getDataDirection();
     }
 
-    public static final String LOGMODE_OFF = "OFF";
-    public static final String LOGMODE_MEM = "MEMORY";
-    public static final String LOGMODE_LIVE = "LIVE";
-    public static final String LOGMODE_OFF_WITH_NOTIFY_SELECT_STATE = "OFF-NOTIFY";
-    public static final String LOGMODE_LIVE_WITH_NOTIFY_SELECT_STATE = "LIVE-NOTIFY";
+    public static class ChameleonLogData {
 
-    public static boolean LOGMODE_NOTIFY_STATE = false;
-    public static boolean LOGMODE_ENABLE_PRINTING_LIVE_LOGS = true;
-    public static boolean LOGMODE_NOTIFY_ENABLE_CODECRX_STATUS_INDICATOR = true;
-    public static boolean LOGMODE_NOTIFY_ENABLE_RDRFLDDETECT_STATUS_INDICATOR = true;
+        private static final String TAG = ChameleonLogData.class.getSimpleName();
+
+        private String logTypeNameFull;
+        private String logTypeNameShort;
+        private byte logCode;
+        private int timestamp;
+        private int payloadLength;
+        private byte[] payloadData;
+        private boolean isValid;
+
+        private ChameleonLogData(byte[] rawLogData) {
+            logTypeNameFull = "";
+            logTypeNameShort = "";
+            logCode = (byte) 0x00;
+            timestamp = 0;
+            payloadLength = 0;
+            payloadData = null;
+            if (rawLogData != null) {
+                isValid = extractLogData(rawLogData);
+            } else {
+                isValid = false;
+            }
+        }
+
+        private boolean extractLogData(@NonNull byte[] rawLogData) {
+            int logDataStructLength = ResponseIsLiveLoggingBytes(rawLogData);
+            if (logDataStructLength == 0) {
+                return false;
+            }
+            LogCode lcType = LogCode.LOG_CODE_MAP.get(rawLogData[0]);
+            if(lcType == null) {
+                return false;
+            }
+            logTypeNameFull = lcType.getDesc();
+            logTypeNameShort = lcType.getShortCodeName(logCode);
+            logCode = rawLogData[0];
+            payloadLength = Byte.toUnsignedInt(rawLogData[1]);
+            timestamp = (((int) rawLogData[2]) << 8) | ((int) rawLogData[3]);
+            payloadData = new byte[payloadLength];
+            System.arraycopy(payloadData, 0, rawLogData, 4, payloadLength);
+            return true;
+        }
+
+        public static final ChameleonLogData newInstance(byte[] rawLogData, int arrayOffset) {
+            if (rawLogData == null || arrayOffset >= rawLogData.length) {
+                rawLogData = null;
+            } else {
+                byte[] tempRawLogData = new byte[rawLogData.length - arrayOffset];
+                System.arraycopy(tempRawLogData, 0, rawLogData, arrayOffset, rawLogData.length - arrayOffset);
+                rawLogData = tempRawLogData;
+            }
+            return new ChameleonLogData(rawLogData);
+        }
+
+        public static final ChameleonLogData newInstance(byte[] rawLogData) {
+            return ChameleonLogData.newInstance(rawLogData, 0);
+        }
+
+        public boolean isValid() {
+            return isValid;
+        }
+
+        public String getLogDataString() {
+            if (!isValid()) {
+                return String.format(BuildConfig.DEFAULT_LOCALE, "---- INPUT NOT LOGGING DATA ----");
+            }
+            StringBuilder logDataBuilder = new StringBuilder("");
+            logDataBuilder.append(String.format(BuildConfig.DEFAULT_LOCALE, "LOG TYPE: %s -- %s -- CODE %02X -- LENGTH %d = %04X\n", logTypeNameFull, logTypeNameShort, logCode, payloadLength));
+            logDataBuilder.append(String.format(BuildConfig.DEFAULT_LOCALE, "    --- PAYLOAD AS HEX (LE-NATIVE): %s\n", Utils.bytes2Hex(payloadData)));
+            logDataBuilder.append(String.format(BuildConfig.DEFAULT_LOCALE, "    --- PAYLOAD AS HEX (BE):        %s\n", Utils.bytes2Hex(Utils.bytesToBigEndian(payloadData))));
+            logDataBuilder.append(String.format(BuildConfig.DEFAULT_LOCALE, "    --- PAYLOAD AS ASCII:           %s\n", Utils.bytes2Ascii(payloadData)));
+            return logDataBuilder.toString();
+        }
+
+        public static String getLogDataString(byte[] rawLogData) {
+            final ChameleonLogData cld = ChameleonLogData.newInstance(rawLogData);
+            return cld.getLogDataString();
+        }
+
+    }
 
 }

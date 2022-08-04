@@ -119,12 +119,17 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
         redirectSerialDataInterface = null;
     }
 
+    private void printSerialDataForDebugging(byte[] serialData) {
+        AndroidLog.d(TAG, "SERIALIO_LOGDATA_RECEIVED: (HEX)   " + Utils.bytes2Hex(serialData));
+        AndroidLog.d(TAG, "SERIALIO_LOGDATA_RECEIVED: (ASCII) " + Utils.bytes2Ascii(serialData));
+        AndroidLog.d(TAG, "SERIALIO_LOGDATA_RECEIVED: (LOG)   " + ChameleonLogUtils.ChameleonLogData.newInstance(serialData));
+    }
+
     public boolean notifySerialDataReceived(byte[] serialData) {
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED);
         notifyIntent.putExtra(ChameleonSerialIOInterface.SERIALIO_BYTE_DATA, serialData);
         notifyContext.sendBroadcast(notifyIntent);
-        AndroidLog.i(TAG, "SERIALIO_DATA_RECEIVED: (HEX) " + Utils.bytes2Hex(serialData));
-        AndroidLog.i(TAG, "SERIALIO_DATA_RECEIVED: (TXT) " + Utils.bytes2Ascii(serialData));
+        printSerialDataForDebugging(serialData);
         return true;
     }
 
@@ -135,8 +140,7 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED);
         notifyIntent.putExtra(ChameleonSerialIOInterface.SERIALIO_BYTE_DATA, serialData);
         notifyContext.sendBroadcast(notifyIntent);
-        AndroidLog.i(TAG, "SERIALIO_LOGDATA_RECEIVED: (HEX) " + Utils.bytes2Hex(serialData));
-        AndroidLog.i(TAG, "SERIALIO_LOGDATA_RECEIVED: (TXT) " + Utils.bytes2Ascii(serialData));
+        printSerialDataForDebugging(serialData);
         return true;
     }
 
@@ -155,7 +159,7 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
     }
 
     public void onReceivedData(byte[] liveLogData) {
-
+        printSerialDataForDebugging(liveLogData);
         if(redirectSerialDataInterface != null) {
             redirectSerialDataInterface.onReceivedData(liveLogData);
             return;
@@ -164,9 +168,6 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
         } else if (liveLogData.length == 0) {
             return;
         }
-        AndroidLog.d(getInterfaceLoggingTag(), "SerialReaderCallback Received Data: (HEX) " + Utils.bytes2Hex(liveLogData));
-        AndroidLog.d(getInterfaceLoggingTag(), "SerialReaderCallback Received Data: (TXT) " + Utils.bytes2Ascii(liveLogData));
-
         int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData);
         if (loggingRespSize > 0) {
             AndroidLog.i(TAG, "Received new LogEntry @ " + String.format(BuildConfig.DEFAULT_LOCALE, "0x%02x", liveLogData[0]));

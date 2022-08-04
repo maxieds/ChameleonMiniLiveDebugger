@@ -149,7 +149,7 @@ public class ChameleonIO {
      */
     public static int TIMEOUT = 3000;
     public static final int LOCK_TIMEOUT = 1000;
-    public static final long LONG_USER_TIMEOUT = 5000;
+    public static final int LONG_USER_TIMEOUT = 5000;
     public static final long BLE_GATT_CHAR_WRITE_TIMEOUT = 2000;
     public static final long NOTHREAD_SLEEP_INTERVAL = 50;
 
@@ -188,28 +188,22 @@ public class ChameleonIO {
          * List of the status codes and their corresponding text descriptions
          * (taken almost verbatim from the ChameleonMini source code).
          */
-        TIMEOUT(203),
-        OK(100),
-        OK_WITH_TEXT(101),
-        WAITING_FOR_MODEM(110),
-        TRUE(121),
-        FALSE(120),
-        UNKNOWN_COMMAND(200),
-        INVALID_COMMAND_USAGE(201),
-        INVALID_PARAMETER(202);
+        TIMEOUT(203, "TIMEOUT"),
+        OK(100, "OK"),
+        OK_WITH_TEXT(101, "OK WITH TEXT"),
+        WAITING_FOR_MODEM(110, "WAITING FOR XMODEM"),
+        TRUE(121, "TRUE"),
+        FALSE(120, "FALSE"),
+        UNKNOWN_COMMAND(200, "UNKNOWN COMMAND"),
+        INVALID_COMMAND_USAGE(201, "INVALID COMMAND USAGE"),
+        INVALID_PARAMETER(202, "INVALID PARAMETER");
 
-        /**
-         * Integer value associated with each enum value.
-         */
         private int responseCode;
+        private String responseMsg;
 
-        /**
-         * Constructor
-         *
-         * @param rcode
-         */
-        private SerialRespCode(int rcode) {
+        private SerialRespCode(int rcode, String rmsg) {
             responseCode = rcode;
+            responseMsg = rmsg;
         }
 
         /**
@@ -259,6 +253,26 @@ public class ChameleonIO {
          */
         public static SerialRespCode lookupByResponseCode(int rcode) {
             return RESP_CODE_MAP.get(rcode);
+        }
+
+        public String getChameleonTerminalResponse() {
+            String codeMsgDelim = responseMsg.length() == 0 ? "" : ":";
+            return String.format(BuildConfig.DEFAULT_LOCALE, "%d%s%s\n\r", responseCode, codeMsgDelim, responseMsg);
+        }
+
+        public static String getChameleonTerminalResponse(int rcode) {
+            SerialRespCode srCode = RESP_CODE_MAP.get(rcode);
+            if (srCode == null) {
+                srCode = RESP_CODE_MAP.get(FALSE.responseCode);
+            }
+            return srCode.getChameleonTerminalResponse();
+        }
+
+        public static String getChameleonTerminalResponse(SerialRespCode srCode) {
+            if (srCode == null) {
+                srCode = RESP_CODE_MAP.get(FALSE.responseCode);
+            }
+            return srCode.getChameleonTerminalResponse();
         }
 
     }
@@ -533,8 +547,11 @@ public class ChameleonIO {
             AndroidLog.i(TAG, "Serial port is null while executing command");
             return null;
         }
-        serialPort.sendDataBuffer(sendBuf);
-        return OK;
+        if (serialPort.sendDataBuffer(sendBuf) == SerialIOReceiver.STATUS_OK) {
+            return OK;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -562,11 +579,12 @@ public class ChameleonIO {
         ChameleonIO.WAITING_FOR_RESPONSE = true;
         ChameleonIO.executeChameleonMiniCommand(query, TIMEOUT);
         for(int i = 0; i < ChameleonIO.TIMEOUT / 50; i++) {
-            if(!ChameleonIO.WAITING_FOR_RESPONSE)
+            if(!ChameleonIO.WAITING_FOR_RESPONSE) {
                 break;
+            }
             try {
                 Thread.sleep(50);
-            } catch(InterruptedException ie) {
+            } catch (InterruptedException ie) {
                 ChameleonIO.WAITING_FOR_RESPONSE = false;
                 break;
             }
