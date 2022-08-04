@@ -468,14 +468,34 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
         if (newState == BluetoothGatt.STATE_DISCONNECTED) {
             AndroidLog.w(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "onConnectionStateChange: error/status code %d = %04x", status, status));
-            if (gatt != null) {
-                gatt.close();
-            }
+            disconnectDevice();
         } else if (newState == BluetoothGatt.STATE_CONNECTED) {
             if (btGatt == null) {
                 btGatt = gatt;
             }
             configureGattConnector();
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+        if (gatt != null) {
+            btGatt = gatt;
+        }
+        if (status != BluetoothGatt.GATT_SUCCESS) {
+            AndroidLog.w(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "onServicesDiscovered: error/status code %d = %04x", status, status));
+            return;
+        } else if (configureGattConnector()) {
+            if (discoverServicesHandler != null && discoverServicesRunner != null) {
+                discoverServicesHandler.removeCallbacks(discoverServicesRunner);
+            }
+            BluetoothBroadcastReceiver.printServicesSummaryListToLog(btGatt);
+            notifyBluetoothBLEDeviceConnected();
+        } else {
+            disconnectDevice();
+            stopConnectingDevices();
+            startConnectingDevices();
         }
     }
 
@@ -573,9 +593,9 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         if (btDevice == null) {
             btDevice = btGatt.getDevice();
         }
-        if (btDevice != null) {
-            btDevice.fetchUuidsWithSdp();
-        }
+        //if (btDevice != null) {
+        //    btDevice.fetchUuidsWithSdp();
+        //}
         if (btGatt != null) {
             btGatt.requestMtu(BLUETOOTH_LOCAL_MTU_THRESHOLD);
             requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
