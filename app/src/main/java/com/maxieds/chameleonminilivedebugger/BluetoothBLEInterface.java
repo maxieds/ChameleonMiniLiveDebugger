@@ -18,22 +18,15 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 package com.maxieds.chameleonminilivedebugger;
 
 import android.annotation.SuppressLint;
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.IOException;
 import java.util.concurrent.Semaphore;
@@ -93,6 +86,79 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
         return devInfo;
     }
 
+    @SuppressLint("MissingPermission")
+    private String getActiveDeviceInfoExtraTiny() {
+        try {
+            byte[] deviceInfoBytes = btGattConnectorBLEDevice.rawWrite(BluetoothUtils.CMD_GET_INFO_TINY);
+            if (deviceInfoBytes == null || deviceInfoBytes.length < BluetoothUtils.BLE_INFO_PACKET_SIZE_MAX_TINY) {
+                return null;
+            }
+            String[][] extraInfoDataList = new String[][] {
+                    { "Battery Voltage", String.valueOf(Utils.bytes2Integer32(Utils.reverseByteArray(Utils.getByteSubarray(deviceInfoBytes, 0, 1)))) },
+                    { "Battery Percent", String.valueOf(deviceInfoBytes[2]) },
+                    { "BLE Firmware Version", Utils.byteSubarrayToString(deviceInfoBytes, 3, 18) },
+            };
+            final int maxHeaderLength = 20;
+            final String paddingBase = "                                        ";
+            StringBuilder extraInfoBuilder = new StringBuilder("");
+            for (int lstIdx = 0; lstIdx < extraInfoDataList.length; lstIdx++) {
+                String einfoHdr = extraInfoDataList[lstIdx][0];
+                String einfoHdrPadding = paddingBase.substring(0, maxHeaderLength - einfoHdr.length() - 1);
+                String einfoData = extraInfoDataList[lstIdx][1];
+                extraInfoBuilder.append(String.format(BuildConfig.DEFAULT_LOCALE, "%s:%s%s\n", einfoHdr, einfoHdrPadding, einfoData));
+            }
+            return extraInfoBuilder.toString();
+        } catch (IOException ioe) {
+            AndroidLog.printStackTrace(ioe);
+
+        }
+        return null;
+    }
+
+    @SuppressLint("MissingPermission")
+    private String getActiveDeviceInfoExtraMini() {
+        try {
+            byte[] deviceInfoBytes = btGattConnectorBLEDevice.rawWrite(BluetoothUtils.CMD_GET_INFO_MINI);
+            if (deviceInfoBytes == null || deviceInfoBytes.length < BluetoothUtils.BLE_INFO_PACKET_SIZE_MAX_MINI) {
+                return null;
+            }
+            String[][] extraInfoDataList = new String[][] {
+                    { "Major (Main) Version", String.valueOf(deviceInfoBytes[0]) },
+                    { "Minor Version", String.valueOf(deviceInfoBytes[1]) },
+                    { "Version Flag", String.valueOf(Utils.bytes2Integer32(Utils.reverseByteArray(Utils.getByteSubarray(deviceInfoBytes, 2, 5)))) },
+                    { "BLE Version", Utils.byteSubarrayToString(deviceInfoBytes, 6, 37) },
+                    { "Battery Voltage", String.valueOf(Utils.bytes2Integer32(Utils.reverseByteArray(Utils.getByteSubarray(deviceInfoBytes, 38, 41)))) },
+                    { "Battery Percent", String.valueOf(deviceInfoBytes[42]) },
+                    { "AVR Major (Main) Version", String.valueOf(deviceInfoBytes[43]) },
+                    { "AVR Minor Version", String.valueOf(deviceInfoBytes[44]) },
+                    { "AVR Version", Utils.byteSubarrayToString(deviceInfoBytes, 45, 74) },
+            };
+            final int maxHeaderLength = 24;
+            final String paddingBase = "                                        ";
+            StringBuilder extraInfoBuilder = new StringBuilder("");
+            for (int lstIdx = 0; lstIdx < extraInfoDataList.length; lstIdx++) {
+                String einfoHdr = extraInfoDataList[lstIdx][0];
+                String einfoHdrPadding = paddingBase.substring(0, maxHeaderLength - einfoHdr.length() - 1);
+                String einfoData = extraInfoDataList[lstIdx][1];
+                extraInfoBuilder.append(String.format(BuildConfig.DEFAULT_LOCALE, "%s:%s%s\n", einfoHdr, einfoHdrPadding, einfoData));
+            }
+            return extraInfoBuilder.toString();
+        } catch (IOException ioe) {
+            AndroidLog.printStackTrace(ioe);
+        }
+        return null;
+    }
+
+    @SuppressLint("MissingPermission")
+    public String getActiveDeviceInfoExtra() {
+        int chamDeviceType = BluetoothUtils.getChameleonDeviceType(getDeviceName());
+        if (chamDeviceType == ChameleonIO.CHAMELEON_TYPE_PROXGRIND_REVG_TINY || chamDeviceType == ChameleonIO.CHAMELEON_TYPE_PROXGRIND_REVG_TINYPRO) {
+            return getActiveDeviceInfoExtraTiny();
+        } else {
+            return getActiveDeviceInfoExtraMini();
+        }
+    }
+
     public BluetoothBLEInterface(Context appContext) {
         setListenerContext(appContext);
         activeDevice = null;
@@ -135,11 +201,10 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
                     Utils.displayToastMessageShort(String.format(BuildConfig.DEFAULT_LOCALE, "New Bluetooth BLE device connection:\n%s @ %s\n%s", btDev.getName(), ChameleonSettings.chameleonDeviceAddress, ChameleonIO.getDeviceDescription(ChameleonIO.CHAMELEON_MINI_BOARD_TYPE)));
                     UITabUtils.updateConfigTabConnDeviceInfo(false);
                     notifyStatus("BLUETOOTH STATUS: ", "Chameleon:     " + getActiveDeviceInfo());
-                    /**
-                     * TODO: Extract more manufacturer information about the BT device using these commands and
-                     *       the byte order for which device properties are mapped onto which bytes:
-                     *       https://github.com/RfidResearchGroup/ChameleonBLEAPI/blob/master/appmain/devices/BleCMDControl.java#L52
-                     */
+                    String extraBTInfo = getActiveDeviceInfoExtra();
+                    if (extraBTInfo != null) {
+                        notifyStatus("BLUETOOTH EXTENDED DEVICE INFO: ", extraBTInfo);
+                    }
                 }
                 else {
                     AndroidLog.i(TAG, "BLE device __NOT__ connected! ... Looping");

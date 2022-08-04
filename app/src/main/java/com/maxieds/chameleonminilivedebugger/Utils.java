@@ -200,6 +200,29 @@ public class Utils {
         return mergedBytesArr;
     }
 
+    public static byte[] getByteSubarray(@NonNull byte[] bytesArray, int lowerPos, int upperPos) {
+        if (lowerPos > upperPos || upperPos >= bytesArray.length) {
+            return new byte[0];
+        }
+        int subarraySize = upperPos + 1 - lowerPos;
+        byte[] bytesSubarray = new byte[subarraySize];
+        System.arraycopy(bytesSubarray, 0, bytesArray, lowerPos, subarraySize);
+        return bytesSubarray;
+    }
+
+    public static String byteSubarrayToString(@NonNull byte[] bytesArray, int lowerPos, int upperPos) {
+        return new String(getByteSubarray(bytesArray, lowerPos, upperPos), StandardCharsets.UTF_8);
+    }
+
+    public static byte[] reverseByteArray(byte[] bytesArray) {
+        if (bytesArray == null) {
+            return null;
+        }
+        byte[] reversedBytesArray = bytesArray.clone();
+        ArrayUtils.reverse(reversedBytesArray);
+        return reversedBytesArray;
+    }
+
     /**
      * Returns a 32-bit integer obtained from the bytes (in lex. order).
      * @param bytesArray

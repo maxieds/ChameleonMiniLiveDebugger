@@ -320,4 +320,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item>ERROR</item>
     </string-array>
 
+    <string-array name="BluetoothConnectionPriority">
+        <item>BALANCED</item>
+        <item>HIGH</item>
+        <item>LOW POWER</item>
+    </string-array>
+
 </resources>

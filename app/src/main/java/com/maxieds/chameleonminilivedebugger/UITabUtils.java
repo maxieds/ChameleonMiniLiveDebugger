@@ -17,6 +17,28 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG_MITEM_CONNECT;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG_MITEM_LOGGING;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG_MITEM_SCRIPTING;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG_MITEM_SETTINGS;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_MITEM_LOGS;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_MITEM_LOGTOOLS;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_MITEM_SEARCH;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_SCRIPTING;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_SCRIPTING_MITEM_CONSOLE_VIEW;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_SCRIPTING_MITEM_LOAD_IMPORT;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_SCRIPTING_MITEM_REGISTER_VIEW;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_APDU;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_CMDS;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_PERIPHERALS;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_SLOTS;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_TAGCONFIG;
+import static com.maxieds.chameleonminilivedebugger.TabFragment.UITAB_DATA;
+
 import android.annotation.SuppressLint;
 import android.content.res.ColorStateList;
 import android.graphics.Typeface;
@@ -42,30 +64,6 @@ import androidx.core.widget.CompoundButtonCompat;
 
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingGUIMain;
 import com.shawnlin.numberpicker.NumberPicker;
-
-import java.util.Locale;
-
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG_MITEM_CONNECT;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG_MITEM_LOGGING;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG_MITEM_SCRIPTING;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG_MITEM_SETTINGS;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_EXPORT;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_MITEM_LOGS;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_MITEM_LOGTOOLS;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_MITEM_SEARCH;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_SCRIPTING;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_SCRIPTING_MITEM_CONSOLE_VIEW;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_SCRIPTING_MITEM_LOAD_IMPORT;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_SCRIPTING_MITEM_REGISTER_VIEW;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_APDU;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_CMDS;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_PERIPHERALS;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_SLOTS;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_TOOLS_MITEM_TAGCONFIG;
-import static com.maxieds.chameleonminilivedebugger.TabFragment.UITAB_DATA;
 
 public class UITabUtils {
 
@@ -544,6 +542,9 @@ public class UITabUtils {
             } else {
                 errorOnInit = true;
             }
+            if (!connectSpinnerAdapter(tabMainLayoutView, R.id.btConnPrioritySpinner, R.array.BluetoothConnectionPriority, AndroidSettingsStorage.BLUETOOTH_CONNECTION_PRIORITY, ChameleonSettings.bluetoothConnectionPriority)) {
+                errorOnInit = true;
+            }
         }
         else if(menuItemIdx == TAB_CONFIG_MITEM_CONNECT) {
             TextView btStatusText = tabMainLayoutView.findViewById(R.id.androidBluetoothStatusText);
@@ -854,6 +855,31 @@ public class UITabUtils {
                 AndroidLog.LOGDATA_LEVEL_THRESHOLD = AndroidLog.LogLevel.getLogLevelFromOrdinal(i);
                 AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_LOGDATA_LEVEL_THRESHOLD);
                 //Utils.displayToastMessageShort("New logging threshold: " + AndroidLog.LOGDATA_LEVEL_THRESHOLD.name());
+            }
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                return;
+            }
+        });
+        return true;
+    }
+
+    private static boolean connectSpinnerAdapter(View view, int spinnerID, int spinnerStringList, String settingsStorageKey, int defaultValue) {
+        final String[] spinnerList = view.getContext().getResources().getStringArray(spinnerStringList);
+        SpinnerAdapter spinnerAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, spinnerList);
+        Spinner spinner = (Spinner) view.findViewById(spinnerID);
+        if(spinner == null) {
+            return false;
+        }
+        spinner.setAdapter(spinnerAdapter);
+        spinner.setSelection(defaultValue);
+        final Spinner localSpinnerRef = spinner;
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            Spinner localSpinner = localSpinnerRef;
+            String[] localSpinnerList = spinnerList;
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                localSpinner.setSelection(((ArrayAdapter<String>) localSpinner.getAdapter()).getPosition(localSpinnerList[i]));
+                AndroidSettingsStorage.updateValueByKey(settingsStorageKey);
+                AndroidSettingsStorage.loadPreviousSettings();
             }
             public void onNothingSelected(AdapterView<?> adapterView) {
                 return;

@@ -267,6 +267,12 @@ public class BluetoothUtils {
      * public static final int DATA_TYPE_MANUFACTURER_SPECIFIC_DATA = 0xFF;
      */
 
+    public static final int BLE_INFO_PACKET_SIZE_MAX_TINY = 25;
+    public static final byte[] CMD_GET_INFO_TINY = new byte[] { (byte) 0XA5, 0X69, 0X00, 0X00 };
+
+    public static final int BLE_INFO_PACKET_SIZE_MAX_MINI = 77;
+    public static final byte[] CMD_GET_INFO_MINI = new byte[] { (byte) 0XA5, 0X69, 0X00, 0X00 };
+
     public static class BLEPacket {
 
         private static String TAG = BLEPacket.class.getSimpleName();

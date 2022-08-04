@@ -17,6 +17,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import android.bluetooth.BluetoothGatt;
 import android.os.Handler;
 
 public class ChameleonSettings {
@@ -26,6 +27,7 @@ public class ChameleonSettings {
     public static boolean allowWiredUSB = true;
     public static int serialBaudRate = ChameleonSerialIOInterface.HIGH_SPEED_BAUD_RATE;
     public static boolean allowBluetooth = false;
+    public static int bluetoothConnectionPriority = BluetoothGatt.CONNECTION_PRIORITY_BALANCED;
     public static boolean disableBTAdapter = false;
 
     public static final String CMINI_DEVICE_FIELD_NONE = "N/A";

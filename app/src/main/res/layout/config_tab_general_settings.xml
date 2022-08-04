@@ -246,6 +246,37 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
             </GridLayout>
 
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="@android:color/transparent"
+                android:columnCount="2"
+                android:padding="2dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:drawableLeft="@drawable/bluetooth_icon24"
+                    android:drawablePadding="3dp"
+                    android:singleLine="true"
+                    android:text="Bluetooth Connection Priority: "
+                    android:textStyle="normal"
+                    android:textColor="#000000" />
+
+                <Spinner
+                    android:id="@+id/btConnPrioritySpinner"
+                    android:layout_width="175dp"
+                    android:layout_height="20dp"
+                    android:layout_weight="1"
+                    android:layout_gravity="left|center_vertical"
+                    android:popupBackground="?colorAccentHighlight"
+                    android:spinnerMode="dropdown"
+                    android:paddingLeft="0dp" />
+
+            </GridLayout>
+
         </LinearLayout>
 
     </ScrollView>
