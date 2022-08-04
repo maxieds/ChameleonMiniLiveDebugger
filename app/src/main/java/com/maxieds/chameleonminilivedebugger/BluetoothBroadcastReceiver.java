@@ -93,7 +93,7 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
     }
 
     public static final int DISCOVER_SVCS_ATTEMPT_COUNT = 32;
-    public static final long CHECK_DISCOVER_SVCS_INTERVAL = 32 * 7500L;
+    public static final long CHECK_DISCOVER_SVCS_INTERVAL = 360000L;
 
     @SuppressLint("MissingPermission")
     public void onReceive(Context context, Intent intent) {
@@ -113,7 +113,9 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         AndroidLog.i(TAG, "btConnReceiver: intent device name: " + btDeviceName);
         if (btGattConn == null || !BluetoothUtils.isChameleonDeviceName(btDeviceName)) {
             return;
-        } else if (action.equals(BluetoothDevice.ACTION_FOUND)) {
+        } else if (btGattConn.btDevice != null && btGattConn.btDevice.getName() == btDeviceName) {
+            return;
+        } else if (action.equals(BluetoothDevice.ACTION_FOUND) || action.equals(BluetoothDevice.ACTION_ACL_CONNECTED)) {
             final short DEFAULT_BTDEV_RSSI = Short.MIN_VALUE;
             short btDeviceRSSI = intent.getExtras().getShort(BluetoothDevice.EXTRA_RSSI, DEFAULT_BTDEV_RSSI);
             String rssiInfoStr = "";
@@ -134,12 +136,12 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
                 (action.equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_CONNECTED) ||
                 (action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED) && intentExtraBondState == BluetoothDevice.BOND_BONDED) ||
                 (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_CONNECTED)) {
-            btGattConn.btGatt = btGattConn.btDevice.connectGatt(btGattConn.btSerialContext, true, btGattConn);
+            btGattConn.btGatt = btGattConn.btDevice.connectGatt(btGattConn.btSerialContext, true, btGattConn, BluetoothDevice.TRANSPORT_LE);
             if (btGattConn.btGatt == null) {
                 return;
             }
             btGattConn.stopConnectingDevices();
-            btGattConn.btGatt = btGattConn.configureGattDataConnection();
+            //btGattConn.btGatt = btGattConn.configureGattDataConnection();
         }
     }
 }

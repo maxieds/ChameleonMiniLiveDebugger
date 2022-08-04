@@ -235,6 +235,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     serialIOActionFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
                     serialIOActionFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
                     serialIOActionFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
+                    //serialIOActionFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
                     serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_NOTIFY_BTDEV_CONNECTED);
                     serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST);
                     serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED);
@@ -525,7 +526,8 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                   intent.getAction().equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) ||
                   intent.getAction().equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED) ||
                   intent.getAction().equals(BluetoothAdapter.ACTION_STATE_CHANGED) ||
-                  intent.getAction().equals(BluetoothDevice.ACTION_PAIRING_REQUEST)) {
+                  intent.getAction().equals(BluetoothDevice.ACTION_PAIRING_REQUEST) ||
+                  intent.getAction().equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)) {
                if (ChameleonSettings.getActiveSerialIOPort() != null) {
                     /* Another Chameleon devices is already attached and configured, so we ignore the notification. */
                } else if (!ChameleonSettings.allowBluetooth) {
@@ -583,6 +585,9 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = -1;
                     clearStatusIcon(R.id.statusIconBT);
                     ChameleonSettings.initializeSerialIOConnections();
+               } else if (ChameleonSettings.getBluetoothIOInterface() != null) {
+                    ChameleonSettings.getBluetoothIOInterface().stopScanningDevices();
+                    ChameleonSettings.getBluetoothIOInterface().startScanningDevices();
                }
           } else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST)) {
                /* Do nothing. This intent is only broadcast by the IO classes after calling shutdownSerial(). */

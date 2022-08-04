@@ -111,7 +111,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
 
     private static final String BLUETOOTH_SYSTEM_SERVICE = Context.BLUETOOTH_SERVICE;
     private static final byte[] BLUETOOTH_GATT_ENABLE_NOTIFY_PROP = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE;
-    private static final int BLUETOOTH_LOCAL_MTU_THRESHOLD = 244;
+    private static final int BLUETOOTH_LOCAL_MTU_THRESHOLD = 56; // 244;
     private static final int BLUETOOTH_GATT_RSP_WRITE = 0x13;
     private static final int BLUETOOTH_GATT_RSP_EXEC_WRITE = 0x19;
     private static final int BLUETOOTH_GATT_ERROR = 0x85;
@@ -224,7 +224,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         btConnectIntentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         btConnectIntentFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         btConnectIntentFilter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
-        btConnectIntentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        //btConnectIntentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         btConnectIntentFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
         btSerialContext.registerReceiver(btConnReceiver, btConnectIntentFilter);
         btConnRecvRegistered = true;
@@ -269,8 +269,8 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                 if (discoverServicesHandler != null && discoverServicesRunner != null) {
                     discoverServicesHandler.removeCallbacks(discoverServicesRunner);
                 }
-                discoverServicesHandler = null;
-                discoverServicesRunner = null;
+                //discoverServicesHandler = null;
+                //discoverServicesRunner = null;
                 stopRestartCancelledBTDiscRuntime();
                 stopBTDevicesFromAdapterPolling();
             } catch(SecurityException se) {
@@ -288,7 +288,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
             if (btGatt != null) {
                 try {
                     btGatt.abortReliableWrite();
-                    btGatt.disconnect();
+                    //btGatt.disconnect();
                     btGatt.close();
                 } catch (SecurityException se) {
                     AndroidLog.printStackTrace(se);
@@ -303,8 +303,8 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     if (discoverServicesHandler != null && discoverServicesRunner != null) {
                         discoverServicesHandler.removeCallbacks(discoverServicesRunner);
                     }
-                    discoverServicesHandler = null;
-                    discoverServicesRunner = null;
+                    //discoverServicesHandler = null;
+                    //discoverServicesRunner = null;
                 } catch (SecurityException se) {
                     AndroidLog.printStackTrace(se);
                 }
@@ -400,7 +400,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                                         btGattConnLocalRef.receiveBroadcastIntent(bcDevIntent);
                                     }
                                 };
-                                postNotifyPairedHandler.post(postNotifyPairedRunner);
+                                postNotifyPairedHandler.postDelayed(postNotifyPairedRunner, 500L);
                                 break;
                             }
                         }
@@ -475,6 +475,15 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
             }
             configureGattConnector();
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    public void onSearchComplete(String address, int status) {
+        AndroidLog.d(TAG, "onSearchComplete() = Device=" + address + " Status=" + status);
+        if (btDevice != null && !address.equals(btDevice.getAddress())) {
+            return;
+        }
+        onServicesDiscovered(btGatt, status);
     }
 
     @SuppressLint("MissingPermission")
@@ -600,8 +609,10 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
             btGatt.requestMtu(BLUETOOTH_LOCAL_MTU_THRESHOLD);
             requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
             //btGatt.readRemoteRssi();
-            if (discoverServicesHandler == null || discoverServicesRunner == null) {
+            if (discoverServicesHandler == null) {
                 discoverServicesHandler = new Handler(Looper.getMainLooper());
+            }
+            if (discoverServicesRunner == null) {
                 discoverServicesRunner = new Runnable() {
                     int retryAttempts = 0;
                     final BluetoothGatt btGattRef = btGatt;
@@ -630,7 +641,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
             } else {
                 discoverServicesHandler.removeCallbacks(discoverServicesRunner);
             }
-            discoverServicesHandler.post(discoverServicesRunner);
+            discoverServicesHandler.postDelayed(discoverServicesRunner, 500L);
         }
         return btGatt;
     }
@@ -716,7 +727,6 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         try {
             if (bleWriteLock.tryAcquire(BLE_READ_WRITE_OPERATION_TRYLOCK_TIMEOUT, TimeUnit.MILLISECONDS)) {
                 btGatt.writeCharacteristic(sendGattChar);
-                btGatt.executeReliableWrite(); // ??? TODO ???
             } else {
                 AndroidLog.w(TAG, "Cannot acquire BT BLE read lock for operation");
                 bleWriteLock.release();
@@ -760,7 +770,6 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
             if (bleWriteLock.tryAcquire(BLE_READ_WRITE_OPERATION_TRYLOCK_TIMEOUT, TimeUnit.MILLISECONDS) &&
                     bleReadLock.tryAcquire(BLE_READ_WRITE_OPERATION_TRYLOCK_TIMEOUT, TimeUnit.MILLISECONDS)) {
                 btGatt.writeCharacteristic(ctrlGattChar);
-                btGatt.executeReliableWrite(); // ??? TODO ???
             } else {
                 AndroidLog.w(TAG, "Cannot acquire BT BLE read lock for operation");
                 bleReadLock.release();
