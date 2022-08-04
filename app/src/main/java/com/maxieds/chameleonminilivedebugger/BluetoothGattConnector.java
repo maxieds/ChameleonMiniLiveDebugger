@@ -34,6 +34,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.ParcelUuid;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -589,11 +590,14 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                             disconnectDevice();
                             stopConnectingDevices();
                             startConnectingDevices();
+                        } else if (!btGattRef.discoverServices()) {
+                            Utils.displayToastMessage("Discovering bluetooth services. Prepare to wait ...", Toast.LENGTH_LONG);
+                            discoverServicesHandler.postDelayed(this, BluetoothBroadcastReceiver.CHECK_DISCOVER_SVCS_INTERVAL);
                         } else if (configureGattConnector()) {
                             BluetoothBroadcastReceiver.printServicesSummaryListToLog(btGattRef);
                             notifyBluetoothBLEDeviceConnected();
                         } else {
-                            btGattRef.discoverServices();
+                            Utils.displayToastMessage("Discovering bluetooth services. Prepare to wait ...", Toast.LENGTH_LONG);
                             discoverServicesHandler.postDelayed(this, BluetoothBroadcastReceiver.CHECK_DISCOVER_SVCS_INTERVAL);
                         }
                     }

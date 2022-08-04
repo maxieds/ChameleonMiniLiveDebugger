@@ -58,7 +58,7 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         btGattConn = null;
     }
 
-    private static final boolean PRINT_SERVICES_LIST_TO_LOG = false;
+    private static final boolean PRINT_SERVICES_LIST_TO_LOG = true;
     private static final boolean PRINT_SERVICES_LIST_FULL = false;
 
     public static void printServicesSummaryListToLog(BluetoothGatt btGatt) {
@@ -93,7 +93,7 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
     }
 
     public static final int DISCOVER_SVCS_ATTEMPT_COUNT = 10;
-    public static final long CHECK_DISCOVER_SVCS_INTERVAL = 60000L;
+    public static final long CHECK_DISCOVER_SVCS_INTERVAL = 7500L;
 
     @SuppressLint("MissingPermission")
     public void onReceive(Context context, Intent intent) {
