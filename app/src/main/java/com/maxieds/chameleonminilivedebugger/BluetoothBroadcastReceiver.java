@@ -92,7 +92,7 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
-    public static final int DISCOVER_SVCS_ATTEMPT_COUNT = 10;
+    public static final int DISCOVER_SVCS_ATTEMPT_COUNT = 120;
     public static final long CHECK_DISCOVER_SVCS_INTERVAL = 7500L;
 
     @SuppressLint("MissingPermission")

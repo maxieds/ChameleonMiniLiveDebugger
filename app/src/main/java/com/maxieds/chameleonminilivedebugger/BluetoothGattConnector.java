@@ -466,13 +466,15 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
     @SuppressLint("MissingPermission")
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-        if (status != BluetoothGatt.GATT_SUCCESS || newState == BluetoothGatt.STATE_DISCONNECTED) {
+        if (newState == BluetoothGatt.STATE_DISCONNECTED) {
             AndroidLog.w(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "onConnectionStateChange: error/status code %d = %04x", status, status));
             if (gatt != null) {
                 gatt.close();
             }
-        } else if (newState == BluetoothGatt.STATE_CONNECTED && btGatt == null) {
-            btGatt = gatt;
+        } else if (newState == BluetoothGatt.STATE_CONNECTED) {
+            if (btGatt == null) {
+                btGatt = gatt;
+            }
             configureGattConnector();
         }
     }
@@ -590,6 +592,9 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                             disconnectDevice();
                             stopConnectingDevices();
                             startConnectingDevices();
+                        } else if (configureGattConnector()) {
+                            BluetoothBroadcastReceiver.printServicesSummaryListToLog(btGattRef);
+                            notifyBluetoothBLEDeviceConnected();
                         } else if (!btGattRef.discoverServices()) {
                             Utils.displayToastMessage("Discovering bluetooth services.\nPrepare to wait ...", Toast.LENGTH_LONG);
                             discoverServicesHandler.postDelayed(this, BluetoothBroadcastReceiver.CHECK_DISCOVER_SVCS_INTERVAL);
