@@ -110,7 +110,7 @@ android {
         applicationId "com.maxieds.chameleonminilivedebugger"
 
         versionCode 124 + 8080
-        versionName "1.5.3"
+        versionName "1.5.3-beta"
 
         minSdkVersion 26
         targetSdkVersion 30
