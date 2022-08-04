@@ -570,9 +570,9 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         if (btDevice == null) {
             btDevice = btGatt.getDevice();
         }
-        //if (btDevice != null && DISCOVER_SERVICES) {
-        //    btDevice.fetchUuidsWithSdp();
-        //}
+        if (btDevice != null) {
+            btDevice.fetchUuidsWithSdp();
+        }
         if (btGatt != null) {
             btGatt.requestMtu(BLUETOOTH_LOCAL_MTU_THRESHOLD);
             requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
@@ -580,10 +580,21 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
             if (discoverServicesHandler == null || discoverServicesRunner == null) {
                 discoverServicesHandler = new Handler(Looper.getMainLooper());
                 discoverServicesRunner = new Runnable() {
+                    int retryAttempts = 0;
                     final BluetoothGatt btGattRef = btGatt;
                     @Override
                     public void run() {
-                        if (!btGattRef.discoverServices()) {
+                        AndroidLog.d(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "Initializing BLE device service connections ... ATTEMPT #%d", retryAttempts + 1));
+                        if (++retryAttempts >= BluetoothBroadcastReceiver.DISCOVER_SVCS_ATTEMPT_COUNT) {
+                            disconnectDevice();
+                            stopConnectingDevices();
+                            startConnectingDevices();
+                        } else if (!btGattRef.discoverServices()) {
+                            discoverServicesHandler.postDelayed(this, BluetoothBroadcastReceiver.CHECK_DISCOVER_SVCS_INTERVAL);
+                        } else if (configureGattConnector()) {
+                            BluetoothBroadcastReceiver.printServicesSummaryListToLog(btGattRef);
+                            notifyBluetoothBLEDeviceConnected();
+                        } else {
                             discoverServicesHandler.postDelayed(this, BluetoothBroadcastReceiver.CHECK_DISCOVER_SVCS_INTERVAL);
                         }
                     }

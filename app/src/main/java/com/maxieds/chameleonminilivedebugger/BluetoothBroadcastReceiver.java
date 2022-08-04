@@ -20,6 +20,7 @@ package com.maxieds.chameleonminilivedebugger;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
@@ -60,9 +61,9 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
     private static final boolean PRINT_SERVICES_LIST_TO_LOG = false;
     private static final boolean PRINT_SERVICES_LIST_FULL = false;
 
-    private void printServicesSummaryListToLog() {
-        if (PRINT_SERVICES_LIST_TO_LOG) {
-            List<BluetoothGattService> svcList = btGattConn.btGatt.getServices();
+    public static void printServicesSummaryListToLog(BluetoothGatt btGatt) {
+        if (PRINT_SERVICES_LIST_TO_LOG && btGatt != null) {
+            List<BluetoothGattService> svcList = btGatt.getServices();
             StringBuilder svcUUIDSummary = new StringBuilder(" ==== \n");
             for (BluetoothGattService svc : svcList) {
                 /* NOTE: BT service data types described in table here:
@@ -91,8 +92,8 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
-    private static final int DISCOVER_SVCS_ATTEMPT_COUNT = 5 * 60;
-    public static final long CHECK_DISCOVER_SVCS_INTERVAL = 4000L;
+    public static final int DISCOVER_SVCS_ATTEMPT_COUNT = 10;
+    public static final long CHECK_DISCOVER_SVCS_INTERVAL = 60000L;
 
     @SuppressLint("MissingPermission")
     public void onReceive(Context context, Intent intent) {
@@ -134,35 +135,11 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
                 (action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED) && intentExtraBondState == BluetoothDevice.BOND_BONDED) ||
                 (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_CONNECTED)) {
             btGattConn.btGatt = btGattConn.btDevice.connectGatt(btGattConn.btSerialContext, true, btGattConn);
-            if (btGattConn.btGatt == null || btGattConn.btGatt.getConnectionState(btGattConn.btDevice) != BluetoothProfile.STATE_CONNECTED) {
-                if (btGattConn.btGatt != null) {
-                    btGattConn.btGatt.close();
-                    btGattConn.btGatt = null;
-                }
+            if (btGattConn.btGatt == null) {
                 return;
             }
-            btGattConn.btGatt = btGattConn.configureGattDataConnection();
             btGattConn.stopConnectingDevices();
-            final Handler discoverSvcsHandler = new Handler(Looper.getMainLooper());
-            Runnable discoverSvcsRunner = new Runnable() {
-                int retryAttempts = 0;
-                final BluetoothGattConnector btGattConnRef = btGattConn;
-                @Override
-                public void run() {
-                    AndroidLog.d(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "Initializing BLE device service connections ... ATTEMPT #%d", retryAttempts + 1));
-                    if (++retryAttempts >= DISCOVER_SVCS_ATTEMPT_COUNT) {
-                        btGattConnRef.disconnectDevice();
-                        btGattConnRef.stopConnectingDevices();
-                        btGattConnRef.startConnectingDevices();
-                    } else if (btGattConnRef.configureGattConnector()) {
-                        printServicesSummaryListToLog();
-                        btGattConn.notifyBluetoothBLEDeviceConnected();
-                    } else {
-                        discoverSvcsHandler.postDelayed(this, CHECK_DISCOVER_SVCS_INTERVAL);
-                    }
-                }
-            };
-            discoverSvcsHandler.post(discoverSvcsRunner);
+            btGattConn.btGatt = btGattConn.configureGattDataConnection();
         }
     }
 }
