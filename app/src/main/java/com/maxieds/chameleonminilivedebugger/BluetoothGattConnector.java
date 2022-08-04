@@ -591,13 +591,13 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                             stopConnectingDevices();
                             startConnectingDevices();
                         } else if (!btGattRef.discoverServices()) {
-                            Utils.displayToastMessage("Discovering bluetooth services. Prepare to wait ...", Toast.LENGTH_LONG);
+                            Utils.displayToastMessage("Discovering bluetooth services.\nPrepare to wait ...", Toast.LENGTH_LONG);
                             discoverServicesHandler.postDelayed(this, BluetoothBroadcastReceiver.CHECK_DISCOVER_SVCS_INTERVAL);
                         } else if (configureGattConnector()) {
                             BluetoothBroadcastReceiver.printServicesSummaryListToLog(btGattRef);
                             notifyBluetoothBLEDeviceConnected();
                         } else {
-                            Utils.displayToastMessage("Discovering bluetooth services. Prepare to wait ...", Toast.LENGTH_LONG);
+                            Utils.displayToastMessage("Discovering bluetooth services.\nPrepare to wait ...", Toast.LENGTH_LONG);
                             discoverServicesHandler.postDelayed(this, BluetoothBroadcastReceiver.CHECK_DISCOVER_SVCS_INTERVAL);
                         }
                     }
