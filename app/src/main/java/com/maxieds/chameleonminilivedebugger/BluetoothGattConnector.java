@@ -39,6 +39,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Set;
@@ -281,6 +282,57 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         return status;
     }
 
+    /**
+     *  NOTE: The next procedure is lifted from the Nordic BLE library
+     *        (see URL references to the original source below).
+     *
+     *        It should remove the pairing information of the selected Chameleon BT device
+     *        from the Android system. In recent releases of Android OS, the call to the
+     *        BluetoothDevice class 'removeBond' method is blocked by SDK version annotations that
+     *        effectively "hide" this functionality making the operation impossible outside of the
+     *        system Settings GUI :(
+     *
+     *        If we do not remove the pairing data for the
+     *        device each time we connect a new Chameleon over BLE/BT, the service discovery process
+     *        fails the second time after the initial run where the device is paired.
+     *
+     * @url https://github.com/NordicSemiconductor/Android-BLE-Library/blob/e3eeeb82a742b45707a58ec72eb384ccf6db9620/ble/src/main/java/no/nordicsemi/android/ble/BleManagerHandler.java#L786
+     * @url https://github.com/innoveit/react-native-ble-manager/blob/e2e5ca00019eb567b59b16e16e597f488d8001fe/android/src/main/java/it/innove/BleManager.java#L253
+     */
+    @SuppressLint("MissingPermission")
+    private static boolean removeBluetoothDeviceBond(@NonNull BluetoothDevice btDev) {
+        try {
+            final Method removeBond = btDev.getClass().getMethod("removeBond");
+            return removeBond.invoke(btDev) == Boolean.TRUE;
+        } catch (final Exception excpt) {
+            AndroidLog.w(TAG, "An exception occurred while removing bond");
+            AndroidLog.printStackTrace(excpt);
+            return false;
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private boolean unpairConnectedBluetoothDeviceCompletely() {
+        boolean status = true;
+        if (btGatt != null) {
+            try {
+                btGatt.disconnect();
+                //btGatt.close();
+            } catch (SecurityException se){
+                AndroidLog.printStackTrace(se);
+                status = false;
+            }
+        } else {
+            status = false;
+        }
+        if (btDevice != null) {
+            removeBluetoothDeviceBond(btDevice);
+        } else {
+            status = false;
+        }
+        return status;
+    }
+
     @SuppressLint("MissingPermission")
     public boolean disconnectDevice() {
         if (isDeviceConnected()) {
@@ -288,8 +340,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
             if (btGatt != null) {
                 try {
                     btGatt.abortReliableWrite();
-                    //btGatt.disconnect();
-                    btGatt.close();
+                    unpairConnectedBluetoothDeviceCompletely();
                 } catch (SecurityException se) {
                     AndroidLog.printStackTrace(se);
                 }
@@ -387,7 +438,16 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     if (pairedDevices != null && pairedDevices.size() > 0) {
                         ArrayList<BluetoothDevice> devList = new ArrayList<>(pairedDevices);
                         for (BluetoothDevice btDev : devList) {
-                            String devName = btDev.getName();
+                            String devName = "<UNKNOWN>";
+                            try {
+                                if (btDev.getBondState() == BluetoothDevice.BOND_BONDED) {
+                                    removeBluetoothDeviceBond(btDev);
+                                }
+                                devName = btDev.getName();
+                            } catch (Exception btEx) {
+                                AndroidLog.printStackTrace(btEx);
+                                continue;
+                            }
                             if (BluetoothUtils.isChameleonDeviceName(devName)) {
                                 Intent bcDevIntent = new Intent(BluetoothDevice.ACTION_FOUND);
                                 bcDevIntent.putExtra(BluetoothDevice.EXTRA_DEVICE, btDev);
@@ -409,7 +469,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     AndroidLog.printStackTrace(seNPE);
                 }
                 if (foundChamBTDevice) {
-                    AndroidLog.d(TAG, "BT device already paired with the adapter found ==>\nforwarding the device with an ACTION_FOUND intent to the broadcast receiver");
+                    AndroidLog.d(TAG, "BT device already paired with the adapter found ==>\n ... Forwarding the device with an ACTION_FOUND intent to the broadcast receiver");
                     pollBTDevicesFromAdapterHandler.removeCallbacks(pollBTDevicesFromAdapterRunner);
                 } else {
                     pollBTDevicesFromAdapterHandler.postDelayed(pollBTDevicesFromAdapterRunner, pollBTDevicesFromAdapterInterval);

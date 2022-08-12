@@ -15,7 +15,7 @@ available at the following link:
 https://github.com/maxieds/ChameleonMiniLiveDebugger
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowActionBar">false</item>
@@ -32,6 +32,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item name="android:actionBarPopupTheme">@style/ActionBarTheme</item>
         <item name="android:windowEnableSplitTouch">false</item>
         <item name="android:actionButtonStyle">@style/Actionbar.PopupTheme</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 
     <style name="AppThemeGreen" parent="@style/AppTheme">

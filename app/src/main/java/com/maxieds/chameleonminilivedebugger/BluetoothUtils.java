@@ -440,8 +440,9 @@ public class BluetoothUtils {
                         AndroidLog.w(TAG, "Packet checksum does not match for raw byte data " + Utils.bytes2Ascii(pktPayloadData));
                         return null;
                     }
-                    /** ??? TODO: Big or little endian byte order of the results returned (Chameleon Mini AVR is LE) ??? */
-                    //return ArrayUtils.reverse(pktPayloadData);
+                    /** ??? TODO: Big or little endian byte order of the results returned (Chameleon Mini AVR is LE) ???
+                     * return ArrayUtils.reverse(pktPayloadData);
+                     */
                     return pktPayloadData;
                 }
                 return null;

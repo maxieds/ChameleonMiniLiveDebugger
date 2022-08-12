@@ -95,14 +95,21 @@ public class AndroidLog {
     private static PrintStream openLogDataOutputFile() {
         String logDataOutFilePath = Utils.getTimestamp(LOGDATA_FILE_FORMAT);
         boolean logOutputFolderExists = true;
-        String localAppStoragePath = getActivityContext().getFilesDir().getAbsolutePath();
-        String logDataOutputFilePath = localAppStoragePath + "//" + LOGDATA_FILE_LOCAL_DIRPATH;
-        File logDataOutputFolder = new File(logDataOutputFilePath);
-        if (!logDataOutputFolder.exists()) {
-            logOutputFolderExists = logDataOutputFolder.mkdir();
+        File logDataOutputFolder = null;
+        try {
+            String localAppStoragePath = getActivityContext().getFilesDir().getAbsolutePath();
+            String logDataOutputFilePath = localAppStoragePath + "//" + LOGDATA_FILE_LOCAL_DIRPATH;
+            logDataOutputFolder = new File(logDataOutputFilePath);
+            if (!logDataOutputFolder.exists()) {
+                logOutputFolderExists = logDataOutputFolder.mkdir();
+            }
+        } catch (Exception ex) {
+            logDataOutputFileHandle = null;
+            logDataOutputStreamHandle = null;
+            return null;
         }
         if(logDataOutputFileHandle == null || logDataOutputStreamHandle == null) {
-            if (logOutputFolderExists) {
+            if (logDataOutputFolder != null && logOutputFolderExists) {
                 logDataOutputFileHandle = new File(logDataOutputFolder.getAbsolutePath(), logDataOutFilePath);
             } else {
                 logDataOutputFileHandle = null;
@@ -282,7 +289,7 @@ public class AndroidLog {
     }
 
     public static void v(String tag, String msg) {
-        Log.e(formatLogTag(tag), msg);
+        Log.v(formatLogTag(tag), msg);
         logAtLevel(LogLevel.VERBOSE, tag, msg);
     }
 

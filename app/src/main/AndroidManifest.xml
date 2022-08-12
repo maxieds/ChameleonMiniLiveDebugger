@@ -235,6 +235,7 @@
             android:resizeableActivity="false"
             android:maxAspectRatio="2.4"
             android:supportsPictureInPicture="false"
+            tools:node="merge"
             >
 
             <intent-filter android:priority="1000">
@@ -243,8 +244,8 @@
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
                 <action android:name="android.bluetooth.device.action.FOUND" />
                 <action android:name="android.hardware.usb.action.ACL_CONNECTED" />
-                <!--<category android:name="android.intent.category.HOME" />-->
                 <category android:name="android.intent.category.DEFAULT" />
+                <!--<category android:name="android.intent.category.HOME" />-->
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <meta-data
@@ -291,6 +292,7 @@
             android:resizeableActivity="false"
             android:maxAspectRatio="2.4"
             android:supportsPictureInPicture="false"
+            tools:node="merge"
             >
 
             <intent-filter>

@@ -101,7 +101,7 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         if (action == null) {
             return;
         }
-        AndroidLog.d(TAG, "btConnReceiver: intent action: " + action);
+        AndroidLog.v(TAG, "btConnReceiver: intent action: " + action);
         if (intent.getExtras() == null) {
             return;
         }
@@ -110,7 +110,7 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
             return;
         }
         String btDeviceName = btIntentDevice.getName();
-        AndroidLog.i(TAG, "btConnReceiver: intent device name: " + btDeviceName);
+        AndroidLog.v(TAG, "btConnReceiver: intent device name: " + btDeviceName);
         if (btGattConn == null || !BluetoothUtils.isChameleonDeviceName(btDeviceName)) {
             return;
         } else if (btGattConn.btDevice != null && btGattConn.btDevice.getName() == btDeviceName) {
@@ -127,7 +127,7 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
             String userConnInstMsg = String.format(BuildConfig.DEFAULT_LOCALE, "%s %s found%s. Establishing connection.\n%s",
                     btGattConn.btDevice.getName(), btGattConn.btDevice.getAddress(), rssiInfoStr, btConnInst);
             Utils.displayToastMessage(userConnInstMsg, Toast.LENGTH_LONG);
-            //Utils.vibrateAlertShort();
+            Utils.vibrateAlertShort();
             btGattConn.btDevice.createBond();
         }
         int intentExtraState = intent.getExtras().getInt(BluetoothAdapter.EXTRA_STATE, -1);
