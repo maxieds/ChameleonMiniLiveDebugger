@@ -193,8 +193,8 @@ public class LogEntryUI extends LogEntryBase {
             inoutDirIndicator.setImageDrawable(LiveLoggerActivity.getLiveLoggerInstance().getResources().getDrawable(getDataDirectionMarker()));
             apduParseStatus = (ImageView) mainContainerRef.findViewById(R.id.apduParseStatusImg);
             tvLabel = (TextView) mainContainerRef.findViewById(R.id.text_label);
-            recordID = ++MainActivityLogUtils.RECORDID;
-            tvLabel.setText(logLabel + String.format(BuildConfig.DEFAULT_LOCALE, "%06d", MainActivityLogUtils.RECORDID));
+            recordID = ++LogUtils.RECORDID;
+            tvLabel.setText(logLabel + String.format(BuildConfig.DEFAULT_LOCALE, "%06d", LogUtils.RECORDID));
             tvNumBytes = (TextView) mainContainerRef.findViewById(R.id.text_data_num_bytes);
             tvNumBytes.setText(String.valueOf(numBytes) + "B");
             tvNumMillis = (TextView) mainContainerRef.findViewById(R.id.text_offset_millis);

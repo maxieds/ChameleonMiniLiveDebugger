@@ -94,9 +94,9 @@ public class UITabUtils {
             return false;
         }
         boolean errorOnInit = false;
-        if(menuItemIdx == TAB_LOG_MITEM_LOGS && !MainActivityLogUtils.logDataFeedConfigured) {
-            if(MainActivityLogUtils.logDataFeed == null) {
-                MainActivityLogUtils.logDataFeed = new LinearLayout(LiveLoggerActivity.getLiveLoggerInstance());
+        if(menuItemIdx == TAB_LOG_MITEM_LOGS && !LogUtils.logDataFeedConfigured) {
+            if(LogUtils.logDataFeed == null) {
+                LogUtils.logDataFeed = new LinearLayout(LiveLoggerActivity.getLiveLoggerInstance());
             }
             ScrollView logScroller = (ScrollView) tabMainLayoutView.findViewById(R.id.log_scroll_view);
             if(logScroller != null) {
@@ -104,15 +104,15 @@ public class UITabUtils {
             } else {
                 errorOnInit = true;
             }
-            LinearLayout logDataFeed = MainActivityLogUtils.logDataFeed;
+            LinearLayout logDataFeed = LogUtils.logDataFeed;
             logDataFeed.setOrientation(LinearLayout.VERTICAL);
             if(logScroller != null) {
                 logScroller.addView(logDataFeed);
                 logScroller.setFillViewport(true);
             }
-            MainActivityLogUtils.logScrollView = logScroller;
-            MainActivityLogUtils.logDataFeed = logDataFeed;
-            MainActivityLogUtils.logDataFeedConfigured = true;
+            LogUtils.logScrollView = logScroller;
+            LogUtils.logDataFeed = logDataFeed;
+            LogUtils.logDataFeedConfigured = true;
         }
         else if(menuItemIdx == TAB_LOG_MITEM_LOGTOOLS) {}
         else if(menuItemIdx == TAB_LOG_MITEM_SEARCH) {

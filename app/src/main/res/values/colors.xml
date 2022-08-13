@@ -126,4 +126,12 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     <color name="AppThemeRaspberryPI_colorAccentHighlight">#EDCCD4</color>
     <color name="AppThemeRaspberryPI_colorAboutLinkColor">#622B38</color>
 
+    <color name="AppThemeDesertSunshine_colorPrimary">#ed8b00</color>
+    <color name="AppThemeDesertSunshine_colorPrimaryDark">#c05131</color>
+    <color name="AppThemeDesertSunshine_colorAccent">#d6a461</color>
+    <color name="AppThemeDesertSunshine_colorPrimaryDarkLog">#ba0c2f</color>
+    <color name="AppThemeDesertSunshine_colorAccentLog">#63666a</color>
+    <color name="AppThemeDesertSunshine_colorAccentHighlight">#a7a8aa</color>
+    <color name="AppThemeDesertSunshine_colorAboutLinkColor">#a8aa19</color>
+
 </resources>

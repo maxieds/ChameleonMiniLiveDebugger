@@ -62,7 +62,7 @@ public class ExternalFileIO {
             outfile = new File(downloadsFolder.getAbsolutePath(),outfilePath);
         }
         else {
-            MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to save output in Downloads folder."));
+            LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to save output in Downloads folder."));
             llActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             return;
         }
@@ -81,7 +81,7 @@ public class ExternalFileIO {
                 ExportTools.writeBinaryLogFile(outfile);
             }
         } catch(Exception ioe) {
-            MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
+            LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
             llActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             AndroidLogger.printStackTrace(ioe);
             return;
@@ -107,7 +107,7 @@ public class ExternalFileIO {
             sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             llActivity.startActivity(Intent.createChooser(sendIntent, "Share the file ... "));
         }
-        MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("EXPORT", "Saved log file to \"" + outfilePath + "\"."));
+        LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("EXPORT", "Saved log file to \"" + outfilePath + "\"."));
     }
 
     /**

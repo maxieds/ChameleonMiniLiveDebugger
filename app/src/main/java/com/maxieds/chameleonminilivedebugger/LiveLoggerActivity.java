@@ -311,7 +311,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
 
           AndroidSettingsStorage.loadPreviousSettings();
           if(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT) {
-               MainActivityLogUtils.clearAllLogs();
+               LogUtils.clearAllLogs();
           }
           Utils.clearToastMessage();
           ThemesConfiguration.setLocalTheme(ThemesConfiguration.storedAppTheme, true, this); // set the base colors, not the backgrounds initially
@@ -375,13 +375,13 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
 
           if(BuildConfig.PAID_APP_VERSION) {
                String userGreeting = getString(R.string.appInitialUserGreetingMsg);
-               MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("WELCOME", userGreeting));
+               LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("WELCOME", userGreeting));
                String disclaimerStmt = getString(R.string.appPaidFlavorDisclaimerEULA);
-               MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("DISCLAIMER", disclaimerStmt));
+               LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("DISCLAIMER", disclaimerStmt));
           }
           else {
                String userGreeting = getString(R.string.appInitialUserGreetingMsg);
-               MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("WELCOME", userGreeting));
+               LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("WELCOME", userGreeting));
           }
 
           if(getIntent() != null && getIntent().getBooleanExtra(CrashReportActivity.INTENT_CMLD_RECOVERED_FROM_CRASH, false)) {
@@ -434,10 +434,10 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       */
      protected void configureTabViewPager() {
 
-          MainActivityLogUtils.logDataFeedConfigured = false;
-          MainActivityLogUtils.logDataFeed = new LinearLayout(getApplicationContext());
-          if(MainActivityLogUtils.logDataEntries != null)
-               MainActivityLogUtils.logDataEntries.clear();
+          LogUtils.logDataFeedConfigured = false;
+          LogUtils.logDataFeed = new LinearLayout(getApplicationContext());
+          if(LogUtils.logDataEntries != null)
+               LogUtils.logDataEntries.clear();
 
           viewPager = (ViewPager) findViewById(R.id.tab_pager);
           if(viewPager != null) {
@@ -544,7 +544,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = ChameleonSettings.USBIO_IFACE_INDEX;
                     ChameleonIO.DeviceStatusSettings.stopPostingStats();
                     if(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT) {
-                         MainActivityLogUtils.clearAllLogs();
+                         LogUtils.clearAllLogs();
                     }
                     reconfigureSerialIODevices();
                     setStatusIcon(R.id.statusIconUSB, R.drawable.usbconnected16);
@@ -594,37 +594,37 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                byte[] serialByteData = intent.getByteArrayExtra(ChameleonSerialIOInterface.SERIALIO_BYTE_DATA);
                if (ChameleonLogUtils.ResponseIsLiveLoggingBytes(serialByteData) == 0) {
                     String dataMsg = String.format(BuildConfig.DEFAULT_LOCALE, "Unexpected serial I/O data received (data as log below)");
-                    MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", dataMsg));
-                    MainActivityLogUtils.appendNewLog(LogEntryUI.newInstance(serialByteData, ""));
+                    LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", dataMsg));
+                    LogUtils.appendNewLog(LogEntryUI.newInstance(serialByteData, ""));
                }
           }
           else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED)) {
                byte[] logDataBytes = intent.getByteArrayExtra(ChameleonSerialIOInterface.SERIALIO_BYTE_DATA);
                boolean duplicateLogData = false;
                if(ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES) {
-                    for(int chIdx = 0; chIdx < MainActivityLogUtils.logDataEntries.size(); chIdx++) {
-                         if(!(MainActivityLogUtils.logDataEntries.get(chIdx) instanceof LogEntryUI)) {
+                    for(int chIdx = 0; chIdx < LogUtils.logDataEntries.size(); chIdx++) {
+                         if(!(LogUtils.logDataEntries.get(chIdx) instanceof LogEntryUI)) {
                               continue;
                          }
-                         LogEntryUI logEntryUI = (LogEntryUI) MainActivityLogUtils.logDataEntries.get(chIdx);
+                         LogEntryUI logEntryUI = (LogEntryUI) LogUtils.logDataEntries.get(chIdx);
                          if(logEntryUI.logEntryDataEquals(logDataBytes)) {
                               logEntryUI.appendDuplicate(logDataBytes[2], logDataBytes[3]);
-                              MainActivityLogUtils.logDataFeed.removeViewAt(chIdx);
-                              MainActivityLogUtils.logDataEntries.remove(chIdx);
-                              MainActivityLogUtils.appendNewLog(logEntryUI);
+                              LogUtils.logDataFeed.removeViewAt(chIdx);
+                              LogUtils.logDataEntries.remove(chIdx);
+                              LogUtils.appendNewLog(logEntryUI);
                               duplicateLogData = true;
                               break;
                          }
                     }
                }
                if (!duplicateLogData) {
-                    MainActivityLogUtils.appendNewLog(LogEntryUI.newInstance(logDataBytes, ""));
+                    LogUtils.appendNewLog(LogEntryUI.newInstance(logDataBytes, ""));
                }
           }
           else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_NOTIFY_STATUS)) {
                String msgType = intent.getStringExtra(ChameleonSerialIOInterface.SERIALIO_STATUS_TYPE);
                String statusMsg = intent.getStringExtra(ChameleonSerialIOInterface.SERIALIO_STATUS_MSG);
-               MainActivityLogUtils.appendNewLog(new LogEntryMetadataRecord(defaultInflater, msgType, statusMsg));
+               LogUtils.appendNewLog(new LogEntryMetadataRecord(defaultInflater, msgType, statusMsg));
           }
      }
 
@@ -824,7 +824,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       * @param view
       */
      public void actionButtonClearAllLogs(@NonNull View view) {
-          MainActivityLogUtils.clearAllLogs();
+          LogUtils.clearAllLogs();
      }
 
      /**
@@ -833,7 +833,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       */
      public void actionButtonCreateNewEvent(@NonNull View view) {
           if(ChameleonSettings.getActiveSerialIOPort() == null) {
-               MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Cannot run command since serial IO over USB/BT is not configured."));
+               LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Cannot run command since serial IO over USB/BT is not configured."));
                return;
           }
           Button srcBtn = (Button) view;
@@ -848,7 +848,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                else {
                     msgParam = ChameleonIO.getSettingFromDevice(createCmd);
                }
-               MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord(createCmd, msgParam));
+               LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord(createCmd, msgParam));
                ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
                ChameleonIO.deviceStatus.updateAllStatusAndPost(false); /* Make sure the device returned the correct data to display */
           }
@@ -888,26 +888,26 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
      }
 
      public void actionButtonCollapseSimilar(@NonNull View view) {
-          MainActivityLogUtils.collapseSimilarLogs();
+          LogUtils.collapseSimilarLogs();
      }
 
      public void actionButtonSelectedHighlight(@NonNull View view) {
           Button srcBtn = (Button) view;
           if(srcBtn != null) {
                int highlightColor = Color.parseColor(srcBtn.getTag().toString());
-               MainActivityLogUtils.selectedHighlightedLogs(highlightColor);
+               LogUtils.selectedHighlightedLogs(highlightColor);
           }
      }
 
      public void actionButtonUncheckAll(@NonNull View view) {
-          MainActivityLogUtils.uncheckAllLogs();
+          LogUtils.uncheckAllLogs();
      }
 
      public void actionButtonSetSelectedXFer(@NonNull View view) {
           Button srcBtn = (Button) view;
           if(srcBtn != null) {
                int directionFlag = Integer.parseInt(srcBtn.getTag().toString());
-               MainActivityLogUtils.setSelectedXFerOnLogs(directionFlag);
+               LogUtils.setSelectedXFerOnLogs(directionFlag);
           }
      }
 
@@ -915,7 +915,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           Button srcBtn = (Button) view;
           if(srcBtn != null) {
                String actionFlag = srcBtn.getTag().toString();
-               MainActivityLogUtils.processBatchOfSelectedLogs(actionFlag);
+               LogUtils.processBatchOfSelectedLogs(actionFlag);
           }
      }
 
@@ -1086,7 +1086,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
           }
-          MainActivityLogUtils.performLogSearch();
+          LogUtils.performLogSearch();
      }
 
      public void actionButtonApduCLA(@NonNull View view) {

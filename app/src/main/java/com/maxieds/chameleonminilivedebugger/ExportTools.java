@@ -104,7 +104,7 @@ public class ExportTools {
                 try {
                     streamDest.close();
                 } catch (Exception ioe) {
-                    MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
+                    LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
                     AndroidLogger.printStackTrace(ioe);
                 } finally {
                     ChameleonIO.DOWNLOAD = false;
@@ -117,7 +117,7 @@ public class ExportTools {
                             outfile.getAbsolutePath(), outfile.length(), true);
                     String statusMsg = "Write internal log data to file " + outfile.getName() + "(+" + outfile.length() + " / " + fileSize + " bytes).\n\n";
                     statusMsg += "If you are not seeing the expected output, try running the LOGSTORE command from the tools menu first.";
-                    MainActivityLogUtils.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "EXPORT", statusMsg));
+                    LogUtils.appendNewLog(new LogEntryMetadataRecord(LiveLoggerActivity.defaultInflater, "EXPORT", statusMsg));
                     if (throwToLive) {
                         throwDeviceLogDataToLive(outfile);
                     }
@@ -125,7 +125,7 @@ public class ExportTools {
                 else {
                     outfile.delete();
                     LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
-                    MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Maximum number of NAK errors exceeded. Download of data aborted."));
+                    LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Maximum number of NAK errors exceeded. Download of data aborted."));
                 }
             }
             else if(ChameleonIO.UPLOAD) {
@@ -133,7 +133,7 @@ public class ExportTools {
                 try {
                     streamSrc.close();
                 } catch (Exception ioe) {
-                    MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
+                    LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
                     AndroidLogger.printStackTrace(ioe);
                 } finally {
                     ChameleonIO.UPLOAD = false;
@@ -145,7 +145,7 @@ public class ExportTools {
                 }
                 else {
                     LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
-                    MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "File transmission errors encountered. Maximum number of NAK errors exceeded. Download of data aborted."));
+                    LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "File transmission errors encountered. Maximum number of NAK errors exceeded. Download of data aborted."));
                 }
             }
         }
@@ -262,7 +262,7 @@ public class ExportTools {
             outfile = new File(downloadsFolder.getAbsolutePath(), outfilePath);
         }
         else {
-            MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to save output in Downloads folder."));
+            LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to save output in Downloads folder."));
             llActivity.clearStatusIcon(R.id.statusIconUlDl);
             return false;
         }
@@ -271,7 +271,7 @@ public class ExportTools {
             outfile.createNewFile();
             streamDest = new FileOutputStream(outfile);
         } catch(Exception ioe) {
-            MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
+            LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
             AndroidLogger.printStackTrace(ioe);
             llActivity.clearStatusIcon(R.id.statusIconUlDl);
             return false;
@@ -317,11 +317,11 @@ public class ExportTools {
                 LogEntryUI nextLogEntry = LogEntryUI.newInstance(payloadBytes, "");
                 /* Highlight the entries so it's clear they're from the device's logs: */
                 nextLogEntry.getMainEntryContainer().setBackgroundColor(ThemesConfiguration.getThemeColorVariant(R.attr.deviceMemoryLogHighlight));
-                MainActivityLogUtils.appendNewLog(nextLogEntry);
+                LogUtils.appendNewLog(nextLogEntry);
             }
             fin.close();
         } catch(Exception ioe) {
-            MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
+            LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
             AndroidLogger.printStackTrace(ioe);
         }
     }
@@ -395,7 +395,7 @@ public class ExportTools {
             uploadCardFileByXModem(istream);
         } catch(Exception ioe) {
             String cardFilePath = LiveLoggerActivity.defaultContext.getResources().getResourceName(rawResID);
-            MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to open chosen resource \"" + cardFilePath + "\": " + ioe.getMessage()));
+            LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to open chosen resource \"" + cardFilePath + "\": " + ioe.getMessage()));
             LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             return;
         }
@@ -408,7 +408,7 @@ public class ExportTools {
      */
     public static void uploadCardFileByXModem(String cardFilePath) {
         if(new File(cardFilePath).length() % XMODEM_BLOCK_SIZE != 0) {
-            MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Invalid file size for the selected card file \"" + cardFilePath + "\". Aborting."));
+            LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Invalid file size for the selected card file \"" + cardFilePath + "\". Aborting."));
             LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             return;
         }
@@ -416,7 +416,7 @@ public class ExportTools {
             InputStream istream = new FileInputStream(cardFilePath);
             uploadCardFileByXModem(istream);
         } catch(IOException ioe) {
-            MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to open chosen file \"" + cardFilePath + "\": " + ioe.getMessage()));
+            LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to open chosen file \"" + cardFilePath + "\": " + ioe.getMessage()));
             LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             return;
         }
@@ -465,14 +465,14 @@ public class ExportTools {
         AndroidLogger.i(TAG, String.valueOf("00".getBytes(StandardCharsets.US_ASCII)));
 
         FileOutputStream fout = new FileOutputStream(fd);
-        for (int vi = 0; vi < MainActivityLogUtils.logDataFeed.getChildCount(); vi++) {
-            View logEntryView = MainActivityLogUtils.logDataFeed.getChildAt(vi);
-            if (MainActivityLogUtils.logDataEntries.get(vi) instanceof LogEntryUI) {
-                String dataLine = ((LogEntryUI) MainActivityLogUtils.logDataEntries.get(vi)).toString() + "\n";
+        for (int vi = 0; vi < LogUtils.logDataFeed.getChildCount(); vi++) {
+            View logEntryView = LogUtils.logDataFeed.getChildAt(vi);
+            if (LogUtils.logDataEntries.get(vi) instanceof LogEntryUI) {
+                String dataLine = ((LogEntryUI) LogUtils.logDataEntries.get(vi)).toString() + "\n";
                 fout.write(dataLine.getBytes(StandardCharsets.US_ASCII));
             }
             else {
-                String lineStr = "\n## " + ((LogEntryMetadataRecord) MainActivityLogUtils.logDataEntries.get(vi)).toString() + "\n";
+                String lineStr = "\n## " + ((LogEntryMetadataRecord) LogUtils.logDataEntries.get(vi)).toString() + "\n";
                 fout.write(lineStr.getBytes(StandardCharsets.US_ASCII));
             }
         }
@@ -493,17 +493,17 @@ public class ExportTools {
         String htmlHeader = "<html><head><title>Chameleon Mini Live Debugger -- Logging Output</title></head><body>\n\n";
         fout.write(htmlHeader.getBytes(StandardCharsets.US_ASCII));
         String defaultBgColor = String.format(BuildConfig.DEFAULT_LOCALE, "#%06X", (0xFFFFFF & ThemesConfiguration.getThemeColorVariant(R.attr.colorPrimaryDarkLog)));
-        for (int vi = 0; vi < MainActivityLogUtils.logDataFeed.getChildCount(); vi++) {
-            View logEntryView = MainActivityLogUtils.logDataFeed.getChildAt(vi);
-            if (MainActivityLogUtils.logDataEntries.get(vi) instanceof LogEntryUI) {
+        for (int vi = 0; vi < LogUtils.logDataFeed.getChildCount(); vi++) {
+            View logEntryView = LogUtils.logDataFeed.getChildAt(vi);
+            if (LogUtils.logDataEntries.get(vi) instanceof LogEntryUI) {
                 String bgColor = String.format(BuildConfig.DEFAULT_LOCALE, "#%06X", (0xFFFFFF & logEntryView.getDrawingCacheBackgroundColor()));
                 if(bgColor.equals(defaultBgColor))
                     bgColor = "#ffffff";
-                String lineData = "<code bgcolor='" + bgColor + "'>" + ((LogEntryUI) MainActivityLogUtils.logDataEntries.get(vi)).toString() + "</code><br/>\n";
+                String lineData = "<code bgcolor='" + bgColor + "'>" + ((LogEntryUI) LogUtils.logDataEntries.get(vi)).toString() + "</code><br/>\n";
                 fout.write(lineData.getBytes(StandardCharsets.US_ASCII));
             }
             else {
-                String lineData = "<b><code>" + ((LogEntryMetadataRecord) MainActivityLogUtils.logDataEntries.get(vi)).toString() + "</code></b><br/>\n";
+                String lineData = "<b><code>" + ((LogEntryMetadataRecord) LogUtils.logDataEntries.get(vi)).toString() + "</code></b><br/>\n";
                 fout.write(lineData.getBytes(StandardCharsets.US_ASCII));
             }
         }
@@ -524,10 +524,10 @@ public class ExportTools {
     public static boolean writeBinaryLogFile(File fd) throws Exception {
         FileOutputStream fout = new FileOutputStream(fd);
         short localTicks = 0;
-        for (int vi = 0; vi < MainActivityLogUtils.logDataFeed.getChildCount(); vi++) {
-            View logEntryView = MainActivityLogUtils.logDataFeed.getChildAt(vi);
-            if (MainActivityLogUtils.logDataEntries.get(vi) instanceof LogEntryUI) {
-                LogEntryUI logEntry = (LogEntryUI) MainActivityLogUtils.logDataEntries.get(vi);
+        for (int vi = 0; vi < LogUtils.logDataFeed.getChildCount(); vi++) {
+            View logEntryView = LogUtils.logDataFeed.getChildAt(vi);
+            if (LogUtils.logDataEntries.get(vi) instanceof LogEntryUI) {
+                LogEntryUI logEntry = (LogEntryUI) LogUtils.logDataEntries.get(vi);
                 byte[] entryBytes = logEntry.packageBinaryLogData(localTicks);
                 localTicks = logEntry.getNextOffsetTime(localTicks);
                 fout.write(entryBytes);
@@ -561,7 +561,7 @@ public class ExportTools {
             outfile = new File(downloadsFolder.getAbsolutePath(),outfilePath);
         }
         else {
-            MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to save output in Downloads folder."));
+            LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to save output in Downloads folder."));
             llActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             return false;
         }
@@ -574,7 +574,7 @@ public class ExportTools {
             fout.flush();
             fout.close();
         } catch(Exception ioe) {
-            MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
+            LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
             llActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
             AndroidLogger.printStackTrace(ioe);
             return false;
@@ -583,7 +583,7 @@ public class ExportTools {
         downloadManager.addCompletedDownload(outfile.getName(), outfile.getName(), true, mimeType,
                 outfile.getAbsolutePath(), outfile.length(),true);
         String statusMsg = "Dumped MFU binary data to " + outfilePath + " (" + String.valueOf(outfile.length()) + " bytes).";
-        MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("EXPORT", statusMsg));
+        LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("EXPORT", statusMsg));
         return true;
     }
 

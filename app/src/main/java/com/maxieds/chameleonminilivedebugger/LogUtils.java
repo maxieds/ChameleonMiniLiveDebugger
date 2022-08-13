@@ -40,9 +40,9 @@ import java.util.List;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_MITEM_LOGS;
 
-public class MainActivityLogUtils {
+public class LogUtils {
 
-    private static final String TAG = MainActivityLogUtils.class.getSimpleName();
+    private static final String TAG = LogUtils.class.getSimpleName();
 
     public static LinearLayout logDataFeed;
     public static List<LogEntryBase> logDataEntries = new ArrayList<LogEntryBase>();

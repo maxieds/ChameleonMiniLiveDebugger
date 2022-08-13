@@ -87,6 +87,9 @@ public class ThemesConfiguration {
             case "Chicky":
                 themeID = R.style.AppThemeChicky;
                 break;
+            case "Desert Sunshine":
+                themeID = R.style.AppThemeDesertSunshine;
+                break;
             case "Frosty":
                 themeID = R.style.AppThemeFrosty;
                 break;
@@ -168,7 +171,7 @@ public class ThemesConfiguration {
                     storedAppTheme = themeDesc;
                     ThemesConfiguration.storedAppTheme = themeDesc;
                     AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.THEMEID_PREFERENCE);
-                    MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("THEME", "New theme installed: " + themeDesc));
+                    LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("THEME", "New theme installed: " + themeDesc));
                     LiveLoggerActivity.getLiveLoggerInstance().recreate();
                 } catch(NullPointerException npe) {
                     AndroidLogger.printStackTrace(npe);

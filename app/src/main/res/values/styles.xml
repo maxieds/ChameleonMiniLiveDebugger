@@ -190,6 +190,17 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_red</item>
     </style>
 
+    <style name="AppThemeDesertSunshine" parent="AppTheme">
+        <item name="colorPrimary">@color/AppThemeDesertSunshine_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/AppThemeDesertSunshine_colorPrimaryDark</item>
+        <item name="colorAccent">@color/AppThemeDesertSunshine_colorAccent</item>
+        <item name="colorPrimaryDarkLog">@color/AppThemeDesertSunshine_colorPrimaryDarkLog</item>
+        <item name="colorAccentLog">@color/AppThemeDesertSunshine_colorAccentLog</item>
+        <item name="colorAccentHighlight">@color/AppThemeDesertSunshine_colorAccentHighlight</item>
+        <item name="colorAboutLinkColor">@color/AppThemeDesertSunshine_colorAboutLinkColor</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo48_desert_sunshine</item>
+    </style>
+
     <style name="SpinnerTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="android:background">?colorAccentHighlight</item>
         <item name="buttonStyle">@style/AboutButtonTheme</item>

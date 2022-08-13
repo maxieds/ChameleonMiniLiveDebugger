@@ -129,9 +129,9 @@ public class Utils {
      */
     public static byte byte2Ascii(byte b) {
         if (b >= 0x20 && b <= 0x7e) {
-            return Byte.valueOf(new String(new byte[] { b }, StandardCharsets.US_ASCII)).byteValue();
+            return Byte.valueOf(new String(new byte[] { b }, StandardCharsets.US_ASCII));
         } else {
-            return Byte.valueOf(new String(new byte[] { (byte) '�' }, StandardCharsets.UTF_8)).byteValue();
+            return Byte.valueOf(new String(new byte[] { (byte) '�' }, StandardCharsets.UTF_8));
         }
     }
 
@@ -155,7 +155,7 @@ public class Utils {
 
     public static byte byteToHex(byte b) {
         String byteStr = new String(new byte[] { b }, StandardCharsets.UTF_8);
-        return Byte.valueOf(byteStr).byteValue();
+        return Byte.valueOf(byteStr);
     }
 
     /**

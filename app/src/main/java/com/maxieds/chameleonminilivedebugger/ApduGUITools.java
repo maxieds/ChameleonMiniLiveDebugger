@@ -123,7 +123,7 @@ public class ApduGUITools {
         String sendCmd = sendRaw ? "SEND_RAW " : "SEND ";
         String sendBytesStr = ApduUtils.apduTransceiveCmd.getPayloadData(sendMode);
         String respData = ChameleonIO.getSettingFromDevice(sendCmd + sendBytesStr);
-        MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("APDU TRANSFER", sendCmd + "Response:\n" + respData));
+        LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("APDU TRANSFER", sendCmd + "Response:\n" + respData));
     }
 
     public static void searchAPDUDatabase(String searchText) {
