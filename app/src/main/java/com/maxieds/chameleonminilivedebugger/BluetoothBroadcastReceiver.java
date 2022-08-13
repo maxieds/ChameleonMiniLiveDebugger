@@ -112,12 +112,16 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         if (btIntentDevice == null) {
             return;
         }
-        if (btGattConn == null || (btGattConn.btDevice == null && btIntentDevice == null) || !BluetoothUtils.isChameleonDeviceName(btDeviceName)) {
+        if (btGattConn == null || (btGattConn.btDevice == null && btIntentDevice == null)) {
             return;
         } else if (btGattConn.btDevice != null && btGattConn.btDevice.getName() == btDeviceName) {
             return;
         }
-        if (btGattConn.btDevice == null) {
+        boolean isChameleonDevice = (btGattConn.btDevice != null && BluetoothUtils.isChameleonDeviceName(btDeviceName)) ||
+                (btIntentDevice != null && BluetoothUtils.isChameleonDeviceName(btIntentDevice.getName()));
+        if (!isChameleonDevice || btDeviceName.length() == 0 || (btIntentDevice != null && btIntentDevice.getName().length() == 0)) {
+            return;
+        } else if (btGattConn.btDevice == null) {
             btGattConn.btDevice = btIntentDevice;
             btDeviceName = btIntentDevice.getName();
         } else if (btIntentDevice != null && btIntentDevice.getName().equals(btDeviceName)) {

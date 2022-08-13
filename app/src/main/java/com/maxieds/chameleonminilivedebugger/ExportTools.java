@@ -490,7 +490,7 @@ public class ExportTools {
      */
     public static boolean writeHTMLLogFile(File fd) throws Exception {
         FileOutputStream fout = new FileOutputStream(fd);
-        String htmlHeader = "<html><head><title>Chameleon Mini Live Debugger -- Logging Output</title></head><body>\n\n";
+        String htmlHeader = "<html><head><title>Chameleon Mini Live Debugger --- Logging Output</title></head><body>\n\n";
         fout.write(htmlHeader.getBytes(StandardCharsets.US_ASCII));
         String defaultBgColor = String.format(BuildConfig.DEFAULT_LOCALE, "#%06X", (0xFFFFFF & ThemesConfiguration.getThemeColorVariant(R.attr.colorPrimaryDarkLog)));
         for (int vi = 0; vi < GUILogUtils.logDataFeed.getChildCount(); vi++) {

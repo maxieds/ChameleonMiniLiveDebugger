@@ -329,13 +329,13 @@ public class GUILogUtils {
         if(llActivity == null) {
             return;
         } else if(logDataEntries == null) {
-            String toastMsg = "Unable to perform search -- The main activity is not initialized -- Aborting search operation";
+            String toastMsg = "Unable to perform search --- The main activity is not initialized --- Aborting search operation";
             Utils.displayToastMessage(llActivity, toastMsg, Toast.LENGTH_SHORT);
         }
         /* Clear out the existing search data first: */
         ScrollView searchResultsScroller = (ScrollView) llActivity.findViewById(R.id.searchResultsScrollView);
         if(searchResultsScroller == null) {
-            String toastMsg = "Unable to perform search -- The main activity is not initialized -- Aborting search operation";
+            String toastMsg = "Unable to perform search --- The main activity is not initialized --- Aborting search operation";
             Utils.displayToastMessage(llActivity, toastMsg, Toast.LENGTH_SHORT);
         }
         if(searchResultsScroller.getChildCount() != 0) {

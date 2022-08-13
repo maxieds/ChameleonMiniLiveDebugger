@@ -326,7 +326,7 @@ public class Utils {
     public static String getTimestamp() {
         Time currentTime = new Time();
         currentTime.setToNow();
-        return currentTime.format("%Y-%m-%d@%T");
+        return currentTime.format("%Y.%m.%d @ %I:%M:%S %p");
     }
 
     public static String getTimestamp(@NonNull String tsFmt) {
@@ -734,7 +734,7 @@ public class Utils {
         ClipboardManager clipboard = (ClipboardManager) activityCtx.getSystemService(Context.CLIPBOARD_SERVICE);
         if(clipboard == null) {
             if(showToastStatus) {
-                String toastMsg = "Unable to initialize system clipboard -- Copy action is invalid -- Nothing copied to clipboard";
+                String toastMsg = "Unable to initialize system clipboard --- Copy action is invalid --- Nothing copied to clipboard";
                 Utils.displayToastMessage(activityCtx, toastMsg, Toast.LENGTH_SHORT);
             }
             return;

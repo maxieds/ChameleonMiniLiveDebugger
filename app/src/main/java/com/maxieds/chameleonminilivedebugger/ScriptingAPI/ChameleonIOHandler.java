@@ -134,7 +134,7 @@ public class ChameleonIOHandler implements ChameleonSerialIOInterface.SerialData
         ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
         if(serialIOPort == null) {
             /* Try to recover in the script with a user friendly error message: */
-            return ScriptingTypes.ScriptVariable.newInstance().set("NO DATA -- Chameleon Mini not attached???");
+            return ScriptingTypes.ScriptVariable.newInstance().set("NO DATA --- Is the Chameleon Mini attached ???");
         } else if(!serialIOPort.tryAcquireSerialPort(ChameleonIO.LOCK_TIMEOUT)) {
             return parseChameleonCommandResponse(cmdText, "", true);
         }

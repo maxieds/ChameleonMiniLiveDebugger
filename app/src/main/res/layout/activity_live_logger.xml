@@ -76,7 +76,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:text="DEVICE CONF"
                 android:textColor="?deviceStatusBarTextColor"
                 android:textSize="11sp"
-                android:textStyle="normal|bold" />
+                android:textStyle="normal|bold"
+                android:fontFamily="sans-serif-condensed-medium" />
 
             <TextView
                 android:id="@+id/deviceStats1"
@@ -88,7 +89,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:text="REVEG | MEM | LOG-MODE"
                 android:textColor="?deviceStatusBarTextColor"
                 android:textSize="9sp"
-                android:textStyle="normal" />
+                android:textStyle="normal"
+                android:fontFamily="sans-serif-condensed-medium" />
 
             <TextView
                 android:id="@+id/deviceConfigUID"
@@ -99,7 +101,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:text="DEVICE UID"
                 android:textColor="?deviceStatusBarTextColor"
                 android:textSize="11sp"
-                android:textStyle="normal|bold|italic" />
+                android:textStyle="normal|bold|italic"
+                android:fontFamily="sans-serif-condensed-medium" />
 
             <TextView
                 android:id="@+id/deviceStats2"
@@ -110,7 +113,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:text="DIP#1 | RO/RW | FLD-0 | CHRG-0"
                 android:textColor="?deviceStatusBarTextColor"
                 android:textSize="9sp"
-                android:textStyle="normal" />
+                android:textStyle="normal"
+                android:fontFamily="sans-serif-condensed-medium" />
 
             <GridLayout
                 android:layout_width="wrap_content"
@@ -190,7 +194,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:text="THRES | TMOUT"
                 android:textColor="?deviceStatusBarTextColor"
                 android:textSize="9sp"
-                android:textStyle="normal" />
+                android:textStyle="normal"
+                android:fontFamily="sans-serif-condensed-medium" />
 
         </GridLayout>
 

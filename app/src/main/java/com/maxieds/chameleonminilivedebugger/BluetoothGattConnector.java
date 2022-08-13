@@ -26,6 +26,8 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.le.ScanFilter;
+import android.bluetooth.le.ScanSettings;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -307,7 +309,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
             final Method removeBond = btDev.getClass().getMethod("removeBond");
             return removeBond.invoke(btDev) == Boolean.TRUE;
         } catch (final Exception excpt) {
-            AndroidLogger.w(TAG, "An exception occurred while removing bond");
+            AndroidLogger.w(TAG, "An exception occurred while removing bond.");
             AndroidLogger.printStackTrace(excpt);
             return false;
         }
@@ -357,8 +359,6 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     if (discoverServicesHandler != null && discoverServicesRunner != null) {
                         discoverServicesHandler.removeCallbacks(discoverServicesRunner);
                     }
-                    //discoverServicesHandler = null;
-                    //discoverServicesRunner = null;
                 } catch (SecurityException se) {
                     AndroidLogger.printStackTrace(se);
                 }
@@ -673,8 +673,10 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         if (btDevice != null && btDevice.fetchUuidsWithSdp()) {
             StringBuilder uuidNotifyBuilder = new StringBuilder("Fetched UUID list with BT device SDP.");
             ParcelUuid[] uuidList = btDevice.getUuids();
-            for (ParcelUuid uuid : uuidList) {
-                uuidNotifyBuilder.append(String.format(BuildConfig.DEFAULT_LOCALE, "\n   >>> SVC with UUID = %s found.", uuid.getUuid().toString()));
+            if (uuidList != null) {
+                for (ParcelUuid uuid : uuidList) {
+                    uuidNotifyBuilder.append(String.format(BuildConfig.DEFAULT_LOCALE, "\n   >>> SVC with UUID = %s found.", uuid.getUuid().toString()));
+                }
             }
             AndroidLogger.w(TAG, uuidNotifyBuilder.toString());
         } else {

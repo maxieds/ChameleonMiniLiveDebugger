@@ -112,6 +112,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:id="@+id/androidBTSettingsButton"
                     style="@style/GridButtonsNoWidth"
                     android:layout_columnWeight="1"
+                    android:layout_gravity="left|center_vertical"
                     android:drawableLeft="@drawable/info_icon24"
                     android:drawablePadding="3dp"
                     android:text="BT Settings" />
@@ -120,6 +121,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:id="@+id/androidBTTroubleshootingButton"
                     style="@style/GridButtonsNoWidth"
                     android:layout_columnWeight="1"
+                    android:layout_gravity="left|center_vertical"
                     android:drawableLeft="@drawable/info_icon24"
                     android:drawablePadding="3dp"
                     android:text="BT Troubleshooting/Tips" />
@@ -302,11 +304,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:text="Disconnect Device" />
 
             </GridLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="?colorPrimaryDark" />
 
         </LinearLayout>
 

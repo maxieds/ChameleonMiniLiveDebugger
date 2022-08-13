@@ -81,9 +81,9 @@ clean.dependsOn cleanBuildDir
 
 task cleanPreBuildGenAntlr4JavaSources {
 
-    println 'REMOVING OLD ANTLR4 JAVA SOURCES ==> '
+    println '==> REMOVING OLD ANTLR4 JAVA SOURCES ...'
     file(new File('app/src/main/antlr-gen')).deleteDir()
-    println 'GENERATING ANTLR4 JAVA SOURCES ==> '
+    println '==> GENERATING ANTLR4 JAVA SOURCES ...'
     file(new File('app/src/main/antlr-gen')).mkdirs()
     generateAntlrJava("ChameleonScriptLexer.g4")
     generateAntlrJava("ChameleonScriptParser.g4")
@@ -100,9 +100,9 @@ preBuild.dependsOn verboseBuildLogs
 
 task preBuildGenAntlr4JavaSources {
 
-    println 'REMOVING OLD ANTLR4 JAVA SOURCES ==> '
+    println '==> REMOVING OLD ANTLR4 JAVA SOURCES ...'
     file(new File('app/src/main/antlr-gen')).deleteDir()
-    println 'GENERATING ANTLR4 JAVA SOURCES ==> '
+    println '==> GENERATING ANTLR4 JAVA SOURCES ...'
     file(new File('app/src/main/antlr-gen')).mkdirs()
     generateAntlrJava("ChameleonScriptLexer.g4")
     generateAntlrJava("ChameleonScriptParser.g4")

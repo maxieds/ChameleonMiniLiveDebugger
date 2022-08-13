@@ -309,7 +309,7 @@ public class ChameleonIO {
         private static final String UNSET_VALUE_NA = "N/A";
         private static final String UID_NONE = "NO UID";
 
-        public static final String DEFAULT_CONFIG = UNSET_VALUE_NONE;
+        public static final String DEFAULT_CONFIG = "NO-CONFIG";
         public static final String DEFAULT_UID = UID_NONE;
         public static final String DEFAULT_LOGMODE = UNSET_VALUE_NA;
         public static final int DEFAULT_UIDSIZE = 0;
@@ -384,11 +384,11 @@ public class ChameleonIO {
                             try {
                                 ((TextView) LiveLoggerActivity.getContentView(R.id.deviceConfigText)).setText(CONFIG);
                                 ((TextView) LiveLoggerActivity.getContentView(R.id.deviceConfigUID)).setText(UID);
-                                String subStats1 = String.format(BuildConfig.DEFAULT_LOCALE, "REV%s|MEM-%dK|LOG-%s-%dK", ChameleonIO.REVE_BOARD ? "E" : "G", round(MEMSIZE / 1024), LOGMODE, round(LOGSIZE / 1024));
+                                String subStats1 = String.format(BuildConfig.DEFAULT_LOCALE, "REV%s | MEM-%dK | LOG-%s-%dK", ChameleonIO.REVE_BOARD ? "E" : "G", round(MEMSIZE / 1024), LOGMODE, round(LOGSIZE / 1024));
                                 ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats1)).setText(subStats1);
-                                String subStats2 = String.format(BuildConfig.DEFAULT_LOCALE, "SLOT-%d|%s|FLD-%s|CHRG-%s", DIP_SETTING, READONLY ? "RO" : "RW", FIELD ? "1" : "0", CHARGING ? "1" : "0");
+                                String subStats2 = String.format(BuildConfig.DEFAULT_LOCALE, "SLOT-%d | %s | FLD-%s | CHRG-%s", DIP_SETTING, READONLY ? "RO" : "RW", FIELD ? "1" : "0", CHARGING ? "1" : "0");
                                 ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats2)).setText(subStats2);
-                                String subStats3 = String.format(BuildConfig.DEFAULT_LOCALE, "THRS-%dmv|TMT-%s", THRESHOLD, TIMEOUT.replace(" ", ""));
+                                String subStats3 = String.format(BuildConfig.DEFAULT_LOCALE, "THRS-%dmv | TMT-%s", THRESHOLD, TIMEOUT.replace(" ", ""));
                                 ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats3)).setText(subStats3);
                                 LiveLoggerActivity.setSignalStrengthIndicator(THRESHOLD);
                             } catch (Exception ex) {
@@ -488,11 +488,11 @@ public class ChameleonIO {
                                     String formattedUID = Utils.formatUIDString(UID, ":");
                                     ((TextView) LiveLoggerActivity.getContentView(R.id.deviceConfigUID)).setText(formattedUID);
                                 }
-                                String subStats1 = String.format(BuildConfig.DEFAULT_LOCALE, "REV%s|MEM-%dK|LOG-%s-%dK", ChameleonIO.REVE_BOARD ? "E" : "G", round(MEMSIZE / 1024), LOGMODE, round(LOGSIZE / 1024));
+                                String subStats1 = String.format(BuildConfig.DEFAULT_LOCALE, "REV%s | MEM-%dK | LOG-%s-%dK", ChameleonIO.REVE_BOARD ? "E" : "G", round(MEMSIZE / 1024), LOGMODE, round(LOGSIZE / 1024));
                                 ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats1)).setText(subStats1);
-                                String subStats2 = String.format(BuildConfig.DEFAULT_LOCALE, "SLOT-%d|%s|FLD-%s|CHRG-%s", DIP_SETTING, READONLY ? "RO" : "RW", FIELD ? "1" : "0", CHARGING ? "1" : "0");
+                                String subStats2 = String.format(BuildConfig.DEFAULT_LOCALE, "SLOT-%d | %s | FLD-%s | CHRG-%s", DIP_SETTING, READONLY ? "RO" : "RW", FIELD ? "1" : "0", CHARGING ? "1" : "0");
                                 ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats2)).setText(subStats2);
-                                String subStats3 = String.format(BuildConfig.DEFAULT_LOCALE, "THRS-%dmv|TMT-%s", THRESHOLD, TIMEOUT.replace(" ", ""));
+                                String subStats3 = String.format(BuildConfig.DEFAULT_LOCALE, "THRS-%dmv | TMT-%s", THRESHOLD, TIMEOUT.replace(" ", ""));
                                 ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats3)).setText(subStats3);
                                 SeekBar thresholdSeekbar = (SeekBar) LiveLoggerActivity.getContentView(R.id.thresholdSeekbar);
                                 if (thresholdSeekbar != null) {

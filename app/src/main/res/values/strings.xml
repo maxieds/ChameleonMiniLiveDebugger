@@ -173,7 +173,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 manually removing the attached Chameleon BT device from the list of Android system
                 paired devices and then reinitiate the pairing process. This operation can be done via the
                 GUI found at: &lt;code>Settings &lt;&lt; Connected devices &lt;&lt; Bluetooth &lt;&lt;
-                Unpair device from cog-icon list&lt;/code>&lt;/li>
+                Unpair device by selecting \'Forget\' from cog-icon list&lt;/code>&lt;/li>
         &lt;/ul>
     </string>
     <string name="bluetoothExtraConfigInstructions">

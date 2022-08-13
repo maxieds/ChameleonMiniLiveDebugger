@@ -65,7 +65,7 @@ public class LogEntryMetadataRecord extends LogEntryBase {
         recordContainer.setAlpha(LOGENTRY_GUI_ALPHA);
         tvRecTitle = (TextView) recordContainer.findViewById(R.id.record_title_text);
         if(tvRecTitle != null) {
-            tvRecTitle.setText(recordTitle + " -- " + recordTimestamp);
+            tvRecTitle.setText(recordTitle + " | " + recordTimestamp);
         }
         tvRecData = (TextView) recordContainer.findViewById(R.id.record_data_text);
         if(tvRecData != null) {

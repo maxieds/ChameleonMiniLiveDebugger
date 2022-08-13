@@ -251,7 +251,7 @@ public class ScriptingGUIConsole {
         }
 
         public static ConsoleOutputRecord newErrorWarningMessageInstance(String msgDataPrefix, String msgData[], int lineOfCode) {
-            ConsoleOutputRecord newEWarnMsgRecord = new ConsoleOutputRecord(String.format(BuildConfig.DEFAULT_LOCALE, "Error -- Warning"));
+            ConsoleOutputRecord newEWarnMsgRecord = new ConsoleOutputRecord(String.format(BuildConfig.DEFAULT_LOCALE, "Error --- Warning"));
             newEWarnMsgRecord.setMainContentLayout(R.layout.scripting_console_record_textinfomsg);
             newEWarnMsgRecord.setRecordIcon(R.drawable.scripting_output_icon_error16);
             newEWarnMsgRecord.setRecordLineOfCode(lineOfCode);

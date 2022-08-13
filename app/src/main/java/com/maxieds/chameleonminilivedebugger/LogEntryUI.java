@@ -362,7 +362,7 @@ public class LogEntryUI extends LogEntryBase {
     @Override
     public String toString() {
         ChameleonLogUtils.LogCode logCode = ChameleonLogUtils.LogCode.lookupByLogCode(logType);
-        String recordFmt = String.format(BuildConfig.DEFAULT_LOCALE, "%06d -- %-32s [%-3s bytes] (%s%-6s ms) [%s] {%s}", recordID, logCode.name(),
+        String recordFmt = String.format(BuildConfig.DEFAULT_LOCALE, "%06d --- %-32s [%-3s bytes] (%s%-6s ms) [%s] {%s}", recordID, logCode.name(),
                 String.valueOf(entryData.length), diffTimeMillis >= 0 ? "+" : "~", String.valueOf(abs(diffTimeMillis)),
                 Utils.bytes2Hex(entryData), tvApdu.getText().toString());
         return recordFmt;
