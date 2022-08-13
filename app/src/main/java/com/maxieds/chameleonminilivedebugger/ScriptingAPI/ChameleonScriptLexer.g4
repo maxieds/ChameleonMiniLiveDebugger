@@ -44,6 +44,7 @@ PrintingAndLoggingFunctions: PrintFuncName | PrintfFuncName | SprintfFuncName;
 AsHexStringFuncName:      'AsHexString(' ;
 AsBinaryStringFuncName:   'AsBinaryString(' ;
 AsByteArrayFuncName:      'AsByteArray(' ;
+AsWrappedAPDUFuncName:    'AsWrappedAPDU(';
 GetLengthFuncName:        'GetLength(' ;
 GetEnvFuncName:           'GetEnv(' ;
 

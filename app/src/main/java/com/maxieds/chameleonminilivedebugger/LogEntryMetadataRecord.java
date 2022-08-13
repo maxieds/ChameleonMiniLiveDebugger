@@ -28,7 +28,6 @@ import androidx.annotation.NonNull;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -203,7 +202,7 @@ public class LogEntryMetadataRecord extends LogEntryBase {
                     }
                 }
             } catch (Exception e) {
-                AndroidLog.printStackTrace(e);
+                AndroidLogger.printStackTrace(e);
             }
             if(eventMsg.length() > 0) {
                 eventMsg = locationDetails + "\n" + eventMsg;

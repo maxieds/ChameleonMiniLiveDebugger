@@ -26,8 +26,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
-import java.util.Locale;
-
 public class ApduGUITools {
 
     private static final String TAG = ApduGUITools.class.getSimpleName();
@@ -41,7 +39,7 @@ public class ApduGUITools {
         try {
             ((LinearLayout) ((ScrollView) ApduUtils.tabView.findViewById(R.id.apduSearchResultsScrollView)).getChildAt(0)).removeAllViewsInLayout();
         } catch(NullPointerException npe) {
-            AndroidLog.printStackTrace(npe);
+            AndroidLogger.printStackTrace(npe);
             return;
         }
         ApduUtils.apduTransceiveCmd.clear();

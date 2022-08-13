@@ -36,9 +36,9 @@ import java.util.Map;
 /*
  * @see https://github.com/maxieds/ChameleonMiniLiveDebugger/projects/11
  */
-public class AndroidLog {
+public class AndroidLogger {
 
-    private static final String TAG = AndroidLog.class.getSimpleName();
+    private static final String TAG = AndroidLogger.class.getSimpleName();
 
     public static ChameleonMiniLiveDebuggerActivity getActivityContext() {
         return ChameleonMiniLiveDebuggerActivity.getInstance();

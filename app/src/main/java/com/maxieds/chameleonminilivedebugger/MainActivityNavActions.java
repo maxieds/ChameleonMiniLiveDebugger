@@ -38,6 +38,7 @@ public class MainActivityNavActions {
                 LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.privacyhtml) +
                 LiveLoggerActivity.getLiveLoggerInstance().getString(R.string.apphtmlfooter);
         rawAboutStr = rawAboutStr.replace("%%ANDROID_VERSION_CODE%%", String.valueOf(BuildConfig.VERSION_CODE));
+        rawAboutStr = rawAboutStr.replace("%%ANDROID_VERSION_CODE_DEMUX%%", String.format(BuildConfig.DEFAULT_LOCALE, "%d + %d", BuildConfig.VERSION_CODE_BASE, BuildConfig.VERSION_CODE - BuildConfig.VERSION_CODE_BASE));
         rawAboutStr = rawAboutStr.replace("%%ANDROID_VERSION_NAME%%", String.valueOf(BuildConfig.VERSION_NAME));
         rawAboutStr = rawAboutStr.replace("%%ANDROID_FLAVOR_NAME%%", String.valueOf(BuildConfig.FLAVOR) + ", " + BuildConfig.BUILD_TIMESTAMP);
         rawAboutStr = rawAboutStr.replace("%%GIT_COMMIT_HASH%%", String.valueOf(BuildConfig.GIT_COMMIT_HASH));

@@ -178,7 +178,7 @@ public class UITabUtils {
                 try {
                     activeSlotNumber = Integer.parseInt(ChameleonIO.getSettingFromDevice("SETTING?"), 10);
                 } catch(NumberFormatException nfe) {
-                    AndroidLog.printStackTrace(nfe);
+                    AndroidLogger.printStackTrace(nfe);
                     errorOnInit = true;
                 }
             }
@@ -416,12 +416,12 @@ public class UITabUtils {
         if(menuItemIdx == TAB_CONFIG_MITEM_SETTINGS) {
             CheckBox cbEnableLoggingToFile = (CheckBox) tabMainLayoutView.findViewById(R.id.settingsEnableLoggingToFile);
             if(cbEnableLoggingToFile != null) {
-                cbEnableLoggingToFile.setChecked(AndroidLog.WRITE_LOGDATA_TO_FILE);
+                cbEnableLoggingToFile.setChecked(AndroidLogger.WRITE_LOGDATA_TO_FILE);
                 cbEnableLoggingToFile.setOnClickListener(new CheckBox.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         CheckBox cb = (CheckBox) view;
-                        AndroidLog.WRITE_LOGDATA_TO_FILE = cb.isChecked();
+                        AndroidLogger.WRITE_LOGDATA_TO_FILE = cb.isChecked();
                         AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_WRITE_LOGDATA_TO_FILE);
                     }
                 });
@@ -447,7 +447,7 @@ public class UITabUtils {
                             ChameleonSettings.initializeSerialIOConnections();
                         }
                     } catch(Exception ex) {
-                        AndroidLog.printStackTrace(ex);
+                        AndroidLogger.printStackTrace(ex);
                     }
                 }
             });
@@ -485,7 +485,7 @@ public class UITabUtils {
                             ChameleonSettings.initializeSerialIOConnections();
                         }
                     } catch(Exception ex) {
-                        AndroidLog.printStackTrace(ex);
+                        AndroidLogger.printStackTrace(ex);
                         cb.setChecked(false);
                         LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(new Runnable() {
                             @Override
@@ -734,7 +734,7 @@ public class UITabUtils {
                     errorOnInit = true;
                 }
             } catch(Exception ex) {
-                AndroidLog.printStackTrace(ex);
+                AndroidLogger.printStackTrace(ex);
                 return false;
             }
         }
@@ -845,16 +845,16 @@ public class UITabUtils {
             return false;
         }
         spinner.setAdapter(spinnerAdapter);
-        spinner.setSelection(((ArrayAdapter<String>) spinnerAdapter).getPosition(AndroidLog.LOGDATA_LEVEL_THRESHOLD.name()));
+        spinner.setSelection(((ArrayAdapter<String>) spinnerAdapter).getPosition(AndroidLogger.LOGDATA_LEVEL_THRESHOLD.name()));
         final Spinner localSpinnerRef = spinner;
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             Spinner localSpinner = localSpinnerRef;
             String[] localSpinnerList = spinnerList;
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 localSpinner.setSelection(((ArrayAdapter<String>) localSpinner.getAdapter()).getPosition(localSpinnerList[i]));
-                AndroidLog.LOGDATA_LEVEL_THRESHOLD = AndroidLog.LogLevel.getLogLevelFromOrdinal(i);
+                AndroidLogger.LOGDATA_LEVEL_THRESHOLD = AndroidLogger.LogLevel.getLogLevelFromOrdinal(i);
                 AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_CONFIG_LOGDATA_LEVEL_THRESHOLD);
-                //Utils.displayToastMessageShort("New logging threshold: " + AndroidLog.LOGDATA_LEVEL_THRESHOLD.name());
+                //Utils.displayToastMessageShort("New logging threshold: " + AndroidLogger.LOGDATA_LEVEL_THRESHOLD.name());
             }
             public void onNothingSelected(AdapterView<?> adapterView) {
                 return;

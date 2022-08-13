@@ -33,9 +33,6 @@ import android.webkit.WebView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 
-import org.apache.commons.lang3.ArrayUtils;
-
-import java.util.Arrays;
 import java.util.Locale;
 
 public class BluetoothUtils {
@@ -66,7 +63,7 @@ public class BluetoothUtils {
                     Intent turnBTOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                     mainActivityCtx.startActivityForResult(turnBTOn, ACTVITY_REQUEST_BLUETOOTH_ENABLED_CODE);
                 } catch (Exception excpt) {
-                    AndroidLog.printStackTrace(excpt);
+                    AndroidLogger.printStackTrace(excpt);
                 }
             }
             status = false;
@@ -122,7 +119,7 @@ public class BluetoothUtils {
                     btAdapter.disable();
                 }
             } catch (SecurityException se) {
-                AndroidLog.printStackTrace(se);
+                AndroidLogger.printStackTrace(se);
             }
         }
     }
@@ -228,7 +225,7 @@ public class BluetoothUtils {
                 return ChameleonIO.CHAMELEON_TYPE_PROXGRIND_REVG;
             }
         } catch (Exception excpt) {
-            AndroidLog.printStackTrace(excpt);
+            AndroidLogger.printStackTrace(excpt);
         }
         return ChameleonIO.CHAMELEON_TYPE_UNKNOWN;
     }
@@ -436,8 +433,8 @@ public class BluetoothUtils {
                     pktPackagedBytes[3] = (byte) 0x00; /* Reset the status byte so it does not contribute to the checksum */
                     byte pktChecksum = calculateChecksum(pktHeadStatus, pktPackagedBytes, false);
                     if (pktChecksum != (byte) 0x00) {
-                        AndroidLog.d(TAG, "Incoming BT bytes to unpack: " + Utils.bytes2Hex(rawData));
-                        AndroidLog.w(TAG, "Packet checksum does not match for raw byte data " + Utils.bytes2Ascii(pktPayloadData));
+                        AndroidLogger.d(TAG, "Incoming BT bytes to unpack: " + Utils.bytes2Hex(rawData));
+                        AndroidLogger.w(TAG, "Packet checksum does not match for raw byte data " + Utils.bytes2Ascii(pktPayloadData));
                         return null;
                     }
                     /** ??? TODO: Big or little endian byte order of the results returned (Chameleon Mini AVR is LE) ???

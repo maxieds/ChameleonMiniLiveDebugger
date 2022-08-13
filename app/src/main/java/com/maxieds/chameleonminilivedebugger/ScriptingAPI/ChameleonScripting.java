@@ -20,7 +20,7 @@ package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 import android.os.Handler;
 import android.widget.LinearLayout;
 
-import com.maxieds.chameleonminilivedebugger.AndroidLog;
+import com.maxieds.chameleonminilivedebugger.AndroidLogger;
 import com.maxieds.chameleonminilivedebugger.ChameleonIO;
 import com.maxieds.chameleonminilivedebugger.ChameleonSerialIOInterface;
 import com.maxieds.chameleonminilivedebugger.ChameleonSettings;
@@ -43,16 +43,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
-
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParser;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptLexer;
 
 public class ChameleonScripting {
 
@@ -200,7 +196,7 @@ public class ChameleonScripting {
                 loggingFileStream = new FileOutputStream(loggingFilePath);
                 debuggingFileStream = debuggingFilePath.equals(ScriptingTypes.NULL) ? null : new FileOutputStream(debuggingFilePath);
             } catch(FileNotFoundException ioe) {
-                AndroidLog.printStackTrace(ioe);
+                AndroidLogger.printStackTrace(ioe);
                 scriptFileStream = null;
                 outputFileStream = loggingFileStream = debuggingFileStream = null;
                 initialized = false;
@@ -215,7 +211,7 @@ public class ChameleonScripting {
                 }
                 consoleViewMainLayout = TabFragment.UITAB_DATA[TabFragment.TAB_SCRIPTING].tabMenuItemLayouts[TabFragment.TAB_SCRIPTING_MITEM_CONSOLE_VIEW].findViewById(R.id.scriptingTabConsoleViewMainLayoutContainer);
             } catch(Exception ex) {
-                AndroidLog.printStackTrace(ex);
+                AndroidLogger.printStackTrace(ex);
                 consoleViewMainLayout = null;
                 initialized = false;
             }
@@ -247,7 +243,7 @@ public class ChameleonScripting {
                 loggingFileStream.close();
                 debuggingFileStream.close();
             } catch(IOException ioe) {
-                AndroidLog.printStackTrace(ioe);
+                AndroidLogger.printStackTrace(ioe);
             }
             if(scriptState != ScriptRuntimeState.EXCEPTION) {
                 scriptState = ScriptRuntimeState.DONE;
@@ -284,7 +280,7 @@ public class ChameleonScripting {
                             String.format(BuildConfig.DEFAULT_LOCALE, "@TOKEN:    %s", syntaxError.getException().getOffendingToken().getText())
                     };
                     ScriptingGUIConsole.appendConsoleOutputRecordErrorWarning(syntaxErrorNotifyMsg, syntaxErrorDetailsList, syntaxError.getLine());
-                    AndroidLog.w(TAG, "SYNTAX ERROR: " + syntaxErrorNotifyMsg + "\n" + String.join("\n  > ", syntaxErrorDetailsList));
+                    AndroidLogger.w(TAG, "SYNTAX ERROR: " + syntaxErrorNotifyMsg + "\n" + String.join("\n  > ", syntaxErrorDetailsList));
                 }
                 ScriptingUtils.signalStateChangeByVibration(ScriptRuntimeState.EXCEPTION);
                 return false;
@@ -316,7 +312,7 @@ public class ChameleonScripting {
                         //scriptParseTree = scriptParser.file_contents().getChild(0);
                         scriptVisitor = new ChameleonScriptVisitorExtended(getRunningInstance());
                     } catch(IOException ioe) {
-                        AndroidLog.printStackTrace(ioe);
+                        AndroidLogger.printStackTrace(ioe);
                         initialized = false;
                     }
                     if(!runScriptPreambleActions()) {
@@ -380,7 +376,7 @@ public class ChameleonScripting {
                                 ewarnMsg = String.format(BuildConfig.DEFAULT_LOCALE, "%s: \n%s", rtEx.getClass().getSimpleName(), rtEx.getMessage());
                                 ScriptingGUIConsole.appendConsoleOutputRecordErrorWarning(ewarnMsg, null, getExecutingLineOfCode());
                             } catch(Exception ex) {
-                                AndroidLog.printStackTrace(ex);
+                                AndroidLogger.printStackTrace(ex);
                             }
                             ChameleonScripting.getRunningInstance().killRunningScript();
                             paramThread.interrupt();
@@ -451,7 +447,7 @@ public class ChameleonScripting {
 
         public ScriptingTypes.ScriptVariable lookupVariableByName(String varName) throws ScriptingExceptions.ChameleonScriptingException {
             ScriptingTypes.ScriptVariable svar = scriptVariablesHashMap.get(varName);
-            AndroidLog.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "LOOKED UP (%s) -> VARBYNAME = %s", varName, svar.getName()));
+            AndroidLogger.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "LOOKED UP (%s) -> VARBYNAME = %s", varName, svar.getName()));
             return svar;
         }
 
@@ -470,9 +466,9 @@ public class ChameleonScripting {
             }
             try {
                 loggingFileStream.write(String.format(BuildConfig.DEFAULT_LOCALE, ">> [%s] %s\n", Utils.getTimestamp(), logLine).getBytes());
-                AndroidLog.i(TAG, "LOG FILE LINE>> " + logLine);
+                AndroidLogger.i(TAG, "LOG FILE LINE>> " + logLine);
             } catch(IOException ioe) {
-                AndroidLog.printStackTrace(ioe);
+                AndroidLogger.printStackTrace(ioe);
                 return false;
             }
             return true;
@@ -480,7 +476,7 @@ public class ChameleonScripting {
 
         public boolean writeConsoleOutput(String consoleOutputLine) {
             if(consoleOutput != null) {
-                AndroidLog.i(TAG, " CONSOLE APPENDED >>> " + consoleOutputLine);
+                AndroidLogger.i(TAG, " CONSOLE APPENDED >>> " + consoleOutputLine);
                 consoleOutput.append(consoleOutputLine);
                 return true;
             }
@@ -522,7 +518,7 @@ public class ChameleonScripting {
 
     public static boolean runScriptFromStart() {
         String scriptPath = ScriptingFileIO.expandStoragePath(ScriptingConfig.LAST_SCRIPT_LOADED_PATH);
-        AndroidLog.i(TAG, "Attempting to run script from file path: " + scriptPath);
+        AndroidLogger.i(TAG, "Attempting to run script from file path: " + scriptPath);
         if(ScriptingFileIO.getStoragePathFromRelative(scriptPath, false, false) == null) {
             Utils.displayToastMessageShort(String.format(BuildConfig.DEFAULT_LOCALE, "Invalid script file path \"%s\".", scriptPath));
             return false;

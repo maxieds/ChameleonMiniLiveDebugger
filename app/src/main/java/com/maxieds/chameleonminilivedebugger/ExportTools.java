@@ -23,7 +23,6 @@ import static android.content.Context.DOWNLOAD_SERVICE;
 import android.app.DownloadManager;
 import android.os.Environment;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 
 import java.io.File;
@@ -32,7 +31,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
 
 /**
  * <h1>File Export Tools</h1>
@@ -107,7 +105,7 @@ public class ExportTools {
                     streamDest.close();
                 } catch (Exception ioe) {
                     MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
-                    AndroidLog.printStackTrace(ioe);
+                    AndroidLogger.printStackTrace(ioe);
                 } finally {
                     ChameleonIO.DOWNLOAD = false;
                     ChameleonIO.executeChameleonMiniCommand("LOGMODE=" + currentLogMode, ChameleonIO.TIMEOUT);
@@ -131,12 +129,12 @@ public class ExportTools {
                 }
             }
             else if(ChameleonIO.UPLOAD) {
-                AndroidLog.i(TAG, "Cleaning up after UPLOAD ...");
+                AndroidLogger.i(TAG, "Cleaning up after UPLOAD ...");
                 try {
                     streamSrc.close();
                 } catch (Exception ioe) {
                     MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
-                    AndroidLog.printStackTrace(ioe);
+                    AndroidLogger.printStackTrace(ioe);
                 } finally {
                     ChameleonIO.UPLOAD = false;
                     serialIOPort.releaseSerialPortLock();
@@ -181,18 +179,18 @@ public class ExportTools {
         }
         if(ExportTools.EOT)
             return; // waiting for conclusion of timer to cleanup the download files
-        AndroidLog.i(TAG, "Received XModem data (#bytes=" + liveLogData.length + ") ..." + Utils.bytes2Hex(liveLogData));
-        AndroidLog.i(TAG, "    => " + Utils.bytes2Ascii(liveLogData));
+        AndroidLogger.i(TAG, "Received XModem data (#bytes=" + liveLogData.length + ") ..." + Utils.bytes2Hex(liveLogData));
+        AndroidLogger.i(TAG, "    => " + Utils.bytes2Ascii(liveLogData));
         byte[] frameBuffer = new byte[XMODEM_BLOCK_SIZE];
         if (liveLogData != null && liveLogData.length > 0 && liveLogData[0] != ExportTools.BYTE_EOT) {
             if (liveLogData[0] == ExportTools.BYTE_SOH && liveLogData[1] == ExportTools.CurrentFrameNumber && liveLogData[2] == (byte) (255 - ExportTools.CurrentFrameNumber)) {
-                AndroidLog.i(TAG, "Writing XModem data ...");
+                AndroidLogger.i(TAG, "Writing XModem data ...");
                 int dataBufferSize = liveLogData.length - 4;
                 System.arraycopy(liveLogData, 3, frameBuffer, 0, ExportTools.XMODEM_BLOCK_SIZE);
                 byte checksumByte = liveLogData[dataBufferSize + 3];
                 ExportTools.Checksum = ExportTools.CalcChecksum(frameBuffer, ExportTools.XMODEM_BLOCK_SIZE);
                 if (ExportTools.Checksum != checksumByte && currentNAKCount < MAX_NAK_COUNT) {
-                    AndroidLog.w(TAG, "Sent another NAK (invalid checksum) : # = " + currentNAKCount);
+                    AndroidLogger.w(TAG, "Sent another NAK (invalid checksum) : # = " + currentNAKCount);
                     serialIOPort.sendDataBuffer(new byte[]{ExportTools.BYTE_NAK});
                     currentNAKCount++;
                     return;
@@ -211,7 +209,7 @@ public class ExportTools {
                     serialIOPort.sendDataBuffer(new byte[]{BYTE_ACK});
                 } catch (Exception e) {
                     ExportTools.EOT = true;
-                    AndroidLog.printStackTrace(e);
+                    AndroidLogger.printStackTrace(e);
                 }
             }
             else {
@@ -221,7 +219,7 @@ public class ExportTools {
                     serialIOPort.sendDataBuffer(new byte[] {ExportTools.BYTE_CAN});
                     return;
                 }
-                AndroidLog.w(TAG, "Sent another NAK (header bytes) : # = " + currentNAKCount);
+                AndroidLogger.w(TAG, "Sent another NAK (header bytes) : # = " + currentNAKCount);
                 serialIOPort.sendDataBuffer(new byte[]{ExportTools.BYTE_NAK});
                 currentNAKCount++;
             }
@@ -230,7 +228,7 @@ public class ExportTools {
             try {
                 serialIOPort.sendDataBuffer(new byte[]{ExportTools.BYTE_ACK});
             } catch (Exception ioe) {
-                AndroidLog.printStackTrace(ioe);
+                AndroidLogger.printStackTrace(ioe);
             }
             ExportTools.EOT = true;
         }
@@ -274,7 +272,7 @@ public class ExportTools {
             streamDest = new FileOutputStream(outfile);
         } catch(Exception ioe) {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
-            AndroidLog.printStackTrace(ioe);
+            AndroidLogger.printStackTrace(ioe);
             llActivity.clearStatusIcon(R.id.statusIconUlDl);
             return false;
         }
@@ -324,7 +322,7 @@ public class ExportTools {
             fin.close();
         } catch(Exception ioe) {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
-            AndroidLog.printStackTrace(ioe);
+            AndroidLogger.printStackTrace(ioe);
         }
     }
 
@@ -338,8 +336,8 @@ public class ExportTools {
         if(serialIOPort == null || !serialIOPort.serialConfigured()) {
             return;
         }
-        AndroidLog.i(TAG, "Received Upload Data (#=" + liveLogData.length + ") ... " + Utils.bytes2Hex(liveLogData));
-        AndroidLog.i(TAG, "    => " + Utils.bytes2Ascii(liveLogData));
+        AndroidLogger.i(TAG, "Received Upload Data (#=" + liveLogData.length + ") ... " + Utils.bytes2Hex(liveLogData));
+        AndroidLogger.i(TAG, "    => " + Utils.bytes2Ascii(liveLogData));
         if(ExportTools.EOT || liveLogData == null || liveLogData.length == 0)
             return;
         byte statusByte = liveLogData[0];
@@ -356,7 +354,7 @@ public class ExportTools {
             byte[] payloadBytes = new byte[XMODEM_BLOCK_SIZE];
             try {
                 if(streamSrc.available() == 0) {
-                    AndroidLog.i(TAG, "Upload / Sending EOT to device.");
+                    AndroidLogger.i(TAG, "Upload / Sending EOT to device.");
                     EOT = true;
                     serialIOPort.sendDataBuffer(new byte[]{BYTE_EOT});
                     return;
@@ -370,11 +368,11 @@ public class ExportTools {
                 return;
             }
             uploadFramebuffer[XMODEM_BLOCK_SIZE + 3] = CalcChecksum(payloadBytes, XMODEM_BLOCK_SIZE);
-            AndroidLog.i(TAG, "Upload Writing Data: frame=" + CurrentFrameNumber + ": " + Utils.bytes2Hex(uploadFramebuffer));
+            AndroidLogger.i(TAG, "Upload Writing Data: frame=" + CurrentFrameNumber + ": " + Utils.bytes2Hex(uploadFramebuffer));
             serialIOPort.sendDataBuffer(uploadFramebuffer);
         }
         else if(statusByte == BYTE_NAK && currentNAKCount <= MAX_NAK_COUNT) {
-            AndroidLog.i(TAG, "Upload / Sending Another NAK response (#=" + currentNAKCount + ")");
+            AndroidLogger.i(TAG, "Upload / Sending Another NAK response (#=" + currentNAKCount + ")");
             currentNAKCount++;
             serialIOPort.sendDataBuffer(uploadFramebuffer);
         }
@@ -464,7 +462,7 @@ public class ExportTools {
      * @ref LiveLoggerActivity.actionButtonWriteFile
      */
     public static boolean writeFormattedLogFile(File fd) throws Exception {
-        AndroidLog.i(TAG, String.valueOf("00".getBytes(StandardCharsets.US_ASCII)));
+        AndroidLogger.i(TAG, String.valueOf("00".getBytes(StandardCharsets.US_ASCII)));
 
         FileOutputStream fout = new FileOutputStream(fd);
         for (int vi = 0; vi < MainActivityLogUtils.logDataFeed.getChildCount(); vi++) {
@@ -578,7 +576,7 @@ public class ExportTools {
         } catch(Exception ioe) {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
             llActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
-            AndroidLog.printStackTrace(ioe);
+            AndroidLogger.printStackTrace(ioe);
             return false;
         }
         DownloadManager downloadManager = (DownloadManager) LiveLoggerActivity.defaultContext.getSystemService(DOWNLOAD_SERVICE);

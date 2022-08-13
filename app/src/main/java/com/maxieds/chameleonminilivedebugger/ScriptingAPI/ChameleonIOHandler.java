@@ -18,9 +18,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
 import android.os.Handler;
-import android.util.Log;
 
-import com.maxieds.chameleonminilivedebugger.AndroidLog;
+import com.maxieds.chameleonminilivedebugger.AndroidLogger;
 import com.maxieds.chameleonminilivedebugger.ChameleonIO;
 import com.maxieds.chameleonminilivedebugger.ChameleonLogUtils;
 import com.maxieds.chameleonminilivedebugger.ChameleonSerialIOInterface;
@@ -92,7 +91,7 @@ public class ChameleonIOHandler implements ChameleonSerialIOInterface.SerialData
         int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(dataBytes);
         if(loggingRespSize > 0) {
             if(!ScriptingConfig.IGNORE_LIVE_LOGGING) {
-                AndroidLog.d(TAG, "Received LIVE logging data [" + ChameleonLogUtils.LogCode.lookupByLogCode(dataBytes[0]).toString() + "]");
+                AndroidLogger.d(TAG, "Received LIVE logging data [" + ChameleonLogUtils.LogCode.lookupByLogCode(dataBytes[0]).toString() + "]");
             }
         }
         else if(PAUSED) {}
@@ -120,7 +119,7 @@ public class ChameleonIOHandler implements ChameleonSerialIOInterface.SerialData
             statusConfigLock.unlock();
         }
         else {
-            AndroidLog.d(TAG, "Received unexpected Serial I/O @ " + Utils.bytes2Hex(dataBytes));
+            AndroidLogger.d(TAG, "Received unexpected Serial I/O @ " + Utils.bytes2Hex(dataBytes));
         }
     }
 
@@ -213,7 +212,7 @@ public class ChameleonIOHandler implements ChameleonSerialIOInterface.SerialData
             ScriptingGUIConsole.appendConsoleOutputRecordChameleonCommandResponse(cmdRespVar, -1);
             return cmdRespVar;
         } catch(Exception ex) {
-            AndroidLog.printStackTrace(ex);
+            AndroidLogger.printStackTrace(ex);
             return null;
         }
 

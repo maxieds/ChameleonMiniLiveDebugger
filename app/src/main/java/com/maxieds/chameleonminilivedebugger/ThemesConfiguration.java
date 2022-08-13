@@ -19,7 +19,6 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.content.DialogInterface;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -127,7 +126,7 @@ public class ThemesConfiguration {
                 return appThemeResID;
         }
         if(applyTheme) {
-            AndroidLog.d(TAG, themeDesc);
+            AndroidLogger.d(TAG, themeDesc);
             activity.getInstance().setTheme(themeID);
             appThemeResID = themeID;
         }
@@ -172,7 +171,7 @@ public class ThemesConfiguration {
                     MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("THEME", "New theme installed: " + themeDesc));
                     LiveLoggerActivity.getLiveLoggerInstance().recreate();
                 } catch(NullPointerException npe) {
-                    AndroidLog.printStackTrace(npe);
+                    AndroidLogger.printStackTrace(npe);
                 }
             }
         });

@@ -17,9 +17,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
-import android.util.Log;
-
-import com.maxieds.chameleonminilivedebugger.AndroidLog;
+import com.maxieds.chameleonminilivedebugger.AndroidLogger;
 import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.ChameleonIO;
 import com.maxieds.chameleonminilivedebugger.ChameleonSettings;
@@ -29,9 +27,6 @@ import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExceptions.Ex
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ScriptingFunctions {
 
@@ -40,7 +35,7 @@ public class ScriptingFunctions {
     public static ScriptVariable callFunction(String funcName, List<ScriptVariable> funcArgs) throws ChameleonScriptingException {
         // The argument list is passed in reverse default from the parser:
         Collections.reverse(funcArgs);
-        AndroidLog.w(TAG, "Script: Calling function '" + funcName + "'");
+        AndroidLogger.w(TAG, "Script: Calling function '" + funcName + "'");
         printFunctionArgumentList(funcName, funcArgs);
         switch(funcName) {
             case "Exit":
@@ -142,7 +137,7 @@ public class ScriptingFunctions {
             default:
                 break;
         }
-        AndroidLog.w(TAG, "Script: Calling function '" + funcName + "'");
+        AndroidLogger.w(TAG, "Script: Calling function '" + funcName + "'");
         throw new ChameleonScriptingException(ExceptionType.OperationNotSupportedException);
     }
 
@@ -171,7 +166,7 @@ public class ScriptingFunctions {
         public static ScriptVariable Printf(List<ScriptVariable> argList) throws ChameleonScriptingException {
             printFunctionArgumentList("Printf", argList);
             ScriptVariable sprintfText = Sprintf(argList);
-            AndroidLog.i(TAG, "Printf [sprintf var str value] -> \"" + sprintfText.getValueAsString() + "\"");
+            AndroidLogger.i(TAG, "Printf [sprintf var str value] -> \"" + sprintfText.getValueAsString() + "\"");
             String returnText = ScriptingUtils.rawStringToSpecialCharEncoding(sprintfText.getValueAsString());
             ChameleonScripting.getRunningInstance().writeConsoleOutput(returnText);
             return ScriptVariable.newInstance().set(returnText.length());
@@ -190,7 +185,7 @@ public class ScriptingFunctions {
                 throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException, "Not enough variables supplied");
             }
             for(String rawStringPart : fmtFlagMatches) {
-                AndroidLog.d(TAG, "MATCHING RAW FMT PART: '" + rawStringPart + "'");
+                AndroidLogger.d(TAG, "MATCHING RAW FMT PART: '" + rawStringPart + "'");
                 ++varIndex;
                 if(varIndex == 0 && fmtMsg.charAt(0) != '%') {
                     consoleOutput.append(rawStringPart);
@@ -226,7 +221,7 @@ public class ScriptingFunctions {
                             consoleOutput.append(String.format(BuildConfig.DEFAULT_LOCALE, rawStringPart, argList.get(varIndex).getValueAsInt()));
                         }
                     } catch(Exception strFmtEx) {
-                        AndroidLog.printStackTrace(strFmtEx);
+                        AndroidLogger.printStackTrace(strFmtEx);
                         ScriptingGUIConsole.appendConsoleOutputRecordErrorWarning(
                                 String.format(BuildConfig.DEFAULT_LOCALE, "String format error '%s' is invalid!", rawStringPart),
                                 null,
@@ -236,7 +231,7 @@ public class ScriptingFunctions {
                     }
                 }
             }
-            AndroidLog.i(TAG, "Sprintf -> \"" + consoleOutput.toString() + "\"");
+            AndroidLogger.i(TAG, "Sprintf -> \"" + consoleOutput.toString() + "\"");
             return ScriptVariable.newInstance().set(ScriptingUtils.rawStringToSpecialCharEncoding(consoleOutput.toString()));
         }
 
@@ -374,13 +369,13 @@ public class ScriptingFunctions {
             String arrReprStr = "{ ";
             ScriptVariable arrVar = argList.get(0);
             int arrLength = arrVar.length();
-            AndroidLog.i(TAG,"ArrayToString -> Array Length = " + arrLength);
+            AndroidLogger.i(TAG,"ArrayToString -> Array Length = " + arrLength);
             for(int ai = 0; ai < arrLength; ai++) {
                 String nextSpace = (ai + 1 == arrLength) ? " " : ", ";
                 arrReprStr += String.format(BuildConfig.DEFAULT_LOCALE, "%s%s", arrVar.getValueAt(ai).getValueAsString(), nextSpace);
             }
             arrReprStr += "}";
-            AndroidLog.i(TAG, "ArrayToString -> \"" + arrReprStr + "\"");
+            AndroidLogger.i(TAG, "ArrayToString -> \"" + arrReprStr + "\"");
             return new ScriptVariable(arrReprStr);
         }
 
@@ -427,10 +422,10 @@ public class ScriptingFunctions {
     }
 
     private static void printFunctionArgumentList(String funcName, List<ScriptVariable> svList) {
-        AndroidLog.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "FUNCTION %s(...) called with ##% 2d ARGS", funcName, svList.size()));
+        AndroidLogger.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "FUNCTION %s(...) called with ##% 2d ARGS", funcName, svList.size()));
         int varIndex = 0;
         for(ScriptVariable svar : svList) {
-            AndroidLog.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "    &&&& [VARIDX=% 2d] '%s' (quoted)", varIndex, svList.get(varIndex++).getValueAsString()));
+            AndroidLogger.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "    &&&& [VARIDX=% 2d] '%s' (quoted)", varIndex, svList.get(varIndex++).getValueAsString()));
         }
     }
 

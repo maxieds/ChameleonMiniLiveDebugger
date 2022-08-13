@@ -19,15 +19,9 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
-import org.apache.commons.lang3.ArrayUtils;
-
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Locale;
 
-import static com.maxieds.chameleonminilivedebugger.ChameleonLogUtils.LogCode.LOG_INFO_CODEC_READER_FIELD_DETECTED;
 import static com.maxieds.chameleonminilivedebugger.ChameleonLogUtils.LogCode.LOG_INFO_CODEC_RX_DATA;
 import static com.maxieds.chameleonminilivedebugger.ChameleonLogUtils.LogCode.LOG_INFO_CODEC_RX_DATA_W_PARITY;
 
@@ -120,9 +114,9 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
     }
 
     private void printSerialDataForDebugging(byte[] serialData) {
-        AndroidLog.d(TAG, "SERIALIO_LOGDATA_RECEIVED: (HEX)   " + Utils.bytes2Hex(serialData));
-        AndroidLog.d(TAG, "SERIALIO_LOGDATA_RECEIVED: (ASCII) " + Utils.bytes2Ascii(serialData));
-        AndroidLog.d(TAG, "SERIALIO_LOGDATA_RECEIVED: (LOG)   " + ChameleonLogUtils.ChameleonLogData.newInstance(serialData));
+        AndroidLogger.d(TAG, "SERIALIO_LOGDATA_RECEIVED: (HEX)   " + Utils.bytes2Hex(serialData));
+        AndroidLogger.d(TAG, "SERIALIO_LOGDATA_RECEIVED: (ASCII) " + Utils.bytes2Ascii(serialData));
+        AndroidLogger.d(TAG, "SERIALIO_LOGDATA_RECEIVED: (LOG)   " + ChameleonLogUtils.ChameleonLogData.newInstance(serialData));
     }
 
     public boolean notifySerialDataReceived(byte[] serialData) {
@@ -170,7 +164,7 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
         }
         int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData);
         if (loggingRespSize > 0) {
-            AndroidLog.i(TAG, "Received new LogEntry @ " + String.format(BuildConfig.DEFAULT_LOCALE, "0x%02x", liveLogData[0]));
+            AndroidLogger.i(TAG, "Received new LogEntry @ " + String.format(BuildConfig.DEFAULT_LOCALE, "0x%02x", liveLogData[0]));
             if(ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS) {
                 notifyLogDataReceived(liveLogData);
             }

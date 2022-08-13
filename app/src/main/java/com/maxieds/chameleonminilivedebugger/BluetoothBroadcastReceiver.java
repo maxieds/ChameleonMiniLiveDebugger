@@ -23,12 +23,9 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
-import android.bluetooth.BluetoothProfile;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Looper;
 import android.widget.Toast;
 
 import java.util.List;
@@ -88,7 +85,7 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
                 }
                 svcUUIDSummary.append("\n");
             }
-            AndroidLog.d(TAG, svcUUIDSummary.toString());
+            AndroidLogger.d(TAG, svcUUIDSummary.toString());
         }
     }
 
@@ -101,7 +98,7 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         if (action == null) {
             return;
         }
-        AndroidLog.v(TAG, "btConnReceiver: intent action: " + action);
+        AndroidLogger.v(TAG, "btConnReceiver: intent action: " + action);
         if (intent.getExtras() == null) {
             return;
         }
@@ -110,7 +107,7 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
             return;
         }
         String btDeviceName = btIntentDevice.getName();
-        AndroidLog.v(TAG, "btConnReceiver: intent device name: " + btDeviceName);
+        AndroidLogger.v(TAG, "btConnReceiver: intent device name: " + btDeviceName);
         if (btGattConn == null || !BluetoothUtils.isChameleonDeviceName(btDeviceName)) {
             return;
         } else if (btGattConn.btDevice != null && btGattConn.btDevice.getName() == btDeviceName) {

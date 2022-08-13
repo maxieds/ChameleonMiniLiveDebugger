@@ -29,7 +29,6 @@ import com.maxieds.androidfilepickerlightlibrary.FileChooserBuilder;
 
 import java.io.File;
 import java.util.List;
-import java.util.Locale;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.DOWNLOAD_SERVICE;
@@ -84,7 +83,7 @@ public class ExternalFileIO {
         } catch(Exception ioe) {
             MainActivityLogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
             llActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
-            AndroidLog.printStackTrace(ioe);
+            AndroidLogger.printStackTrace(ioe);
             return;
         }
         DownloadManager downloadManager = (DownloadManager) LiveLoggerActivity.getLiveLoggerInstance().defaultContext.getSystemService(DOWNLOAD_SERVICE);
@@ -97,7 +96,7 @@ public class ExternalFileIO {
             emailFileChecked = ((RadioButton) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.radio_save_email)).isChecked();
             shareFileChecked = ((RadioButton) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.radio_save_share)).isChecked();
         } catch(NullPointerException npe) {
-            AndroidLog.printStackTrace(npe);
+            AndroidLogger.printStackTrace(npe);
         }
         if(emailFileChecked || shareFileChecked) {
             Intent sendIntent = new Intent(Intent.ACTION_SEND);
@@ -152,7 +151,7 @@ public class ExternalFileIO {
                 List<String> selectedFilePathsList = FileChooserBuilder.handleActivityResult(activity, chooserRequestCodeAction, resultCode, data);
                 selectedChooserPath = String.format(BuildConfig.DEFAULT_LOCALE, AndroidFileChooser.getFileNotifySelectExceptionFormat(), selectedFilePathsList.get(0));
             } catch(Exception ex) {
-                AndroidLog.printStackTrace(ex);
+                AndroidLogger.printStackTrace(ex);
             }
             throw new RuntimeException(selectedChooserPath);
         }

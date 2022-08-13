@@ -27,6 +27,16 @@ def getDateTimestamp() {
 
 }
 
+def getVersionNameFull(String versionNameBase, String versionNameType) {
+
+    if (!versionNameType.equals("") && !versionNameType.toLowerCase().equals("release")) {
+        return versionNameBase
+    } else {
+        return String.format(Locale.getDefault(), "%s-%s", versionNameBase, versionNameType)
+    }
+
+}
+
 def getShellCommandOutput(String shellCmd) {
 
     def cmdResult = ['bash', '-c', shellCmd].execute()
@@ -62,26 +72,6 @@ def generateAntlrJava(String grammarFile) {
 
 }
 
-task verboseBuildLogs {
-
-    logging.captureStandardOutput LogLevel.DEBUG
-
-}
-preBuild.dependsOn verboseBuildLogs
-
-task preBuildGenAntlr4JavaSources {
-
-    println 'REMOVING OLD ANTLR4 JAVA SOURCES ==> '
-    file(new File('app/src/main/antlr-gen')).deleteDir()
-    println 'GENERATING ANTLR4 JAVA SOURCES ==> '
-    file(new File('app/src/main/antlr-gen')).mkdirs()
-    generateAntlrJava("ChameleonScriptLexer.g4")
-    generateAntlrJava("ChameleonScriptParser.g4")
-    outputs.upToDateWhen { false } /* Make the task run every time (no UP-TO-DATE skippage) */
-
-}
-preBuild.dependsOn preBuildGenAntlr4JavaSources
-
 task cleanBuildDir {
 
     delete rootProject.buildDir
@@ -101,16 +91,41 @@ task cleanPreBuildGenAntlr4JavaSources {
 }
 clean.dependsOn cleanPreBuildGenAntlr4JavaSources
 
+task verboseBuildLogs {
+
+    logging.captureStandardOutput LogLevel.DEBUG
+
+}
+preBuild.dependsOn verboseBuildLogs
+
+task preBuildGenAntlr4JavaSources {
+
+    println 'REMOVING OLD ANTLR4 JAVA SOURCES ==> '
+    file(new File('app/src/main/antlr-gen')).deleteDir()
+    println 'GENERATING ANTLR4 JAVA SOURCES ==> '
+    file(new File('app/src/main/antlr-gen')).mkdirs()
+    generateAntlrJava("ChameleonScriptLexer.g4")
+    generateAntlrJava("ChameleonScriptParser.g4")
+    outputs.upToDateWhen { false } /* Make the task run every time (no UP-TO-DATE skippage) */
+
+}
+preBuild.dependsOn cleanBuildDir
+preBuild.dependsOn preBuildGenAntlr4JavaSources
+
 android {
 
-    def configBuildTimeStamp = getDateTimestamp()
+    def int versionCodeBase = 8080
+    def int versionCodeRevision = 127
+    def String configBuildTimeStamp = getDateTimestamp()
+    def String versionNameBase = "1.5.3"
+    def String versionNameType = "beta"
 
     defaultConfig {
 
         applicationId "com.maxieds.chameleonminilivedebugger"
 
-        versionCode 127 + 8080
-        versionName "1.5.3-beta"
+        versionCode versionCodeRevision + versionCodeBase
+        versionName getVersionNameFull(versionNameBase, versionNameType)
 
         minSdkVersion 26
         targetSdkVersion 30
@@ -120,6 +135,7 @@ android {
 
         buildConfigField "String", "GIT_COMMIT_HASH", "\"" + getGitCommitHash() + "\""
         buildConfigField "String", "GIT_COMMIT_DATE", "\"" + getGitCommitDate() + "\""
+        buildConfigField "int", "VERSION_CODE_BASE", "\"" + versionCodeBase + "\""
         buildConfigField "java.util.Locale", "DEFAULT_LOCALE", "java.util.Locale.ENGLISH"
         buildConfigField "java.nio.charset.Charset", "DEFAULT_CHARSET", "java.nio.charset.StandardCharsets.UTF_8"
         setProperty("archivesBaseName", "ChameleonMiniLiveDebugger-v$versionName-$versionCode-$configBuildTimeStamp")
@@ -128,10 +144,10 @@ android {
 
     lint {
 
-        abortOnError = true
-        ignoreWarnings = false
+        abortOnError = false
         checkAllWarnings = true
         explainIssues = true
+        ignoreWarnings = false
         warningsAsErrors = false
 
     }
@@ -261,7 +277,7 @@ android {
         implementation 'org.antlr:antlr4:4.9.2'
         implementation 'org.antlr:antlr4-runtime:4.9.2'
         implementation 'com.github.felHR85:UsbSerial:4.5.2'
-        implementation 'com.shawnlin:number-picker:2.4.9'
+        implementation 'com.github.shawnlin013:NumberPicker:v2.4.12'
         implementation 'com.github.maxieds:AndroidFilePickerLight:release-v22'
 
     }

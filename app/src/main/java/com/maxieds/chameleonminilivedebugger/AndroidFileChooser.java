@@ -141,18 +141,18 @@ public class AndroidFileChooser {
                 String replaceRegex = String.format(BuildConfig.DEFAULT_LOCALE, getFileNotifySelectExceptionFormat(), "");
                 String[] excptMsgComponents = excptMsg.split(replaceRegex);
                 if(excptMsgComponents.length != 2) {
-                    AndroidLog.i(TAG, "USER SELECTED <__NO__> PATH! ... " + ie.getMessage());
+                    AndroidLogger.i(TAG, "USER SELECTED <__NO__> PATH! ... " + ie.getMessage());
                     return NULL_FILE_PATH_LABEL;
                 }
                 excptMsg = excptMsgComponents[1];
                 if(excptMsg.length() == 0) {
-                    AndroidLog.i(TAG, "USER SELECTED <__EMPTY__> PATH! ... " + ie.getMessage());
+                    AndroidLogger.i(TAG, "USER SELECTED <__EMPTY__> PATH! ... " + ie.getMessage());
                     return NULL_FILE_PATH_LABEL;
                 }
                 String fileChooserBaseFolder = getInitialFileChooserBaseFolder();
                 excptMsg = excptMsg.replaceFirst(fileChooserBaseFolder, STORAGE_HOME_PREFIX_SUBST);
                 excptMsg = excptMsg.replaceAll(String.format(BuildConfig.DEFAULT_LOCALE, "[%s]+", PATH_SEP), "/");
-                AndroidLog.i(TAG, "USER SELECTED PATH: \"" + excptMsg + "\" ...");
+                AndroidLogger.i(TAG, "USER SELECTED PATH: \"" + excptMsg + "\" ...");
                 return excptMsg;
             }
         }
@@ -177,10 +177,10 @@ public class AndroidFileChooser {
                 return false;
             }
             String fileMimeType = docRef.getDocumentType();
-            AndroidLog.i(TAG, "MIME TYPE: " + fileMimeType);
+            AndroidLogger.i(TAG, "MIME TYPE: " + fileMimeType);
             return fileMimeType.toLowerCase(BuildConfig.DEFAULT_LOCALE).startsWith("text");
         } catch(Exception ex) {
-            AndroidLog.printStackTrace(ex);
+            AndroidLogger.printStackTrace(ex);
             return false;
         }
     }
@@ -199,7 +199,7 @@ public class AndroidFileChooser {
             }
             return docRef.readFileContentsAsString().toString();
         } catch(Exception ex) {
-            AndroidLog.printStackTrace(ex);
+            AndroidLogger.printStackTrace(ex);
             return null;
         }
     }

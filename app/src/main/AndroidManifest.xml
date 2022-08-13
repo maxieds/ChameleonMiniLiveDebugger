@@ -194,7 +194,7 @@
     </compatible-screens>
 
     <application
-        android:name=".ChameleonMiniLiveDebugger"
+        android:name=".ChameleonMiniLiveDebuggerApplication"
         android:description="@string/app_desc"
         android:icon="${appIcon}"
         android:label="${appLabelDesc}"

@@ -25,7 +25,6 @@ import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingConfig;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 
 public class AndroidSettingsStorage {
@@ -179,8 +178,8 @@ public class AndroidSettingsStorage {
                 ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_CODECRX_STATUS_INDICATOR = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_CODECRX_EVENTS));
                 ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_RDRFLDDETECT_STATUS_INDICATOR = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_RDRFLDDETECT_EVENTS));
                 ChameleonLogUtils.LOGMODE_NOTIFY_STATE = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_LOGMODE_NOTIFY_STATE));
-                AndroidLog.WRITE_LOGDATA_TO_FILE = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_WRITE_LOGDATA_TO_FILE));
-                AndroidLog.LOGDATA_LEVEL_THRESHOLD = AndroidLog.LogLevel.getLogLevelFromOrdinal(Integer.parseInt(getStringValueByKey(profileID, LOGGING_CONFIG_LOGDATA_LEVEL_THRESHOLD)));
+                AndroidLogger.WRITE_LOGDATA_TO_FILE = Boolean.valueOf(getStringValueByKey(profileID, LOGGING_CONFIG_WRITE_LOGDATA_TO_FILE));
+                AndroidLogger.LOGDATA_LEVEL_THRESHOLD = AndroidLogger.LogLevel.getLogLevelFromOrdinal(Integer.parseInt(getStringValueByKey(profileID, LOGGING_CONFIG_LOGDATA_LEVEL_THRESHOLD)));
                 status = true;
             }
             if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.SCRIPTING_CONFIG) {
@@ -210,7 +209,7 @@ public class AndroidSettingsStorage {
                 status = true;
             }
         } catch(Exception ex) {
-            AndroidLog.printStackTrace(ex);
+            AndroidLogger.printStackTrace(ex);
             return false;
         }
         return status;
@@ -293,10 +292,10 @@ public class AndroidSettingsStorage {
             spEditor.putBoolean(prefsKey, ChameleonLogUtils.LOGMODE_NOTIFY_STATE);
         }
         else if(prefsKey.equals(LOGGING_CONFIG_WRITE_LOGDATA_TO_FILE)) {
-            spEditor.putBoolean(prefsKey, AndroidLog.WRITE_LOGDATA_TO_FILE);
+            spEditor.putBoolean(prefsKey, AndroidLogger.WRITE_LOGDATA_TO_FILE);
         }
         else if(prefsKey.equals(LOGGING_CONFIG_LOGDATA_LEVEL_THRESHOLD)) {
-            spEditor.putInt(prefsKey, AndroidLog.LOGDATA_LEVEL_THRESHOLD.ordinal());
+            spEditor.putInt(prefsKey, AndroidLogger.LOGDATA_LEVEL_THRESHOLD.ordinal());
         }
         else if(prefsKey.equals(SCRIPTING_CONFIG_SAVE_CONSOLE_OUTPUT_FILE)) {
             spEditor.putBoolean(prefsKey, ScriptingConfig.SAVE_CONSOLE_OUTPUT_FILE);
@@ -444,10 +443,10 @@ public class AndroidSettingsStorage {
             return sharedPrefs.getBoolean(prefsKey, ChameleonLogUtils.LOGMODE_NOTIFY_STATE) ? "true" : "false";
         }
         else if(prefsKey.equals(LOGGING_CONFIG_WRITE_LOGDATA_TO_FILE)) {
-            return sharedPrefs.getBoolean(prefsKey, AndroidLog.WRITE_LOGDATA_TO_FILE) ? "true" : "false";
+            return sharedPrefs.getBoolean(prefsKey, AndroidLogger.WRITE_LOGDATA_TO_FILE) ? "true" : "false";
         }
         else if(prefsKey.equals(LOGGING_CONFIG_LOGDATA_LEVEL_THRESHOLD)) {
-            return String.format(BuildConfig.DEFAULT_LOCALE, "%d", sharedPrefs.getInt(prefsKey, AndroidLog.LOGDATA_LEVEL_THRESHOLD.ordinal()));
+            return String.format(BuildConfig.DEFAULT_LOCALE, "%d", sharedPrefs.getInt(prefsKey, AndroidLogger.LOGDATA_LEVEL_THRESHOLD.ordinal()));
         }
         else if(prefsKey.equals(SCRIPTING_CONFIG_SAVE_CONSOLE_OUTPUT_FILE)) {
             return sharedPrefs.getBoolean(prefsKey, ScriptingConfig.SAVE_CONSOLE_OUTPUT_FILE) ? "true" : "false";

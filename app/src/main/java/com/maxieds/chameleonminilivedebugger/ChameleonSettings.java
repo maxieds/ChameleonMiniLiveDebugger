@@ -85,14 +85,14 @@ public class ChameleonSettings {
         }
         for(int si = 0; si < serialIOPorts.length; si++) {
             if(si == USBIO_IFACE_INDEX && allowWiredUSB) {
-                AndroidLog.i(TAG, "Started scanning for SerialUSB devices ... ");
+                AndroidLogger.i(TAG, "Started scanning for SerialUSB devices ... ");
                 //serialIOPorts[si].startScanningDevices();
             } else if(si == BTIO_IFACE_INDEX && allowBluetooth && BluetoothUtils.isBluetoothEnabled(true)) {
-                AndroidLog.i(TAG, "Started scanning for BT/BLE devices ... ");
+                AndroidLogger.i(TAG, "Started scanning for BT/BLE devices ... ");
                 serialIOPorts[si].startScanningDevices();
                 initUpdateHandler.removeCallbacksAndMessages(initUpdateRunnable);
             } else if (si == BTIO_IFACE_INDEX && allowBluetooth) {
-                AndroidLog.i(TAG, "Repeating initialization of scanning of BT/BLE devices in a few seconds ... ");
+                AndroidLogger.i(TAG, "Repeating initialization of scanning of BT/BLE devices in a few seconds ... ");
                 initUpdateHandler.postDelayed(initUpdateRunnable, ChameleonSettings.REINIT_SCAN_INTERVAL);
             }
         }

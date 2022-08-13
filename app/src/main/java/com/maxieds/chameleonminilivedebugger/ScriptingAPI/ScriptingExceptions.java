@@ -19,7 +19,7 @@ package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
 import androidx.annotation.NonNull;
 
-import com.maxieds.chameleonminilivedebugger.AndroidLog;
+import com.maxieds.chameleonminilivedebugger.AndroidLogger;
 import com.maxieds.chameleonminilivedebugger.BuildConfig;
 
 public class ScriptingExceptions {
@@ -56,8 +56,8 @@ public class ScriptingExceptions {
 
         public ChameleonScriptingException(@NonNull ExceptionType exType) {
             super(exType.name());
-            AndroidLog.i(TAG, exType.name());
-            AndroidLog.printStackTrace(this);
+            AndroidLogger.i(TAG, exType.name());
+            AndroidLogger.printStackTrace(this);
         }
 
         public ChameleonScriptingException(@NonNull ExceptionType exType, String msg) {

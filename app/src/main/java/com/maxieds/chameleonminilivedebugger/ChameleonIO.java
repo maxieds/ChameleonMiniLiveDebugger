@@ -24,7 +24,6 @@ import android.widget.TextView;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.FALSE;
@@ -115,7 +114,7 @@ public class ChameleonIO {
         else {
             String firmwareVersion = getSettingFromDevice("VERSION?");
             String commandsList = getSettingFromDevice("HELP");
-            AndroidLog.i(TAG, "CHAMELEON DEVICE TYPE -- " + firmwareVersion + "------" + commandsList);
+            AndroidLogger.i(TAG, "CHAMELEON DEVICE TYPE -- " + firmwareVersion + "------" + commandsList);
             if(firmwareVersion.contains("DESFire") ||
                     (deviceConnType.equals("USB") && deviceActiveSerialIOPort.getActiveDeviceInfo().contains("DESFireMod"))) {
                 CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_DESFIRE_FWMOD;
@@ -393,7 +392,7 @@ public class ChameleonIO {
                                 ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats3)).setText(subStats3);
                                 LiveLoggerActivity.setSignalStrengthIndicator(THRESHOLD);
                             } catch (Exception ex) {
-                                AndroidLog.printStackTrace(ex);
+                                AndroidLogger.printStackTrace(ex);
                             }
                         }
                     });
@@ -448,7 +447,7 @@ public class ChameleonIO {
                     TIMEOUT = UNSET_VALUE_NA;
                 }
             } catch (Exception ex) {
-                AndroidLog.printStackTrace(ex);
+                AndroidLogger.printStackTrace(ex);
                 return false;
             }
             LiveLoggerActivity.setSignalStrengthIndicator(THRESHOLD);
@@ -475,7 +474,7 @@ public class ChameleonIO {
                         boolean haveUpdates = updateAllStatus();
                     }
                     catch(Exception nfe) {
-                        AndroidLog.printStackTrace(nfe);
+                        AndroidLogger.printStackTrace(nfe);
                         stopPostingStats();
                         return;
                     }
@@ -506,7 +505,7 @@ public class ChameleonIO {
                                     ((TextView) LiveLoggerActivity.getContentView(R.id.cmdTimeoutSeekbarValueText)).setText(String.format(BuildConfig.DEFAULT_LOCALE, "% 4s (x128) ms", TIMEOUT));
                                 }
                             } catch (Exception ex) {
-                                AndroidLog.printStackTrace(ex);
+                                AndroidLogger.printStackTrace(ex);
                             }
                         }
                     });
@@ -533,7 +532,7 @@ public class ChameleonIO {
      */
     public static SerialRespCode executeChameleonMiniCommand(String rawCmd, int timeout) {
         if(PAUSED) {
-            AndroidLog.i(TAG, "executeChameleonMiniCommand: PAUSED.");
+            AndroidLogger.i(TAG, "executeChameleonMiniCommand: PAUSED.");
             return FALSE;
         }
         if (timeout < 0) {
@@ -544,7 +543,7 @@ public class ChameleonIO {
         byte[] sendBuf = deviceConfigCmd.getBytes(StandardCharsets.UTF_8);
         ChameleonSerialIOInterface serialPort = ChameleonSettings.getActiveSerialIOPort();
         if(serialPort == null) {
-            AndroidLog.i(TAG, "Serial port is null while executing command");
+            AndroidLogger.i(TAG, "Serial port is null while executing command");
             return null;
         }
         if (serialPort.sendDataBuffer(sendBuf) == SerialIOReceiver.STATUS_OK) {
@@ -569,11 +568,11 @@ public class ChameleonIO {
         ChameleonIO.LASTCMD = query;
         ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
         if(serialIOPort == null) {
-            AndroidLog.i(TAG, "Serial port is null");
+            AndroidLogger.i(TAG, "Serial port is null");
             return ChameleonIO.DEVICE_RESPONSE[0];
         }
         else if(!serialIOPort.tryAcquireSerialPort(LOCK_TIMEOUT)) {
-            AndroidLog.i(TAG, "Unable to acquire serial port");
+            AndroidLogger.i(TAG, "Unable to acquire serial port");
             return ChameleonIO.DEVICE_RESPONSE[0];
         }
         ChameleonIO.WAITING_FOR_RESPONSE = true;
@@ -601,7 +600,7 @@ public class ChameleonIO {
                 deviceRespCode = Integer.valueOf(ChameleonIO.DEVICE_RESPONSE_CODE);
             }
         } catch(NumberFormatException nfe) {
-            AndroidLog.printStackTrace(nfe);
+            AndroidLogger.printStackTrace(nfe);
             serialIOPort.releaseSerialPortLock();
             return ChameleonIO.DEVICE_RESPONSE_CODE;
         }

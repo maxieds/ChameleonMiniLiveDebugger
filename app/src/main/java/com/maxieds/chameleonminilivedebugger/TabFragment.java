@@ -32,8 +32,6 @@ import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 
-import java.util.Locale;
-
 /**
  * <h1>Tab Fragment</h1>
  * Implements a Fragment for individual tab data in the application.
@@ -176,7 +174,7 @@ public class TabFragment extends Fragment {
                 menuItem.setTextColor(Utils.getColorFromTheme(R.attr.colorPrimaryDark));
                 menuItem.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
             } catch(NullPointerException npe) {
-                AndroidLog.printStackTrace(npe);
+                AndroidLogger.printStackTrace(npe);
                 return false;
             }
             return true;

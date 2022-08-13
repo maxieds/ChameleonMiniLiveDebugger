@@ -28,7 +28,6 @@ import android.app.Activity;
 import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothStatusCodes;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -69,7 +68,6 @@ import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingGUIMain;
 
 import java.io.File;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * <h1>Live Logger Activity</h1>
@@ -204,7 +202,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     startCrashRptIntent.putExtra(CrashReportActivity.INTENT_CHAMELEON_CONFIG, ChameleonIO.DeviceStatusSettings.CONFIG);
                     startCrashRptIntent.putExtra(CrashReportActivity.INTENT_CHAMELEON_LOGMODE, ChameleonIO.DeviceStatusSettings.LOGMODE);
                     startCrashRptIntent.putExtra(CrashReportActivity.INTENT_CHAMELEON_TIMEOUT, ChameleonIO.DeviceStatusSettings.TIMEOUT);
-                    startCrashRptIntent.putExtra(CrashReportActivity.INTENT_LOG_FILE_DOWNLOAD_PATH, AndroidLog.downloadCurrentLogFile(false));
+                    startCrashRptIntent.putExtra(CrashReportActivity.INTENT_LOG_FILE_DOWNLOAD_PATH, AndroidLogger.downloadCurrentLogFile(false));
                     startActivity(startCrashRptIntent);
                     liveLoggerActivityContext.finish();
                     System.exit(-1);
@@ -221,7 +219,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                if(serialIOActionReceiver == null) {
                     serialIOActionReceiver = new BroadcastReceiver() {
                          public void onReceive(Context context, Intent intent) {
-                              AndroidLog.i(TAG, intent.getAction());
+                              AndroidLogger.i(TAG, intent.getAction());
                               if (intent.getAction() == null) {
                                    return;
                               } else {
@@ -282,23 +280,23 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
 
           super.onCreate(savedInstanceState);
           if(getInstance() == null) {
-               AndroidLog.i(TAG, "Created new activity");
+               AndroidLogger.i(TAG, "Created new activity");
           } else if(!isTaskRoot()) {
-               AndroidLog.i(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
+               AndroidLogger.i(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
                final Intent intent = getIntent();
                final String intentAction = intent != null ? intent.getAction() : null;
                if (intentAction != null && (intentAction.equals(UsbManager.ACTION_USB_DEVICE_DETACHED) || intentAction.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED))) {
                     if(LiveLoggerActivity.getLiveLoggerInstance() != null) {
                          LiveLoggerActivity.getLiveLoggerInstance().onNewIntent(intent);
                     }
-                    AndroidLog.i(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead to handle USB connection instead of re-launching.");
+                    AndroidLogger.i(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead to handle USB connection instead of re-launching.");
                     finish();
                     return;
                } else if (intentAction != null && (intentAction.equals(BluetoothDevice.ACTION_FOUND) || intentAction.equals(BluetoothDevice.ACTION_ACL_CONNECTED))) {
                     if(LiveLoggerActivity.getLiveLoggerInstance() != null) {
                          LiveLoggerActivity.getLiveLoggerInstance().onNewIntent(intent);
                     }
-                    AndroidLog.i(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead to handle USB connection instead of re-launching.");
+                    AndroidLogger.i(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead to handle USB connection instead of re-launching.");
                     finish();
                     return;
                }
@@ -520,7 +518,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           if(intent == null || intent.getAction() == null) {
                return;
           }
-          AndroidLog.i(TAG, "NEW INTENT: " + intent.getAction());
+          AndroidLogger.i(TAG, "NEW INTENT: " + intent.getAction());
           if (intent.getAction().equals(BluetoothDevice.ACTION_FOUND) ||
                   intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
                   intent.getAction().equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) ||
@@ -646,7 +644,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                ChameleonSettings.stopSerialIOConnectionDiscovery();
           }
           BluetoothUtils.resetBluetoothAdapterAtClose(this);
-          AndroidLog.closeLogDataOutputFile();
+          AndroidLogger.closeLogDataOutputFile();
           super.onPause();
      }
 
@@ -681,7 +679,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                ChameleonSettings.stopSerialIOConnectionDiscovery();
           }
           BluetoothUtils.resetBluetoothAdapterAtClose(this);
-          AndroidLog.closeLogDataOutputFile();
+          AndroidLogger.closeLogDataOutputFile();
           super.onDestroy();
      }
 
@@ -702,7 +700,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                          }
                          return groupPermsArray;
                     } catch (Exception expt) {
-                         AndroidLog.printStackTrace(expt);
+                         AndroidLogger.printStackTrace(expt);
                     }
                }
           }
@@ -1049,7 +1047,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     ExternalFileIO.handleActivityResult(this, requestCode, resultCode, data);
                } catch(RuntimeException  rte) {
                     if(rte.getMessage() != null && rte.getMessage().length() > 0) {
-                         AndroidLog.printStackTrace(rte);
+                         AndroidLogger.printStackTrace(rte);
                          return;
                     }
                }
@@ -1172,8 +1170,8 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_MIN_DATA_BYTES);
           }
           catch(Exception ex) {
-               AndroidLog.printStackTrace(ex);
-               AndroidLog.i(TAG, ex.getMessage());
+               AndroidLogger.printStackTrace(ex);
+               AndroidLogger.i(TAG, ex.getMessage());
                ChameleonLogUtils.LOGGING_MIN_DATA_BYTES = loggingMinDataLength;
           }
      }
@@ -1217,13 +1215,13 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
      }
 
      public void actionButtonDownloadCurrentLogFile(@NonNull View btn) {
-          AndroidLog.downloadCurrentLogFile(true);
+          AndroidLogger.downloadCurrentLogFile(true);
      }
 
      public void actionButtonClearAllLogFiles(@NonNull View btn) {
-          AndroidLog.closeLogDataOutputFile();
+          AndroidLogger.closeLogDataOutputFile();
           String localAppStoragePath = LiveLoggerActivity.getLiveLoggerInstance().getFilesDir().getAbsolutePath();
-          String logDataOutputFilePath = localAppStoragePath + "//" + AndroidLog.LOGDATA_FILE_LOCAL_DIRPATH;
+          String logDataOutputFilePath = localAppStoragePath + "//" + AndroidLogger.LOGDATA_FILE_LOCAL_DIRPATH;
           File logDataOutputFolder = new File(logDataOutputFilePath);
           if (!logDataOutputFolder.exists() || !logDataOutputFolder.delete()) {
                Utils.displayToastMessageShort("Error clearing stored log files.");

@@ -17,13 +17,9 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
-import android.util.Log;
-
-import com.maxieds.chameleonminilivedebugger.AndroidLog;
+import com.maxieds.chameleonminilivedebugger.AndroidLogger;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingTypes.ScriptVariable;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScripting.ChameleonScriptInstance;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParser;
-import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonScriptParserBaseVisitor;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.RuleNode;
@@ -41,10 +37,10 @@ public class ChameleonScriptVisitorExtended extends ChameleonScriptParserBaseVis
     @Override
     public ScriptVariable visitWhile_loop(ChameleonScriptParser.While_loopContext ctx) {
         setActiveLineOfCode(ctx);
-        AndroidLog.i(TAG, "Before WHILE BLOCK");
+        AndroidLogger.i(TAG, "Before WHILE BLOCK");
         while(this.visit(ctx.oe).getValueAsBoolean()) {
             this.visit(ctx.scrLineBlk);
-            AndroidLog.i(TAG, "Visiting WHILE BLOCK");
+            AndroidLogger.i(TAG, "Visiting WHILE BLOCK");
         }
         return this.visitChildren(ctx);
     }
@@ -55,7 +51,7 @@ public class ChameleonScriptVisitorExtended extends ChameleonScriptParserBaseVis
         ScriptVariable boolPreCond = this.visit(ctx.oe);
         if(boolPreCond.getValueAsBoolean()) {
             this.visit(ctx.scrLineBlk);
-            AndroidLog.i(TAG, "Visiting IF (SG) BLOCK");
+            AndroidLogger.i(TAG, "Visiting IF (SG) BLOCK");
         }
         return this.visitChildren(ctx);
     }
@@ -65,11 +61,11 @@ public class ChameleonScriptVisitorExtended extends ChameleonScriptParserBaseVis
         setActiveLineOfCode(ctx);
         if(this.visit(ctx.ifoe).getValueAsBoolean()) {
             this.visit(ctx.scrLineBlkIf);
-            AndroidLog.i(TAG, "Visiting IF BLOCK");
+            AndroidLogger.i(TAG, "Visiting IF BLOCK");
         }
         else {
             this.visit(ctx.scrLineBlkElse);
-            AndroidLog.i(TAG, "Visiting ELSE BLOCK");
+            AndroidLogger.i(TAG, "Visiting ELSE BLOCK");
         }
         return this.visitChildren(ctx);
     }
@@ -95,7 +91,7 @@ public class ChameleonScriptVisitorExtended extends ChameleonScriptParserBaseVis
             int activeLOC = ((ParserRuleContext) ctx).getStart().getLine();
             ChameleonScripting.getRunningInstance().setActiveLineOfCode(activeLOC);
         } catch(Exception ex) {
-            AndroidLog.printStackTrace(ex);
+            AndroidLogger.printStackTrace(ex);
             ChameleonScripting.getRunningInstance().setActiveLineOfCode(-1);
         }
     }

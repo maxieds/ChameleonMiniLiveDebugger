@@ -22,7 +22,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.InsetDrawable;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -34,8 +33,6 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
-
-import java.util.Locale;
 
 public class ChameleonConfigSlot {
 
@@ -145,7 +142,7 @@ public class ChameleonConfigSlot {
             isLocked = ChameleonIO.getSettingFromDevice("READONLY?") == "1" ? true : false;
             fieldSetting = ChameleonIO.getSettingFromDevice("FIELD?") == "1" ? true : false;
         } catch(NumberFormatException nfe) {
-            AndroidLog.printStackTrace(nfe);
+            AndroidLogger.printStackTrace(nfe);
             return false;
         }
         return true;
@@ -164,7 +161,7 @@ public class ChameleonConfigSlot {
             ChameleonIO.getSettingFromDevice(String.format(BuildConfig.DEFAULT_LOCALE, "SETTING=%d", nextSlot));
             readParametersFromChameleonSlot();
         } catch(Exception exe) {
-            AndroidLog.printStackTrace(exe);
+            AndroidLogger.printStackTrace(exe);
             return false;
         }
         return true;
@@ -237,7 +234,7 @@ public class ChameleonConfigSlot {
                 public void afterTextChanged(Editable editStr) {}
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    AndroidLog.i(TAG, "Changing Slot #" + slotIndex + " name to " + s);
+                    AndroidLogger.i(TAG, "Changing Slot #" + slotIndex + " name to " + s);
                     CHAMELEON_SLOT_NAMES[slotIndex - 1] = s.toString();
                     slotNickname = s.toString();
                     AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE, AndroidSettingsStorage.CHAMELEON_SLOT_NAMES);
@@ -306,7 +303,7 @@ public class ChameleonConfigSlot {
             isEnabled = false;
             return true;
         } catch(NullPointerException npe) {
-            AndroidLog.printStackTrace(npe);
+            AndroidLogger.printStackTrace(npe);
             return false;
         }
     }

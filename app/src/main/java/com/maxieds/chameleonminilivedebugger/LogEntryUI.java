@@ -18,7 +18,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 package com.maxieds.chameleonminilivedebugger;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
@@ -27,7 +26,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.Arrays;
-import java.util.Locale;
 
 import static java.lang.Math.abs;
 
@@ -81,7 +79,7 @@ public class LogEntryUI extends LogEntryBase {
      */
     public static LogEntryUI newInstance(@NonNull byte[] rawLogBytes, @NonNull String logLabel) {
         if(rawLogBytes.length < 4) {
-            AndroidLog.w(TAG, "Invalid log tag data sent.");
+            AndroidLogger.w(TAG, "Invalid log tag data sent.");
             return null;
         }
         int logCode = (int) rawLogBytes[0];
@@ -96,7 +94,7 @@ public class LogEntryUI extends LogEntryBase {
         lastSystemMillis = systemTimeMillis;
         byte[] payloadBytes = new byte[rawLogBytes.length - 4];
         if(payloadBytes.length < payloadNumBytes) {
-            AndroidLog.w(TAG, "Invalid payload bytes sent.");
+            AndroidLogger.w(TAG, "Invalid payload bytes sent.");
         }
         else
             System.arraycopy(rawLogBytes, 4, payloadBytes, 0, payloadBytes.length);
@@ -173,7 +171,7 @@ public class LogEntryUI extends LogEntryBase {
                 tvApduClone.setVisibility(TextView.GONE);
             }
         } catch(NullPointerException npe) {
-            AndroidLog.printStackTrace(npe);
+            AndroidLogger.printStackTrace(npe);
             return null;
         }
         return mainEntryContainerClone;
@@ -242,7 +240,7 @@ public class LogEntryUI extends LogEntryBase {
                 apduParseStatus.setImageDrawable(LiveLoggerActivity.defaultContext.getResources().getDrawable(R.drawable.known16));
             }
         } catch(NullPointerException npe) {
-            AndroidLog.printStackTrace(npe);
+            AndroidLogger.printStackTrace(npe);
         }
     }
 
@@ -380,10 +378,10 @@ public class LogEntryUI extends LogEntryBase {
 
     public String getPayloadDataString(boolean byteString) {
         if(byteString) {
-            AndroidLog.i(TAG, "Returning bytes: " + tvDataHexBytes.getText().toString());
+            AndroidLogger.i(TAG, "Returning bytes: " + tvDataHexBytes.getText().toString());
             return tvDataHexBytes.getText().toString();
         } else {
-            AndroidLog.i(TAG, "Returning ascii: " + tvDataAscii.getText().toString());
+            AndroidLogger.i(TAG, "Returning ascii: " + tvDataAscii.getText().toString());
             return tvDataAscii.getText().toString();
         }
     }

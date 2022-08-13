@@ -104,7 +104,7 @@ public class Utils {
      */
     public static byte hexString2Byte(String byteStr) {
         if (byteStr.length() != 2) {
-            AndroidLog.e(TAG, "Invalid Byte String: " + byteStr);
+            AndroidLogger.e(TAG, "Invalid Byte String: " + byteStr);
             return 0x00;
         }
         int lsb = Character.digit(byteStr.charAt(1), 16);
@@ -409,7 +409,7 @@ public class Utils {
             cmprByteCount += cmpr.deflate(new byte[1024]);
         }
         double entropyRatio = (double) cmprByteCount / inputBytes.length;
-        AndroidLog.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "Compressed #%d bytes to #%d bytes ... Entropy ratio = %1.4g", inputBytes.length, cmprByteCount, entropyRatio));
+        AndroidLogger.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "Compressed #%d bytes to #%d bytes ... Entropy ratio = %1.4g", inputBytes.length, cmprByteCount, entropyRatio));
         return entropyRatio;
     }
 
@@ -434,7 +434,7 @@ public class Utils {
         pp += "=================================================\n";
         for (int page = 0; page < mfuBytes.length(); page += 8) {
             int pageNumber = page / 8;
-            AndroidLog.i(TAG, String.format("prettyPrintMFU: page#% 2d, page=% 2d", pageNumber, page));
+            AndroidLogger.i(TAG, String.format("prettyPrintMFU: page#% 2d, page=% 2d", pageNumber, page));
             byte[] pageData = Utils.hexString2Bytes(mfuBytes.substring(page, Math.min(page + 8, mfuBytes.length()) - 1));
             if (pageData.length < 4) {
                 byte[] pageDataResized = new byte[4];
@@ -511,8 +511,8 @@ public class Utils {
             };
             return gpsAttrsArray;
         } catch(SecurityException secExcpt) {
-            AndroidLog.w(TAG, "Exception getting GPS coords: " + secExcpt.getMessage());
-            AndroidLog.printStackTrace(secExcpt);
+            AndroidLogger.w(TAG, "Exception getting GPS coords: " + secExcpt.getMessage());
+            AndroidLogger.printStackTrace(secExcpt);
             return new String[] {
                     "LAT-NONE",
                     "LONG-NONE"
@@ -573,7 +573,7 @@ public class Utils {
             }
         };
         displayToastHandler.post(displayToastRunner);
-        AndroidLog.i(TAG, "TOAST MSG PENDING DISPLAY: " + toastMsg);
+        AndroidLogger.i(TAG, "TOAST MSG PENDING DISPLAY: " + toastMsg);
     }
 
     public static void displayToastMessage(String toastMsg, int msgDuration) {
@@ -690,8 +690,8 @@ public class Utils {
         try {
             return URLEncoder.encode(inputText, "utf-8");
         } catch(UnsupportedEncodingException uee) {
-            AndroidLog.e(TAG, "ERROR: Invalid encoding for the URL string \"" + inputText + "\"");
-            AndroidLog.printStackTrace(uee);
+            AndroidLogger.e(TAG, "ERROR: Invalid encoding for the URL string \"" + inputText + "\"");
+            AndroidLogger.printStackTrace(uee);
         }
         return "";
     }
@@ -746,7 +746,7 @@ public class Utils {
         try {
             return Integer.toString(initObjHash, radix);
         } catch(Exception excpt) {
-            AndroidLog.printStackTrace(excpt);
+            AndroidLogger.printStackTrace(excpt);
         }
         return "";
     }

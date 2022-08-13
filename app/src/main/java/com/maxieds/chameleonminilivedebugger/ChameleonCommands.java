@@ -21,7 +21,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Looper;
-import android.util.Log;
 
 import java.util.Arrays;
 
@@ -89,7 +88,7 @@ public class ChameleonCommands {
             Looper.loop();
         } catch(RuntimeException rte) {
             cardFilePath = rte.getMessage().split("java.lang.RuntimeException: ")[1];
-            AndroidLog.i(TAG, "Chosen Card File: " + cardFilePath);
+            AndroidLogger.i(TAG, "Chosen Card File: " + cardFilePath);
         }
         ExportTools.uploadCardFileByXModem(cardFilePath);
     }

@@ -19,7 +19,6 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -37,7 +36,6 @@ import com.google.android.material.tabs.TabLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG;
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_LOG_MITEM_LOGS;
@@ -367,10 +365,10 @@ public class MainActivityLogUtils {
             searchLogPayload = ((CheckBox) llActivity.findViewById(R.id.entrySearchRawLogData)).isChecked();
             searchLogHeaders = ((CheckBox) llActivity.findViewById(R.id.entrySearchLogHeaders)).isChecked();
         } catch(NullPointerException npe) {
-            AndroidLog.printStackTrace(npe);
+            AndroidLogger.printStackTrace(npe);
             return;
         }
-        AndroidLog.i(TAG, "Searching for: " + searchString);
+        AndroidLogger.i(TAG, "Searching for: " + searchString);
         int matchCount = 0;
         for(int vi = 0; vi < logDataEntries.size(); vi++) {
             LogEntryBase nextLogEntry = logDataEntries.get(vi);
@@ -385,7 +383,7 @@ public class MainActivityLogUtils {
                 continue;
             }
             LogEntryUI nextLogEntryUI = (LogEntryUI) nextLogEntry;
-            AndroidLog.i(TAG, nextLogEntryUI.getPayloadDataString(selectedBytes));
+            AndroidLogger.i(TAG, nextLogEntryUI.getPayloadDataString(selectedBytes));
             if (searchAPDU && nextLogEntryUI.getAPDUString().toLowerCase(BuildConfig.DEFAULT_LOCALE).contains(searchString) ||
                     searchLogHeaders && nextLogEntryUI.getLogCodeName().toLowerCase(BuildConfig.DEFAULT_LOCALE).contains(searchString) ||
                     searchLogPayload && nextLogEntryUI.getPayloadDataString(selectedBytes).toLowerCase(BuildConfig.DEFAULT_LOCALE).contains(searchString)) {
@@ -397,7 +395,7 @@ public class MainActivityLogUtils {
                     searchResult.setMinimumHeight(150);
                     LinearLayout.LayoutParams lllp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                     searchResultsContainer.addView(searchResult, lllp);
-                    AndroidLog.i(TAG, "Case II: Record " + vi + " matches");
+                    AndroidLogger.i(TAG, "Case II: Record " + vi + " matches");
                     matchCount++;
                 }
             }
