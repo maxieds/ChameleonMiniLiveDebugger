@@ -179,7 +179,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     <string name="bluetoothExtraConfigInstructions">
         PRESS AND HOLD button \'A\' for at least 15 seconds while we connect the device.
         \n\n
-        RELEASE the button after clicking \'Pair\' on the displayed dialog.
+        RELEASE the button after the \'Pair\' dialog is displayed. Then click to pair.
     </string>
     <string name="bluetoothEnableConnectionInstructions">
         Bluetooth (BT) devices are available. Enable BT connections in the Settings|General tab.

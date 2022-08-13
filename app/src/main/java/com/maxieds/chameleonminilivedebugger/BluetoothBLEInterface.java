@@ -196,7 +196,7 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
                     LiveLoggerActivity llActivity = LiveLoggerActivity.getLiveLoggerInstance();
                     llActivity.reconfigureSerialIODevices();
                     llActivity.setStatusIcon(R.id.statusIconBT, R.drawable.bluetooth16);
-                    Utils.displayToastMessageShort(String.format(BuildConfig.DEFAULT_LOCALE, "New Bluetooth BLE device connection:\n%s @ %s\n%s", btDev.getName(), ChameleonSettings.chameleonDeviceAddress, ChameleonIO.getDeviceDescription(ChameleonIO.CHAMELEON_MINI_BOARD_TYPE)));
+                    Utils.displayToastMessageShort(String.format(BuildConfig.DEFAULT_LOCALE, "New Bluetooth connection:\n%s\n%s @ %s", ChameleonIO.getDeviceDescription(ChameleonIO.CHAMELEON_MINI_BOARD_TYPE), btDev.getName(), ChameleonSettings.chameleonDeviceAddress));
                     UITabUtils.updateConfigTabConnDeviceInfo(false);
                     notifyStatus("BLUETOOTH STATUS: ", "Chameleon:     " + getActiveDeviceInfo());
                     String extraBTInfo = getActiveDeviceInfoExtra();

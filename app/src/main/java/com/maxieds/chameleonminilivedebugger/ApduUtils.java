@@ -372,7 +372,7 @@ public class ApduUtils {
             return;
         } catch(IOException ioe) {
             AndroidLogger.printStackTrace(ioe);
-            LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
+            GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
             fullInsList = null;
             return;
         }

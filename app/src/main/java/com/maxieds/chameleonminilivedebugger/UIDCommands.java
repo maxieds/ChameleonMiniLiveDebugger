@@ -76,7 +76,7 @@ public class UIDCommands {
         String uidCmd = ChameleonIO.REVE_BOARD ? "uid" : "UID";
         String cmdStatus = ChameleonIO.getSettingFromDevice(String.format(BuildConfig.DEFAULT_LOCALE, "%s=%s", uidCmd, Utils.bytes2Hex(uid).replace(" ", "").toUpperCase()));
         ChameleonIO.deviceStatus.startPostingStats(250);
-        LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("UID", "Next device UID set to " + Utils.bytes2Hex(uid).replace(" ", ":").toUpperCase()));
+        GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("UID", "Next device UID set to " + Utils.bytes2Hex(uid).replace(" ", ":").toUpperCase()));
     }
 
 }

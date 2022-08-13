@@ -17,9 +17,14 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import android.content.res.ColorStateList;
+import android.graphics.BlendMode;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.InsetDrawable;
+import android.os.Build;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -112,6 +117,10 @@ public class ChameleonConfigSlot {
         }
         LinearLayout slotLayoutContainer = tabView.findViewById(R.id.slotConfigLayoutsContainer);
         View layoutView = layoutInflater.inflate(R.layout.slot_sublayout, slotLayoutContainer, false);
+        if (layoutView == null) {
+            slotConfigLayout = null;
+            return null;
+        }
         slotConfigLayout = layoutView;
         GradientDrawable gradientBg = new GradientDrawable(
                 GradientDrawable.Orientation.BL_TR,
@@ -206,6 +215,18 @@ public class ChameleonConfigSlot {
         else if(readNewTagConfigs) {
             getTagConfigurationsListFromDevice();
         }
+        /* Tint / stylize the sub-icons to the theme: */
+        ImageView imgViewCfgModeIcon = getDrawableIconFromTextView(R.id.cfgModeText);
+        setTextViewDrawableFromImageView(R.id.cfgModeText, tintLightenSlotIcon(imgViewCfgModeIcon));
+        ImageView imgViewUidIcon = getDrawableIconFromTextView(R.id.uidLabelText);
+        setTextViewDrawableFromImageView(R.id.uidLabelText, tintLightenSlotIcon(imgViewUidIcon));
+        ImageView imgViewMemSizeIcon = getDrawableIconFromTextView(R.id.slotMemSizeLabelText);
+        setTextViewDrawableFromImageView(R.id.slotMemSizeLabelText, tintLightenSlotIcon(imgViewMemSizeIcon));
+        ImageView imgViewLockedIcon = getDrawableIconFromTextView(R.id.slotLockedLabelText);
+        setTextViewDrawableFromImageView(R.id.slotLockedLabelText, tintLightenSlotIcon(imgViewLockedIcon));
+        ImageView imgViewFieldIcon = getDrawableIconFromTextView(R.id.slotFieldLabelText);
+        setTextViewDrawableFromImageView(R.id.slotFieldLabelText, tintLightenSlotIcon(imgViewFieldIcon));
+        /* Update the values: */
         TextView uidBytes = (TextView) slotConfigLayout.findViewById(R.id.uidBytesText);
         uidHexDisplayStr = Utils.formatUIDString(uidHexBytes, " ");
         uidBytes.setText(uidHexDisplayStr);
@@ -226,8 +247,10 @@ public class ChameleonConfigSlot {
     public boolean enableLayout() {
         slotConfigLayout.setEnabled(true);
         ImageView slotOnOffImageMarker = slotConfigLayout.findViewById(R.id.slotOnOffMarker);
-        Drawable slotEnabledMarker = LiveLoggerActivity.getLiveLoggerInstance().getResources().getDrawable(R.drawable.slot_on);
+        LiveLoggerActivity llActivity = LiveLoggerActivity.getLiveLoggerInstance();
+        Drawable slotEnabledMarker = llActivity.getResources().getDrawable(R.drawable.slot_on);
         slotOnOffImageMarker.setImageDrawable(slotEnabledMarker);
+        slotOnOffImageMarker = tintSlotIcon(slotOnOffImageMarker);
         EditText slotNicknameEditor = slotConfigLayout.findViewById(R.id.slotNicknameText);
         if(slotNicknameEditor != null) {
             slotNicknameEditor.addTextChangedListener(new TextWatcher() {
@@ -299,12 +322,82 @@ public class ChameleonConfigSlot {
             ImageView slotOnOffImageMarker = slotConfigLayout.findViewById(R.id.slotOnOffMarker);
             Drawable slotEnabledMarker = LiveLoggerActivity.getLiveLoggerInstance().getResources().getDrawable(R.drawable.slot_off);
             slotOnOffImageMarker.setImageDrawable(slotEnabledMarker);
+            slotOnOffImageMarker = tintSlotIcon(slotOnOffImageMarker);
             slotConfigLayout.setEnabled(false);
             isEnabled = false;
             return true;
         } catch(NullPointerException npe) {
             AndroidLogger.printStackTrace(npe);
             return false;
+        }
+    }
+
+    private static final int ICON_TINT_COLOR = R.attr.colorAccent;
+    private static final int ICON_DARK_TINT_COLOR = R.attr.colorPrimaryDark;
+
+    private ImageView tintSlotIcon(ImageView slotImgView) {
+        if (slotImgView == null) {
+            return null;
+        }
+        LiveLoggerActivity llActivity = LiveLoggerActivity.getLiveLoggerInstance();
+        try {
+            int tintColorCode = Utils.getColorFromTheme(ICON_TINT_COLOR);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                slotImgView.setAlpha(0.75f);
+                //slotImgView.setImageTintBlendMode(BlendMode.MULTIPLY);
+                slotImgView.setImageTintBlendMode(BlendMode.DST_ATOP);
+                slotImgView.setImageTintList(ColorStateList.valueOf(tintColorCode));
+            } else {
+                slotImgView.setAlpha(0.75f);
+                slotImgView.setColorFilter(ThemesConfiguration.getThemeColorVariant(llActivity, tintColorCode), PorterDuff.Mode.DST_ATOP);
+            }
+        } catch (Exception ex) {
+            AndroidLogger.printStackTrace(ex);
+        }
+        return slotImgView;
+    }
+
+    private ImageView tintLightenSlotIcon(ImageView slotImgView) {
+        if (slotImgView == null) {
+            return null;
+        }
+        LiveLoggerActivity llActivity = LiveLoggerActivity.getLiveLoggerInstance();
+        try {
+            Color tintColor = Color.valueOf(Utils.getColorFromTheme(ICON_DARK_TINT_COLOR));
+            tintColor = Color.valueOf(tintColor.red(), tintColor.blue(), tintColor.green(), 0.42f);
+            int tintColorCode = tintColor.toArgb();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                slotImgView.setImageTintBlendMode(BlendMode.SRC_ATOP);
+                slotImgView.setImageTintList(ColorStateList.valueOf(tintColorCode));
+            } else {
+                slotImgView.setColorFilter(ThemesConfiguration.getThemeColorVariant(llActivity, tintColorCode), PorterDuff.Mode.SRC_ATOP);
+            }
+        } catch (Exception ex) {
+            AndroidLogger.printStackTrace(ex);
+        }
+        return slotImgView;
+    }
+
+    private ImageView getDrawableIconFromTextView(int tvRID) {
+        try {
+            TextView tv = slotConfigLayout.findViewById(tvRID);
+            Drawable tvIcon = tv.getCompoundDrawables()[0];
+            ImageView imgViewIcon = new ImageView(slotConfigLayout.getContext());
+            imgViewIcon.setImageDrawable(tvIcon);
+            return imgViewIcon;
+        } catch (Exception ex) {
+            AndroidLogger.printStackTrace(ex);
+        }
+        return null;
+    }
+
+    private void setTextViewDrawableFromImageView(int tvRID, ImageView modifiedImgViewIcon) {
+        try {
+            TextView tv = slotConfigLayout.findViewById(tvRID);
+            Drawable tvIcon = modifiedImgViewIcon.getDrawable();
+            tv.setCompoundDrawables(tvIcon, null, null, null);
+        } catch (Exception ex) {
+            AndroidLogger.printStackTrace(ex);
         }
     }
 

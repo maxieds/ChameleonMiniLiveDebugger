@@ -30,9 +30,9 @@ def getDateTimestamp() {
 def getVersionNameFull(String versionNameBase, String versionNameType) {
 
     if (!versionNameType.equals("") && !versionNameType.toLowerCase().equals("release")) {
-        return versionNameBase
-    } else {
         return String.format(Locale.getDefault(), "%s-%s", versionNameBase, versionNameType)
+    } else {
+        return versionNameBase
     }
 
 }
@@ -154,8 +154,6 @@ android {
 
     compileOptions {
 
-        //sourceCompatibility JavaVersion.VERSION_1_8
-        //targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
 

@@ -42,20 +42,19 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             <GridLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
+                android:layout_margin="0dp"
+                android:layout_marginRight="11dp"
                 android:background="@android:color/transparent"
-                android:columnCount="2"
+                android:columnCount="3"
                 android:padding="6dp" >
 
                 <ImageView
                     android:id="@+id/slotOnOffMarker"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal|left"
+                    android:layout_gravity="center_vertical|left"
                     android:src="@drawable/slot_off"
-                    android:padding="3dp" />
-
-                <View android:background="@android:color/transparent" />
+                    android:paddingRight="0dp" />
 
                 <TextView
                     android:id="@+id/slotOnOffNumberText"
@@ -66,17 +65,32 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:text="SLOT #00"
                     android:textSize="18sp"
                     android:textStyle="bold|italic"
-                    android:textColor="?colorPrimaryDark" />
+                    android:textColor="?colorPrimaryDark"
+                    android:paddingRight="12dp" />
 
                 <EditText
                     android:id="@+id/slotNicknameText"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|right"
                     android:hint="Slot Nickname"
                     android:singleLine="true"
-                    android:textColor="?colorPrimaryDarkLog" />
+                    android:textColor="?colorPrimaryDarkLog"
+                    android:paddingRight="32dp"
+                    android:paddingLeft="5dp" />
+
+            </GridLayout>
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@android:color/transparent"
+                android:columnCount="2"
+                android:padding="6dp" >
 
                 <TextView
+                    android:id="@+id/cfgModeText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -99,6 +113,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:paddingLeft="0dp" />
 
                 <TextView
+                    android:id="@+id/uidLabelText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -121,6 +136,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:textColor="?colorPrimaryDarkLog" />
 
                 <TextView
+                    android:id="@+id/slotMemSizeLabelText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -143,6 +159,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:textColor="?colorPrimaryDarkLog" />
 
                 <TextView
+                    android:id="@+id/slotLockedLabelText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -171,6 +188,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:thumbTint="?colorPrimaryDark" />
 
                 <TextView
+                    android:id="@+id/slotFieldLabelText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"

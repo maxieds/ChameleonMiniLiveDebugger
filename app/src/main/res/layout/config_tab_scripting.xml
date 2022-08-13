@@ -54,7 +54,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:drawablePadding="5dp"
                 android:singleLine="true"
                 android:text="General configuration: "
-                android:textSize="18sp"
                 android:textAllCaps="true"
                 android:textStyle="bold|italic" />
 
@@ -171,7 +170,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:singleLine="true"
                 android:text="Runtime Settings: "
                 android:textAllCaps="true"
-                android:textSize="18sp"
                 android:textStyle="bold|italic" />
 
             <View
@@ -255,7 +253,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:singleLine="true"
                 android:text="Set Env Variables: "
                 android:textAllCaps="true"
-                android:textSize="18sp"
                 android:textStyle="bold|italic" />
 
             <View
@@ -383,7 +380,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:singleLine="true"
                 android:text="File I/O defaults: "
                 android:textAllCaps="true"
-                android:textSize="18sp"
                 android:textStyle="bold|italic" />
 
 

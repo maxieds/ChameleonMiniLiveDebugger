@@ -94,7 +94,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:buttonTint="?colorPrimaryDark"
-            android:checked="false"
+            android:checked="true"
             android:drawableLeft="@drawable/num12316"
             android:drawablePadding="5dp"
             android:text="search bytes" />
@@ -104,7 +104,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:buttonTint="?colorPrimaryDark"
-            android:checked="true"
+            android:checked="false"
             android:drawableLeft="@drawable/abc16"
             android:drawablePadding="5dp"
             android:text="ascii string" />

@@ -101,7 +101,7 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
             @Override
             public void run() {
                 BluetoothUtils.resetBluetoothAdapterAtClose(mainActivityCtx);
-                signalCrashByVibration();
+                //signalCrashByVibration();
             }
         };
         notifyCrashReportLaunchHandler.postDelayed(notifyCrashReportLaunchRunnable, 500);
@@ -111,7 +111,7 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
     protected void configureLayoutToolbar() {
         Toolbar crashRptToolbar = (Toolbar) findViewById(R.id.crashReportActivityToolbar);
         crashRptToolbar.setTitle("Chameleon Mini Live Debugger");
-        crashRptToolbar.setSubtitle("Crash report summary | v" + BuildConfig.VERSION_NAME);
+        crashRptToolbar.setSubtitle("Crash report | v" + BuildConfig.VERSION_NAME);
         getWindow().setTitleColor(ThemesConfiguration.getThemeColorVariant(this, R.attr.actionBarBackgroundColor));
         getWindow().setStatusBarColor(ThemesConfiguration.getThemeColorVariant(this, R.attr.colorPrimaryDark));
         getWindow().setNavigationBarColor(ThemesConfiguration.getThemeColorVariant(this, R.attr.colorPrimaryDark));

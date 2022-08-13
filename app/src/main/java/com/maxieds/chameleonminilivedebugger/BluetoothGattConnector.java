@@ -450,7 +450,6 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                             }
                             if (BluetoothUtils.isChameleonDeviceName(devName)) {
                                 final byte[] defaultBTDevicePin = new String("0000").getBytes(StandardCharsets.UTF_8);
-                                //final byte[] defaultBTDevicePin = new byte[] {};
                                 if (btDev.getBondState() == BluetoothDevice.BOND_BONDED) {
                                     btDev.setPin(defaultBTDevicePin);
                                     removeBluetoothDeviceBond(btDev);
@@ -671,9 +670,16 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         if (btDevice == null) {
             btDevice = btGatt.getDevice();
         }
-        //if (btDevice != null) {
-        //    btDevice.fetchUuidsWithSdp();
-        //}
+        if (btDevice != null && btDevice.fetchUuidsWithSdp()) {
+            StringBuilder uuidNotifyBuilder = new StringBuilder("Fetched UUID list with BT device SDP.");
+            ParcelUuid[] uuidList = btDevice.getUuids();
+            for (ParcelUuid uuid : uuidList) {
+                uuidNotifyBuilder.append(String.format(BuildConfig.DEFAULT_LOCALE, "\n   >>> SVC with UUID = %s found.", uuid.getUuid().toString()));
+            }
+            AndroidLogger.w(TAG, uuidNotifyBuilder.toString());
+        } else {
+            AndroidLogger.w(TAG, "!!! Unable to fetch UUID list with BT device SDP.");
+        }
         if (btGatt != null) {
             btGatt.requestMtu(BLUETOOTH_LOCAL_MTU_THRESHOLD);
             requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
@@ -688,21 +694,24 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                     @Override
                     public void run() {
                         AndroidLogger.d(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "Initializing BLE device service connections ... ATTEMPT #%d", retryAttempts + 1));
+                        String userConnNotifyMsg = String.format(BuildConfig.DEFAULT_LOCALE, "%s %s connected.\nContinuing BT service discovery. This can take a while ...",
+                                btDevice.getName(), btDevice.getAddress());
                         if (++retryAttempts >= BluetoothBroadcastReceiver.DISCOVER_SVCS_ATTEMPT_COUNT) {
+                            AndroidLogger.w(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "Aborting BT GATT service discovery after %d attempts.", retryAttempts));
                             disconnectDevice();
                             stopConnectingDevices();
                             startConnectingDevices();
                         } else if (configureGattConnector()) {
                             BluetoothBroadcastReceiver.printServicesSummaryListToLog(btGattRef);
                             notifyBluetoothBLEDeviceConnected();
-                        } else if (!btGattRef.discoverServices()) {
-                            Utils.displayToastMessage("Discovering bluetooth services.\nPrepare to wait ...", Toast.LENGTH_LONG);
+                        } else if (btDevice != null && !btDevice.fetchUuidsWithSdp() && !btGattRef.discoverServices()) {
+                            Utils.displayToastMessage(userConnNotifyMsg, Toast.LENGTH_LONG);
                             discoverServicesHandler.postDelayed(this, BluetoothBroadcastReceiver.CHECK_DISCOVER_SVCS_INTERVAL);
                         } else if (configureGattConnector()) {
                             BluetoothBroadcastReceiver.printServicesSummaryListToLog(btGattRef);
                             notifyBluetoothBLEDeviceConnected();
                         } else {
-                            Utils.displayToastMessage("Discovering bluetooth services.\nPrepare to wait ...", Toast.LENGTH_LONG);
+                            Utils.displayToastMessage(userConnNotifyMsg, Toast.LENGTH_LONG);
                             discoverServicesHandler.postDelayed(this, BluetoothBroadcastReceiver.CHECK_DISCOVER_SVCS_INTERVAL);
                         }
                     }
@@ -710,7 +719,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
             } else {
                 discoverServicesHandler.removeCallbacks(discoverServicesRunner);
             }
-            discoverServicesHandler.postDelayed(discoverServicesRunner, 500L);
+            discoverServicesHandler.postDelayed(discoverServicesRunner, 1000L);
         }
         return btGatt;
     }

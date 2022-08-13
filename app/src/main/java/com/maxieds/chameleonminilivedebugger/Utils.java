@@ -326,7 +326,7 @@ public class Utils {
     public static String getTimestamp() {
         Time currentTime = new Time();
         currentTime.setToNow();
-        return currentTime.format("%Y-%m-%d-%T");
+        return currentTime.format("%Y-%m-%d@%T");
     }
 
     public static String getTimestamp(@NonNull String tsFmt) {

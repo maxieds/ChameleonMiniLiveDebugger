@@ -30,11 +30,11 @@ public class ChameleonCommands {
 
     public static void cloneMFU() {
         String dumpMFUOutput = ChameleonIO.getSettingFromDevice("DUMP_MFU");
-        LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("DUMP_MFU", dumpMFUOutput));
+        GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("DUMP_MFU", dumpMFUOutput));
         ChameleonIO.executeChameleonMiniCommand("CLONE", ChameleonIO.TIMEOUT);
         String cloneCmdOutput = ChameleonIO.DEVICE_RESPONSE_CODE;
         cloneCmdOutput += Arrays.asList(ChameleonIO.DEVICE_RESPONSE).toString().replaceAll("(^\\[|\\]$)", "").replace(", ", "\n");
-        LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("CLONE", cloneCmdOutput));
+        GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("CLONE", cloneCmdOutput));
     }
 
     public static void cloneStockDumpImages(String stockChipType) {
@@ -81,7 +81,7 @@ public class ChameleonCommands {
         try {
             llActivity.startActivityForResult(Intent.createChooser(intent, "Select a Card File to Upload"), ExternalFileIO.FILE_SELECT_CODE);
         } catch (android.content.ActivityNotFoundException e) {
-            LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to choose card file: " + e.getMessage()));
+            GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", "Unable to choose card file: " + e.getMessage()));
         }
         String cardFilePath = "";
         try {
@@ -106,12 +106,12 @@ public class ChameleonCommands {
             mfuBytes = mfuBytes.replace("\r", "");
             if (cmCmd.equals("DUMP_MFU")) {
                 String mfuBytesPrettyPrint = Utils.prettyPrintMFU(mfuBytes);
-                LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("DUMP_MFU", mfuBytesPrettyPrint));
+                GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("DUMP_MFU", mfuBytesPrettyPrint));
             } else
-                LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord(cmCmd, mfuBytes));
+                GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord(cmCmd, mfuBytes));
         } else {
             String rdata = ChameleonIO.getSettingFromDevice(cmCmd);
-            LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord(cmCmd, rdata));
+            GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord(cmCmd, rdata));
         }
     }
 
@@ -145,7 +145,7 @@ public class ChameleonCommands {
             msgParam = "Next UID set to " + Utils.bytes2Hex(randomBytes).replace(" ", ":").toUpperCase();
         }
         else if(createCmd.equals("Log Replay")) {
-            LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "RE: LOG REPLAY: This is a wishlist feature. It might be necessary to add it to the firmware and implement it in hardware. Not currently implemented."));
+            GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("STATUS", "RE: LOG REPLAY: This is a wishlist feature. It might be necessary to add it to the firmware and implement it in hardware. Not currently implemented."));
             return;
         }
         else if(createCmd.equals("STATUS") || createCmd.equals("SET ACTIVITY") ||
@@ -155,12 +155,12 @@ public class ChameleonCommands {
                 createCmd.equals("WORK") || createCmd.equals(" DEVICE PROFILE") ||
                 createCmd.equals("TODO LIST")) {
             try {
-                LogUtils.displayUserInputPrompt("Description of the new event? ");
+                GUILogUtils.displayUserInputPrompt("Description of the new event? ");
                 Looper.loop();
             }
             catch(RuntimeException msgReady) {}
-            msgParam = LogUtils.userInputStack;
-            LogUtils.userInputStack = null;
+            msgParam = GUILogUtils.userInputStack;
+            GUILogUtils.userInputStack = null;
         }
         else if(createCmd.equals("ONCLICK")) {
             msgParam = "SYSTICK Millis := " + ChameleonIO.getSettingFromDevice("SYSTICK?");
@@ -177,6 +177,6 @@ public class ChameleonCommands {
             msgParam = ChameleonIO.getSettingFromDevice(createCmd);
         }
         ChameleonIO.deviceStatus.updateAllStatusAndPost(false);
-        LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord(createCmd, msgParam));
+        GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord(createCmd, msgParam));
     }
 }

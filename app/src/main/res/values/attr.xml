@@ -18,8 +18,10 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 -->
 
 <resources>
-    <!--<declare-styleable name="CurrentThemeData">-->
-    <attr name="colorPrimaryDarkLog" format="reference|color" />
+    <attr name="colorPrimary" format="color" />
+    <attr name="colorPrimaryDark" format="color" />
+    <attr name="colorPrimaryDarkLog" format="color" />
+    <attr name="colorAccent" format="color" />
     <attr name="colorAccentLog" format="reference|color" />
     <attr name="deviceMemoryLogHighlight" format="reference|color" />
     <attr name="colorAccentHighlight" format="reference|color" />

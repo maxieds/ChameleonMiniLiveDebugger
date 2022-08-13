@@ -129,7 +129,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     <color name="AppThemeDesertSunshine_colorPrimary">#ed8b00</color>
     <color name="AppThemeDesertSunshine_colorPrimaryDark">#8E5300</color>
     <color name="AppThemeDesertSunshine_colorAccent">#ffc600</color>
-    <color name="AppThemeDesertSunshine_colorPrimaryDarkLog">#ba0c2f</color>
+    <color name="AppThemeDesertSunshine_colorPrimaryDarkLog">#C83D59</color>
     <color name="AppThemeDesertSunshine_colorAccentLog">#F4B966</color>
     <color name="AppThemeDesertSunshine_colorAccentHighlight">#EF971A</color>
     <color name="AppThemeDesertSunshine_colorAboutLinkColor">#D57D00</color>

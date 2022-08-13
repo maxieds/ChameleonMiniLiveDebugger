@@ -19,6 +19,7 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.content.DialogInterface;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -38,12 +39,12 @@ public class ThemesConfiguration {
      */
     @ColorInt
     public static int getThemeColorVariant(int attrID) {
-        return LiveLoggerActivity.getLiveLoggerInstance().getTheme().obtainStyledAttributes(new int[] {attrID}).getColor(0, attrID);
+        return LiveLoggerActivity.getLiveLoggerInstance().getTheme().obtainStyledAttributes(new int[] { attrID }).getColor(0, attrID);
     }
 
     @ColorInt
     public static int getThemeColorVariant(ChameleonMiniLiveDebuggerActivity activity, int attrID) {
-        return activity.getInstance().getTheme().obtainStyledAttributes(new int[] {attrID}).getColor(0, attrID);
+        return activity.getInstance().getTheme().obtainStyledAttributes(new int[] { attrID }).getColor(0, attrID);
     }
 
     /**
@@ -53,7 +54,7 @@ public class ThemesConfiguration {
      */
     public static String storedAppTheme = "Standard Green";
     public static int appThemeResID = R.style.AppTheme;
-    public static Handler setThemeHandler = new Handler();
+    public static Handler setThemeHandler = new Handler(Looper.getMainLooper());
     public static Runnable setThemeRunner = new Runnable() {
         @Override
         public void run() {
@@ -171,7 +172,7 @@ public class ThemesConfiguration {
                     storedAppTheme = themeDesc;
                     ThemesConfiguration.storedAppTheme = themeDesc;
                     AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.THEMEID_PREFERENCE);
-                    LogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("THEME", "New theme installed: " + themeDesc));
+                    GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("THEME", "New theme installed: " + themeDesc));
                     LiveLoggerActivity.getLiveLoggerInstance().recreate();
                 } catch(NullPointerException npe) {
                     AndroidLogger.printStackTrace(npe);

@@ -146,7 +146,7 @@ public class TabFragment extends Fragment {
                     public void run() {
                         menuItemFinal.performClick();
                         if (tabIndex == TAB_LOG && midx == TAB_LOG_MITEM_LOGS) {
-                            LogUtils.moveLiveLogTabScrollerToBottom();
+                            GUILogUtils.moveLiveLogTabScrollerToBottom();
                         }
                     }
                 };

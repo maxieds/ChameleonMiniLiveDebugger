@@ -96,8 +96,8 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
-    public static final int DISCOVER_SVCS_ATTEMPT_COUNT = 32;
-    public static final long CHECK_DISCOVER_SVCS_INTERVAL = 360000L;
+    public static final int DISCOVER_SVCS_ATTEMPT_COUNT = 16;
+    public static final long CHECK_DISCOVER_SVCS_INTERVAL = 60000L;
 
     @SuppressLint("MissingPermission")
     public void onReceive(Context context, Intent intent) {
@@ -105,7 +105,6 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         if (action == null) {
             return;
         }
-        AndroidLogger.d(TAG, "btConnReceiver: intent action: " + action);
         if (intent.getExtras() == null) {
             return;
         }
@@ -113,7 +112,6 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         if (btIntentDevice == null) {
             return;
         }
-        AndroidLogger.d(TAG, "btConnReceiver: intent device name: " + btDeviceName);
         if (btGattConn == null || (btGattConn.btDevice == null && btIntentDevice == null) || !BluetoothUtils.isChameleonDeviceName(btDeviceName)) {
             return;
         } else if (btGattConn.btDevice != null && btGattConn.btDevice.getName() == btDeviceName) {
@@ -122,6 +120,8 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         if (btGattConn.btDevice == null) {
             btGattConn.btDevice = btIntentDevice;
             btDeviceName = btIntentDevice.getName();
+        } else if (btIntentDevice != null && btIntentDevice.getName().equals(btDeviceName)) {
+            return;
         }
         final short DEFAULT_BTDEV_RSSI = Short.MIN_VALUE;
         short btDeviceRSSI = intent.getExtras().getShort(BluetoothDevice.EXTRA_RSSI, DEFAULT_BTDEV_RSSI);
@@ -129,14 +129,13 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         if (btDeviceRSSI != DEFAULT_BTDEV_RSSI) {
             rssiInfoStr = String.format(BuildConfig.DEFAULT_LOCALE, " at RSSI of %d dBm", btDeviceRSSI);
         }
-        String btConnInst = btGattConn.btSerialContext.getString(R.string.bluetoothExtraConfigInstructions);
-        String userConnInstMsg = String.format(BuildConfig.DEFAULT_LOCALE, "%s %s found%s.\n\n%s",
-                btGattConn.btDevice.getName(), btGattConn.btDevice.getAddress(), rssiInfoStr, btConnInst);
+        AndroidLogger.d(TAG, "NEW INTENT " + action);
+        AndroidLogger.d(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "Device name \"%s\" @ %s%s found.", btDeviceName, btGattConn.btDevice.getAddress(), rssiInfoStr));
+        String userConnInstMsg = btGattConn.btSerialContext.getString(R.string.bluetoothExtraConfigInstructions);
         if (action.equals(BluetoothDevice.ACTION_FOUND)) {
             btGattConn.btDevice = btIntentDevice;
             btGattConn.stopConnectingDevices();
             btGattConn.btDevice.createBond();
-            //Utils.displayToastMessage(userConnInstMsg, Toast.LENGTH_LONG);
         }
         int intentExtraState = intent.getExtras().getInt(BluetoothAdapter.EXTRA_STATE, -1);
         int intentExtraBondState = intent.getExtras().getInt(BluetoothDevice.EXTRA_BOND_STATE, -1);
@@ -146,7 +145,6 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
             btGattConn.startConnectingDevices();
             return;
         } else if ((action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED) && intentExtraBondState == BluetoothDevice.BOND_BONDING)) {
-            //btGattConn.stopConnectingDevices();
             Utils.displayToastMessage(userConnInstMsg, Toast.LENGTH_LONG);
         }
         if (action.equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
@@ -166,6 +164,10 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
                 btGattConn.startConnectingDevices();
                 return;
             }
+            AndroidLogger.d(TAG, "BT Device bonded ... Starting service discovery.");
+            String userConnNotifyMsg = String.format(BuildConfig.DEFAULT_LOCALE, "%s %s connected.\nStarting BT service discovery. This can take a while ...",
+                    btGattConn.btDevice.getName(), btGattConn.btDevice.getAddress());
+            Utils.displayToastMessage(userConnNotifyMsg, Toast.LENGTH_LONG);
             btGattConn.btGatt = btGattConn.configureGattDataConnection();
         }
     }

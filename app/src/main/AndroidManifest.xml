@@ -210,10 +210,10 @@
         android:defaultToDeviceProtectedStorage="true"
         android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="false"
-        android:installLocation="${installLocation}"
-        tools:replace="android:installLocation"
         android:allowBackup="true"
         android:keepScreenOn="true"
+        android:installLocation="${installLocation}"
+        tools:replace="android:installLocation"
         >
 
         <uses-library
@@ -230,7 +230,7 @@
             android:uiOptions="none"
             android:configChanges="uiMode|orientation|keyboard|keyboardHidden|fontScale"
             android:windowSoftInputMode="stateVisible|adjustResize"
-            android:stateNotNeeded="true"
+            android:stateNotNeeded="false"
             android:exported="true"
             android:resizeableActivity="false"
             android:maxAspectRatio="2.4"
