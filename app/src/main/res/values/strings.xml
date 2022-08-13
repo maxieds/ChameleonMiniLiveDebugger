@@ -76,8 +76,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
         &lt;h1>Information about the current build&lt;/h1>
         &lt;ul>
-            &lt;li>The Android version of the application is &lt;i>build version &lt;b>%%ANDROID_VERSION_CODE%%
-            (%%ANDROID_VERSION_CODE_DEMUX%%)&lt;/b>&lt;/i>&lt;/li>
+            &lt;li>The Android version of the application is &lt;i>build version &lt;b>%%ANDROID_VERSION_CODE%% =
+            %%ANDROID_VERSION_CODE_DEMUX%%&lt;/b>&lt;/i>&lt;/li>
             &lt;li>Android revision &lt;b>&lt;i>%%ANDROID_VERSION_NAME%%&lt;/b>&lt;/i>&lt;/li>
             &lt;li>Application build flavor &lt;b>&lt;i>%%ANDROID_FLAVOR_NAME%%&lt;/b>&lt;/i>&lt;/li>
             &lt;li>Git revision &lt;b>&lt;i>%%GIT_COMMIT_HASH%%&lt;/b>&lt;/i> commited at &lt;b>&lt;i>%%GIT_COMMIT_DATE%%&lt;/b>&lt;/i>&lt;/li>
@@ -177,7 +177,9 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         &lt;/ul>
     </string>
     <string name="bluetoothExtraConfigInstructions">
-        Press and hold button \'A\' for at least 15 seconds while we connect the device ...
+        PRESS AND HOLD button \'A\' for at least 15 seconds while we connect the device.
+        \n\n
+        RELEASE the button after clicking \'Pair\' on the displayed dialog.
     </string>
     <string name="bluetoothEnableConnectionInstructions">
         Bluetooth (BT) devices are available. Enable BT connections in the Settings|General tab.

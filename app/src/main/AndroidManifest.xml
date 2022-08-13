@@ -267,6 +267,9 @@
 
         </activity>
 
+        <!-- Implicit broadcasts are not allowed anymore in Android Oreo and later.
+             See: https://developer.android.com/about/versions/oreo/background#broadcasts
+
         <receiver android:name=".BluetoothBroadcastReceiver">
             <intent-filter android:priority="1000">
                 <action android:name="android.bluetooth.device.action.FOUND"/>
@@ -277,6 +280,7 @@
                 <action android:name="android.bluetooth.adapter.action.STATE_CHANGED"/>
             </intent-filter>
         </receiver>
+        -->
 
         <activity
             android:name=".CrashReportActivity"

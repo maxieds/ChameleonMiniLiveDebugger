@@ -37,6 +37,7 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
 
     private static BluetoothBroadcastReceiver activeReceiverInstance = null;
     private BluetoothGattConnector btGattConn;
+    private String btDeviceName;
 
     public static BluetoothBroadcastReceiver getActiveInstance() {
         return activeReceiverInstance;
@@ -46,13 +47,19 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         if (BluetoothBroadcastReceiver.getActiveInstance() == null) {
             activeReceiverInstance = new BluetoothBroadcastReceiver();
             activeReceiverInstance.btGattConn = bgc;
+            activeReceiverInstance.resetActiveBluetoothDeviceName();
         }
         return BluetoothBroadcastReceiver.getActiveInstance();
+    }
+
+    public void resetActiveBluetoothDeviceName() {
+        btDeviceName = "";
     }
 
     public BluetoothBroadcastReceiver() {
         activeReceiverInstance = this;
         btGattConn = null;
+        resetActiveBluetoothDeviceName();
     }
 
     private static final boolean PRINT_SERVICES_LIST_TO_LOG = true;
@@ -98,7 +105,7 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         if (action == null) {
             return;
         }
-        AndroidLogger.v(TAG, "btConnReceiver: intent action: " + action);
+        AndroidLogger.d(TAG, "btConnReceiver: intent action: " + action);
         if (intent.getExtras() == null) {
             return;
         }
@@ -106,39 +113,60 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         if (btIntentDevice == null) {
             return;
         }
-        String btDeviceName = btIntentDevice.getName();
-        AndroidLogger.v(TAG, "btConnReceiver: intent device name: " + btDeviceName);
-        if (btGattConn == null || !BluetoothUtils.isChameleonDeviceName(btDeviceName)) {
+        AndroidLogger.d(TAG, "btConnReceiver: intent device name: " + btDeviceName);
+        if (btGattConn == null || (btGattConn.btDevice == null && btIntentDevice == null) || !BluetoothUtils.isChameleonDeviceName(btDeviceName)) {
             return;
         } else if (btGattConn.btDevice != null && btGattConn.btDevice.getName() == btDeviceName) {
             return;
-        } else if (action.equals(BluetoothDevice.ACTION_FOUND) || action.equals(BluetoothDevice.ACTION_ACL_CONNECTED)) {
-            final short DEFAULT_BTDEV_RSSI = Short.MIN_VALUE;
-            short btDeviceRSSI = intent.getExtras().getShort(BluetoothDevice.EXTRA_RSSI, DEFAULT_BTDEV_RSSI);
-            String rssiInfoStr = "";
-            if (btDeviceRSSI != DEFAULT_BTDEV_RSSI) {
-                rssiInfoStr = String.format(BuildConfig.DEFAULT_LOCALE, " at RSSI of %d dBm", btDeviceRSSI);
-            }
-            String btConnInst = btGattConn.btSerialContext.getString(R.string.bluetoothExtraConfigInstructions);
+        }
+        if (btGattConn.btDevice == null) {
             btGattConn.btDevice = btIntentDevice;
-            String userConnInstMsg = String.format(BuildConfig.DEFAULT_LOCALE, "%s %s found%s. Establishing connection.\n%s",
-                    btGattConn.btDevice.getName(), btGattConn.btDevice.getAddress(), rssiInfoStr, btConnInst);
-            Utils.displayToastMessage(userConnInstMsg, Toast.LENGTH_LONG);
-            Utils.vibrateAlertShort();
+            btDeviceName = btIntentDevice.getName();
+        }
+        final short DEFAULT_BTDEV_RSSI = Short.MIN_VALUE;
+        short btDeviceRSSI = intent.getExtras().getShort(BluetoothDevice.EXTRA_RSSI, DEFAULT_BTDEV_RSSI);
+        String rssiInfoStr = "";
+        if (btDeviceRSSI != DEFAULT_BTDEV_RSSI) {
+            rssiInfoStr = String.format(BuildConfig.DEFAULT_LOCALE, " at RSSI of %d dBm", btDeviceRSSI);
+        }
+        String btConnInst = btGattConn.btSerialContext.getString(R.string.bluetoothExtraConfigInstructions);
+        String userConnInstMsg = String.format(BuildConfig.DEFAULT_LOCALE, "%s %s found%s.\n\n%s",
+                btGattConn.btDevice.getName(), btGattConn.btDevice.getAddress(), rssiInfoStr, btConnInst);
+        if (action.equals(BluetoothDevice.ACTION_FOUND)) {
+            btGattConn.btDevice = btIntentDevice;
+            btGattConn.stopConnectingDevices();
             btGattConn.btDevice.createBond();
+            //Utils.displayToastMessage(userConnInstMsg, Toast.LENGTH_LONG);
         }
         int intentExtraState = intent.getExtras().getInt(BluetoothAdapter.EXTRA_STATE, -1);
         int intentExtraBondState = intent.getExtras().getInt(BluetoothDevice.EXTRA_BOND_STATE, -1);
-        if (btGattConn.btDevice.getBondState() == BluetoothDevice.BOND_BONDED ||
+        if ((action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED) && intentExtraBondState == BluetoothDevice.BOND_NONE) ||
+                (action.equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_DISCONNECTED) ||
+                (action.equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_DISCONNECTING)) {
+            btGattConn.startConnectingDevices();
+            return;
+        } else if ((action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED) && intentExtraBondState == BluetoothDevice.BOND_BONDING)) {
+            //btGattConn.stopConnectingDevices();
+            Utils.displayToastMessage(userConnInstMsg, Toast.LENGTH_LONG);
+        }
+        if (action.equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
                 (action.equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_CONNECTED) ||
+                (action.equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_CONNECTING) ||
+                btGattConn.btDevice.getBondState() == BluetoothDevice.BOND_BONDED ||
                 (action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED) && intentExtraBondState == BluetoothDevice.BOND_BONDED) ||
                 (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED) && intentExtraState == BluetoothAdapter.STATE_CONNECTED)) {
-            btGattConn.btGatt = btGattConn.btDevice.connectGatt(btGattConn.btSerialContext, true, btGattConn, BluetoothDevice.TRANSPORT_LE);
-            if (btGattConn.btGatt == null) {
+            try {
+                btGattConn.btGatt = btGattConn.btDevice.connectGatt(btGattConn.btSerialContext, true, btGattConn, BluetoothDevice.TRANSPORT_LE);
+            } catch (NullPointerException npe) {
+                AndroidLogger.printStackTrace(npe);
+                btGattConn.startConnectingDevices();
                 return;
             }
-            btGattConn.stopConnectingDevices();
-            //btGattConn.btGatt = btGattConn.configureGattDataConnection();
+            if (btGattConn.btGatt == null) {
+                btGattConn.startConnectingDevices();
+                return;
+            }
+            btGattConn.btGatt = btGattConn.configureGattDataConnection();
         }
     }
 }

@@ -539,6 +539,10 @@ public class Utils {
     }
 
     public static void displayToastMessage(ChameleonMiniLiveDebuggerActivity callingActivity, String toastMsg, int msgDuration) {
+        if (toastMsg != null || toastMsg.length() == 0) {
+            clearToastMessage();
+            return;
+        }
         Toast toastDisplay = Toast.makeText(
                 callingActivity,
                 toastMsg,
@@ -565,13 +569,15 @@ public class Utils {
         lastDisplayedToast = toastDisplay;
         if (displayToastHandler == null) {
             displayToastHandler = new Handler(Looper.getMainLooper());
+            displayToastRunner = new Runnable() {
+                @Override
+                public void run() {
+                    lastDisplayedToast.show();
+                }
+            };
+        } else {
+            clearToastMessage();
         }
-        displayToastRunner = new Runnable() {
-            @Override
-            public void run() {
-                lastDisplayedToast.show();
-            }
-        };
         displayToastHandler.post(displayToastRunner);
         AndroidLogger.i(TAG, "TOAST MSG PENDING DISPLAY: " + toastMsg);
     }

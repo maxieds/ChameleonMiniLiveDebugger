@@ -125,7 +125,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
     private Handler pollBTDevicesFromAdapterHandler;
     private Runnable pollBTDevicesFromAdapterRunner;
     public BluetoothGatt btGatt;
-    private final BroadcastReceiver btConnReceiver;
+    private final BluetoothBroadcastReceiver btConnReceiver;
     private boolean btConnRecvRegistered;
     private BluetoothBLEInterface btSerialIface;
     public static byte[] btDevicePinDataBytes = new byte[0];
@@ -227,6 +227,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         btConnectIntentFilter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
         //btConnectIntentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         btConnectIntentFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
+        btConnReceiver.resetActiveBluetoothDeviceName();
         btSerialContext.registerReceiver(btConnReceiver, btConnectIntentFilter);
         btConnRecvRegistered = true;
     }
@@ -270,10 +271,11 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                 if (discoverServicesHandler != null && discoverServicesRunner != null) {
                     discoverServicesHandler.removeCallbacks(discoverServicesRunner);
                 }
-                //discoverServicesHandler = null;
-                //discoverServicesRunner = null;
                 stopRestartCancelledBTDiscRuntime();
                 stopBTDevicesFromAdapterPolling();
+                if (btDevice != null) {
+                    removeBluetoothDeviceBond(btDevice);
+                }
             } catch(SecurityException se) {
                 AndroidLogger.printStackTrace(se);
                 status = false;
@@ -317,9 +319,10 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         if (btGatt != null) {
             try {
                 btGatt.disconnect();
-                //btGatt.close();
+                btGatt.close();
             } catch (SecurityException se){
                 AndroidLogger.printStackTrace(se);
+                AndroidLogger.d(TAG, "Unable to unpair BT GATT object.");
                 status = false;
             }
         } else {
@@ -440,15 +443,21 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
                         for (BluetoothDevice btDev : devList) {
                             String devName = "<UNKNOWN>";
                             try {
-                                if (btDev.getBondState() == BluetoothDevice.BOND_BONDED) {
-                                    removeBluetoothDeviceBond(btDev);
-                                }
                                 devName = btDev.getName();
                             } catch (Exception btEx) {
                                 AndroidLogger.printStackTrace(btEx);
                                 continue;
                             }
                             if (BluetoothUtils.isChameleonDeviceName(devName)) {
+                                final byte[] defaultBTDevicePin = new String("0000").getBytes(StandardCharsets.UTF_8);
+                                //final byte[] defaultBTDevicePin = new byte[] {};
+                                if (btDev.getBondState() == BluetoothDevice.BOND_BONDED) {
+                                    btDev.setPin(defaultBTDevicePin);
+                                    removeBluetoothDeviceBond(btDev);
+                                    pollBTDevicesFromAdapterHandler.postDelayed(pollBTDevicesFromAdapterRunner, pollBTDevicesFromAdapterInterval);
+                                    return;
+                                }
+                                btDev.setPin(defaultBTDevicePin);
                                 Intent bcDevIntent = new Intent(BluetoothDevice.ACTION_FOUND);
                                 bcDevIntent.putExtra(BluetoothDevice.EXTRA_DEVICE, btDev);
                                 foundChamBTDevice = true;

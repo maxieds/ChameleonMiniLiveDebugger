@@ -583,10 +583,13 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = -1;
                     clearStatusIcon(R.id.statusIconBT);
                     ChameleonSettings.initializeSerialIOConnections();
-               } else if (ChameleonSettings.getBluetoothIOInterface() != null) {
+               }
+               /*else if (ChameleonSettings.getBluetoothIOInterface() != null) {
+                    ChameleonSettings.stopSerialIOConnectionDiscovery();
+                    ChameleonSettings.initializeSerialIOConnections();
                     ChameleonSettings.getBluetoothIOInterface().stopScanningDevices();
                     ChameleonSettings.getBluetoothIOInterface().startScanningDevices();
-               }
+               }*/
           } else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST)) {
                /* Do nothing. This intent is only broadcast by the IO classes after calling shutdownSerial(). */
           }
