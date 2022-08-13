@@ -198,7 +198,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         <item name="colorAccentLog">@color/AppThemeDesertSunshine_colorAccentLog</item>
         <item name="colorAccentHighlight">@color/AppThemeDesertSunshine_colorAccentHighlight</item>
         <item name="colorAboutLinkColor">@color/AppThemeDesertSunshine_colorAboutLinkColor</item>
-        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo48_desert_sunshine</item>
+        <item name="actionBarLeftLogoIcon">@drawable/chameleonlogo32_desert_sunshine</item>
     </style>
 
     <style name="SpinnerTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">

@@ -77,6 +77,16 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:text="Chicky" />
 
                 <RadioButton
+                    android:id="@+id/themeRadioButtonDesertSunshine"
+                    android:buttonTint="?colorPrimaryDark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:drawableLeft="@drawable/chameleonlogo32_desert_sunshine"
+                    android:drawablePadding="5dp"
+                    android:text="Desert Sunshine" />
+
+                <RadioButton
                     android:id="@+id/themeRadioButtonFrosty"
                     android:buttonTint="?colorPrimaryDark"
                     android:layout_width="wrap_content"
