@@ -6,23 +6,23 @@
 #   -- iceman fork version --
 #   -- contribute to this list, sharing is caring --
 #
-AEA684A6DAB23278 # AA1
+aea684a6dab23278 # AA1
 7665544332211000 # key1/Kc from PicoPass 2k documentation
 0123456789ABCDEF # SAGEM
 5b7c62c491c11b39 # from loclass demo file.
-F0E1D2C3B4A59687 # Kd from PicoPass 2k documentation
-5CBCF1DA45D5FB4F # PicoPass Default Exchange Key
+f0e1d2c3b4a59687 # Kd from PicoPass 2k documentation
+5cbcf1da45d5fb4f # PicoPass Default Exchange Key
 31ad7ebd2f282168 # From HID multiclassSE reader
 
 0000000000000000                                    #NXP Default DES
 7544d1652bc9bd43
 00000000000000000000000000000000                    #NXP Default 3DES/AES
 000000000000000000000000000000000000000000000000    #NXP Default 3K3DES
-00112233445566778899AABBCCDDEEFF                    #TI TRF7970A sloa213
+00112233445566778899aabbccddeeff                    #TI TRF7970A sloa213
 79702553797025537970255379702553                    #TI TRF7970A sloa213
-4E617468616E2E4C6920546564647920
-43464F494D48504E4C4359454E528841                    #NHIF
-6AC292FAA1315B4D858AB3A3D7D5933A
+4e617468616e2e4c6920546564647920
+43464f494d48504e4c4359454e528841                    #NHIF
+6ac292faa1315b4d858ab3a3d7d5933a
 404142434445464748494a4b4c4d4e4f
 00112233445566778899aabbccddeeff
 2b7e151628aed2a6abf7158809cf4f3c
@@ -58,8 +58,8 @@ eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 100f0e0d0c0b0a090807060504030201
 404142434445464748494a4b4c4d4e4f
 303132333435363738393a3b3c3d3e3f
-9CABF398358405AE2F0E2B3D31C99A8A              # Default key
-605F5E5D5C5B5A59605F5E5D5C5B5A59              # access control
+9cabf398358405ae2f0e2b3d31c99a8a              # Default key
+605f5e5d5c5b5a59605f5e5d5c5b5a59              # access control
 
 ffffffffffffffffffffffffffffffff
 00000000000000000000000000000000
@@ -90,45 +90,45 @@ eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 100f0e0d0c0b0a090807060504030201
 404142434445464748494a4b4c4d4e4f
 303132333435363738393a3b3c3d3e3f
-605F5E5D5C5B5A59605F5E5D5C5B5A59
+605f5e5d5c5b5a59605f5e5d5c5b5a59
 
 #
 # Mifare Ultralight Default Keys
 #   -- iceman fork version --
 #   -- contribute to this list, sharing is caring --
 #
-425245414B4D454946594F5543414E21 # Sample Key (BREAKMEIFYOUCAN!)
+425245414b4d454946594f5543414e21 # Sample Key (BREAKMEIFYOUCAN!)
 
 # known cloners
 # ref. http://www.proxmark.org/forum/viewtopic.php?id=2022
 51243648
-000D8787
+000d8787
 19920427
 65857569 //chinese "handheld RFID writer" blue cloner from circa 2013 (also sold by xfpga.com)
 # ref. http://kazus.ru/forums/showpost.php?p=1045937&postcount=77
-05D73B9F
+05d73b9f
 # ref. http://www.proxmark.org/forum/viewtopic.php?=
-89A69E60
+89a69e60
 # ref lock
-314159E0
+314159e0
 # ref. http://www.proxmark.org/forum/viewtopic.php?pid=28115#p28115
-AA55BBBB
+aa55bbbb
 # ref. http://www.proxmark.org/forum/viewtopic.php?pid=33376#p33376
-A5B4C3D2
+a5b4c3d2
 # ref. http://www.proxmark.org/forum/viewtopic.php?pid=30379#p30379
-1C0B5848
+1c0b5848
 # ref. http://www.proxmark.org/forum/viewtopic.php?pid=35075#p35075
 00434343
-44B44CAE
+44b44cae
 88661858
 # paxton bullit?
-575F4F4B
+575f4f4b
 #
 50520901
 # default PROX
-50524F58
+50524f58
 # blue gun EM4305 
-F9DCEBA0
+f9dceba0
 # Default pwd, simple:
 00000000
 11111111
@@ -140,12 +140,12 @@ F9DCEBA0
 77777777
 88888888
 99999999
-AAAAAAAA
-BBBBBBBB
-CCCCCCCC
-DDDDDDDD
-EEEEEEEE
-FFFFFFFF
+aaaaaaaa
+bbbbbbbb
+cccccccc
+dddddddd
+eeeeeeee
+ffffffff
 a0a1a2a3
 b0b1b2b3
 50415353
@@ -159,12 +159,12 @@ b0b1b2b3
 04050607
 05060708
 06070809
-0708090A
-08090A0B
-090A0B0C
-0A0B0C0D
-0B0C0D0E
-0C0D0E0F
+0708090a
+08090a0b
+090a0b0c
+0a0b0c0d
+0b0c0d0e
+0c0d0e0f
 01234567
 12345678
 10000000
@@ -176,12 +176,12 @@ b0b1b2b3
 70000000
 80000000
 90000000
-A0000000
-B0000000
-C0000000
-D0000000
-E0000000
-F0000000
+a0000000
+b0000000
+c0000000
+d0000000
+e0000000
+f0000000
 10101010
 01010101
 11223344
@@ -190,21 +190,21 @@ F0000000
 44556677
 55667788
 66778899
-778899AA
-8899AABB
-99AABBCC
-AABBCCDD
-BBCCDDEE
-CCDDEEFF
-0CB7E7FC # rfidler?
-FABADA11 # china?
-# 20 most common len==8
+778899aa
+8899aabb
+99aabbcc
+aabbccdd
+bbccddee
+ccddeeff
+0cb7e7fc # rfidler?
+fabada11 # CHINA?
+# 20 MOST COMMON LEN==8
 87654321
 12341234
 69696969
 12121212
 12344321
-1234ABCD
+1234abcd
 11112222
 13131313
 10041004
@@ -219,11 +219,11 @@ aa55aa55 # amiboo
 07d7bb0b # seeds ul-ev1
 9636ef8f # seeds ul-ev1
 b5f44686 # seeds ul-ev1
-9E3779B9 # TEA
-C6EF3720 # TEA
-7854794A # xbox tea constant :)
-F1EA5EED # burtle
-69314718 # ln2
-57721566 # euler constant (dec)
-93C467E3 # euler constant (hex)
-27182818 # natural log
+9e3779b9 # tea
+c6ef3720 # tea
+7854794a # XBOX TEA CONSTANT :)
+f1ea5eed # BURTLE
+69314718 # LN2
+57721566 # EULER CONSTANT (DEC)
+93c467e3 # EULER CONSTANT (HEX)
+27182818 # NATURAL LOG
