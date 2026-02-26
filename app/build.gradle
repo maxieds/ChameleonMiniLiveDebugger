@@ -284,7 +284,9 @@ android {
         implementation 'org.antlr:antlr4-runtime:4.9.2'
         implementation 'com.github.felHR85:UsbSerial:4.5.2'
         implementation 'com.github.shawnlin013:NumberPicker:v2.4.12'
-        implementation 'com.github.maxieds:AndroidFilePickerLight:release-v1.3.0'
+
+        //implementation 'com.github.maxieds:AndroidFilePickerLight:-SNAPSHOT'
+        implementation 'com.github.maxieds:AndroidFilePickerLight:release-v22'
 
         testImplementation 'junit:junit:4.13.2'
         androidTestImplementation 'androidx.test:core:1.5.0'

@@ -1,0 +1,12 @@
+[versions]
+agp = "8.10.1" # The version of the Android Gradle Plugin (AGP)
+
+[libraries]
+# Define your libraries here, e.g.:
+# androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+
+[plugins]
+# Define your plugins here:
+android-application = { id = "com.android.application", version.ref = "agp" }
+# Other plugins, e.g.:
+# kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

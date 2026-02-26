@@ -5,7 +5,6 @@ buildscript {
 
         google() // Add google Maven repository here
         mavenCentral()
-        gradlePluginPortal() // ???
 
     }
 
