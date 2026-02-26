@@ -38,11 +38,19 @@ def getVersionNameFull(String versionNameBase, String versionNameType) {
 }
 
 def getShellCommandOutput(String shellCmd) {
-
-    def cmdResult = ['bash', '-c', shellCmd].execute()
-    cmdResult.waitFor()
-    return cmdResult.text[0..-2]
-
+    try {
+        def cmdResult = ['bash', '-c', shellCmd].execute();
+        int waitResult = cmdResult.waitFor();
+        if (cmdResult.text.length() == 0 || waitResult != 0) {
+            return '';
+        }
+        String cmdResultText = cmdResult.text;
+        return cmdResultText.substring(0, cmdResultText.length() - 1);
+        //return cmdResult.text[0..-2]
+    } catch (Exception streamError) {
+        streamError.printStackTrace();
+        return '';
+    }
 }
 
 def getGitCommitHash() {
@@ -62,14 +70,21 @@ def getGitCommitDate() {
  *       the runtime version in the implementation line below, or you will get errors).
  */
 def generateAntlrJava(String grammarFile) {
-
     def scriptRunCmd = "antlr -o app/src/main/antlr-gen -package 'com.maxieds.chameleonminilivedebugger.ScriptingAPI' -Dlanguage=Java" +
             " -listener -visitor -long-messages -lib 'app/src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI'" +
             " -Xexact-output-dir 'app/src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI/" + grammarFile + "'"
-    def cmdResult = ['bash', '-c', scriptRunCmd].execute()
-    cmdResult.waitFor()
-    return cmdResult.text
-
+    try {
+        def cmdResult = ['bash', '-c', scriptRunCmd].execute()
+        int waitResult = cmdResult.waitFor()
+        String cmdResultText = cmdResult.text
+        if (cmdResultText.length() == 0 || waitResult != 0) {
+            return ''
+        }
+        return cmdResultText
+    } catch (Exception streamError) {
+        streamError.printStackTrace()
+        return ''
+    }
 }
 
 task cleanBuildDir {
@@ -106,7 +121,8 @@ task preBuildGenAntlr4JavaSources {
     file(new File('app/src/main/antlr-gen')).mkdirs()
     generateAntlrJava("ChameleonScriptLexer.g4")
     generateAntlrJava("ChameleonScriptParser.g4")
-    outputs.upToDateWhen { false } /* Make the task run every time (no UP-TO-DATE skippage) */
+    /* Make the task run every time (no UP-TO-DATE skippage): */
+    outputs.upToDateWhen { false }
 
 }
 preBuild.dependsOn cleanBuildDir
@@ -115,23 +131,31 @@ preBuild.dependsOn preBuildGenAntlr4JavaSources
 android {
 
     def int versionCodeBase = 8080
-    def int versionCodeRevision = 127
-    def String versionNameBase = "1.5.3"
+    def int versionCodeRevision = 128
+    def String appNamespace = 'com.maxieds.chameleonminilivedebugger'
+    def String versionNameBase = "1.6.0"
     def String versionNameType = "beta"
     def String configBuildTimeStamp = getDateTimestamp()
 
+    namespace appNamespace
+    compileSdk 35
+    compileSdkVersion 35
+
     defaultConfig {
 
-        applicationId "com.maxieds.chameleonminilivedebugger"
-
+        applicationId appNamespace
         versionCode versionCodeRevision + versionCodeBase
         versionName getVersionNameFull(versionNameBase, versionNameType)
 
-        minSdkVersion 26
-        targetSdkVersion 30
-        compileSdkVersion 31
+        minSdkVersion 29
+        targetSdkVersion 35
+        versionCode versionCodeRevision + versionCodeBase
+        versionName getVersionNameFull(versionNameBase, versionNameType)
+        buildFeatures.buildConfig = true
+        buildToolsVersion '35.0.1'
+        //multiDexEnabled true
 
-        multiDexEnabled true
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", "GIT_COMMIT_HASH", "\"" + getGitCommitHash() + "\""
         buildConfigField "String", "GIT_COMMIT_DATE", "\"" + getGitCommitDate() + "\""
@@ -142,6 +166,13 @@ android {
 
     }
 
+    compileOptions {
+
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+
+    }
+
     lint {
 
         abortOnError = false
@@ -149,13 +180,6 @@ android {
         explainIssues = true
         ignoreWarnings = false
         warningsAsErrors = false
-
-    }
-
-    compileOptions {
-
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
 
     }
 
@@ -246,27 +270,9 @@ android {
 
         }
 
-        packagingOptions {
-
-            exclude 'META-INF/DEPENDENCIES'
-            exclude 'META-INF/LICENSE'
-            exclude 'META-INF/LICENSE.txt'
-            exclude 'META-INF/license.txt'
-            exclude 'META-INF/NOTICE'
-            exclude 'META-INF/NOTICE.txt'
-            exclude 'META-INF/notice.txt'
-            exclude 'META-INF/ASL2.0'
-            exclude 'META-INF/androidx*'
-            exclude 'META-INF/android*'
-            exclude 'META-INF/com.google.android.*'
-
-        }
-
     }
 
     dependencies {
-
-        testImplementation 'junit:junit:4.12'
 
         implementation fileTree(include: ['*.jar'], dir: 'libs')
         implementation 'com.android.support.constraint:constraint-layout:2.0.2'
@@ -278,28 +284,11 @@ android {
         implementation 'org.antlr:antlr4-runtime:4.9.2'
         implementation 'com.github.felHR85:UsbSerial:4.5.2'
         implementation 'com.github.shawnlin013:NumberPicker:v2.4.12'
-        implementation 'com.github.maxieds:AndroidFilePickerLight:release-v22'
+        implementation 'com.github.maxieds:AndroidFilePickerLight:release-v1.3.0'
 
-    }
-
-    repositories {
-
-        jcenter()
-        google()
-        mavenCentral()
-
-        maven {
-
-            url "https://maven.google.com"
-            name 'Google'
-
-        }
-        maven {
-
-            url 'https://jitpack.io'
-            name 'JitPack.IO'
-
-        }
+        testImplementation 'junit:junit:4.13.2'
+        androidTestImplementation 'androidx.test:core:1.5.0'
+        androidTestImplementation 'androidx.test.ext:junit:1.1.5'
 
     }
 

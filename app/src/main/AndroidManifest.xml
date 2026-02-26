@@ -19,8 +19,7 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.maxieds.chameleonminilivedebugger"
-    android:installLocation="preferExternal" >
+    android:installLocation="preferExternal">
 
     <permission-group
         android:name="CMLD.permission-group.MINIMAL_APP_REQUIREMENTS"
