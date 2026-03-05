@@ -276,7 +276,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED);
                     serialIOActionFilter.addAction(ChameleonSerialIOInterface.SERIALIO_NOTIFY_STATUS);
                     serialIOActionFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
-                    registerReceiver(serialIOActionReceiver, serialIOActionFilter);
+                    registerReceiver(serialIOActionReceiver, serialIOActionFilter, RECEIVER_NOT_EXPORTED);
                     SerialUSBInterface.registerUSBPermission(null, this);
                     serialIOReceiversRegistered = true;
                }
@@ -354,7 +354,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           setContentView(R.layout.activity_live_logger);
 
           Toolbar actionBar = (Toolbar) findViewById(R.id.toolbarActionBar);
-          actionBar.setSubtitle("Portable logger | v" + String.valueOf(BuildConfig.VERSION_NAME));
+          actionBar.setSubtitle("Portable NFC logger | v" + String.valueOf(BuildConfig.VERSION_NAME));
           getWindow().setTitleColor(ThemesConfiguration.getThemeColorVariant(R.attr.actionBarBackgroundColor));
           getWindow().setStatusBarColor(ThemesConfiguration.getThemeColorVariant(R.attr.colorPrimaryDark));
           getWindow().setNavigationBarColor(ThemesConfiguration.getThemeColorVariant(R.attr.colorPrimaryDark));

@@ -41,13 +41,13 @@ def getShellCommandOutput(String shellCmd) {
     try {
         def cmdResult = ['bash', '-c', shellCmd].execute();
         int waitResult = cmdResult.wait();
-        if (cmdResult.text.length() == 0 || waitResult != 0) {
+        if (cmdResult.text.length() == 0) {
             return '';
         }
         String cmdResultText = cmdResult.text;
         return cmdResultText.substring(0, cmdResultText.length() - 1);
     } catch (Exception streamError) {
-        //streamError.printStackTrace();
+        streamError.printStackTrace();
         return '';
     }
 }
@@ -69,14 +69,19 @@ def getGitCommitDate() {
  *       the runtime version in the implementation line below, or you will get errors).
  */
 def generateAntlrJava(String grammarFile) {
-    def scriptRunCmd = "antlr -o app/src/main/antlr-gen -package 'com.maxieds.chameleonminilivedebugger.ScriptingAPI' -Dlanguage=Java" +
+    /* NOTE: The ``antlr4`` command is aliased in my bash profile.
+     *       The standard name for this command is ``antlr``.
+     */
+    String ANTLR4_CMD_NAME = "antlr4";
+    String scriptRunCmdFmt = "%s -o app/src/main/antlr-gen -package 'com.maxieds.chameleonminilivedebugger.ScriptingAPI' -Dlanguage=Java" +
             " -listener -visitor -long-messages -lib 'app/src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI'" +
-            " -Xexact-output-dir 'app/src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI/" + grammarFile + "'"
+            " -Xexact-output-dir 'app/src/main/java/com/maxieds/chameleonminilivedebugger/ScriptingAPI/%s'"
+    String scriptRunCmd = String.format(Locale.getDefault(), scriptRunCmdFmt, ANTLR4_CMD_NAME, grammarFile)
     try {
         def cmdResult = ['bash', '-c', scriptRunCmd].execute()
-        int waitResult = cmdResult.waitFor()
+        int waitResult = cmdResult.wait()
         String cmdResultText = cmdResult.text
-        if (cmdResultText.length() == 0 || waitResult != 0) {
+        if (cmdResultText.length() == 0) {
             return ''
         }
         return cmdResultText
@@ -129,12 +134,12 @@ preBuild.dependsOn preBuildGenAntlr4JavaSources
 
 android {
 
-    def int versionCodeBase = 8080
-    def int versionCodeRevision = 128
-    def String appNamespace = 'com.maxieds.chameleonminilivedebugger'
-    def String versionNameBase = "1.6.0"
-    def String versionNameType = "beta"
-    def String configBuildTimeStamp = getDateTimestamp()
+    int versionCodeBase = 8080
+    int versionCodeRevision = 128
+    String appNamespace = 'com.maxieds.chameleonminilivedebugger'
+    String versionNameBase = "1.6.0"
+    String versionNameType = "pro"
+    String configBuildTimeStamp = getDateTimestamp()
 
     namespace appNamespace
     compileSdk 35
@@ -144,7 +149,8 @@ android {
 
         applicationId appNamespace
         versionCode versionCodeRevision + versionCodeBase
-        versionName getVersionNameFull(versionNameBase, versionNameType)
+        //versionName getVersionNameFull(versionNameBase, versionNameType)
+        versionName versionNameBase
 
         minSdkVersion 29
         targetSdkVersion 35
@@ -273,7 +279,16 @@ android {
 
     dependencies {
 
+        /* Jitpack.io has spotty configuration that prevents
+         * resolving imports of the form: com.maxieds.androidfilepickerlightlibrary.
+         * WORKAROUND (TODO): Build the library as a JAR file, stash it in libs/* and
+         *                    include the JAR from there (as below).
+         */
+        implementation 'com.github.maxieds:AndroidFilePickerLight:release-v22'
+        //implementation 'com.github.maxieds:AndroidFilePickerLight:master-SNAPSHOT'
+
         implementation fileTree(include: ['*.jar'], dir: 'libs')
+
         implementation 'com.android.support.constraint:constraint-layout:2.0.2'
         implementation 'androidx.legacy:legacy-support-v4:1.0.0'
         implementation 'androidx.appcompat:appcompat:1.2.0'
@@ -283,9 +298,6 @@ android {
         implementation 'org.antlr:antlr4-runtime:4.9.2'
         implementation 'com.github.felHR85:UsbSerial:4.5.2'
         implementation 'com.github.shawnlin013:NumberPicker:v2.4.12'
-
-        //implementation 'com.github.maxieds:AndroidFilePickerLight:release-v22'
-        implementation 'com.github.maxieds:AndroidFilePickerLight:master-SNAPSHOT'
 
         testImplementation 'junit:junit:4.13.2'
         androidTestImplementation 'androidx.test:core:1.5.0'

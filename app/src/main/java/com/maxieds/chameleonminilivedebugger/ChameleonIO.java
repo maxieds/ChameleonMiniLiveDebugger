@@ -25,6 +25,7 @@ import android.widget.TextView;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.FALSE;
 import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.OK;
@@ -311,7 +312,7 @@ public class ChameleonIO {
 
         public static final String DEFAULT_CONFIG = "NO-CONFIG";
         public static final String DEFAULT_UID = UID_NONE;
-        public static final String DEFAULT_LOGMODE = UNSET_VALUE_NA;
+        public static final String DEFAULT_LOGMODE = UNSET_VALUE_NONE;
         public static final int DEFAULT_UIDSIZE = 0;
         public static final int DEFAULT_MEMSIZE = 0;
         public static final int DEFAULT_LOGSIZE = 0;
@@ -320,7 +321,7 @@ public class ChameleonIO {
         public static final boolean DEFAULT_READONLY = false;
         public static final boolean DEFAULT_CHARGING = false;
         public static final int DEFAULT_THRESHOLD = 0;
-        public static final String DEFAULT_TIMEOUT = UNSET_VALUE_NA;
+        public static final String DEFAULT_TIMEOUT = UNSET_VALUE_NONE;
 
         /**
          * The status settings summarized at the top of the GUI window.
@@ -363,7 +364,15 @@ public class ChameleonIO {
             postingStatsInProgress = false;
         }
 
+        /* NOTE: Sometimes race conditions creep in where the status variables
+         *       are getting updated by a run() and the header status summaries
+         *       are similarly getting updated. This produces some weird status
+         *       messages. Locking the next mutex intends to resolve this bug.
+         */
+        private static final ReentrantLock statsVarsMutex = new ReentrantLock();
+
         public static void setToolbarStatsToDefault() {
+            statsVarsMutex.lock();
             CONFIG = DEFAULT_CONFIG;
             UID = LASTUID = DEFAULT_UID;
             LOGMODE = DEFAULT_LOGMODE;
@@ -376,23 +385,35 @@ public class ChameleonIO {
             CHARGING = DEFAULT_CHARGING;
             THRESHOLD = DEFAULT_THRESHOLD;
             TIMEOUT = DEFAULT_TIMEOUT;
+            statsVarsMutex.unlock();
             Thread setToolbarResetDefaultSettingsDataThread = new Thread() {
                 @Override
                 public void run() {
                     LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(new Runnable() {
                         public void run() {
                             try {
+                                statsVarsMutex.lock();
                                 ((TextView) LiveLoggerActivity.getContentView(R.id.deviceConfigText)).setText(CONFIG);
                                 ((TextView) LiveLoggerActivity.getContentView(R.id.deviceConfigUID)).setText(UID);
-                                String subStats1 = String.format(BuildConfig.DEFAULT_LOCALE, "REV%s | MEM-%dK | LOG-%s-%dK", ChameleonIO.REVE_BOARD ? "E" : "G", round(MEMSIZE / 1024), LOGMODE, round(LOGSIZE / 1024));
+                                String devName = "NO-DEV";
+                                if (ChameleonSettings.getActiveSerialIOPort() != null) {
+                                    devName = String.format(BuildConfig.DEFAULT_LOCALE, "REV%s", ChameleonIO.REVE_BOARD ? "E" : "G");
+                                }
+                                String subStats1 = String.format(BuildConfig.DEFAULT_LOCALE, "%s | MEM-%dK | LOG-%s-%dK", devName, round(MEMSIZE / 1024), LOGMODE, round(LOGSIZE / 1024));
                                 ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats1)).setText(subStats1);
-                                String subStats2 = String.format(BuildConfig.DEFAULT_LOCALE, "SLOT-%d | %s | FLD-%s | CHRG-%s", DIP_SETTING, READONLY ? "RO" : "RW", FIELD ? "1" : "0", CHARGING ? "1" : "0");
+                                String slotName = String.format(BuildConfig.DEFAULT_LOCALE, "SLOT-%d", DIP_SETTING);
+                                if (ChameleonSettings.getActiveSerialIOPort() == null) {
+                                    slotName = String.format(BuildConfig.DEFAULT_LOCALE, "SLOT-%s", UNSET_VALUE_NONE);
+                                }
+                                String subStats2 = String.format(BuildConfig.DEFAULT_LOCALE, "%s | %s | FLD-%s | CHRG-%s", slotName, READONLY ? "RO" : "RW", FIELD ? "1" : "0", CHARGING ? "1" : "0");
                                 ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats2)).setText(subStats2);
-                                String subStats3 = String.format(BuildConfig.DEFAULT_LOCALE, "THRS-%dmv | TMT-%s", THRESHOLD, TIMEOUT.replace(" ", ""));
+                                String subStats3 = String.format(BuildConfig.DEFAULT_LOCALE, "THRS-%dmV | TMT-%s", THRESHOLD, TIMEOUT.replace(" ", ""));
                                 ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats3)).setText(subStats3);
                                 LiveLoggerActivity.setSignalStrengthIndicator(THRESHOLD);
                             } catch (Exception ex) {
                                 AndroidLogger.printStackTrace(ex);
+                            } finally {
+                                statsVarsMutex.unlock();
                             }
                         }
                     });
@@ -415,6 +436,7 @@ public class ChameleonIO {
          */
         public static boolean updateAllStatus() {
             try {
+                statsVarsMutex.lock();
                 if (!ChameleonIO.REVE_BOARD) {
                     CONFIG = ChameleonIO.getSettingFromDevice("CONFIG?", CONFIG);
                     UID = ChameleonIO.getSettingFromDevice("UID?", UID);
@@ -449,6 +471,8 @@ public class ChameleonIO {
             } catch (Exception ex) {
                 AndroidLogger.printStackTrace(ex);
                 return false;
+            } finally {
+                statsVarsMutex.unlock();
             }
             LiveLoggerActivity.setSignalStrengthIndicator(THRESHOLD);
             return true;
@@ -481,6 +505,7 @@ public class ChameleonIO {
                     LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(new Runnable() {
                         public void run() {
                             try {
+                                statsVarsMutex.lock();
                                 if(!CONFIG.equals("TIMEOUT") && !CONFIG.equals("")) {
                                     ((TextView) LiveLoggerActivity.getContentView(R.id.deviceConfigText)).setText(CONFIG);
                                 }
@@ -506,6 +531,8 @@ public class ChameleonIO {
                                 }
                             } catch (Exception ex) {
                                 AndroidLogger.printStackTrace(ex);
+                            } finally {
+                                statsVarsMutex.unlock();
                             }
                         }
                     });

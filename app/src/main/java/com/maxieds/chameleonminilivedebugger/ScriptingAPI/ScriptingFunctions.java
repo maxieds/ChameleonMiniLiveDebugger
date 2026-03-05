@@ -442,7 +442,7 @@ public class ScriptingFunctions {
                     return new ScriptVariable(binStr);
                 case VariableTypeBytes:
                     byteArr = inputVar.getValueAsBytes();
-                    binStr = Utils.bytes2Hex(byteArr)
+                    binStr = Utils.bytes2Hex(byteArr);
                     return new ScriptVariable(binStr);
                 case VariableTypeHexString:
                 case VariableTypeAsciiString:
@@ -537,19 +537,20 @@ public class ScriptingFunctions {
                 throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
             }
             ScriptVariable inputVar = argList.get(0);
+            int len = 0;
             switch (inputVar.getType()) {
                 case VariableTypeBoolean:
                 case VariableTypeInteger:
                     return new ScriptVariable(1);
                 case VariableTypeBytes:
-                    int len = inputVar.getValueAsBytes().length;
+                    len = inputVar.getValueAsBytes().length;
                     return new ScriptVariable(len);
                 case VariableTypeArrayMap:
                 case VariableTypeHexString:
                 case VariableTypeAsciiString:
                 case VariableTypeStorageFilePath:
                 case VariableTypeRawFileFilePath:
-                    int len = inputVar.getValueAsString().length();
+                    len = inputVar.getValueAsString().length();
                     return new ScriptVariable(len);
                 default:
                     throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);

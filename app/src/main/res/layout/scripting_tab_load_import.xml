@@ -19,7 +19,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
 
     <ScrollView
         android:id="@+id/tools_menu_scroll_view"
@@ -50,8 +51,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:background="?colorPrimaryDarkLog"
                 android:drawableLeft="@drawable/run_script_icon24"
                 android:drawablePadding="5dp"
-                android:paddingLeft="10dp"
                 android:gravity="center_vertical"
+                android:paddingLeft="10dp"
                 android:singleLine="true"
                 android:text="Load script instance: "
                 android:textAllCaps="true"
@@ -77,17 +78,17 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="0.92"
-                    android:hint="chameleon-batch-script.sh"
+                    android:editable="false"
+                    android:hint="example-syntax.sh"
+                    android:inputType="none|textNoSuggestions"
                     android:paddingLeft="4dp"
                     android:singleLine="true"
-                    android:inputType="none|textNoSuggestions"
-                    android:editable="false"
                     android:textColor="?colorPrimaryDarkLog"
                     android:textSize="12sp" />
 
                 <Button
-                    style="@style/GridButtons"
                     android:id="@+id/scriptingLoadImportTabScriptFileSetBtn"
+                    style="@style/GridButtons"
                     android:layout_columnWeight="0.08"
                     android:drawableLeft="@drawable/open_folder_icon24"
                     android:paddingLeft="15dp"
@@ -172,8 +173,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     style="@style/GridButtons"
                     android:layout_columnWeight="0.5"
                     android:drawableLeft="@drawable/run_script_button_icon24"
-                    android:paddingLeft="10dp"
                     android:onClick="actionButtonScriptingGUIHandlePerformTaskClick"
+                    android:paddingLeft="10dp"
                     android:tag="SCRIPTING_BTN_RUN_FROM_START"
                     android:text="Run from start" />
 
@@ -181,8 +182,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     style="@style/GridButtons"
                     android:layout_columnWeight="0.5"
                     android:drawableLeft="@drawable/kill_script_icon24"
-                    android:paddingLeft="10dp"
                     android:onClick="actionButtonScriptingGUIHandlePerformTaskClick"
+                    android:paddingLeft="10dp"
                     android:tag="SCRIPTING_BTN_KILL_SCRIPT"
                     android:text="Kill script" />
 
@@ -190,8 +191,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     style="@style/GridButtons"
                     android:layout_columnWeight="0.5"
                     android:drawableLeft="@drawable/pause_script_icon24"
-                    android:paddingLeft="10dp"
                     android:onClick="actionButtonScriptingGUIHandlePerformTaskClick"
+                    android:paddingLeft="10dp"
                     android:tag="SCRIPTING_BTN_PAUSE_SCRIPT"
                     android:text="Pause script" />
 
@@ -199,8 +200,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     style="@style/GridButtons"
                     android:layout_columnWeight="0.5"
                     android:drawableLeft="@drawable/step_script_icon24"
-                    android:paddingLeft="10dp"
                     android:onClick="actionButtonScriptingGUIHandlePerformTaskClick"
+                    android:paddingLeft="10dp"
                     android:tag="SCRIPTING_BTN_STEP_SCRIPT"
                     android:text="Step + 1" />
 
@@ -224,8 +225,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:background="?colorPrimaryDarkLog"
                 android:drawableLeft="@drawable/set_breakpoint_icon24"
                 android:drawablePadding="5dp"
-                android:paddingLeft="10dp"
                 android:gravity="center_vertical"
+                android:paddingLeft="10dp"
                 android:singleLine="true"
                 android:text="Set breakpoints:"
                 android:textAllCaps="true"
@@ -256,19 +257,18 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_height="wrap_content"
                     android:layout_gravity="left|center_vertical"
                     android:layout_marginRight="5dp"
-                    android:src="@drawable/plus_append_icon24"
                     android:background="@android:color/transparent"
-                    />
+                    android:src="@drawable/plus_append_icon24" />
 
                 <EditText
                     android:id="@+id/scriptingBPAddLineText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="0.32"
+                    android:hint="\@line"
                     android:inputType="numberDecimal"
                     android:paddingLeft="4dp"
                     android:singleLine="true"
-                    android:hint="\@line"
                     android:textColor="?colorPrimaryDarkLog"
                     android:textSize="16sp"
                     android:textStyle="normal|bold|italic" />
@@ -284,19 +284,18 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_height="wrap_content"
                     android:layout_gravity="left|center_vertical"
                     android:layout_marginRight="5dp"
-                    android:src="@drawable/plus_append_icon24"
                     android:background="@android:color/transparent"
-                    />
+                    android:src="@drawable/plus_append_icon24" />
 
                 <EditText
                     android:id="@+id/scriptingBPAddLabelText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="0.32"
+                    android:hint="\@label"
                     android:inputType="textNoSuggestions"
                     android:paddingLeft="4dp"
                     android:singleLine="true"
-                    android:hint="\@label"
                     android:textColor="?colorPrimaryDarkLog"
                     android:textSize="16sp"
                     android:textStyle="normal|bold|italic" />
@@ -319,10 +318,9 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
                 android:background="?colorAccent"
-                android:padding="0dp"
-                android:paddingLeft="15dp"
                 android:orientation="vertical"
-                >
+                android:padding="0dp"
+                android:paddingLeft="15dp">
 
             </LinearLayout>
 
@@ -387,8 +385,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:background="?colorPrimaryDarkLog"
                 android:drawableLeft="@drawable/locate_scripts24"
                 android:drawablePadding="5dp"
-                android:paddingLeft="10dp"
                 android:gravity="center_vertical"
+                android:paddingLeft="10dp"
                 android:singleLine="true"
                 android:text="Find Sample Scripts:"
                 android:textAllCaps="true"
@@ -411,15 +409,15 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 <Button
                     style="@style/GridButtonsNoWidth"
                     android:layout_columnWeight="1.0"
-                    android:layout_weight="1.0"
-                    android:gravity="center_vertical|center_horizontal"
                     android:layout_gravity="center_vertical|left"
+                    android:layout_weight="1.0"
                     android:drawableLeft="@drawable/copy24"
                     android:drawablePadding="8dp"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:onClick="copyButtonTagToClipboard"
                     android:paddingLeft="10dp"
-                    android:text="Copy link to sample scripts  "
                     android:tag="https://github.com/maxieds/ChameleonMiniLiveDebugger/tree/master/app/src/main/SampleScripts"
-                    android:onClick="copyButtonTagToClipboard" />
+                    android:text="Copy link to sample scripts  " />
 
             </GridLayout>
 

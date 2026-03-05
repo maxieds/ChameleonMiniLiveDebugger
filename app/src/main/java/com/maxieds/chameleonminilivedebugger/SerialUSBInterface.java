@@ -17,6 +17,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import static android.content.Context.RECEIVER_NOT_EXPORTED;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -310,7 +312,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
             return;
         }
         if(!usbPermissionsReceiverConfig) {
-            context.registerReceiver(SerialUSBInterface.usbPermissionsReceiver, usbPermsFilter);
+            context.registerReceiver(SerialUSBInterface.usbPermissionsReceiver, usbPermsFilter, RECEIVER_NOT_EXPORTED);
             SerialUSBInterface.usbPermissionsReceiverConfig = true;
         }
         Intent broadcastIntent = new Intent(SerialUSBInterface.ACTION_USB_PERMISSION);

@@ -17,6 +17,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import static android.content.Context.RECEIVER_NOT_EXPORTED;
+
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -230,7 +232,7 @@ public class BluetoothGattConnector extends BluetoothGattCallback {
         //btConnectIntentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         btConnectIntentFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
         btConnReceiver.resetActiveBluetoothDeviceName();
-        btSerialContext.registerReceiver(btConnReceiver, btConnectIntentFilter);
+        btSerialContext.registerReceiver(btConnReceiver, btConnectIntentFilter, RECEIVER_NOT_EXPORTED);
         btConnRecvRegistered = true;
     }
 
