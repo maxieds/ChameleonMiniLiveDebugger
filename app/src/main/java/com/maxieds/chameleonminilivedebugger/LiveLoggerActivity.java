@@ -41,6 +41,7 @@ import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
 import android.view.MenuItem;
@@ -67,7 +68,10 @@ import com.google.android.material.tabs.TabLayout;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingGUIMain;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * <h1>Live Logger Activity</h1>
@@ -92,6 +96,39 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
      }
 
      private static View liveLoggerActivityMainContentView = null;
+
+     protected static boolean isFirstRun = true;
+
+     protected boolean doFirstRunTasks() {
+          boolean isFirstRun = AndroidSettingsStorage.getBooleanValueByKey(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE, AndroidSettingsStorage.APP_FIRST_RUN);
+          if (!isFirstRun) {
+               return false;
+          }
+          /* Copy the sample scripts from res/raw to the local filesystem: */
+          File downloadsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+          String cmldLocalDir = "chameleonminilivedebugger";
+          String fullLocalDirPath = String.format(Locale.getDefault(), "%s/%s",
+                                    downloadsFolder.getAbsolutePath(), cmldLocalDir);
+          File fullLocalDir = new File(fullLocalDirPath);
+          if (!fullLocalDir.exists()) {
+               fullLocalDir.mkdir();
+          }
+          HashMap<Integer, String> rawID2FileNameMap = new HashMap<Integer, String>();
+          rawID2FileNameMap.put(R.raw.example_syntax_sh, "example-syntax.sh");
+          rawID2FileNameMap.put(R.raw.example_syntax2_sh, "example-syntax2.sh");
+          rawID2FileNameMap.put(R.raw.mifare_classic_tool_sh, "mifare-classic-tool.sh");
+          rawID2FileNameMap.put(R.raw.nfc_anticol_sh, "nfc-anticol.sh");
+          for (Map.Entry<Integer, String> mapPair : rawID2FileNameMap.entrySet()) {
+               int rawResID = mapPair.getKey();
+               String destFilePath = String.format(Locale.getDefault(), "%s/%s/%s",
+                                     downloadsFolder.getAbsolutePath(), cmldLocalDir,
+                                     mapPair.getValue());
+               if (!Utils.copyRawFileToLocal(rawResID, destFilePath)) {
+                    return false;
+               }
+          }
+          return true;
+     }
 
      public static View getContentView(@IdRes int viewResId) {
           View mainContentView = liveLoggerActivityMainContentView;
@@ -302,6 +339,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           }
 
           setUnhandledExceptionHandler();
+          doFirstRunTasks();
 
           boolean completeRestart = (getLiveLoggerInstance() == null);
 

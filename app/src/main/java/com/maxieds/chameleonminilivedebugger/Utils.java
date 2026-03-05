@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -807,6 +808,42 @@ public class Utils {
             }
         } finally {
             srcFileStream.close();
+        }
+        return true;
+    }
+
+    public static boolean copyRawFileToLocal(int rawResID, String destFilePath) {
+        final int RW_BUFFER_SIZE = 1024;
+        File destFile = new File(destFilePath);
+        try {
+            if (destFile.exists()) {
+                return false;
+            } else {
+                destFile.createNewFile();
+            }
+            Context appCtx = LiveLoggerActivity.getContext();
+            FileOutputStream fileOS = appCtx.openFileOutput(destFilePath, Context.MODE_WORLD_READABLE);
+            OutputStreamWriter outputSW = new OutputStreamWriter(fileOS);
+            InputStream rawFileStream = appCtx.getResources().openRawResource(rawResID);
+            byte[] rawFileReadBuf = new byte[RW_BUFFER_SIZE];
+            char[] rawFileReadBufAsChar = new char[RW_BUFFER_SIZE];
+            int rawBufReadCount = 0;
+            int bytePos = 0;
+            while ((rawBufReadCount = rawFileStream.read(rawFileReadBuf, 0, RW_BUFFER_SIZE)) != -1) {
+                System.arraycopy(rawFileReadBuf, 0, rawFileReadBufAsChar, 0, rawBufReadCount);
+                outputSW.write(rawFileReadBufAsChar, bytePos, RW_BUFFER_SIZE);
+                bytePos += rawBufReadCount;
+            }
+            outputSW.flush();
+            outputSW.close();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            try {
+                destFile.delete();
+            } catch (Exception ioeInner) {
+                ioeInner.printStackTrace();
+            }
+            return false;
         }
         return true;
     }

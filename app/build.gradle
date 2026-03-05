@@ -40,14 +40,14 @@ def getVersionNameFull(String versionNameBase, String versionNameType) {
 def getShellCommandOutput(String shellCmd) {
     try {
         def cmdResult = ['bash', '-c', shellCmd].execute();
-        int waitResult = cmdResult.waitFor();
+        int waitResult = cmdResult.wait();
         if (cmdResult.text.length() == 0 || waitResult != 0) {
             return '';
         }
         String cmdResultText = cmdResult.text;
         return cmdResultText.substring(0, cmdResultText.length() - 1);
     } catch (Exception streamError) {
-        streamError.printStackTrace();
+        //streamError.printStackTrace();
         return '';
     }
 }
@@ -285,7 +285,7 @@ android {
         implementation 'com.github.shawnlin013:NumberPicker:v2.4.12'
 
         //implementation 'com.github.maxieds:AndroidFilePickerLight:release-v22'
-        implementation 'com.github.maxieds:AndroidFilePickerLight:-SNAPSHOT'
+        implementation 'com.github.maxieds:AndroidFilePickerLight:master-SNAPSHOT'
 
         testImplementation 'junit:junit:4.13.2'
         androidTestImplementation 'androidx.test:core:1.5.0'

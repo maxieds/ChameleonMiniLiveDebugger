@@ -33,6 +33,8 @@ public class AndroidSettingsStorage {
 
     public static final String DEFAULT_CMLDAPP_PROFILE = "CMLDAppProfile";
 
+    public static final String APP_FIRST_RUN = "isFirstRun";
+
     public static final String THEMEID_PREFERENCE = "themeID";
     public static final String PROFILE_NAME_PREFERENCE = "profileName";
     public static final String PROFILE_SERIALID_PREFERENCE = "profileSerialID";
@@ -146,6 +148,7 @@ public class AndroidSettingsStorage {
             updateValueByKey(profileID, SCRIPTING_CONFIG_LAST_SCRIPT_LOADED_PATH);
             status = true;
         }
+        updateValueByKey(profileID, APP_FIRST_RUN);
         return status;
     }
 
@@ -226,7 +229,10 @@ public class AndroidSettingsStorage {
     public static boolean updateValueByKey(String profileTag, String prefsKey) {
         SharedPreferences sharedPrefs = LiveLoggerActivity.getInstance().getSharedPreferences(profileTag, Context.MODE_PRIVATE);
         SharedPreferences.Editor spEditor = sharedPrefs.edit();
-        if(prefsKey.equals(THEMEID_PREFERENCE)) {
+        if(prefsKey.equals(APP_FIRST_RUN)) {
+            spEditor.putBoolean(prefsKey, false);
+        }
+        else if(prefsKey.equals(THEMEID_PREFERENCE)) {
             spEditor.putString(prefsKey, ThemesConfiguration.storedAppTheme);
         }
         else if(prefsKey.equals(PROFILE_NAME_PREFERENCE)) {
@@ -534,6 +540,14 @@ public class AndroidSettingsStorage {
             }
         }
         return null;
+    }
+
+    public static boolean getBooleanValueByKey(String profileID, String prefsKey) {
+        SharedPreferences sharedPrefs = LiveLoggerActivity.getInstance().getSharedPreferences(profileID, Context.MODE_PRIVATE);
+        if (prefsKey.equals(APP_FIRST_RUN)) {
+            return sharedPrefs.getBoolean(APP_FIRST_RUN, true);
+        }
+        return false;
     }
 
 }
