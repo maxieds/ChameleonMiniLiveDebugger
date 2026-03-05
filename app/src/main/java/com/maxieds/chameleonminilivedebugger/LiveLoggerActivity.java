@@ -65,6 +65,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingConfig;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingGUIMain;
 
 import java.io.File;
@@ -125,6 +126,10 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                                      mapPair.getValue());
                if (!Utils.copyRawFileToLocal(rawResID, destFilePath)) {
                     return false;
+               }
+               if (rawResID == R.raw.example_syntax_sh) {
+                    // Set a default script path for the user:
+                    ScriptingConfig.LAST_SCRIPT_LOADED_PATH = destFilePath;
                }
           }
           return true;

@@ -60,7 +60,7 @@ public class MainActivityNavActions {
         adBuilder.setTitle("");
         //adBuilder.setIcon(R.drawable.chameleonicon_about64_roundicon);
         adBuilder.setPositiveButton(
-                "Back to Previous",
+                "◀ Back to Previous",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();

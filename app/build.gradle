@@ -149,13 +149,12 @@ android {
 
         applicationId appNamespace
         versionCode versionCodeRevision + versionCodeBase
-        //versionName getVersionNameFull(versionNameBase, versionNameType)
-        versionName versionNameBase
 
         minSdkVersion 29
         targetSdkVersion 35
         versionCode versionCodeRevision + versionCodeBase
-        versionName getVersionNameFull(versionNameBase, versionNameType)
+        //versionName getVersionNameFull(versionNameBase, versionNameType)
+        versionName versionNameBase
         buildFeatures.buildConfig = true
         buildToolsVersion '35.0.1'
         multiDexEnabled true
@@ -281,13 +280,24 @@ android {
 
         /* Jitpack.io has spotty configuration that prevents
          * resolving imports of the form: com.maxieds.androidfilepickerlightlibrary.
-         * WORKAROUND (TODO): Build the library as a JAR file, stash it in libs/* and
-         *                    include the JAR from there (as below).
+         * WORKAROUND: Build the library as a AAR file, stash it in _libs/* and
+         *             include the AAR from there.
          */
-        implementation 'com.github.maxieds:AndroidFilePickerLight:release-v22'
+        //implementation 'com.github.maxieds:AndroidFilePickerLight:release-v22'
         //implementation 'com.github.maxieds:AndroidFilePickerLight:master-SNAPSHOT'
 
-        implementation fileTree(include: ['*.jar'], dir: 'libs')
+        /* The AndroidFilePickerLightLibrary AAR is not a "fat-AAR",
+         * meaning all of its dependencies are not bundled in the
+         * library file. We're going to use the next workaround by
+         * including all the sub-library dependencies of AFPL:
+         */
+        implementation 'androidx.appcompat:appcompat:1.4.2'
+        implementation 'androidx.recyclerview:recyclerview:1.2.1'
+        implementation 'org.apache.commons:commons-text:1.7'
+        implementation 'pub.devrel:easypermissions:3.0.0'
+
+        implementation fileTree(include: ['*.jar'], dir: '_libs')
+        implementation fileTree(include: ['*.aar'], dir: '_libs')
 
         implementation 'com.android.support.constraint:constraint-layout:2.0.2'
         implementation 'androidx.legacy:legacy-support-v4:1.0.0'
@@ -305,4 +315,7 @@ android {
 
     }
 
+}
+dependencies {
+    implementation files('../_libs/AndroidFilePickerLightLibrary-1.3.6-beta-release.aar')
 }

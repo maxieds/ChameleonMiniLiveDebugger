@@ -58,6 +58,7 @@ public class AndroidSettingsStorage {
     public static final String LOGGING_CONFIG_WRITE_LOGDATA_TO_FILE = "loggingConfigWriteLogDataToFile";
     public static final String LOGGING_CONFIG_LOGDATA_LEVEL_THRESHOLD = "loggingConfigLogDataLevelThreshold";
     public static final String LOGGING_CONFIG_LOGMODE_NOTIFY_STATE = "loggingConfigLogModeNotifyState";
+    public static final String SCRIPTING_CONFIG_DEFAULT_RUNSCRIPT_PATH = "scriptingConfigDefaultRunScriptPath";
     public static final String SCRIPTING_CONFIG_SAVE_CONSOLE_OUTPUT_FILE = "scriptingConfigSaveConsoleOutputFile";
     public static final String SCRIPTING_CONFIG_APPEND_CONSOLE_OUTPUT_FILE = "scriptingConfigAppendConsoleOutputFile";
     public static final String SCRIPTING_CONFIG_DATESTAMP_OUTPUT_FILES = "scriptingConfigDatestampOutputFiles";
@@ -123,6 +124,7 @@ public class AndroidSettingsStorage {
             status = true;
         }
         if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.SCRIPTING_CONFIG) {
+            updateValueByKey(profileID, SCRIPTING_CONFIG_DEFAULT_RUNSCRIPT_PATH);
             updateValueByKey(profileID, SCRIPTING_CONFIG_SAVE_CONSOLE_OUTPUT_FILE);
             updateValueByKey(profileID, SCRIPTING_CONFIG_APPEND_CONSOLE_OUTPUT_FILE);
             updateValueByKey(profileID, SCRIPTING_CONFIG_DATESTAMP_OUTPUT_FILES);
@@ -186,6 +188,7 @@ public class AndroidSettingsStorage {
                 status = true;
             }
             if(settingsMask == AndroidSettingsType.ALL || settingsMask == AndroidSettingsType.SCRIPTING_CONFIG) {
+                ScriptingConfig.LAST_SCRIPT_LOADED_PATH = getStringValueByKey(profileID, SCRIPTING_CONFIG_DEFAULT_RUNSCRIPT_PATH);
                 ScriptingConfig.SAVE_CONSOLE_OUTPUT_FILE = Boolean.valueOf(getStringValueByKey(profileID, SCRIPTING_CONFIG_SAVE_CONSOLE_OUTPUT_FILE));
                 ScriptingConfig.APPEND_CONSOLE_OUTPUT_FILE = Boolean.valueOf(getStringValueByKey(profileID, SCRIPTING_CONFIG_APPEND_CONSOLE_OUTPUT_FILE));
                 ScriptingConfig.DATESTAMP_OUTPUT_FILES = Boolean.valueOf(getStringValueByKey(profileID, SCRIPTING_CONFIG_DATESTAMP_OUTPUT_FILES));
@@ -302,6 +305,9 @@ public class AndroidSettingsStorage {
         }
         else if(prefsKey.equals(LOGGING_CONFIG_LOGDATA_LEVEL_THRESHOLD)) {
             spEditor.putInt(prefsKey, AndroidLogger.LOGDATA_LEVEL_THRESHOLD.ordinal());
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_DEFAULT_RUNSCRIPT_PATH)) {
+            spEditor.putString(prefsKey, ScriptingConfig.LAST_SCRIPT_LOADED_PATH);
         }
         else if(prefsKey.equals(SCRIPTING_CONFIG_SAVE_CONSOLE_OUTPUT_FILE)) {
             spEditor.putBoolean(prefsKey, ScriptingConfig.SAVE_CONSOLE_OUTPUT_FILE);
@@ -453,6 +459,9 @@ public class AndroidSettingsStorage {
         }
         else if(prefsKey.equals(LOGGING_CONFIG_LOGDATA_LEVEL_THRESHOLD)) {
             return String.format(BuildConfig.DEFAULT_LOCALE, "%d", sharedPrefs.getInt(prefsKey, AndroidLogger.LOGDATA_LEVEL_THRESHOLD.ordinal()));
+        }
+        else if(prefsKey.equals(SCRIPTING_CONFIG_DEFAULT_RUNSCRIPT_PATH)) {
+            return sharedPrefs.getString(prefsKey, ScriptingConfig.LAST_SCRIPT_LOADED_PATH);
         }
         else if(prefsKey.equals(SCRIPTING_CONFIG_SAVE_CONSOLE_OUTPUT_FILE)) {
             return sharedPrefs.getBoolean(prefsKey, ScriptingConfig.SAVE_CONSOLE_OUTPUT_FILE) ? "true" : "false";
