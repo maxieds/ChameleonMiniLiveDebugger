@@ -319,6 +319,34 @@ public class Utils {
         return revBytes;
     }
 
+    public static String ToBinaryString(byte b) {
+        StringBuilder rBinStr = new StringBuilder("");
+        for (int bi = 0; bi < 8; bi++) {
+            int bpos = (b >> bi) & 0x01;
+            if (bpos == 0x01) {
+                rBinStr.append("1");
+            } else {
+                rBinStr.append("0");
+            }
+        }
+        rBinStr = rBinStr.reverse();
+        return rBinStr.toString();
+    }
+
+    public static String ToBinaryString(int i) {
+        byte[] intToBytes = new byte[4];
+        int byteMask = 0x000000ff;
+        intToBytes[0] = (byte) ((i >> 24) & byteMask);
+        intToBytes[1] = (byte) ((i >> 16) & byteMask);
+        intToBytes[2] = (byte) ((i >> 8) & byteMask);
+        intToBytes[3] = (byte) (i & byteMask);
+        String iBinStr = "";
+        for (int bi = 3; bi >= 0; bi++) {
+            iBinStr += ToBinaryString(intToBytes[bi]);
+        }
+        return iBinStr;
+    }
+
     /**
      * Returns a standard timestamp of the current Android device's time.
      * @return String timestamp (format: %Y-%m-%d-%T)

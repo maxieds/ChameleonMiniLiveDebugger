@@ -24,7 +24,9 @@ import com.maxieds.chameleonminilivedebugger.ChameleonSettings;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingTypes.ScriptVariable;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExceptions.ChameleonScriptingException;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingExceptions.ExceptionType;
+import com.maxieds.chameleonminilivedebugger.Utils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -49,34 +51,34 @@ public class ScriptingFunctions {
             case "Sprintf":
                 return ScriptingFunctions.ScriptingAPIFunctions.Sprintf(funcArgs);
             case "AsHexString":
-                throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+                return ScriptingFunctions.ScriptingAPIFunctions.AsHexString(funcArgs);
             case "AsBinaryString":
-                throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+                return ScriptingFunctions.ScriptingAPIFunctions.AsBinaryString(funcArgs);
             case "AsByteArray":
-                throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+                return ScriptingFunctions.ScriptingAPIFunctions.AsByteArray(funcArgs);
             case "GetLength":
-                throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+                return ScriptingFunctions.ScriptingAPIFunctions.GetLength(funcArgs);
             case "GetEnv":
-                throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+                return ScriptingFunctions.ScriptingAPIFunctions.GetEnv(funcArgs);
             case "IsChameleonConnected":
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
             case "IsChameleonRevG":
-                throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+                return ScriptingFunctions.ScriptingAPIFunctions.IsChameleonRevG(funcArgs);
             case "IsChameleonRevE":
-                throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+                return ScriptingFunctions.ScriptingAPIFunctions.IsChameleonRevE(funcArgs);
             case "GetChameleonDesc":
-                throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+                return ScriptingFunctions.ScriptingAPIFunctions.GetChameleonDesc(funcArgs);
             case "DownloadTagDump":
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
             case "UploadTagDump":
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
             case "DownloadLogs":
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
-            case "ExtractDataFromWrappedAPDU": /* TODO: See https://github.com/maxieds/ChameleonMiniLiveDebugger/projects/3 */
+            case "ExtractDataFromWrappedAPDU":
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
-            case "ExtractDataFromNativeAPDU": /* TODO: See https://github.com/maxieds/ChameleonMiniLiveDebugger/projects/3 */
+            case "ExtractDataFromNativeAPDU":
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
-            case "SplitAPDUResponse":         /* TODO: See https://github.com/maxieds/ChameleonMiniLiveDebugger/projects/3 */
+            case "SplitAPDUResponse":
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
             case "SearchAPDUStatusCodes":
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
@@ -85,9 +87,9 @@ public class ScriptingFunctions {
             case "SearchAPDUClaCodes":
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
             case "RandomBytes":
-                throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+                return ScriptingFunctions.ScriptingAPIFunctions.RandomBytes(funcArgs);
             case "RandomInt32":
-                throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+                return ScriptingFunctions.ScriptingAPIFunctions.RandomInt32(funcArgs);
             case "GetCRC16":
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
             case "AppendCRC16":
@@ -99,7 +101,7 @@ public class ScriptingFunctions {
             case "GetUserKeys":
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
             case "GetTimestamp":
-                throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+                return ScriptingFunctions.ScriptingAPIFunctions.GetTimestamp(funcArgs);
             case "MemoryXOR":
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
             case "Max":
@@ -113,13 +115,13 @@ public class ScriptingFunctions {
             case "PadRight":
                 throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
             case "GetSubarray":
-                throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+                return ScriptingFunctions.ScriptingAPIFunctions.GetSubarray(funcArgs);
             case "ArrayToString":
                 return ScriptingFunctions.ScriptingAPIFunctions.ArrayToString(funcArgs);
             case "GetConstantString":
-                throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+                return ScriptingFunctions.ScriptingAPIFunctions.GetConstantString(funcArgs);
             case "IntegerRange":
-                throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+                return ScriptingFunctions.ScriptingAPIFunctions.IntegerRange(funcArgs);
             case "StringFind":
                 return ScriptingFunctions.ScriptingAPIFunctions.Find(funcArgs);
             case "StringContains":
@@ -127,7 +129,7 @@ public class ScriptingFunctions {
             case "StringReplace":
                 return ScriptingFunctions.ScriptingAPIFunctions.Replace(funcArgs);
             case "Strcat":
-                throw new ChameleonScriptingException(ExceptionType.NotImplementedException);
+                return ScriptingFunctions.ScriptingAPIFunctions.Strcat(funcArgs);
             case "StringSplit":
                 return ScriptingFunctions.ScriptingAPIFunctions.Split(funcArgs);
             case "StringStrip":
@@ -360,6 +362,39 @@ public class ScriptingFunctions {
             }
         }
 
+        public static ScriptVariable Strcat(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            StringBuilder catStr = new StringBuilder();
+            for (int ai = 0; ai < argList.size(); ai++) {
+                String curArgStr = argList.get(ai).getValueAsString();
+                catStr.append(curArgStr);
+            }
+            return new ScriptVariable(catStr.toString());
+        }
+
+        public static ScriptVariable GetConstantString(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            if (argList.size() != 2) {
+                throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
+            }
+            int numCopies = argList.get(1).getValueAsInt();
+            String builderStr = argList.get(0).getValueAsString();
+            StringBuilder constStr = new StringBuilder();
+            for (int ci = 0; ci < numCopies; ci++) {
+                constStr.append(builderStr);
+            }
+            return new ScriptVariable(constStr.toString());
+        }
+
+        public static ScriptVariable GetSubarray(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            if (argList.size() != 3) {
+                throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
+            } else if (argList.get(0).getType() != ScriptVariable.VariableType.VariableTypeArrayMap) {
+                throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
+            }
+            int startIdx = argList.get(1).getValueAsInt();
+            int endLength = argList.get(2).getValueAsInt();
+            return argList.get(0).getSubArray(startIdx, endLength);
+        }
+
         public static ScriptVariable ArrayToString(List<ScriptVariable> argList) throws ChameleonScriptingException {
             if (argList.size() != 1) {
                 throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
@@ -369,8 +404,8 @@ public class ScriptingFunctions {
             String arrReprStr = "{ ";
             ScriptVariable arrVar = argList.get(0);
             int arrLength = arrVar.length();
-            AndroidLogger.i(TAG,"ArrayToString -> Array Length = " + arrLength);
-            for(int ai = 0; ai < arrLength; ai++) {
+            AndroidLogger.i(TAG, "ArrayToString -> Array Length = " + arrLength);
+            for (int ai = 0; ai < arrLength; ai++) {
                 String nextSpace = (ai + 1 == arrLength) ? " " : ", ";
                 arrReprStr += String.format(BuildConfig.DEFAULT_LOCALE, "%s%s", arrVar.getValueAt(ai).getValueAsString(), nextSpace);
             }
@@ -379,9 +414,223 @@ public class ScriptingFunctions {
             return new ScriptVariable(arrReprStr);
         }
 
+        public static ScriptVariable AsHexString(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            if (argList.size() == 0) {
+                throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
+            } else if (argList.size() >= 2) {
+                throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
+            }
+            ScriptVariable inputVar = argList.get(0);
+            byte[] byteArr = {};
+            int byteMask = 0x000000ff;
+            String binStr = "";
+            switch (inputVar.getType()) {
+                case VariableTypeBoolean:
+                    if (inputVar.getValueAsBoolean()) {
+                        return new ScriptVariable("01");
+                    } else {
+                        return new ScriptVariable("00");
+                    }
+                case VariableTypeInteger:
+                    int ivar = inputVar.getValueAsInt();
+                    byteArr = new byte[4];
+                    byteArr[0] = (byte) ((ivar >> 24) & byteMask);
+                    byteArr[1] = (byte) ((ivar >> 16) & byteMask);
+                    byteArr[2] = (byte) ((ivar >> 8) & byteMask);
+                    byteArr[3] = (byte) (ivar & byteMask);
+                    binStr = Utils.bytes2Hex(byteArr);
+                    return new ScriptVariable(binStr);
+                case VariableTypeBytes:
+                    byteArr = inputVar.getValueAsBytes();
+                    binStr = Utils.bytes2Hex(byteArr)
+                    return new ScriptVariable(binStr);
+                case VariableTypeHexString:
+                case VariableTypeAsciiString:
+                case VariableTypeStorageFilePath:
+                case VariableTypeRawFileFilePath:
+                    byteArr = inputVar.getValueAsString().getBytes();
+                    binStr = "";
+                    for (int bi = 0; bi < byteArr.length; bi++) {
+                        binStr += Utils.ToBinaryString(byteArr[bi]);
+                    }
+                    return new ScriptVariable(binStr);
+                default:
+                    throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
+            }
+
+        }
+
+        public static ScriptVariable AsBinaryString(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            if (argList.size() == 0) {
+                throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
+            } else if (argList.size() >= 2) {
+                throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
+            }
+            ScriptVariable inputVar = argList.get(0);
+            byte[] byteArr = {};
+            String binStr = "";
+            switch (inputVar.getType()) {
+                case VariableTypeBoolean:
+                    if (inputVar.getValueAsBoolean()) {
+                        return new ScriptVariable("1");
+                    } else {
+                        return new ScriptVariable("0");
+                    }
+                case VariableTypeInteger:
+                    binStr = Utils.ToBinaryString(inputVar.getValueAsInt());
+                    return new ScriptVariable(binStr);
+                case VariableTypeBytes:
+                    byteArr = inputVar.getValueAsBytes();
+                    binStr = "";
+                    for (int bi = 0; bi < byteArr.length; bi++) {
+                        binStr += Utils.ToBinaryString(byteArr[bi]);
+                    }
+                    return new ScriptVariable(binStr);
+                case VariableTypeHexString:
+                case VariableTypeAsciiString:
+                case VariableTypeStorageFilePath:
+                case VariableTypeRawFileFilePath:
+                    byteArr = inputVar.getValueAsString().getBytes();
+                    binStr = "";
+                    for (int bi = 0; bi < byteArr.length; bi++) {
+                        binStr += Utils.ToBinaryString(byteArr[bi]);
+                    }
+                    return new ScriptVariable(binStr);
+                default:
+                    throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
+            }
+
+        }
+
+        public static ScriptVariable AsByteArray(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            if (argList.size() == 0) {
+                throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
+            } else if (argList.size() >= 2) {
+                throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
+            }
+            ScriptVariable inputVar = argList.get(0);
+            byte[] byteArr = {};
+            switch (inputVar.getType()) {
+                case VariableTypeInteger:
+                    int ival = inputVar.getValueAsInt();
+                    byteArr = new byte[4];
+                    int byteMask = 0x000000ff;
+                    byteArr[0] = (byte) ((ival >> 24) & byteMask);
+                    byteArr[1] = (byte) ((ival >> 16) & byteMask);
+                    byteArr[2] = (byte) ((ival >> 8) & byteMask);
+                    byteArr[3] = (byte) (ival & byteMask);
+                    return new ScriptVariable(byteArr);
+                case VariableTypeBytes:
+                    return new ScriptVariable(inputVar.getValueAsBytes());
+                case VariableTypeHexString:
+                case VariableTypeAsciiString:
+                    String hexStr = inputVar.getValueAsString();
+                    byteArr = hexStr.getBytes();
+                    return new ScriptVariable(byteArr);
+                default:
+                    throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
+            }
+        }
+
+        public static ScriptVariable GetLength(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            if (argList.size() != 1) {
+                throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
+            }
+            ScriptVariable inputVar = argList.get(0);
+            switch (inputVar.getType()) {
+                case VariableTypeBoolean:
+                case VariableTypeInteger:
+                    return new ScriptVariable(1);
+                case VariableTypeBytes:
+                    int len = inputVar.getValueAsBytes().length;
+                    return new ScriptVariable(len);
+                case VariableTypeArrayMap:
+                case VariableTypeHexString:
+                case VariableTypeAsciiString:
+                case VariableTypeStorageFilePath:
+                case VariableTypeRawFileFilePath:
+                    int len = inputVar.getValueAsString().length();
+                    return new ScriptVariable(len);
+                default:
+                    throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
+            }
+        }
+
+        public static ScriptVariable IntegerRange(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            if (argList.size() != 2 && argList.size() != 3) {
+                throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
+            }
+            int startInt = argList.get(0).getValueAsInt();
+            int endInt = argList.get(1).getValueAsInt();
+            int delta = 1;
+            if (argList.size() == 3) {
+                delta = argList.get(2).getValueAsInt();
+            }
+            if (startInt > endInt || delta < 1) {
+                throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
+            }
+            ArrayList<ScriptVariable> rarr = new ArrayList<ScriptVariable>();
+            for (int i = startInt; i <= endInt; i += delta) {
+                rarr.add(new ScriptVariable(i));
+            }
+            return new ScriptVariable(rarr);
+        }
+
+        public static ScriptVariable GetTimestamp(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            String timeStamp = Utils.getTimestamp();
+            return new ScriptVariable(timeStamp);
+        }
+
+        public static ScriptVariable RandomBytes(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            if (argList.size() != 1) {
+                throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
+            }
+            int numBytes = argList.get(0).getValueAsInt();
+            byte[] rdmByteArr = Utils.getRandomBytes(numBytes);
+            ArrayList<ScriptVariable> alst = new ArrayList<ScriptVariable>();
+            for (int bi = 0; bi < numBytes; bi++) {
+                alst.add(new ScriptVariable(rdmByteArr[bi]));
+            }
+            return new ScriptVariable(alst);
+        }
+
+        public static ScriptVariable RandomInt32(List<ScriptVariable> argList) throws ChameleonScriptingException {
+             byte[] rdmBytes = Utils.getRandomBytes(4);
+             int rdmInt = 0;
+             for (int bi = 0; bi < 4; bi++) {
+                 rdmInt |= (rdmBytes[bi] << 8 * (3 - bi));
+             }
+             return new ScriptVariable(rdmInt);
+        }
+
+        public static ScriptVariable IsChameleonRevG(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            boolean isRevG = !ChameleonIO.REVE_BOARD;
+            return new ScriptVariable(isRevG);
+        }
+
+        public static ScriptVariable IsChameleonRevE(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            boolean isRevE = ChameleonIO.REVE_BOARD;
+            return new ScriptVariable(isRevE);
+        }
+
+        public static ScriptVariable GetChameleonDesc(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            int chamBoardType = ChameleonIO.CHAMELEON_MINI_BOARD_TYPE;
+            String chamDesc = ChameleonIO.getDeviceDescription(chamBoardType);
+            return new ScriptVariable(chamDesc);
+        }
+
+        public static ScriptVariable GetEnv(List<ScriptVariable> argList) throws ChameleonScriptingException {
+            if (argList.size() != 1) {
+                throw new ChameleonScriptingException(ExceptionType.InvalidArgumentException);
+            }
+            String envVarName = argList.get(0).getValueAsString();
+            String envVarValue = getEnvironmentVariableByName(envVarName);
+            return new ScriptVariable(envVarValue);
+        }
+
     };
 
-    public static String getEnvironmentVariableByName(String envVarName) {
+    public static String getEnvironmentVariableByName(String envVarName) throws ChameleonScriptingException {
         switch(envVarName) {
             case "Chameleon.deviceType":
                 return ChameleonIO.CHAMELEON_MINI_BOARD_TYPE_DESC;

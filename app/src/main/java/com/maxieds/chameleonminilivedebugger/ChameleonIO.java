@@ -307,7 +307,7 @@ public class ChameleonIO {
 
         private static final String UNSET_VALUE_NONE = "NONE";
         private static final String UNSET_VALUE_NA = "N/A";
-        private static final String UID_NONE = "NO UID";
+        private static final String UID_NONE = "NO-UID";
 
         public static final String DEFAULT_CONFIG = "NO-CONFIG";
         public static final String DEFAULT_UID = UID_NONE;
