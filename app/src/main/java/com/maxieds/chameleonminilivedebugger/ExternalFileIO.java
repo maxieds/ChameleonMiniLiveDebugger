@@ -26,6 +26,7 @@ import android.provider.OpenableColumns;
 import android.widget.RadioButton;
 
 import com.maxieds.androidfilepickerlightlibrary.FileChooserBuilder;
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingConfig;
 
 import java.io.File;
 import java.util.List;
@@ -124,12 +125,16 @@ public class ExternalFileIO {
         switch (requestCode) {
             case FILE_SELECT_CODE:
                 if (resultCode == RESULT_OK) {
-                    String filePath = "<FileNotFound>";
+                    String filePath = ScriptingConfig.LAST_SCRIPT_LOADED_PATH;
                     Cursor cursor = activity.getContentResolver().query(data.getData(), null, null, null, null, null);
                     if (cursor != null && cursor.moveToFirst()) {
-                        filePath = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                        int cursorColIdx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                        if (cursorColIdx >= 0) {
+                            filePath = cursor.getString(cursorColIdx);
+                        }
+                        /* What does this do (all files do not need to be in the downloads directory) ??? */
                         //filePath = "//sdcard//Download//" + filePath;
-                        filePath = LiveLoggerActivity.getLiveLoggerInstance().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "//Download//" + filePath;
+                        //filePath = LiveLoggerActivity.getLiveLoggerInstance().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "//Download//" + filePath;
                     }
                     throw new RuntimeException(filePath);
                 }
@@ -149,7 +154,9 @@ public class ExternalFileIO {
             String selectedChooserPath = "";
             try {
                 List<String> selectedFilePathsList = FileChooserBuilder.handleActivityResult(activity, chooserRequestCodeAction, resultCode, data);
-                selectedChooserPath = String.format(BuildConfig.DEFAULT_LOCALE, AndroidFileChooser.getFileNotifySelectExceptionFormat(), selectedFilePathsList.get(0));
+                if (selectedFilePathsList.size() > 0) {
+                    selectedChooserPath = String.format(BuildConfig.DEFAULT_LOCALE, AndroidFileChooser.getFileNotifySelectExceptionFormat(), selectedFilePathsList.get(0));
+                }
             } catch(Exception ex) {
                 AndroidLogger.printStackTrace(ex);
             }
