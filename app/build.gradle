@@ -135,10 +135,10 @@ preBuild.dependsOn preBuildGenAntlr4JavaSources
 android {
 
     int versionCodeBase = 8080
-    int versionCodeRevision = 128
+    int versionCodeRevision = 129
     String appNamespace = 'com.maxieds.chameleonminilivedebugger'
-    String versionNameBase = "1.6.0"
-    String versionNameType = "pro"
+    String versionNameBase = "1.6.1"
+    String versionNameType = "pro(d)"
     String configBuildTimeStamp = getDateTimestamp()
 
     namespace appNamespace
@@ -317,5 +317,5 @@ android {
 
 }
 dependencies {
-    implementation files('../_libs/AndroidFilePickerLightLibrary-1.3.6-beta-release.aar')
+    implementation files('../_libs/AndroidFilePickerLightLibrary-1.3.8-release.aar')
 }

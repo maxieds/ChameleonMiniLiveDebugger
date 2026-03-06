@@ -30,6 +30,7 @@ import android.os.Looper;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.text.format.Time;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.inputmethod.InputMethodManager;
@@ -57,6 +58,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -816,35 +818,26 @@ public class Utils {
         final int RW_BUFFER_SIZE = 1024;
         File destFile = new File(destFilePath);
         try {
-            if (destFile.exists()) {
-                return false;
-            } else {
-                destFile.createNewFile();
-            }
             Context appCtx = LiveLoggerActivity.getContext();
-            FileOutputStream fileOS = appCtx.openFileOutput(destFilePath, Context.MODE_WORLD_READABLE);
+            FileOutputStream fileOS = new FileOutputStream(destFile);
             OutputStreamWriter outputSW = new OutputStreamWriter(fileOS);
             InputStream rawFileStream = appCtx.getResources().openRawResource(rawResID);
             byte[] rawFileReadBuf = new byte[RW_BUFFER_SIZE];
-            char[] rawFileReadBufAsChar = new char[RW_BUFFER_SIZE];
             int rawBufReadCount = 0;
             int bytePos = 0;
             while ((rawBufReadCount = rawFileStream.read(rawFileReadBuf, 0, RW_BUFFER_SIZE)) != -1) {
-                System.arraycopy(rawFileReadBuf, 0, rawFileReadBufAsChar, 0, rawBufReadCount);
-                outputSW.write(rawFileReadBufAsChar, bytePos, RW_BUFFER_SIZE);
+                String readBufText = new String(rawFileReadBuf, StandardCharsets.UTF_8);
+                outputSW.write(readBufText);
                 bytePos += rawBufReadCount;
             }
             outputSW.flush();
             outputSW.close();
         } catch (IOException ioe) {
             ioe.printStackTrace();
-            try {
-                destFile.delete();
-            } catch (Exception ioeInner) {
-                ioeInner.printStackTrace();
-            }
+            Log.e(TAG, String.format(Locale.getDefault(), "Unable to copy RAW file to \"%s\"", destFilePath));
             return false;
         }
+        Log.i(TAG, String.format(Locale.getDefault(), "Copied RAW file to \"%s\"", destFilePath));
         return true;
     }
 

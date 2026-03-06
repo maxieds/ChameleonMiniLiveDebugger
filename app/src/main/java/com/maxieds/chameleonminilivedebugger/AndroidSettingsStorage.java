@@ -233,7 +233,7 @@ public class AndroidSettingsStorage {
         SharedPreferences sharedPrefs = LiveLoggerActivity.getInstance().getSharedPreferences(profileTag, Context.MODE_PRIVATE);
         SharedPreferences.Editor spEditor = sharedPrefs.edit();
         if(prefsKey.equals(APP_FIRST_RUN)) {
-            spEditor.putBoolean(prefsKey, false);
+            spEditor.putBoolean(prefsKey, LiveLoggerActivity.isFirstRun);
         }
         else if(prefsKey.equals(THEMEID_PREFERENCE)) {
             spEditor.putString(prefsKey, ThemesConfiguration.storedAppTheme);
@@ -554,7 +554,7 @@ public class AndroidSettingsStorage {
     public static boolean getBooleanValueByKey(String profileID, String prefsKey) {
         SharedPreferences sharedPrefs = LiveLoggerActivity.getInstance().getSharedPreferences(profileID, Context.MODE_PRIVATE);
         if (prefsKey.equals(APP_FIRST_RUN)) {
-            return sharedPrefs.getBoolean(APP_FIRST_RUN, true);
+            return sharedPrefs.getBoolean(APP_FIRST_RUN, LiveLoggerActivity.isFirstRun);
         }
         return false;
     }

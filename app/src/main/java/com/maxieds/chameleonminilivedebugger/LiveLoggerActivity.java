@@ -98,22 +98,22 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
 
      private static View liveLoggerActivityMainContentView = null;
 
-     protected static boolean isFirstRun = true;
-
+     public static boolean isFirstRun = true;
      protected boolean doFirstRunTasks() {
-          boolean isFirstRun = AndroidSettingsStorage.getBooleanValueByKey(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE, AndroidSettingsStorage.APP_FIRST_RUN);
-          if (!isFirstRun) {
-               return false;
-          }
+          boolean isFirstRunStg = AndroidSettingsStorage.getBooleanValueByKey(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE, AndroidSettingsStorage.APP_FIRST_RUN);
           /* Copy the sample scripts from res/raw to the local filesystem: */
           File downloadsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-          String cmldLocalDir = "chameleonminilivedebugger";
-          String fullLocalDirPath = String.format(Locale.getDefault(), "%s/%s",
-                                    downloadsFolder.getAbsolutePath(), cmldLocalDir);
+          //String cmldLocalDir = "chameleonminilivedebugger";
+          //String fullLocalDirPath = String.format(Locale.getDefault(), "%s/%s",
+          //        downloadsFolder.getAbsolutePath(), cmldLocalDir);
+          String fullLocalDirPath = downloadsFolder.getAbsolutePath();
           File fullLocalDir = new File(fullLocalDirPath);
           if (!fullLocalDir.exists()) {
                fullLocalDir.mkdir();
           }
+          /* True for readable, false for ownerOnly (allows other users): */
+          fullLocalDir.setReadable(true, false);
+          fullLocalDir.setExecutable(true, false);
           HashMap<Integer, String> rawID2FileNameMap = new HashMap<Integer, String>();
           rawID2FileNameMap.put(R.raw.example_syntax_sh, "example-syntax.sh");
           rawID2FileNameMap.put(R.raw.example_syntax2_sh, "example-syntax2.sh");
@@ -121,14 +121,13 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           rawID2FileNameMap.put(R.raw.nfc_anticol_sh, "nfc-anticol.sh");
           for (Map.Entry<Integer, String> mapPair : rawID2FileNameMap.entrySet()) {
                int rawResID = mapPair.getKey();
-               String destFilePath = String.format(Locale.getDefault(), "%s/%s/%s",
-                                     downloadsFolder.getAbsolutePath(), cmldLocalDir,
-                                     mapPair.getValue());
-               if (!Utils.copyRawFileToLocal(rawResID, destFilePath)) {
-                    return false;
-               }
+               String destFilePath = String.format(Locale.getDefault(), "%s/%s",
+                       downloadsFolder.getAbsolutePath(), mapPair.getValue());
+               Utils.copyRawFileToLocal(rawResID, destFilePath);
+               File destFile = new File(destFilePath);
+               //destFile.setReadable(true, false); /* MODE_WORLD_READABLE no longer supported - throws exception */
                if (rawResID == R.raw.example_syntax_sh) {
-                    // Set a default script path for the user:
+                    /* Set a default script path for the user: */
                     ScriptingConfig.LAST_SCRIPT_LOADED_PATH = destFilePath;
                }
           }
