@@ -44,6 +44,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -1084,7 +1085,11 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     toastStatusMsg = "USB and other minimal CMLD app permissions enabled.";
                }
           } else {
-               ExternalFileIO.handleActivityResult(this, requestCode, resultCode, data);
+               try {
+                    ExternalFileIO.handleActivityResult(this, requestCode, resultCode, data);
+               } catch(RuntimeException rte) {
+                    throw rte;
+               }
           }
           super.onActivityResult(requestCode, resultCode, data);
           final String toastStatusMsgFinal = toastStatusMsg;

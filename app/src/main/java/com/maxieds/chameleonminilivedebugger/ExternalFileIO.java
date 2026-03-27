@@ -23,6 +23,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.OpenableColumns;
+import android.util.Log;
 import android.widget.RadioButton;
 
 import com.maxieds.androidfilepickerlightlibrary.FileChooserBuilder;
@@ -158,7 +159,8 @@ public class ExternalFileIO {
                     selectedChooserPath = String.format(BuildConfig.DEFAULT_LOCALE, selectedFilePathsList.get(0));
                 }
             } catch(Exception ex) {
-                AndroidLogger.printStackTrace(ex);
+                Log.i(TAG, "Caught exception from FileChooserBuilder.handleActivityResult: [ST below] ...");
+                ex.printStackTrace();
             }
             throw new RuntimeException(selectedChooserPath);
         }

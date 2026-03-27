@@ -140,18 +140,21 @@ public class AndroidFileChooser {
             try {
                 Looper.loop();
             } catch(RuntimeException rte) {
-                Log.d(TAG, " ==== About to print RTE caught stack trace...");
+                Log.d(TAG, " ==== About to print RTE caught stack trace... " + rte.getMessage());
                 rte.printStackTrace();
                 String excptMsg = rte.getMessage();
+                final String rtePrefix = "java.lang.RuntimeException: ";
+                int rtePrefixPos = excptMsg.lastIndexOf(rtePrefix);
+                if(rtePrefixPos >= 0) {
+                    excptMsg = excptMsg.substring(rtePrefixPos + rtePrefix.length());
+                }
                 if(excptMsg.length() == 0) {
                     Log.i(TAG, "USER SELECTED <__EMPTY__> PATH! ... ");
                     return NULL_FILE_PATH_LABEL;
                 }
-                Utils.displayToastMessageShort(String.format(Locale.getDefault(), "Selected script: %s", excptMsg));
-                //String fileChooserBaseFolder = getInitialFileChooserBaseFolder();
-                //excptMsg = excptMsg.replaceFirst(fileChooserBaseFolder, STORAGE_HOME_PREFIX_SUBST);
-                //excptMsg = excptMsg.replaceAll(String.format(BuildConfig.DEFAULT_LOCALE, "[%s]+", PATH_SEP), "/");
-                Log.i(TAG, " ==== USER SELECTED PATH: \"" + excptMsg + "\" ...");
+                //Utils.displayToastMessageShort(String.format(Locale.getDefault(), "Selected script: %s", excptMsg));
+                excptMsg = excptMsg.replaceAll(String.format(BuildConfig.DEFAULT_LOCALE, "[%s]+", PATH_SEP), "/");
+                Log.i(TAG, String.format(Locale.getDefault()," ==== USER FINALLY SELECTED PATH: \"%s\"", excptMsg));
                 return excptMsg;
             }
         }
