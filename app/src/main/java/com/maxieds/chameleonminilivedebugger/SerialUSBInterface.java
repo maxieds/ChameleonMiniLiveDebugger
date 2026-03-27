@@ -66,6 +66,10 @@ public class SerialUSBInterface extends SerialIOReceiver {
         scanning = false;
     }
 
+    public boolean isSerialConfigured() {
+        return serialConfigured;
+    }
+
     public boolean isWiredUSB() { return true; }
 
     public boolean isBluetooth() { return false; }

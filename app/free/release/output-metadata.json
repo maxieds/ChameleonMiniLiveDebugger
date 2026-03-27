@@ -1,0 +1,21 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.maxieds.chameleonminilivedebugger",
+  "variantName": "freeRelease",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 8210,
+      "versionName": "1.6.2-free",
+      "outputFile": "ChameleonMiniLiveDebugger-v1.6.2-8210-2026-03-26-225229-free-release.apk"
+    }
+  ],
+  "elementType": "File",
+  "minSdkVersionForDexing": 29
+}

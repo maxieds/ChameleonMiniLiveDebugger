@@ -699,10 +699,10 @@ public class Utils {
     }
 
     public static boolean checkByteBufferCRC16(@NonNull byte[] bufferBytes) {
-        if (bufferBytes.length < 2) {
+        if (bufferBytes.length == 0) {
             return false;
         }
-        int dataLength = bufferBytes.length - 2;
+        int dataLength = bufferBytes.length;
         byte[] dataBytes = new byte[dataLength];
         System.arraycopy(dataBytes, 0, bufferBytes, 0, dataLength);
         byte[] dataCRCBytes = calculateByteBufferCRC16(dataBytes);

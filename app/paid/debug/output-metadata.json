@@ -1,0 +1,21 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.maxieds.chameleonminilivedebugger.paid",
+  "variantName": "paidDebug",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 8210,
+      "versionName": "1.6.2-paid",
+      "outputFile": "ChameleonMiniLiveDebugger-v1.6.2-8210-2026-03-26-225229-paid-debug.apk"
+    }
+  ],
+  "elementType": "File",
+  "minSdkVersionForDexing": 29
+}

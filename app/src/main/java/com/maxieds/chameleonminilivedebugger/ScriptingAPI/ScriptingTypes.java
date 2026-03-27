@@ -21,11 +21,14 @@ import com.maxieds.chameleonminilivedebugger.AndroidLogger;
 import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ScriptingTypes {
 
@@ -279,6 +282,36 @@ public class ScriptingTypes {
             }
         }
 
+        public List<ScriptVariable> getValueAsList() throws ScriptingExceptions.ChameleonScriptingException {
+            boolean fromBytesArr = false;
+            byte[] varBytesArr;
+            List<Byte> intermedBytesLst;
+            List<ScriptVariable> svBytes;
+            switch (varType) {
+                case VariableTypeHexString:
+                case VariableTypeAsciiString:
+                case VariableTypeStorageFilePath:
+                case VariableTypeRawFileFilePath:
+                    varBytesArr = getValueAsString().getBytes();
+                    fromBytesArr = true;
+                    break;
+                case VariableTypeBytes:
+                    varBytesArr = getValueAsBytes();
+                    fromBytesArr = true;
+                    break;
+                case VariableTypeArrayMap:
+                    return getValueAsList();
+                default:
+                    break;
+            }
+            if (!fromBytesArr) {
+                throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.InvalidArgumentException);
+            }
+            intermedBytesLst = Arrays.asList(ArrayUtils.toObject(varBytesArr));
+            svBytes = intermedBytesLst.stream().map(svi -> new ScriptVariable(svi)).collect(Collectors.toList());
+            return svBytes;
+        }
+
         public boolean isIntegerType() throws ScriptingExceptions.ChameleonScriptingException {
             switch(varType) {
                 case VariableTypeInteger:
@@ -334,13 +367,18 @@ public class ScriptingTypes {
         }
 
         public boolean isArrayType() {
-            switch(varType) {
+            switch (varType) {
+                case VariableTypeHexString:
+                case VariableTypeAsciiString:
+                case VariableTypeStorageFilePath:
+                case VariableTypeRawFileFilePath:
                 case VariableTypeBytes:
                 case VariableTypeArrayMap:
                     return true;
                 default:
-                    return false;
+                    break;
             }
+            return false;
         }
 
         public VariableType getType() throws ScriptingExceptions.ChameleonScriptingException {

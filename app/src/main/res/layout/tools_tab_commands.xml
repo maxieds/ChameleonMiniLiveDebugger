@@ -19,7 +19,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
 
     <ScrollView
         android:id="@+id/tools_menu_scroll_view"
@@ -202,13 +203,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
                 <Button
                     style="@style/GridButtons"
-                    android:drawableLeft="@drawable/store24"
-                    android:onClick="actionButtonRunCommand"
-                    android:tag="STORE"
-                    android:text="STORE" />
-
-                <Button
-                    style="@style/GridButtons"
                     android:drawableLeft="@drawable/wifibc24"
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="SEND" />
@@ -239,13 +233,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:onClick="actionButtonRunCommand"
                     android:tag="CLONE"
                     android:text="CLONE" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/calibrate24"
-                    android:onClick="actionButtonRunCommand"
-                    android:tag="AUTOCALIBRATE"
-                    android:text="AUTOCAL" />
 
                 <Button
                     style="@style/GridButtons"
@@ -359,8 +346,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingRight="5dp"
                     android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
                     android:src="@drawable/af24" />
 
                 <TextView
@@ -369,8 +356,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_gravity="center_vertical"
                     android:singleLine="true"
                     android:text="THRESHOLD: "
-                    android:textStyle="bold|italic"
-                    android:textColor="#000000" />
+                    android:textColor="#000000"
+                    android:textStyle="bold|italic" />
 
                 <SeekBar
                     android:id="@+id/thresholdSeekbar"
@@ -387,11 +374,11 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:paddingRight="5dp"
                     android:singleLine="true"
                     android:text="      mV"
-                    android:paddingRight="5dp"
-                    android:textStyle="normal|bold"
-                    android:textColor="#000000" />
+                    android:textColor="#000000"
+                    android:textStyle="normal|bold" />
 
             </LinearLayout>
 
@@ -405,8 +392,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingRight="5dp"
                     android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
                     android:src="@drawable/timeout_timer_icon24" />
 
                 <TextView
@@ -415,8 +402,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_gravity="center_vertical"
                     android:singleLine="true"
                     android:text="TIMEOUT: "
-                    android:textStyle="bold|italic"
-                    android:textColor="#000000" />
+                    android:textColor="#000000"
+                    android:textStyle="bold|italic" />
 
                 <SeekBar
                     android:id="@+id/cmdTimeoutSeekbar"
@@ -424,8 +411,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
-                    android:min="1"
                     android:max="5000"
+                    android:min="1"
                     android:progress="1"
                     android:thumbTint="?colorPrimaryDark" />
 
@@ -434,11 +421,11 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:paddingRight="5dp"
                     android:singleLine="true"
                     android:text="      ms"
-                    android:paddingRight="5dp"
-                    android:textStyle="normal|bold"
-                    android:textColor="#000000" />
+                    android:textColor="#000000"
+                    android:textStyle="normal|bold" />
 
             </LinearLayout>
 
@@ -457,17 +444,17 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
+                android:layout_marginVertical="4dp"
                 android:background="?colorAccentLog"
                 android:columnCount="3"
-                android:layout_marginVertical="4dp"
                 android:padding="4dp">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left|center_vertical"
-                    android:src="@drawable/mfdesfire_tag_label"
-                    android:paddingRight="3dp" />
+                    android:paddingRight="3dp"
+                    android:src="@drawable/mfdesfire_tag_label" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -476,16 +463,16 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:drawablePadding="3dp"
                     android:singleLine="true"
                     android:text="Set PICC Header Bytes: "
-                    android:textStyle="bold|italic"
-                    android:textColor="?android:colorPrimaryDark" />
+                    android:textColor="?android:colorPrimaryDark"
+                    android:textStyle="bold|italic" />
 
                 <EditText
                     android:id="@+id/mfDESFireTagSetPICCDataBytes"
                     android:layout_width="150dp"
-                    android:layout_columnWeight="1"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="4dp"
+                    android:layout_columnWeight="1"
                     android:hint="0675f7b102"
+                    android:paddingLeft="4dp"
                     android:singleLine="true"
                     android:textColor="?colorPrimaryDarkLog" />
 
@@ -494,6 +481,13 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:drawableLeft="@drawable/firmwareicon24"
                     android:onClick="actionButtonCreateNewEvent"
                     android:text="VERSION?" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/store24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="STORE"
+                    android:text="STORE" />
 
             </GridLayout>
 
@@ -602,6 +596,97 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:tag="DF_SETHDR=ProdDate %s:2"
                     android:text="Set Prod-Date" />
 
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="DF_KEYSCRUB"
+                    android:text="Keyscrub" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="DF_COMM_MODE=Plaintext"
+                    android:text="Set Comm Plain" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="DF_COMM_MODE=Plaintext:MAC"
+                    android:text="Set Comm Plain/MAC" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="DF_COMM_MODE=Enciphered:3K3DES"
+                    android:text="Set Comm Enc/3K3DES" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="DF_COMM_MODE=Enciphered:AES128"
+                    android:text="Set Comm Enc/AES128" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="DF_COMM_MODE=Enciphered:AES192"
+                    android:text="Set Comm Enc/AES192" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="DF_COMM_MODE=Enciphered:AES256"
+                    android:text="Set Comm Enc/AES256" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="DF_ENCMODE=ECB"
+                    android:text="Set Enc/ECB" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="DF_ENCMODE=DES:ECB"
+                    android:text="Set Enc/DES/ECB" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="DF_ENCMODE=AES:ECB"
+                    android:text="Set Enc/AES/ECB" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="DF_ENCMODE=CBC"
+                    android:text="Set Enc/CBC" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="DF_ENCMODE=DES:CBC"
+                    android:text="Set Enc/DES/CBC" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:drawableLeft="@drawable/desfire_df_folder24"
+                    android:onClick="actionButtonRunCommand"
+                    android:tag="DF_ENCMODE=AES:CBC"
+                    android:text="Set Enc/AES/CBC" />
+
             </GridLayout>
 
             <View
@@ -618,7 +703,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:singleLine="true"
                 android:text="Appendix and troubleshooting: "
                 android:textAllCaps="true"
-                android:textStyle="bold|italic"/>
+                android:textStyle="bold|italic" />
 
             <View
                 android:layout_width="match_parent"
@@ -631,12 +716,12 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:background="?colorAccent"
                 android:drawablePadding="5dp"
                 android:singleLine="false"
-                android:textAllCaps="false"
-                android:textStyle="normal"
-                android:textSize="10sp"
-                android:typeface="serif"
                 android:text="@string/chameleonCmdAppendixTroubleshooting"
-                android:textColor="?colorPrimaryDark"/>
+                android:textAllCaps="false"
+                android:textColor="?colorPrimaryDark"
+                android:textSize="10sp"
+                android:textStyle="normal"
+                android:typeface="serif" />
 
         </LinearLayout>
 

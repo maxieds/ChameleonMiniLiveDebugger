@@ -21,9 +21,7 @@ lexer grammar ChameleonScriptLexer;
 
 ScriptingAPIFunctionName:  ScriptControlFlowFunctions | PrintingAndLoggingFunctions |
                            ChameleonConnectionTypeFunctions | VariableTypeFunctions |
-                           ChameleonCommandAndLogFunctions |
-                           StringFunctions | APDUHandlingFunctions |
-                           CryptoAndHashFunctions | UtilityFunctions ;
+                           StringFunctions | CryptoAndHashFunctions | UtilityFunctions ;
 
 /**** Script control flow functions:    ****/
 /**** Debugging and assertion commands: ****/
@@ -60,14 +58,6 @@ GetChameleonDescFuncName:         'GetChameleonDesc(' ;
 ChameleonConnectionTypeFunctions: IsChameleonConnectedFuncName |
                                   IsChameleonRevGFuncName | IsChameleonRevEFuncName ;
 
-/**** Chameleon command and command output post processing functions: ****/
-CmdDownloadTagFuncName:              'DownloadTagDump(' ;
-CmdUploadTagFuncName:                'UploadTagDump(' ;
-CmdDownloadLogsFuncName:             'DownloadLogs(' ;
-
-ChameleonCommandAndLogFunctions:     CmdDownloadTagFuncName | CmdUploadTagFuncName |
-                                     CmdDownloadLogsFuncName ;
-
 /**** String handling functions: ****/
 StringSearchFuncName:              'StringFind(' ;
 StringContainsFuncName:            'StringContains(' ;
@@ -80,37 +70,20 @@ SubstrFuncName:                    'Substr(' ;
 StringFunctions:                   StringSearchFuncName | StringContainsFuncName | StringReplaceFuncName |
                                    StringStripFuncName | StringSplitFuncName | SubstrFuncName ;
 
-/**** APDU handling functions: ****/
-ExtractDataFromWrappedAPDUFuncName:    'ExtractDataFromWrappedAPDU(' ;
-ExtractDataFromNativeAPDUFuncName:     'ExtractDataFromNativeAPDU(' ;
-SplitWrappedAPDUFuncName:              'SplitAPDUResponse(' ;
-SearchAPDUCStatusCodesFuncName:        'SearchAPDUStatusCodes(' ;
-SearchAPDUInsCodesFuncName:            'SearchAPDUInsCodes(' ;
-SearchAPDUClaCodesFuncName:            'SearchAPDUClaCodes(' ;
-
-APDUHandlingFunctions:                 AsWrappedAPDUFuncName | ExtractDataFromWrappedAPDUFuncName |
-                                       ExtractDataFromNativeAPDUFuncName | SplitWrappedAPDUFuncName |
-                                       SearchAPDUCStatusCodesFuncName | SearchAPDUInsCodesFuncName |
-                                       SearchAPDUClaCodesFuncName ;
-
 /**** Crypto and hash related functionality: ****/
 GetRandomBytesFuncName:       'RandomBytes(' ;
 GetRandomIntFuncName:         'RandomInt32(' ;
 GetCRC16FuncName:             'GetCRC16(' ;
 AppendCRC16FuncName:          'AppendCRC16(' ;
 CheckCRC16FuncName:           'CheckCRC16(' ;
-GetCommonKeysFuncName:        'GetCommonKeys(' ;
 GetUserKeysFuncName:          'GetUserKeys(' ;
 
 CryptoAndHashFunctions:       GetRandomBytesFuncName | GetRandomIntFuncName |
                               GetCRC16FuncName | AppendCRC16FuncName | CheckCRC16FuncName |
-                              GetCommonKeysFuncName | GetUserKeysFuncName ;
+                              GetUserKeysFuncName ;
 
 /**** Misc utility functions: ****/
 GetTimestampFuncName:          'GetTimestamp(' ;
-MemoryXORFuncName:             'MemoryXOR(' ;
-MaxFuncName:                   'Max(' ;
-MinFuncName:                   'Min(' ;
 ArrayReverseFuncName:          'Reverse(' ;
 ArrayPadLeftFuncName:          'PadLeft(' ;
 ArrayPadRightFuncName:         'PadRight(' ;
@@ -121,7 +94,6 @@ GetConstantByteArrayFuncName:  'GetConstantArray(' ;
 GetIntegersFromRangeFuncName:  'IntegerRange(' ;
 
 UtilityFunctions:              GetTimestampFuncName |
-                               MemoryXORFuncName | MaxFuncName | MinFuncName |
                                ArrayReverseFuncName | ArrayPadLeftFuncName | ArrayPadRightFuncName |
                                GetSubarrayFuncName | ArrayToStringFuncName |
                                GetConstantStringFuncName | GetConstantByteArrayFuncName |

@@ -46,6 +46,9 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
     private boolean scanning;
     private Semaphore btDevLock = new Semaphore(1, true);
 
+    public boolean isSerialConfigured() {
+        return serialConfigured;
+    }
     public boolean isWiredUSB() { return false; }
 
     public boolean isBluetooth() { return true; }
