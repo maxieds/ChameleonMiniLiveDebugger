@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Locale;
 
 public class ScriptingFileIO {
 
@@ -118,40 +119,12 @@ public class ScriptingFileIO {
     public static final int SHORTENED_PATH_INDEX = 0;
     public static final int COMPLETE_PATH_INDEX = 1;
 
-    public static String[] shortenStoragePath(String fullPath, int maxLength) {
-        if(maxLength <= 0) {
-            return null;
-        }
-        else if(fullPath.length() <= DISPLAY_TEXT_MAX_LENGTH) {
+    public static String[] shortenStoragePath(String fullPath) {
+        if(fullPath.length() <= DISPLAY_TEXT_MAX_LENGTH) {
             return new String[] { fullPath, fullPath };
         }
-        String extStorageDir = AndroidFileChooser.getInitialFileChooserBaseFolder().replace("//", "/");
-        String shortenedPath = fullPath.replace("//", "/").replace(extStorageDir, STORAGE_HOME_PREFIX);
-        if(fullPath.contains(STORAGE_HOME_PREFIX)) {
-            int fullPathAfterIdx = fullPath.indexOf(STORAGE_HOME_PREFIX) + STORAGE_HOME_PREFIX.length() + 1;
-            String prefixPath = shortenedPath.substring(0, fullPathAfterIdx);
-            int suffixLength = Math.min(Math.max(0, maxLength - 5), shortenedPath.length() + 1 - fullPathAfterIdx);
-            String suffixPath = "";
-            if(suffixLength < shortenedPath.length() - fullPathAfterIdx) {
-                suffixPath = "<...>" + shortenedPath.substring(shortenedPath.length() + 1 - suffixLength);
-            }
-            else {
-                suffixPath = shortenedPath.substring(fullPathAfterIdx + 1);
-            }
-            shortenedPath = prefixPath + suffixPath;
-        }
-        else {
-            String prefixPath = "";
-            int suffixLength = Math.min(Math.max(0, maxLength - 5), shortenedPath.length());
-            String suffixPath = "";
-            if(suffixLength < shortenedPath.length()) {
-                suffixPath = "<...>" + shortenedPath.substring(shortenedPath.length() - suffixLength - 1);
-            }
-            else {
-                suffixPath = shortenedPath;
-            }
-            shortenedPath = prefixPath + suffixPath;
-        }
+        File fullPathFile = new File(fullPath);
+        String shortenedPath = String.format(Locale.getDefault(), "<...>/%s", fullPathFile.getName());
         return new String[] {
                 shortenedPath,
                 fullPath
@@ -188,11 +161,11 @@ public class ScriptingFileIO {
     }
 
     public static String selectDirectoryFromGUIList(@NonNull String baseDirectory) {
-        return AndroidFileChooser.selectFolderFromGUIList(baseDirectory, true);
+        return AndroidFileChooser.selectFolderFromGUIList(baseDirectory, false);
     }
 
     public static String selectFileFromGUIList(@NonNull String baseDirectory) {
-        return AndroidFileChooser.selectFileFromGUIList(baseDirectory, true);
+        return AndroidFileChooser.selectFileFromGUIList(baseDirectory, false);
     }
 
     public static String getScriptOutputFilePath(String scriptFilePath) {

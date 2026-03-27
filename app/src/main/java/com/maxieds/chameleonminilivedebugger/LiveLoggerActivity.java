@@ -1084,14 +1084,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     toastStatusMsg = "USB and other minimal CMLD app permissions enabled.";
                }
           } else {
-               try {
-                    ExternalFileIO.handleActivityResult(this, requestCode, resultCode, data);
-               } catch(RuntimeException  rte) {
-                    if(rte.getMessage() != null && rte.getMessage().length() > 0) {
-                         AndroidLogger.printStackTrace(rte);
-                         return;
-                    }
-               }
+               ExternalFileIO.handleActivityResult(this, requestCode, resultCode, data);
           }
           super.onActivityResult(requestCode, resultCode, data);
           final String toastStatusMsgFinal = toastStatusMsg;

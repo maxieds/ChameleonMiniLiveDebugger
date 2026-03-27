@@ -20,6 +20,7 @@ package com.maxieds.chameleonminilivedebugger;
 import android.content.Intent;
 import android.os.Looper;
 import android.provider.Settings;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -27,6 +28,8 @@ import com.maxieds.androidfilepickerlightlibrary.BasicFileProvider;
 import com.maxieds.androidfilepickerlightlibrary.CustomThemeBuilder;
 import com.maxieds.androidfilepickerlightlibrary.FileChooserBuilder;
 import com.maxieds.androidfilepickerlightlibrary.FileUtils;
+
+import java.util.Locale;
 
 public class AndroidFileChooser {
 
@@ -39,7 +42,7 @@ public class AndroidFileChooser {
     public static final FileChooserBuilder.BaseFolderPathType CONFIG_DEFAULT_STORAGE_TYPE = FileChooserBuilder.BaseFolderPathType.BASE_PATH_DEFAULT;
 
     public static String getFileNotifySelectExceptionFormat() {
-        return "PATHSELECTION:==%s";
+        return " ==== PATHSELECTION: %s";
     }
 
     private static final String PATH_SEP = "/";
@@ -136,27 +139,22 @@ public class AndroidFileChooser {
         while(true) {
             try {
                 Looper.loop();
-            } catch(RuntimeException ie) {
-                String excptMsg = ie.getMessage();
-                String replaceRegex = String.format(BuildConfig.DEFAULT_LOCALE, getFileNotifySelectExceptionFormat(), "");
-                String[] excptMsgComponents = excptMsg.split(replaceRegex);
-                if(excptMsgComponents.length != 2) {
-                    AndroidLogger.i(TAG, "USER SELECTED <__NO__> PATH! ... " + ie.getMessage());
-                    return NULL_FILE_PATH_LABEL;
-                }
-                excptMsg = excptMsgComponents[1];
+            } catch(RuntimeException rte) {
+                Log.d(TAG, " ==== About to print RTE caught stack trace...");
+                rte.printStackTrace();
+                String excptMsg = rte.getMessage();
                 if(excptMsg.length() == 0) {
-                    AndroidLogger.i(TAG, "USER SELECTED <__EMPTY__> PATH! ... " + ie.getMessage());
+                    Log.i(TAG, "USER SELECTED <__EMPTY__> PATH! ... ");
                     return NULL_FILE_PATH_LABEL;
                 }
-                String fileChooserBaseFolder = getInitialFileChooserBaseFolder();
-                excptMsg = excptMsg.replaceFirst(fileChooserBaseFolder, STORAGE_HOME_PREFIX_SUBST);
-                excptMsg = excptMsg.replaceAll(String.format(BuildConfig.DEFAULT_LOCALE, "[%s]+", PATH_SEP), "/");
-                AndroidLogger.i(TAG, "USER SELECTED PATH: \"" + excptMsg + "\" ...");
+                Utils.displayToastMessageShort(String.format(Locale.getDefault(), "Selected script: %s", excptMsg));
+                //String fileChooserBaseFolder = getInitialFileChooserBaseFolder();
+                //excptMsg = excptMsg.replaceFirst(fileChooserBaseFolder, STORAGE_HOME_PREFIX_SUBST);
+                //excptMsg = excptMsg.replaceAll(String.format(BuildConfig.DEFAULT_LOCALE, "[%s]+", PATH_SEP), "/");
+                Log.i(TAG, " ==== USER SELECTED PATH: \"" + excptMsg + "\" ...");
                 return excptMsg;
             }
         }
-
     }
 
     public static String selectFolderFromGUIList(@NonNull String baseDirectory, boolean basePathIsRelative) {

@@ -19,6 +19,7 @@ package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -34,6 +35,7 @@ import com.maxieds.chameleonminilivedebugger.R;
 import com.maxieds.chameleonminilivedebugger.Utils;
 
 import java.io.File;
+import java.util.Locale;
 
 public class ScriptingGUIMain {
 
@@ -75,6 +77,8 @@ public class ScriptingGUIMain {
             @Override
             public void onClick(View cbView) {
                 String nextPath = ScriptingFileIO.selectFileFromGUIList(ScriptingConfig.DEFAULT_SCRIPT_LOAD_FOLDER);
+                nextPath = (nextPath != null) ? nextPath : "<null>";
+                Log.i(TAG, String.format(Locale.getDefault(), " ==== Next path: %s", nextPath));
                 if(nextPath == null || nextPath.equals("")) {
                     return;
                 }
@@ -322,7 +326,7 @@ public class ScriptingGUIMain {
 
     public static boolean displayEditTextValue(String fullValue, EditText etView) {
         try {
-            String[] textValues = ScriptingFileIO.shortenStoragePath(fullValue, ScriptingFileIO.DISPLAY_TEXT_MAX_LENGTH);
+            String[] textValues = ScriptingFileIO.shortenStoragePath(fullValue);
             etView.setText(textValues[ScriptingFileIO.SHORTENED_PATH_INDEX]);
             etView.setTag(textValues[ScriptingFileIO.COMPLETE_PATH_INDEX]);
         } catch(Exception ex) {
