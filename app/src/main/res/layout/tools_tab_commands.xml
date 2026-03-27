@@ -436,7 +436,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:drawableLeft="@drawable/mfdesfire_terminal_cmd_icon24"
                 android:drawablePadding="5dp"
                 android:singleLine="true"
-                android:text="DESFire Commands:"
+                android:text="DESFire Firmware Commands:"
                 android:textAllCaps="true"
                 android:textStyle="bold|italic" />
 
@@ -476,19 +476,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:singleLine="true"
                     android:textColor="?colorPrimaryDarkLog" />
 
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/firmwareicon24"
-                    android:onClick="actionButtonCreateNewEvent"
-                    android:text="VERSION?" />
-
-                <Button
-                    style="@style/GridButtons"
-                    android:drawableLeft="@drawable/store24"
-                    android:onClick="actionButtonRunCommand"
-                    android:tag="STORE"
-                    android:text="STORE" />
-
             </GridLayout>
 
             <View
@@ -502,8 +489,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:layout_margin="1dp"
                 android:background="?colorAccentLog"
                 android:columnCount="3"
-                android:padding="2dp"
-                android:rowCount="10">
+                android:padding="2dp">
 
                 <Button
                     style="@style/GridButtons"
@@ -608,84 +594,88 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonRunCommand"
                     android:tag="DF_COMM_MODE=Plaintext"
-                    android:text="Set Comm Plain" />
+                    android:text="Com Plain" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonRunCommand"
                     android:tag="DF_COMM_MODE=Plaintext:MAC"
-                    android:text="Set Comm Plain/MAC" />
+                    android:text="Com Plain+MAC" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonRunCommand"
                     android:tag="DF_COMM_MODE=Enciphered:3K3DES"
-                    android:text="Set Comm Enc/3K3DES" />
+                    android:text="Com 3K3DES" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonRunCommand"
                     android:tag="DF_COMM_MODE=Enciphered:AES128"
-                    android:text="Set Comm Enc/AES128" />
+                    android:text="Com AES128" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonRunCommand"
                     android:tag="DF_COMM_MODE=Enciphered:AES192"
-                    android:text="Set Comm Enc/AES192" />
+                    android:text="Com AES192" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonRunCommand"
                     android:tag="DF_COMM_MODE=Enciphered:AES256"
-                    android:text="Set Comm Enc/AES256" />
+                    android:text="Com AES256" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonRunCommand"
                     android:tag="DF_ENCMODE=ECB"
-                    android:text="Set Enc/ECB" />
+                    android:text="Enc ECB" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonRunCommand"
                     android:tag="DF_ENCMODE=DES:ECB"
-                    android:text="Set Enc/DES/ECB" />
+                    android:text="Enc DES+ECB" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonRunCommand"
                     android:tag="DF_ENCMODE=AES:ECB"
-                    android:text="Set Enc/AES/ECB" />
+                    android:text="Enc AES+ECB" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonRunCommand"
                     android:tag="DF_ENCMODE=CBC"
-                    android:text="Set Enc/CBC" />
+                    android:text="Enc CBC" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonRunCommand"
                     android:tag="DF_ENCMODE=DES:CBC"
-                    android:text="Set Enc/DES/CBC" />
+                    android:text="Enc DES+CBC" />
 
                 <Button
                     style="@style/GridButtons"
                     android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonRunCommand"
                     android:tag="DF_ENCMODE=AES:CBC"
-                    android:text="Set Enc/AES/CBC" />
+                    android:text="Enc AES+CBC" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:text="" />
 
             </GridLayout>
 

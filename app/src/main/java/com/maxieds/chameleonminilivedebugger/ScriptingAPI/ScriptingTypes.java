@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class ScriptingTypes {
 
@@ -284,9 +285,7 @@ public class ScriptingTypes {
 
         public List<ScriptVariable> getValueAsList() throws ScriptingExceptions.ChameleonScriptingException {
             boolean fromBytesArr = false;
-            byte[] varBytesArr;
-            List<Byte> intermedBytesLst;
-            List<ScriptVariable> svBytes;
+            byte[] varBytesArr = {};
             switch (varType) {
                 case VariableTypeHexString:
                 case VariableTypeAsciiString:
@@ -307,8 +306,12 @@ public class ScriptingTypes {
             if (!fromBytesArr) {
                 throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.InvalidArgumentException);
             }
-            intermedBytesLst = Arrays.asList(ArrayUtils.toObject(varBytesArr));
-            svBytes = intermedBytesLst.stream().map(svi -> new ScriptVariable(svi)).collect(Collectors.toList());
+            final byte[] varBytesArrFinal = varBytesArr;
+            Byte[] varWrapperBytesArr = IntStream.range(0, varBytesArr.length)
+                    .mapToObj(idx -> varBytesArrFinal[idx])
+                    .toArray(Byte[]::new);
+            List<Byte> intermedBytesLst = Arrays.asList(varWrapperBytesArr);
+            List<ScriptVariable> svBytes = intermedBytesLst.stream().map(svi -> new ScriptVariable(svi)).collect(Collectors.toList());
             return svBytes;
         }
 
