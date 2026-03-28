@@ -32,6 +32,7 @@ import android.webkit.WebView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import java.util.Locale;
 
@@ -43,6 +44,10 @@ public class BluetoothUtils {
     @SuppressLint("MissingPermission")
     public static boolean isBluetoothEnabled(boolean startActivityIfNot) {
         LiveLoggerActivity mainActivityCtx = LiveLoggerActivity.getLiveLoggerInstance();
+        if(ContextCompat.checkSelfPermission(mainActivityCtx, "android.permission.BLUETOOTH_CONNECT") !=
+           PackageManager.PERMISSION_GRANTED && startActivityIfNot) {
+            return false;
+        }
         BluetoothAdapter btAdapter = null;
         BluetoothAdapter btAdapterDefault = BluetoothAdapter.getDefaultAdapter();
         BluetoothManager btManager = (BluetoothManager) mainActivityCtx.getSystemService(Context.BLUETOOTH_SERVICE);
@@ -56,29 +61,34 @@ public class BluetoothUtils {
         if (btAdapter == null) {
             return false;
         }
-        ChameleonSettings.disableBTAdapter = !btAdapter.isEnabled();
-        if (!btAdapter.isEnabled() && !btAdapter.enable()) {
-            if (startActivityIfNot) {
-                try {
-                    Intent turnBTOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    mainActivityCtx.startActivityForResult(turnBTOn, ACTVITY_REQUEST_BLUETOOTH_ENABLED_CODE);
-                } catch (Exception excpt) {
-                    AndroidLogger.printStackTrace(excpt);
-                }
-            }
-            status = false;
-        }
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            if (ActivityCompat.checkSelfPermission(LiveLoggerActivity.getLiveLoggerInstance(), "android.permission.BLUETOOTH_ADVERTISE") != PackageManager.PERMISSION_GRANTED) {
+        try {
+            ChameleonSettings.disableBTAdapter = !btAdapter.isEnabled();
+            if (!btAdapter.isEnabled() && !btAdapter.enable()) {
                 if (startActivityIfNot) {
-                    Intent btMakeDiscIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-                    btMakeDiscIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-                    mainActivityCtx.startActivityForResult(btMakeDiscIntent, ACTVITY_REQUEST_BLUETOOTH_DISCOVERABLE_CODE);
+                    try {
+                        Intent turnBTOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        mainActivityCtx.startActivityForResult(turnBTOn, ACTVITY_REQUEST_BLUETOOTH_ENABLED_CODE);
+                    } catch (Exception excpt) {
+                        excpt.printStackTrace();
+                    }
                 }
-                return false;
+                status = false;
             }
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (ActivityCompat.checkSelfPermission(LiveLoggerActivity.getLiveLoggerInstance(), "android.permission.BLUETOOTH_ADVERTISE") != PackageManager.PERMISSION_GRANTED) {
+                    if (startActivityIfNot) {
+                        Intent btMakeDiscIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+                        btMakeDiscIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+                        mainActivityCtx.startActivityForResult(btMakeDiscIntent, ACTVITY_REQUEST_BLUETOOTH_DISCOVERABLE_CODE);
+                    }
+                    return false;
+                }
+            }
+            return status;
+        } catch (Exception secExcpt) {
+            secExcpt.printStackTrace();
+            return false;
         }
-        return status;
     }
 
     public static boolean isBluetoothEnabled() {

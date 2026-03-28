@@ -67,5 +67,3 @@ $chamLoadResult = $$($chamLoadStr)
  * See: https://github.com/nfc-tools/libfreefare/blob/
  *                         master/examples/mifare-desfire-create-ndef.c#L214
  */
-
-/**** That's all folks! Cool, right?!? -- MDS ****/

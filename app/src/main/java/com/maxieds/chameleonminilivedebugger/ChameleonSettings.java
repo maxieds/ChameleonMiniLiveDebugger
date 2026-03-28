@@ -19,6 +19,7 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.bluetooth.BluetoothGatt;
 import android.os.Handler;
+import android.util.Log;
 
 public class ChameleonSettings {
 
@@ -85,8 +86,8 @@ public class ChameleonSettings {
         }
         for(int si = 0; si < serialIOPorts.length; si++) {
             if(si == USBIO_IFACE_INDEX && allowWiredUSB) {
-                AndroidLogger.i(TAG, "Started scanning for SerialUSB devices ... ");
-                //serialIOPorts[si].startScanningDevices();
+                Log.i(TAG, "Started scanning for SerialUSB devices ... ");
+                serialIOPorts[si].startScanningDevices();
             } else if(si == BTIO_IFACE_INDEX && allowBluetooth && BluetoothUtils.isBluetoothEnabled(true)) {
                 AndroidLogger.i(TAG, "Started scanning for BT/BLE devices ... ");
                 serialIOPorts[si].startScanningDevices();

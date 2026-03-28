@@ -25,9 +25,9 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                A detailed man page and instructions for using the
                \nChameleon Mini Live Debugger (CMLD) are on the WIKI:
                \nhttps://github.com/maxieds/ChameleonMiniLiveDebugger/wiki.
-               \n\nThis FOSS project was developed in USA, North America, Earth
-               \nfor users across the globe.
-               Enjoy the free software :-)
+               \n\nThis FOSS project was developed in USA, North America,
+               \nEarth for hackers and hobbyists across the globe.
+               \n\nEnjoy the free software :-)
     </string>
     <string name="appPaidFlavorDisclaimerEULA">
                This program is distributed in the hope that it will be useful,
@@ -92,6 +92,16 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
         a sincere effort to keep most of the user interface and the command buttons self explanatory after some mild tinkering
         with the Chameleon Mini devices. Testing data, feedback, and future feature requests can all be compiled
         &lt;a href="https://github.com/maxieds/ChameleonMiniLiveDebugger/issues">here&lt;/a> in the official issues queue.
+
+        &lt;h1>Appendix and Troubleshooting&lt;/h1>
+        All of the different variations of the Chameleon Mini hardware devices do not all support the same
+        commands. The commands supported by the device are programmed into the firmware that must be flashed onto the
+        Chameleon device before you can use it.
+        &lt;br/>&lt;br/>
+        In particular, if you try to run a command with this CMLD application, and it fails for some reason, then most
+        likely the device firmware you are using does not support this command. Some commands also require that they be
+        run in a READER mode, whereas some commands must be run while the current active slot on the Chameleon is set to
+        a configuration in SNIFFER mode.
 
         &lt;h1>Credits&lt;/h1>
         The author thanks

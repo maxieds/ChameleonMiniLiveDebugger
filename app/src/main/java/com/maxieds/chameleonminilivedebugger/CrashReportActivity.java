@@ -21,6 +21,8 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -29,11 +31,21 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
+
+import org.apache.commons.text.WordUtils;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
 
@@ -168,7 +180,52 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
         }
         inputStackTrace = String.join("", subLinesToTrim);
         stackTrace = inputStackTrace;
-        return new SpannableStringBuilder(inputStackTrace);
+        stackTrace += "\n=============================" +
+                      "=================================\n\n";
+        stackTrace += getWrappedStackTrace(inputStackTrace);
+        return colorHighlightSourcesInTrace(stackTrace);
+    }
+
+    protected String getWrappedStackTrace(String inputStackTrace) {
+        //StringWriter sw = new StringWriter();
+        //PrintWriter pw = new PrintWriter(sw);
+        //ex.printStackTrace(pw);
+        //String longTraceStr = sw.toString();
+        String longTraceStr = inputStackTrace;
+        return WordUtils.wrap(longTraceStr, 125, System.lineSeparator(), true);
+    }
+
+    protected SpannableStringBuilder colorHighlightSourcesInTrace(String stackTrace) {
+        SpannableStringBuilder ssBuilder = new SpannableStringBuilder(stackTrace);
+        String[] regex = {
+                "[a-zA-Z][a-zA-Z0-9]*.java",
+                ":[0-9][0-9]*"
+        };
+        String[] hlColor = {
+                "#B9FF66",
+                "#FFAC1C"
+        };
+        for(int idx = 0; idx < regex.length; idx++) {
+            Pattern pattern = Pattern.compile(regex[idx]);
+            Matcher matcher = pattern.matcher(stackTrace);
+            while(matcher.find()) {
+                ForegroundColorSpan hlColorSpan = new ForegroundColorSpan(Color.parseColor(hlColor[idx]));
+                StyleSpan boldStyleSpan = new StyleSpan(Typeface.BOLD);
+                ssBuilder.setSpan(
+                        hlColorSpan,
+                        matcher.start(),
+                        matcher.end(),
+                        Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+                );
+                ssBuilder.setSpan(
+                        boldStyleSpan,
+                        matcher.start(),
+                        matcher.end(),
+                        Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+                );
+            }
+        }
+        return ssBuilder;
     }
 
     protected void signalCrashByVibration() {
@@ -189,10 +246,10 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
         String newIssueURL = "https://github.com/maxieds/ChameleonMiniLiveDebugger/issues/new?";
         String[][] issueContentsData = new String[][] {
                 { "CMLD Version",           String.format(BuildConfig.DEFAULT_LOCALE, "v%s (%d:%d)",
-                                                   BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE,
-                                                          BuildConfig.VERSION_CODE - 8080) },
+                        BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE,
+                        BuildConfig.VERSION_CODE - 8080) },
                 { "CMLD GitHub Commit",     String.format(BuildConfig.DEFAULT_LOCALE, "%s @ %s",
-                                                          BuildConfig.GIT_COMMIT_HASH, BuildConfig.GIT_COMMIT_DATE) },
+                        BuildConfig.GIT_COMMIT_HASH, BuildConfig.GIT_COMMIT_DATE) },
                 { "CMLD Build Date",        BuildConfig.BUILD_TIMESTAMP },
                 { "Chameleon Type",         chameleonDeviceType },
                 { "Serial Connection Type", serialConnType },
@@ -207,8 +264,8 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
                 { "Android Hardware",       Build.HARDWARE},
                 { "Android SDK",            String.format(BuildConfig.DEFAULT_LOCALE, "%d", Build.VERSION.SDK_INT) },
                 { "Android OS Release",     String.format(BuildConfig.DEFAULT_LOCALE, "%s %s (%s / %s)",
-                                                          Build.VERSION.BASE_OS, Build.VERSION.RELEASE,
-                                                          Build.VERSION.CODENAME, Build.VERSION.INCREMENTAL) },
+                        Build.VERSION.BASE_OS, Build.VERSION.RELEASE,
+                        Build.VERSION.CODENAME, Build.VERSION.INCREMENTAL) },
                 { "Android Board",          Build.BOARD },
                 { "Android Type",           Build.TYPE },
         };
@@ -231,10 +288,10 @@ public class CrashReportActivity extends ChameleonMiniLiveDebuggerActivity {
         issueBodyText += "happened are useful to fixing the issue in future releases.*\n\n";
         int invokingMsgLastItemPos = invokingExcptMsg.lastIndexOf(':');
         String issueTitle = String.format(BuildConfig.DEFAULT_LOCALE, "Crash Report (CMLD %s): %s [Android %s, SDK %d]",
-                                          BuildConfig.VERSION_NAME, invokingExcptMsg.substring(invokingMsgLastItemPos + 1),
-                                          Build.VERSION.RELEASE, Build.VERSION.SDK_INT);
+                BuildConfig.VERSION_NAME, invokingExcptMsg.substring(invokingMsgLastItemPos + 1),
+                Build.VERSION.RELEASE, Build.VERSION.SDK_INT);
         newIssueURL += String.format(BuildConfig.DEFAULT_LOCALE, "title=%s&body=%s&assignee=maxieds",
-                                     Utils.encodeAsciiToURL(issueTitle), Utils.encodeAsciiToURL(issueBodyText));
+                Utils.encodeAsciiToURL(issueTitle), Utils.encodeAsciiToURL(issueBodyText));
         return newIssueURL;
     }
 

@@ -291,6 +291,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:id="@+id/fieldOnOffSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:minHeight="48dp"
                     android:layout_gravity="center_vertical"
                     android:checked="true"
                     android:gravity="center"
@@ -316,6 +317,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:id="@+id/readonlyOnOffSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:minHeight="48dp"
                     android:layout_gravity="center_vertical"
                     android:checked="true"
                     android:gravity="center|left"
@@ -470,6 +472,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:id="@+id/mfDESFireTagSetPICCDataBytes"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
+                    android:minHeight="48dp"
                     android:layout_columnWeight="1"
                     android:hint="0675f7b102"
                     android:paddingLeft="4dp"
@@ -678,40 +681,6 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                     android:text="" />
 
             </GridLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="?colorPrimaryDark" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?colorPrimaryDarkLog"
-                android:drawableLeft="@drawable/notes16"
-                android:drawablePadding="5dp"
-                android:singleLine="true"
-                android:text="Appendix and troubleshooting: "
-                android:textAllCaps="true"
-                android:textStyle="bold|italic" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="?colorPrimaryDark" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?colorAccent"
-                android:drawablePadding="5dp"
-                android:singleLine="false"
-                android:text="@string/chameleonCmdAppendixTroubleshooting"
-                android:textAllCaps="false"
-                android:textColor="?colorPrimaryDark"
-                android:textSize="10sp"
-                android:textStyle="normal"
-                android:typeface="serif" />
 
         </LinearLayout>
 
