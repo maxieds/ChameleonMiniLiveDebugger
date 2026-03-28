@@ -411,7 +411,7 @@ public class ChameleonIO {
                                 ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats3)).setText(subStats3);
                                 LiveLoggerActivity.setSignalStrengthIndicator(THRESHOLD);
                             } catch (Exception ex) {
-                                AndroidLogger.printStackTrace(ex);
+                                ex.printStackTrace();
                             } finally {
                                 statsVarsMutex.unlock();
                             }

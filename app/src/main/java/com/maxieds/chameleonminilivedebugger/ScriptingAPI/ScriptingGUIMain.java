@@ -42,6 +42,7 @@ public class ScriptingGUIMain {
     private static final String TAG = ScriptingGUIMain.class.getSimpleName();
 
     public static void scriptGUIHandlePerformTaskClick(Button clickedBtn, String btnTag) {
+        Log.d(TAG, btnTag);
         ChameleonScripting.ChameleonScriptInstance csInstance = ChameleonScripting.getRunningInstance();
         if(csInstance == null) {
             return;

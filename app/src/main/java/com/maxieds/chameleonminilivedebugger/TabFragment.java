@@ -333,7 +333,7 @@ public class TabFragment extends Fragment {
                 TAB_SCRIPTING_MITEM_COLUMNS,
                 new String[] {
                         "Main",
-                        "Console View"
+                        "Console Output"
                 },
                 new int[] {
                         BuildConfig.DEBUG ? R.layout.scripting_tab_load_import : R.layout.tab_under_construction,

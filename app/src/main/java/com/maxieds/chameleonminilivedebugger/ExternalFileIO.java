@@ -25,6 +25,7 @@ import android.os.Environment;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.widget.RadioButton;
+import android.widget.TextView;
 
 import com.maxieds.androidfilepickerlightlibrary.FileChooserBuilder;
 import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ScriptingConfig;
@@ -34,6 +35,7 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.DOWNLOAD_SERVICE;
+import static java.lang.Math.round;
 
 public class ExternalFileIO {
 
@@ -162,9 +164,33 @@ public class ExternalFileIO {
                 Log.i(TAG, "Caught exception from FileChooserBuilder.handleActivityResult: [ST below] ...");
                 ex.printStackTrace();
             }
-            throw new RuntimeException(selectedChooserPath);
+            final String _selectedChooserPath = selectedChooserPath;
+            Thread postPickerRTEToUIThread = new Thread() {
+                @Override
+                public void run() {
+                    final String _localSelectedChooserPath = _selectedChooserPath;
+                    LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(new Runnable() {
+                        final String localSelectedChooserPath = _localSelectedChooserPath;
+                        public void run() {
+                            throw new RuntimeException(localSelectedChooserPath);
+                        }
+                    });
+                }
+            };
+            postPickerRTEToUIThread.start();
+        } else {
+            Thread postPickerNULLValueToUIThread = new Thread() {
+                @Override
+                public void run() {
+                    LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(new Runnable() {
+                        public void run() {
+                            throw new RuntimeException("");
+                        }
+                    });
+                }
+            };
+            postPickerNULLValueToUIThread.start();
         }
-        throw new RuntimeException("");
     }
 
 }

@@ -18,6 +18,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
 import android.os.Handler;
+import android.util.Log;
 import android.widget.LinearLayout;
 
 import com.maxieds.chameleonminilivedebugger.AndroidLogger;
@@ -280,7 +281,7 @@ public class ChameleonScripting {
                             String.format(BuildConfig.DEFAULT_LOCALE, "@TOKEN:    %s", syntaxError.getException().getOffendingToken().getText())
                     };
                     ScriptingGUIConsole.appendConsoleOutputRecordErrorWarning(syntaxErrorNotifyMsg, syntaxErrorDetailsList, syntaxError.getLine());
-                    AndroidLogger.w(TAG, "SYNTAX ERROR: " + syntaxErrorNotifyMsg + "\n" + String.join("\n  > ", syntaxErrorDetailsList));
+                    Log.w(TAG, "SYNTAX ERROR: " + syntaxErrorNotifyMsg + "\n" + String.join("\n  > ", syntaxErrorDetailsList));
                 }
                 ScriptingUtils.signalStateChangeByVibration(ScriptRuntimeState.EXCEPTION);
                 return false;
@@ -312,10 +313,11 @@ public class ChameleonScripting {
                         //scriptParseTree = scriptParser.file_contents().getChild(0);
                         scriptVisitor = new ChameleonScriptVisitorExtended(getRunningInstance());
                     } catch(IOException ioe) {
-                        AndroidLogger.printStackTrace(ioe);
+                        ioe.printStackTrace();
                         initialized = false;
                     }
                     if(!runScriptPreambleActions()) {
+                        Log.w(TAG, "runScriptPreambleActions failed");
                         return;
                     }
 
@@ -376,7 +378,7 @@ public class ChameleonScripting {
                                 ewarnMsg = String.format(BuildConfig.DEFAULT_LOCALE, "%s: \n%s", rtEx.getClass().getSimpleName(), rtEx.getMessage());
                                 ScriptingGUIConsole.appendConsoleOutputRecordErrorWarning(ewarnMsg, null, getExecutingLineOfCode());
                             } catch(Exception ex) {
-                                AndroidLogger.printStackTrace(ex);
+                                ex.printStackTrace();
                             }
                             ChameleonScripting.getRunningInstance().killRunningScript();
                             paramThread.interrupt();

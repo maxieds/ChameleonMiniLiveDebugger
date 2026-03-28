@@ -587,6 +587,29 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
                 <Button
                     style="@style/GridButtons"
+                    android:text="" />
+
+                <Button
+                    style="@style/GridButtons"
+                    android:text="" />
+
+            </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?colorPrimaryDark" />
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="?colorAccentLog"
+                android:columnCount="3"
+                android:padding="2dp">
+
+                <Button
+                    style="@style/GridButtons"
                     android:drawableLeft="@drawable/desfire_df_folder24"
                     android:onClick="actionButtonRunCommand"
                     android:tag="DF_KEYSCRUB"
