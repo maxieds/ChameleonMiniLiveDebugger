@@ -215,10 +215,12 @@
         tools:replace="android:installLocation"
         >
 
+        <!--
         <uses-library
             android:name="com.github.maxieds:AndroidFilePickerLight"
             android:required="false"
             />
+        -->
 
         <activity
             android:name=".LiveLoggerActivity"
@@ -241,6 +243,7 @@
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+                <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
                 <action android:name="android.bluetooth.device.action.FOUND" />
                 <action android:name="android.hardware.usb.action.ACL_CONNECTED" />
                 <category android:name="android.intent.category.DEFAULT" />

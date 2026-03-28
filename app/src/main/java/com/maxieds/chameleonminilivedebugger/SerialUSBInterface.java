@@ -19,6 +19,7 @@ package com.maxieds.chameleonminilivedebugger;
 
 import static android.content.Context.RECEIVER_NOT_EXPORTED;
 
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -288,7 +289,9 @@ public class SerialUSBInterface extends SerialIOReceiver {
     }
 
     /* Android 10 upgrades break the prior permissions scheme for USB devices ... */
-    public static final String ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION";
+    //public static final String ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION";
+    public static final String ACTION_USB_PERMISSION = "android.permission.USB_PERMISSION";
+
     public static boolean usbPermissionsReceiverConfig = false;
     public static boolean usbPermissionsGranted = false;
     public static IntentFilter usbPermsFilter = new IntentFilter(SerialUSBInterface.ACTION_USB_PERMISSION);
@@ -319,14 +322,15 @@ public class SerialUSBInterface extends SerialIOReceiver {
             context.registerReceiver(SerialUSBInterface.usbPermissionsReceiver, usbPermsFilter, RECEIVER_NOT_EXPORTED);
             SerialUSBInterface.usbPermissionsReceiverConfig = true;
         }
-        Intent broadcastIntent = new Intent(SerialUSBInterface.ACTION_USB_PERMISSION);
         if(intent != null) {
-            Parcelable usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-            if(usbDevice != null) {
-                broadcastIntent.putExtra(UsbManager.EXTRA_DEVICE, usbDevice);
+            UsbManager usbManager = (UsbManager) LiveLoggerActivity.getContext().getSystemService(Context.USB_SERVICE);
+            PendingIntent permissionIntent = PendingIntent.getBroadcast(LiveLoggerActivity.getLiveLoggerInstance(), 0, new Intent(SerialUSBInterface.ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE);
+            UsbDevice usbDevice = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+            if (!usbManager.hasPermission(usbDevice)) {
+                usbManager.requestPermission(usbDevice, permissionIntent);
             }
         }
-        LocalBroadcastManager.getInstance(context).sendBroadcast(broadcastIntent);
+        //LocalBroadcastManager.getInstance(context).sendBroadcast(broadcastIntent);
         if(ChameleonSettings.serialIOPorts == null ||
                 ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX] == null ||
                 ChameleonSettings.serialIOPorts[ChameleonSettings.USBIO_IFACE_INDEX] == null) {

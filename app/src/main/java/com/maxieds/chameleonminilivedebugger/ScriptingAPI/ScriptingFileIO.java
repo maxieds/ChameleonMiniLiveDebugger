@@ -170,7 +170,7 @@ public class ScriptingFileIO {
 
     public static String getScriptOutputFilePath(String scriptFilePath) {
         File scriptFile = ScriptingFileIO.getStoragePathFromRelative(scriptFilePath, false, false);
-        String scriptFileBaseName = scriptFile.getName().replace("\\.[a-zA-Z0-9]+", "");
+        String scriptFileBaseName = scriptFile.getName().replaceAll(".[a-zA-Z][a-zA-Z0-9]*", "");
         String outputFileBaseName = ScriptingConfig.OUTPUT_FILE_BASENAME.equals("") ? scriptFileBaseName : ScriptingConfig.OUTPUT_FILE_BASENAME;
         if(ScriptingConfig.DATESTAMP_OUTPUT_FILES && !ScriptingConfig.APPEND_CONSOLE_OUTPUT_FILE) {
             outputFileBaseName += "-" + ScriptingConfig.DATESTAMP_FORMAT;

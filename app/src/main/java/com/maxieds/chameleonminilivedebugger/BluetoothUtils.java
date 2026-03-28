@@ -63,7 +63,7 @@ public class BluetoothUtils {
         }
         try {
             ChameleonSettings.disableBTAdapter = !btAdapter.isEnabled();
-            if (!btAdapter.isEnabled() && !btAdapter.enable()) {
+            if (!btAdapter.isEnabled()) {
                 if (startActivityIfNot) {
                     try {
                         Intent turnBTOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -124,7 +124,7 @@ public class BluetoothUtils {
         if (btAdapter != null) {
             try {
                 if (action && !btAdapter.isEnabled()) {
-                    btAdapter.enable();
+                    //btAdapter.enable();
                 } else if (!action && btAdapter.isEnabled()) {
                     btAdapter.disable();
                 }

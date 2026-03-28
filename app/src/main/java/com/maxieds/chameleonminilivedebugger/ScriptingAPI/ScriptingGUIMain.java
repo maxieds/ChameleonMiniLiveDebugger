@@ -80,7 +80,9 @@ public class ScriptingGUIMain {
                 String nextPath = ScriptingFileIO.selectFileFromGUIList(ScriptingConfig.DEFAULT_SCRIPT_LOAD_FOLDER);
                 nextPath = (nextPath != null) ? nextPath : "<null>";
                 Log.i(TAG, String.format(Locale.getDefault(), " ==== Next path: %s", nextPath));
-                if(nextPath == null || nextPath.equals("")) {
+                File nextPathFile = new File(nextPath);
+                if(nextPath == null || nextPath.equals("") ||
+                        nextPathFile.isDirectory() || !nextPathFile.isFile()) {
                     return;
                 }
                 ScriptingConfig.LAST_SCRIPT_LOADED_PATH = nextPath;

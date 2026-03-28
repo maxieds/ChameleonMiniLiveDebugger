@@ -317,5 +317,5 @@ android {
 
 }
 dependencies {
-    implementation files('../_libs/AndroidFilePickerLightLibrary-1.3.8-release.aar')
+    implementation files('../_libs/AndroidFilePickerLightLibrary-1.3.8-beta-release.aar')
 }
