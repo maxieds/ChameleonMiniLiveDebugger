@@ -135,9 +135,9 @@ preBuild.dependsOn preBuildGenAntlr4JavaSources
 android {
 
     int versionCodeBase = 8080
-    int versionCodeRevision = 130
+    int versionCodeRevision = 131
     String appNamespace = 'com.maxieds.chameleonminilivedebugger'
-    String versionNameBase = "1.6.2"
+    String versionNameBase = "1.6.3"
     String versionNameType = "pro(d)"
     String configBuildTimeStamp = getDateTimestamp()
 

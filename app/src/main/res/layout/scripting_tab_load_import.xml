@@ -54,7 +54,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:gravity="center_vertical"
                 android:paddingLeft="10dp"
                 android:singleLine="true"
-                android:text="Load script instance: "
+                android:text="Load script: "
                 android:textAllCaps="true"
                 android:textSize="18sp"
                 android:textStyle="bold|italic" />

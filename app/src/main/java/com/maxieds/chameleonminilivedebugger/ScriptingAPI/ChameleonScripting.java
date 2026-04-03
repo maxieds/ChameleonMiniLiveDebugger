@@ -19,6 +19,8 @@ package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
 import android.os.Handler;
 import android.util.Log;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.maxieds.chameleonminilivedebugger.AndroidLogger;
@@ -44,6 +46,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ExecutorService;
@@ -297,6 +300,7 @@ public class ChameleonScripting {
 
         public boolean runScriptFromStart() {
 
+            Log.i(TAG, "Running script from start");
             scriptRunnerThread = new Thread() {
                 @Override
                 public void run() {
@@ -320,7 +324,24 @@ public class ChameleonScripting {
                         Log.w(TAG, "runScriptPreambleActions failed");
                         return;
                     }
-
+                    LiveLoggerActivity actCtx = LiveLoggerActivity.getLiveLoggerInstance();
+                    CheckBox setTimeLimitCbox = actCtx.findViewById(R.id.scriptingLoadImportTabLimitExecTimeCbox);
+                    EditText setTimeLimitText = actCtx.findViewById(R.id.scriptingRuntimeLimitExecSecondsText);
+                    if (setTimeLimitCbox != null && setTimeLimitText != null) {
+                        if (setTimeLimitCbox.isChecked()) {
+                            int timeLimitSecs = ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME_SECONDS;
+                            try {
+                                timeLimitSecs = Integer.parseInt(setTimeLimitText.getText().toString());
+                                if (timeLimitSecs > 0) {
+                                    ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME_SECONDS = timeLimitSecs;
+                                    Log.i(TAG, String.format(Locale.getDefault(), "Limiting execution time to: %d sec", timeLimitSecs));
+                                }
+                            } catch (Exception pie) {
+                                pie.printStackTrace();
+                                ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME_SECONDS = 0;
+                            }
+                        }
+                    }
                     scriptState = ScriptRuntimeState.RUNNING;
                     Handler setTimeLimitHandler = new Handler();
                     Runnable enforceTimeLimitRunnable = new Runnable() {
@@ -333,13 +354,17 @@ public class ChameleonScripting {
                             }
                         }
                     };
+
+
                     long execTimeLimit = ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME ?  ScriptingConfig.DEFAULT_LIMIT_SCRIPT_EXEC_TIME_SECONDS : 0;
                     if(execTimeLimit > 0) {
                         setTimeLimitHandler.postDelayed(enforceTimeLimitRunnable, execTimeLimit * 1000);
                     }
 
+                    Log.i(TAG, "Started running script");
                     scriptVisitor.visit(scriptParser.file_contents());
                     //scriptVisitor.visit(scriptParseTree);
+                    Log.i(TAG, "Finished running script");
                     writeLogFile(String.format(BuildConfig.DEFAULT_LOCALE, "TEXT PARSE TREE for file \"%s\":\n\n%s\n", scriptFilePath, scriptParseTree.toStringTree()));
                     runningTime = System.currentTimeMillis() - lastStartTime;
                     setTimeLimitHandler.removeCallbacks(enforceTimeLimitRunnable);

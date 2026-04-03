@@ -44,24 +44,37 @@ public class ScriptingGUIMain {
     public static void scriptGUIHandlePerformTaskClick(Button clickedBtn, String btnTag) {
         Log.d(TAG, btnTag);
         ChameleonScripting.ChameleonScriptInstance csInstance = ChameleonScripting.getRunningInstance();
-        if(csInstance == null) {
-            return;
-        }
+        //if(csInstance == null) {
+        //    return;
+        //}
         switch(btnTag) {
             case "SCRIPTING_BTN_RUN_FROM_START":
                 ChameleonScripting.runScriptFromStart();
                 break;
             case "SCRIPTING_BTN_KILL_SCRIPT":
-                csInstance.killRunningScript();
+                if (csInstance != null) {
+                    csInstance.killRunningScript();
+                } else {
+                    Utils.displayToastMessageShort("No running script to kill!");
+                }
                 break;
             case "SCRIPTING_BTN_PAUSE_SCRIPT":
-                csInstance.pauseRunningScript();
+                if (csInstance != null) {
+                    csInstance.pauseRunningScript();
+                } else {
+                    Utils.displayToastMessageShort("No running script to pause!");
+                }
                 break;
             case "SCRIPTING_BTN_STEP_SCRIPT":
-                csInstance.stepRunningScript();
+                if (csInstance != null) {
+                    csInstance.stepRunningScript();
+                } else {
+                    Utils.displayToastMessageShort("No running script to step!");
+                }
                 break;
             default:
-                /* TODO: Breakpoint actions -- NOT IMPLEMENTED */
+                /* TODO: Breakpoint actions -- NOT IMPLEMENTED: */
+                Utils.displayToastMessageShort("Breakpoint actions are not yet supported.");
                 break;
         }
     }
