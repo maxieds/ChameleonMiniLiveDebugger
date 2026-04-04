@@ -51,7 +51,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
     <string name="cmld_permgroup_storage">Filesystem and storage access permissions</string>
     <string name="cmld_permgroup_bluetooth">Required for users with BlueTooth BLE devices (experimental)</string>
 
-    <string name="filePickerTitleTextSelectFolder">Select next folder path</string>
+    <string name="filePickerTitleTextSelectFolder">Goto: </string>
     <string name="filePickerTitleTextSelectFile">Select next file</string>
     <string name="filePickerNavbarPrefixText">Goto Nav:</string>
     <string name="filePickerDoneActionText">Select</string>

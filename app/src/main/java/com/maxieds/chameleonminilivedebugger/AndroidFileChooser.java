@@ -119,8 +119,11 @@ public class AndroidFileChooser {
             activityActionCode = ACTION_SELECT_FILE_ONLY;
         }
 
-        CustomThemeBuilder customChooserTheme = getFileChooserCustomStyle();
-        customChooserTheme.setPickerTitleText(pickerTitleTextResId);
+        CustomThemeBuilder customChooserTheme = getFileChooserCustomStyle()
+                .setPickerTitleText(pickerTitleTextResId)
+                .generateThemeColors(com.maxieds.androidfilepickerlightlibrary.R.color.__colorPrimary)
+                .useToolbarGradients(true)
+                .setUseTintedDefaultIcons();
         FileChooserBuilder fcBuilder = new FileChooserBuilder(LiveLoggerActivity.getLiveLoggerInstance())
                 .setActionCode(activityActionCode)
                 .setSelectMultiple(1)
