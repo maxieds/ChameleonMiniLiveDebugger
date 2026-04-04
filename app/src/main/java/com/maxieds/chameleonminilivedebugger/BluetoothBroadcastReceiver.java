@@ -26,6 +26,7 @@ import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.List;
@@ -92,7 +93,7 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
                 }
                 svcUUIDSummary.append("\n");
             }
-            AndroidLogger.d(TAG, svcUUIDSummary.toString());
+            Log.d(TAG, svcUUIDSummary.toString());
         }
     }
 
@@ -133,8 +134,8 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
         if (btDeviceRSSI != DEFAULT_BTDEV_RSSI) {
             rssiInfoStr = String.format(BuildConfig.DEFAULT_LOCALE, " at RSSI of %d dBm", btDeviceRSSI);
         }
-        AndroidLogger.d(TAG, "NEW INTENT " + action);
-        AndroidLogger.d(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "Device name \"%s\" @ %s%s found.", btDeviceName, btGattConn.btDevice.getAddress(), rssiInfoStr));
+        Log.d(TAG, "NEW INTENT " + action);
+        Log.d(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "Device name \"%s\" @ %s%s found.", btDeviceName, btGattConn.btDevice.getAddress(), rssiInfoStr));
         String userConnInstMsg = btGattConn.btSerialContext.getString(R.string.bluetoothExtraConfigInstructions);
         if (action.equals(BluetoothDevice.ACTION_FOUND)) {
             btGattConn.btDevice = btIntentDevice;
@@ -160,7 +161,7 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
             try {
                 btGattConn.btGatt = btGattConn.btDevice.connectGatt(btGattConn.btSerialContext, true, btGattConn, BluetoothDevice.TRANSPORT_LE);
             } catch (NullPointerException npe) {
-                AndroidLogger.printStackTrace(npe);
+                npe.printStackTrace();
                 btGattConn.startConnectingDevices();
                 return;
             }
@@ -168,7 +169,7 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
                 btGattConn.startConnectingDevices();
                 return;
             }
-            AndroidLogger.d(TAG, "BT Device bonded ... Starting service discovery.");
+            Log.d(TAG, "BT Device bonded ... Starting service discovery.");
             String userConnNotifyMsg = String.format(BuildConfig.DEFAULT_LOCALE, "%s %s connected.\nStarting BT service discovery. This can take a while ...",
                     btGattConn.btDevice.getName(), btGattConn.btDevice.getAddress());
             Utils.displayToastMessage(userConnNotifyMsg, Toast.LENGTH_LONG);

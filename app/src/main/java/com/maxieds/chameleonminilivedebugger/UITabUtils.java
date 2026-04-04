@@ -178,7 +178,7 @@ public class UITabUtils {
                 try {
                     activeSlotNumber = Integer.parseInt(ChameleonIO.getSettingFromDevice("SETTING?"), 10);
                 } catch(NumberFormatException nfe) {
-                    AndroidLogger.printStackTrace(nfe);
+                    nfe.printStackTrace();
                     errorOnInit = true;
                 }
             }
@@ -447,7 +447,7 @@ public class UITabUtils {
                             ChameleonSettings.initializeSerialIOConnections();
                         }
                     } catch(Exception ex) {
-                        AndroidLogger.printStackTrace(ex);
+                        ex.printStackTrace();
                     }
                 }
             });
@@ -485,7 +485,7 @@ public class UITabUtils {
                             ChameleonSettings.initializeSerialIOConnections();
                         }
                     } catch(Exception ex) {
-                        AndroidLogger.printStackTrace(ex);
+                        ex.printStackTrace();
                         cb.setChecked(false);
                         LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(new Runnable() {
                             @Override
@@ -734,7 +734,7 @@ public class UITabUtils {
                     errorOnInit = true;
                 }
             } catch(Exception ex) {
-                AndroidLogger.printStackTrace(ex);
+                ex.printStackTrace();
                 return false;
             }
         }

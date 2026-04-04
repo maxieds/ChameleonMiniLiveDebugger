@@ -99,6 +99,9 @@ public class Utils {
 
     private static final String NULL_STRING = "<NULL>";
     private static final String EMPTY_STRING = "<EMPTY>";
+    private static final String ERROR_STRING = "<ERROR>";
+
+    private static final byte ERROR_BYTE = (byte) 0x00;
 
     /**
      * Converts a string representation of a two-digit byte into a corresponding byte type.
@@ -107,7 +110,7 @@ public class Utils {
      */
     public static byte hexString2Byte(String byteStr) {
         if (byteStr.length() != 2) {
-            AndroidLogger.e(TAG, "Invalid Byte String: " + byteStr);
+            Log.e(TAG, "Invalid Byte String: " + byteStr);
             return 0x00;
         }
         int lsb = Character.digit(byteStr.charAt(1), 16);
@@ -131,10 +134,15 @@ public class Utils {
      * @return char print character (or '.')
      */
     public static byte byte2Ascii(byte b) {
-        if (b >= 0x20 && b <= 0x7e) {
-            return Byte.valueOf(new String(new byte[] { b }, StandardCharsets.US_ASCII));
-        } else {
-            return Byte.valueOf(new String(new byte[] { (byte) '�' }, StandardCharsets.UTF_8));
+        try {
+            if (b >= (byte) 0x20 && b <= (byte) 0x7e) {
+                return Byte.valueOf(new String(new byte[]{ b }, StandardCharsets.US_ASCII));
+            } else {
+                return ERROR_BYTE;
+            }
+        } catch (NumberFormatException nfe) {
+            //nfe.printStackTrace();
+            return ERROR_BYTE;
         }
     }
 
@@ -149,16 +157,26 @@ public class Utils {
         } else if (bytes.length == 0) {
             return EMPTY_STRING;
         }
-        StringBuilder byteStr = new StringBuilder();
-        for (int b = 0; b < bytes.length; b++) {
-            byteStr.append(String.valueOf(byte2Ascii(bytes[b])));
+        try {
+            StringBuilder byteStr = new StringBuilder();
+            for (int b = 0; b < bytes.length; b++) {
+                byteStr.append(String.valueOf(byte2Ascii(bytes[b])));
+            }
+            return byteStr.toString();
+        } catch (NumberFormatException nfe) {
+            //nfe.printStackTrace();
+            return ERROR_STRING;
         }
-        return byteStr.toString();
     }
 
     public static byte byteToHex(byte b) {
-        String byteStr = new String(new byte[] { b }, StandardCharsets.UTF_8);
-        return Byte.valueOf(byteStr);
+        try {
+            String byteStr = new String(new byte[]{ b }, StandardCharsets.UTF_8);
+            return Byte.valueOf(byteStr);
+        } catch (NumberFormatException nfe) {
+            //nfe.printStackTrace();
+            return ERROR_BYTE;
+        }
     }
 
     /**
@@ -440,7 +458,7 @@ public class Utils {
             cmprByteCount += cmpr.deflate(new byte[1024]);
         }
         double entropyRatio = (double) cmprByteCount / inputBytes.length;
-        AndroidLogger.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "Compressed #%d bytes to #%d bytes ... Entropy ratio = %1.4g", inputBytes.length, cmprByteCount, entropyRatio));
+        Log.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "Compressed #%d bytes to #%d bytes ... Entropy ratio = %1.4g", inputBytes.length, cmprByteCount, entropyRatio));
         return entropyRatio;
     }
 
@@ -465,7 +483,7 @@ public class Utils {
         pp += "=================================================\n";
         for (int page = 0; page < mfuBytes.length(); page += 8) {
             int pageNumber = page / 8;
-            AndroidLogger.i(TAG, String.format("prettyPrintMFU: page#% 2d, page=% 2d", pageNumber, page));
+            Log.i(TAG, String.format("prettyPrintMFU: page#% 2d, page=% 2d", pageNumber, page));
             byte[] pageData = Utils.hexString2Bytes(mfuBytes.substring(page, Math.min(page + 8, mfuBytes.length()) - 1));
             if (pageData.length < 4) {
                 byte[] pageDataResized = new byte[4];
@@ -542,8 +560,8 @@ public class Utils {
             };
             return gpsAttrsArray;
         } catch(SecurityException secExcpt) {
-            AndroidLogger.w(TAG, "Exception getting GPS coords: " + secExcpt.getMessage());
-            AndroidLogger.printStackTrace(secExcpt);
+            Log.w(TAG, "Exception getting GPS coords: " + secExcpt.getMessage());
+            secExcpt.printStackTrace();
             return new String[] {
                     "LAT-NONE",
                     "LONG-NONE"
@@ -610,7 +628,7 @@ public class Utils {
             clearToastMessage();
         }
         displayToastHandler.post(displayToastRunner);
-        AndroidLogger.i(TAG, "TOAST MSG PENDING DISPLAY: " + toastMsg);
+        Log.i(TAG, "TOAST MSG PENDING DISPLAY: " + toastMsg);
     }
 
     public static void displayToastMessage(String toastMsg, int msgDuration) {
@@ -727,8 +745,8 @@ public class Utils {
         try {
             return URLEncoder.encode(inputText, "utf-8");
         } catch(UnsupportedEncodingException uee) {
-            AndroidLogger.e(TAG, "ERROR: Invalid encoding for the URL string \"" + inputText + "\"");
-            AndroidLogger.printStackTrace(uee);
+            Log.e(TAG, "ERROR: Invalid encoding for the URL string \"" + inputText + "\"");
+            uee.printStackTrace();
         }
         return "";
     }
@@ -783,7 +801,7 @@ public class Utils {
         try {
             return Integer.toString(initObjHash, radix);
         } catch(Exception excpt) {
-            AndroidLogger.printStackTrace(excpt);
+            excpt.printStackTrace();
         }
         return "";
     }

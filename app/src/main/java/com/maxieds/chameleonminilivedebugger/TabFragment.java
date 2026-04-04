@@ -174,7 +174,7 @@ public class TabFragment extends Fragment {
                 menuItem.setTextColor(Utils.getColorFromTheme(R.attr.colorPrimaryDark));
                 menuItem.setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
             } catch(NullPointerException npe) {
-                AndroidLogger.printStackTrace(npe);
+                npe.printStackTrace();
                 return false;
             }
             return true;

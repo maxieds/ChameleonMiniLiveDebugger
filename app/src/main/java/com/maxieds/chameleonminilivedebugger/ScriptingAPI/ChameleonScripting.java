@@ -200,7 +200,7 @@ public class ChameleonScripting {
                 loggingFileStream = new FileOutputStream(loggingFilePath);
                 debuggingFileStream = debuggingFilePath.equals(ScriptingTypes.NULL) ? null : new FileOutputStream(debuggingFilePath);
             } catch(FileNotFoundException ioe) {
-                AndroidLogger.printStackTrace(ioe);
+                ioe.printStackTrace();
                 scriptFileStream = null;
                 outputFileStream = loggingFileStream = debuggingFileStream = null;
                 initialized = false;
@@ -215,7 +215,7 @@ public class ChameleonScripting {
                 }
                 consoleViewMainLayout = TabFragment.UITAB_DATA[TabFragment.TAB_SCRIPTING].tabMenuItemLayouts[TabFragment.TAB_SCRIPTING_MITEM_CONSOLE_VIEW].findViewById(R.id.scriptingTabConsoleViewMainLayoutContainer);
             } catch(Exception ex) {
-                AndroidLogger.printStackTrace(ex);
+                ex.printStackTrace();
                 consoleViewMainLayout = null;
                 initialized = false;
             }
@@ -247,7 +247,7 @@ public class ChameleonScripting {
                 loggingFileStream.close();
                 debuggingFileStream.close();
             } catch(IOException ioe) {
-                AndroidLogger.printStackTrace(ioe);
+                ioe.printStackTrace();
             }
             if(scriptState != ScriptRuntimeState.EXCEPTION) {
                 scriptState = ScriptRuntimeState.DONE;
@@ -474,7 +474,7 @@ public class ChameleonScripting {
 
         public ScriptingTypes.ScriptVariable lookupVariableByName(String varName) throws ScriptingExceptions.ChameleonScriptingException {
             ScriptingTypes.ScriptVariable svar = scriptVariablesHashMap.get(varName);
-            AndroidLogger.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "LOOKED UP (%s) -> VARBYNAME = %s", varName, svar.getName()));
+            Log.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "LOOKED UP (%s) -> VARBYNAME = %s", varName, svar.getName()));
             return svar;
         }
 
@@ -493,9 +493,9 @@ public class ChameleonScripting {
             }
             try {
                 loggingFileStream.write(String.format(BuildConfig.DEFAULT_LOCALE, ">> [%s] %s\n", Utils.getTimestamp(), logLine).getBytes());
-                AndroidLogger.i(TAG, "LOG FILE LINE>> " + logLine);
+                Log.i(TAG, "LOG FILE LINE>> " + logLine);
             } catch(IOException ioe) {
-                AndroidLogger.printStackTrace(ioe);
+                ioe.printStackTrace();
                 return false;
             }
             return true;
@@ -503,7 +503,7 @@ public class ChameleonScripting {
 
         public boolean writeConsoleOutput(String consoleOutputLine) {
             if(consoleOutput != null) {
-                AndroidLogger.i(TAG, " CONSOLE APPENDED >>> " + consoleOutputLine);
+                Log.i(TAG, " CONSOLE APPENDED >>> " + consoleOutputLine);
                 consoleOutput.append(consoleOutputLine);
                 return true;
             }
@@ -545,7 +545,7 @@ public class ChameleonScripting {
 
     public static boolean runScriptFromStart() {
         String scriptPath = ScriptingFileIO.expandStoragePath(ScriptingConfig.LAST_SCRIPT_LOADED_PATH);
-        AndroidLogger.i(TAG, "Attempting to run script from file path: " + scriptPath);
+        Log.i(TAG, "Attempting to run script from file path: " + scriptPath);
         if(ScriptingFileIO.getStoragePathFromRelative(scriptPath, false, false) == null) {
             Utils.displayToastMessageShort(String.format(BuildConfig.DEFAULT_LOCALE, "Invalid script file path \"%s\".", scriptPath));
             return false;

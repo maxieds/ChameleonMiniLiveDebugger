@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -54,7 +55,7 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
     public boolean isBluetooth() { return true; }
 
     public int setSerialBaudRate(int bdRate) {
-        AndroidLogger.w(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "Attempt to set serial baud rate to %d on a BT connection"));
+        Log.w(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "Attempt to set serial baud rate to %d on a BT connection"));
         return STATUS_NOT_SUPPORTED;
     }
 
@@ -64,7 +65,7 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
         try {
             return activeDevice != null ? activeDevice.getName() : unknownBTDevName;
         } catch (SecurityException se) {
-            AndroidLogger.printStackTrace(se);
+            se.printStackTrace();
             return unknownBTDevName;
         }
     }
@@ -81,7 +82,7 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
                     activeDevice.getName(), activeDevice.getType(),
                     activeDevice.getAddress());
         } catch (SecurityException se) {
-            AndroidLogger.printStackTrace(se);
+            se.printStackTrace();
             devInfo = "<Device-Info-Unavailable>";
         }
         return devInfo;
@@ -110,7 +111,7 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
             }
             return extraInfoBuilder.toString();
         } catch (IOException ioe) {
-            AndroidLogger.printStackTrace(ioe);
+            ioe.printStackTrace();
 
         }
         return null;
@@ -145,7 +146,7 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
             }
             return extraInfoBuilder.toString();
         } catch (IOException ioe) {
-            AndroidLogger.printStackTrace(ioe);
+            ioe.printStackTrace();
         }
         return null;
     }
@@ -193,7 +194,7 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
         Handler configDeviceHandler = new Handler(Looper.getMainLooper());
         Runnable configDeviceRunnable = new Runnable() {
             public void run() {
-                AndroidLogger.i(TAG, ChameleonSettings.getActiveSerialIOPort().toString());
+                Log.i(TAG, ChameleonSettings.getActiveSerialIOPort().toString());
                 if(ChameleonSettings.getActiveSerialIOPort() != null && btGattConnectorBLEDevice.isDeviceConnected()) {
                     configDeviceHandler.removeCallbacks(this);
                     LiveLoggerActivity llActivity = LiveLoggerActivity.getLiveLoggerInstance();
@@ -208,7 +209,7 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
                     }
                 }
                 else {
-                    AndroidLogger.i(TAG, "BLE device __NOT__ connected! ... Looping");
+                    Log.i(TAG, "BLE device __NOT__ connected! ... Looping");
                     configDeviceHandler.postDelayed(this, ChameleonIO.TIMEOUT);
                 }
             }
@@ -284,7 +285,7 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
             btDevLock.acquire();
             return true;
         } catch(Exception inte) {
-            AndroidLogger.printStackTrace(inte);
+            inte.printStackTrace();
             btGattConnectorBLEDevice.releaseAllLocks();
             btDevLock.release();
             return false;
@@ -296,7 +297,7 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
             btDevLock.acquireUninterruptibly();
             return true;
         } catch(Exception inte) {
-            AndroidLogger.printStackTrace(inte);
+            inte.printStackTrace();
             btDevLock.release();
             btGattConnectorBLEDevice.releaseAllLocks();
             return false;
@@ -307,7 +308,7 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
         try {
             return btDevLock.tryAcquire(timeout, java.util.concurrent.TimeUnit.MILLISECONDS);
         } catch(Exception ie) {
-            AndroidLogger.printStackTrace(ie);
+            ie.printStackTrace();
             btDevLock.release();
             btGattConnectorBLEDevice.releaseAllLocks();
             return false;
@@ -321,7 +322,7 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
     }
 
     public int sendDataBuffer(byte[] dataWriteBuffer) {
-        AndroidLogger.i(TAG, "write: " + Utils.bytes2Hex(dataWriteBuffer));
+        Log.i(TAG, "write: " + Utils.bytes2Hex(dataWriteBuffer));
         if(dataWriteBuffer == null || dataWriteBuffer.length == 0) {
             return STATUS_FALSE;
         } else if(!serialConfigured()) {
@@ -334,7 +335,7 @@ public class BluetoothBLEInterface extends SerialIOReceiver {
                 return STATUS_FALSE;
             }
         } catch(IOException ioe) {
-            AndroidLogger.printStackTrace(ioe);
+            ioe.printStackTrace();
         }
         return STATUS_TRUE;
     }

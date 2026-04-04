@@ -17,6 +17,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
+import android.util.Log;
+
 import com.maxieds.chameleonminilivedebugger.AndroidLogger;
 
 import org.antlr.v4.runtime.ANTLRErrorListener;
@@ -92,7 +94,7 @@ public class ChameleonScriptErrorListener extends BaseErrorListener implements A
         syntaxErrors.add(new SyntaxError(recognizer, offendingSymbol, line, charPositionInLine, msg, e));
         String sourceFileName = recognizer.getInputStream().getSourceName();
         sourceFileName = !sourceFileName.isEmpty() ? sourceFileName + ": " : "";
-        AndroidLogger.i(TAG, sourceFileName + "line #" + line + " @ " + charPositionInLine + ": " + msg);
+        Log.i(TAG, sourceFileName + "line #" + line + " @ " + charPositionInLine + ": " + msg);
     }
 
     @Override

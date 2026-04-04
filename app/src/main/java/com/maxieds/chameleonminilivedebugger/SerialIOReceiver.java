@@ -19,6 +19,7 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import java.util.Arrays;
 
@@ -114,9 +115,9 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
     }
 
     private void printSerialDataForDebugging(byte[] serialData) {
-        AndroidLogger.d(TAG, "SERIALIO_LOGDATA_RECEIVED: (HEX)   " + Utils.bytes2Hex(serialData));
-        AndroidLogger.d(TAG, "SERIALIO_LOGDATA_RECEIVED: (ASCII) " + Utils.bytes2Ascii(serialData));
-        AndroidLogger.d(TAG, "SERIALIO_LOGDATA_RECEIVED: (LOG)   " + ChameleonLogUtils.ChameleonLogData.newInstance(serialData));
+        Log.d(TAG, "SERIALIO_LOGDATA_RECEIVED: (ASCII) " + Utils.bytes2Ascii(serialData));
+        Log.d(TAG, "SERIALIO_LOGDATA_RECEIVED: (HEX)   " + Utils.bytes2Hex(serialData));
+        Log.d(TAG, "SERIALIO_LOGDATA_RECEIVED: (LOG)   " + ChameleonLogUtils.ChameleonLogData.newInstance(serialData).toString());
     }
 
     public boolean notifySerialDataReceived(byte[] serialData) {
@@ -164,7 +165,7 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
         }
         int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData);
         if (loggingRespSize > 0) {
-            AndroidLogger.i(TAG, "Received new LogEntry @ " + String.format(BuildConfig.DEFAULT_LOCALE, "0x%02x", liveLogData[0]));
+            Log.i(TAG, "Received new LogEntry @ " + String.format(BuildConfig.DEFAULT_LOCALE, "0x%02x", liveLogData[0]));
             if(ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS) {
                 notifyLogDataReceived(liveLogData);
             }

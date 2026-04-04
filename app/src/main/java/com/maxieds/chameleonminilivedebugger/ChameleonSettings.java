@@ -89,11 +89,11 @@ public class ChameleonSettings {
                 Log.i(TAG, "Started scanning for SerialUSB devices ... ");
                 serialIOPorts[si].startScanningDevices();
             } else if(si == BTIO_IFACE_INDEX && allowBluetooth && BluetoothUtils.isBluetoothEnabled(true)) {
-                AndroidLogger.i(TAG, "Started scanning for BT/BLE devices ... ");
+                Log.i(TAG, "Started scanning for BT/BLE devices ... ");
                 serialIOPorts[si].startScanningDevices();
                 initUpdateHandler.removeCallbacksAndMessages(initUpdateRunnable);
             } else if (si == BTIO_IFACE_INDEX && allowBluetooth) {
-                AndroidLogger.i(TAG, "Repeating initialization of scanning of BT/BLE devices in a few seconds ... ");
+                Log.i(TAG, "Repeating initialization of scanning of BT/BLE devices in a few seconds ... ");
                 initUpdateHandler.postDelayed(initUpdateRunnable, ChameleonSettings.REINIT_SCAN_INTERVAL);
             }
         }

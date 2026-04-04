@@ -178,10 +178,10 @@ public class AndroidFileChooser {
                 return false;
             }
             String fileMimeType = docRef.getDocumentType();
-            AndroidLogger.i(TAG, "MIME TYPE: " + fileMimeType);
+            Log.i(TAG, "MIME TYPE: " + fileMimeType);
             return fileMimeType.toLowerCase(BuildConfig.DEFAULT_LOCALE).startsWith("text");
         } catch(Exception ex) {
-            AndroidLogger.printStackTrace(ex);
+            ex.printStackTrace();
             return false;
         }
     }
@@ -200,7 +200,7 @@ public class AndroidFileChooser {
             }
             return docRef.readFileContentsAsString().toString();
         } catch(Exception ex) {
-            AndroidLogger.printStackTrace(ex);
+            ex.printStackTrace();
             return null;
         }
     }

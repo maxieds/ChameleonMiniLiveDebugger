@@ -215,7 +215,7 @@ public class AndroidSettingsStorage {
                 status = true;
             }
         } catch(Exception ex) {
-            AndroidLogger.printStackTrace(ex);
+            ex.printStackTrace();
             return false;
         }
         return status;

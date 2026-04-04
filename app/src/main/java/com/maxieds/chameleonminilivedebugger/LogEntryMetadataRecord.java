@@ -202,7 +202,7 @@ public class LogEntryMetadataRecord extends LogEntryBase {
                     }
                 }
             } catch (Exception e) {
-                AndroidLogger.printStackTrace(e);
+                e.printStackTrace();
             }
             if(eventMsg.length() > 0) {
                 eventMsg = locationDetails + "\n" + eventMsg;

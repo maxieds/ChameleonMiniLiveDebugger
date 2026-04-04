@@ -17,6 +17,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger.ScriptingAPI;
 
+import android.util.Log;
+
 import com.maxieds.chameleonminilivedebugger.AndroidLogger;
 import com.maxieds.chameleonminilivedebugger.BuildConfig;
 import com.maxieds.chameleonminilivedebugger.Utils;
@@ -176,7 +178,7 @@ public class ScriptingTypes {
                     return true;
                 }
             } catch(NumberFormatException nfe) {
-                AndroidLogger.printStackTrace(nfe);
+                nfe.printStackTrace();
                 return false;
             }
             return false;
@@ -597,7 +599,7 @@ public class ScriptingTypes {
                 else {
                     throw new ScriptingExceptions.ChameleonScriptingException(ScriptingExceptions.ExceptionType.ArithmeticErrorException);
                 }
-                AndroidLogger.i(TAG, "BINARY-OP: New Value " + getValueAsString());
+                Log.i(TAG, "BINARY-OP: New Value " + getValueAsString());
                 return this;
             }
             else if(opType == Operation.BINOP_PLUS) {

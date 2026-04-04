@@ -27,6 +27,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.util.Log;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -129,7 +130,7 @@ public class BluetoothUtils {
                     btAdapter.disable();
                 }
             } catch (SecurityException se) {
-                AndroidLogger.printStackTrace(se);
+                se.printStackTrace();
             }
         }
     }
@@ -235,7 +236,7 @@ public class BluetoothUtils {
                 return ChameleonIO.CHAMELEON_TYPE_PROXGRIND_REVG;
             }
         } catch (Exception excpt) {
-            AndroidLogger.printStackTrace(excpt);
+            excpt.printStackTrace();
         }
         return ChameleonIO.CHAMELEON_TYPE_UNKNOWN;
     }
@@ -443,8 +444,8 @@ public class BluetoothUtils {
                     pktPackagedBytes[3] = (byte) 0x00; /* Reset the status byte so it does not contribute to the checksum */
                     byte pktChecksum = calculateChecksum(pktHeadStatus, pktPackagedBytes, false);
                     if (pktChecksum != (byte) 0x00) {
-                        AndroidLogger.d(TAG, "Incoming BT bytes to unpack: " + Utils.bytes2Hex(rawData));
-                        AndroidLogger.w(TAG, "Packet checksum does not match for raw byte data " + Utils.bytes2Ascii(pktPayloadData));
+                        Log.d(TAG, "Incoming BT bytes to unpack: " + Utils.bytes2Hex(rawData));
+                        Log.w(TAG, "Packet checksum does not match for raw byte data " + Utils.bytes2Ascii(pktPayloadData));
                         return null;
                     }
                     /** ??? TODO: Big or little endian byte order of the results returned (Chameleon Mini AVR is LE) ???

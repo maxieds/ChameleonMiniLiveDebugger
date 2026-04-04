@@ -29,6 +29,7 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -162,7 +163,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
             serialPort = null;
             return STATUS_ERROR;
         }
-        AndroidLogger.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "USB device attached with name %s and product name %d and manu ID %s", device.getProductName(), device.getProductName(), device.getManufacturerName()));
+        Log.i(TAG, String.format(BuildConfig.DEFAULT_LOCALE, "New USB device attached with name %s ;; product name %s ;; manu ID %s", device.getProductName(), device.getProductName(), device.getManufacturerName()));
         serialPort = UsbSerialDevice.createUsbSerialDevice(device, connection);
         if(serialPort != null && serialPort.open()) {
             serialPort.setBaudRate(ChameleonSettings.serialBaudRate);
@@ -242,7 +243,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
             serialPortLock.acquire();
             return true;
         } catch(Exception inte) {
-            AndroidLogger.printStackTrace(inte);
+            inte.printStackTrace();
             serialPortLock.release();
             return false;
         }
@@ -253,7 +254,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
             serialPortLock.acquireUninterruptibly();
             return true;
         } catch(Exception inte) {
-            AndroidLogger.printStackTrace(inte);
+            inte.printStackTrace();
             serialPortLock.release();
             return false;
         }
@@ -262,10 +263,14 @@ public class SerialUSBInterface extends SerialIOReceiver {
     public boolean tryAcquireSerialPort(int timeout) {
         boolean status = false;
         try {
-            status = serialPortLock.tryAcquire(timeout, java.util.concurrent.TimeUnit.MILLISECONDS);
+            if (timeout > 0) {
+                status = serialPortLock.tryAcquire(timeout, java.util.concurrent.TimeUnit.MILLISECONDS);
+            } else {
+                status = serialPortLock.tryAcquire();
+            }
             return status;
         } catch(Exception inte) {
-            AndroidLogger.printStackTrace(inte);
+            inte.printStackTrace();
             serialPortLock.release();
             return false;
         }
@@ -282,8 +287,8 @@ public class SerialUSBInterface extends SerialIOReceiver {
         } else if(!serialConfigured() || serialPort == null) {
             return STATUS_ERROR;
         }
-        AndroidLogger.d(TAG, "USBReaderCallback Send Data: (HEX) " + Utils.bytes2Hex(dataWriteBuffer));
-        AndroidLogger.d(TAG, "USBReaderCallback Send Data: (TXT) " + Utils.bytes2Ascii(dataWriteBuffer));
+        Log.d(TAG, "USBReaderCallback Send Data: (HEX) " + Utils.bytes2Hex(dataWriteBuffer));
+        Log.d(TAG, "USBReaderCallback Send Data: (TXT) " + Utils.bytes2Ascii(dataWriteBuffer));
         serialPort.write(dataWriteBuffer);
         return STATUS_TRUE;
     }
@@ -304,9 +309,9 @@ public class SerialUSBInterface extends SerialIOReceiver {
                     if (!intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                         UsbDevice usbDev = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                         if(usbDev != null) {
-                            AndroidLogger.d(TAG, "Permission denied for USB device " + usbDev);
+                            Log.d(TAG, "Permission denied for USB device " + usbDev);
                         } else {
-                            AndroidLogger.d(TAG, "Permission denied for NULL USB device ");
+                            Log.d(TAG, "Permission denied for NULL USB device ");
                         }
                     }
                 }

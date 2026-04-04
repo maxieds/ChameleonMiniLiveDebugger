@@ -83,7 +83,7 @@ public class ScriptingFileIO {
             try {
                 Files.createDirectories(storageFile.toPath());
             } catch(IOException ioe) {
-                AndroidLogger.printStackTrace(ioe);
+                ioe.printStackTrace();
                 return null;
             }
         }
@@ -92,7 +92,7 @@ public class ScriptingFileIO {
                 Files.createDirectories(storageFile.getParentFile().toPath());
                 storageFile.createNewFile();
             } catch(IOException ioe) {
-                AndroidLogger.printStackTrace(ioe);
+                ioe.printStackTrace();
                 return null;
             }
         }
@@ -108,7 +108,7 @@ public class ScriptingFileIO {
                     Files.setPosixFilePermissions(storageFile.toPath(), PosixFilePermissions.fromString("rw-r-----"));
                 }
             } catch(IOException ioe) {
-                AndroidLogger.printStackTrace(ioe);
+                ioe.printStackTrace();
                 return null;
             }
         }

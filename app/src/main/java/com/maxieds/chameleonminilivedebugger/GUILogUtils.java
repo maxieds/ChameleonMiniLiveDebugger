@@ -19,6 +19,7 @@ package com.maxieds.chameleonminilivedebugger;
 
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -365,10 +366,10 @@ public class GUILogUtils {
             searchLogPayload = ((CheckBox) llActivity.findViewById(R.id.entrySearchRawLogData)).isChecked();
             searchLogHeaders = ((CheckBox) llActivity.findViewById(R.id.entrySearchLogHeaders)).isChecked();
         } catch(NullPointerException npe) {
-            AndroidLogger.printStackTrace(npe);
+            npe.printStackTrace();
             return;
         }
-        AndroidLogger.i(TAG, "Searching for: " + searchString);
+        Log.i(TAG, "Searching for: " + searchString);
         int matchCount = 0;
         for(int vi = 0; vi < logDataEntries.size(); vi++) {
             LogEntryBase nextLogEntry = logDataEntries.get(vi);
@@ -383,7 +384,7 @@ public class GUILogUtils {
                 continue;
             }
             LogEntryUI nextLogEntryUI = (LogEntryUI) nextLogEntry;
-            AndroidLogger.i(TAG, nextLogEntryUI.getPayloadDataString(selectedBytes));
+            Log.i(TAG, nextLogEntryUI.getPayloadDataString(selectedBytes));
             if (searchAPDU && nextLogEntryUI.getAPDUString().toLowerCase(BuildConfig.DEFAULT_LOCALE).contains(searchString) ||
                     searchLogHeaders && nextLogEntryUI.getLogCodeName().toLowerCase(BuildConfig.DEFAULT_LOCALE).contains(searchString) ||
                     searchLogPayload && nextLogEntryUI.getPayloadDataString(selectedBytes).toLowerCase(BuildConfig.DEFAULT_LOCALE).contains(searchString)) {
@@ -395,7 +396,7 @@ public class GUILogUtils {
                     searchResult.setMinimumHeight(150);
                     LinearLayout.LayoutParams lllp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                     searchResultsContainer.addView(searchResult, lllp);
-                    AndroidLogger.i(TAG, "Case II: Record " + vi + " matches");
+                    Log.i(TAG, "Case II: Record " + vi + " matches");
                     matchCount++;
                 }
             }

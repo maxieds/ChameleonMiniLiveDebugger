@@ -27,6 +27,7 @@ import android.graphics.drawable.InsetDrawable;
 import android.os.Build;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -151,7 +152,7 @@ public class ChameleonConfigSlot {
             isLocked = ChameleonIO.getSettingFromDevice("READONLY?") == "1" ? true : false;
             fieldSetting = ChameleonIO.getSettingFromDevice("FIELD?") == "1" ? true : false;
         } catch(NumberFormatException nfe) {
-            AndroidLogger.printStackTrace(nfe);
+            nfe.printStackTrace();
             return false;
         }
         return true;
@@ -170,7 +171,7 @@ public class ChameleonConfigSlot {
             ChameleonIO.getSettingFromDevice(String.format(BuildConfig.DEFAULT_LOCALE, "SETTING=%d", nextSlot));
             readParametersFromChameleonSlot();
         } catch(Exception exe) {
-            AndroidLogger.printStackTrace(exe);
+            exe.printStackTrace();
             return false;
         }
         return true;
@@ -257,7 +258,7 @@ public class ChameleonConfigSlot {
                 public void afterTextChanged(Editable editStr) {}
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    AndroidLogger.i(TAG, "Changing Slot #" + slotIndex + " name to " + s);
+                    Log.i(TAG, "Changing Slot #" + slotIndex + " name to " + s);
                     CHAMELEON_SLOT_NAMES[slotIndex - 1] = s.toString();
                     slotNickname = s.toString();
                     AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.DEFAULT_CMLDAPP_PROFILE, AndroidSettingsStorage.CHAMELEON_SLOT_NAMES);
@@ -327,7 +328,7 @@ public class ChameleonConfigSlot {
             isEnabled = false;
             return true;
         } catch(NullPointerException npe) {
-            AndroidLogger.printStackTrace(npe);
+            npe.printStackTrace();
             return false;
         }
     }
@@ -352,7 +353,7 @@ public class ChameleonConfigSlot {
                 slotImgView.setColorFilter(ThemesConfiguration.getThemeColorVariant(llActivity, tintColorCode), PorterDuff.Mode.DST_ATOP);
             }
         } catch (Exception ex) {
-            AndroidLogger.printStackTrace(ex);
+            ex.printStackTrace();
         }
         return slotImgView;
     }
@@ -373,7 +374,7 @@ public class ChameleonConfigSlot {
                 slotImgView.setColorFilter(ThemesConfiguration.getThemeColorVariant(llActivity, tintColorCode), PorterDuff.Mode.SRC_ATOP);
             }
         } catch (Exception ex) {
-            AndroidLogger.printStackTrace(ex);
+            ex.printStackTrace();
         }
         return slotImgView;
     }
@@ -386,7 +387,7 @@ public class ChameleonConfigSlot {
             imgViewIcon.setImageDrawable(tvIcon);
             return imgViewIcon;
         } catch (Exception ex) {
-            AndroidLogger.printStackTrace(ex);
+            ex.printStackTrace();
         }
         return null;
     }
@@ -397,7 +398,7 @@ public class ChameleonConfigSlot {
             Drawable tvIcon = modifiedImgViewIcon.getDrawable();
             tv.setCompoundDrawables(tvIcon, null, null, null);
         } catch (Exception ex) {
-            AndroidLogger.printStackTrace(ex);
+            ex.printStackTrace();
         }
     }
 

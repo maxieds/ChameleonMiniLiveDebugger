@@ -87,7 +87,7 @@ public class ExternalFileIO {
         } catch(Exception ioe) {
             GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", ioe.getMessage()));
             llActivity.setStatusIcon(R.id.statusIconUlDl, R.drawable.statusxferfailed16);
-            AndroidLogger.printStackTrace(ioe);
+            ioe.printStackTrace();
             return;
         }
         DownloadManager downloadManager = (DownloadManager) LiveLoggerActivity.getLiveLoggerInstance().defaultContext.getSystemService(DOWNLOAD_SERVICE);
@@ -100,7 +100,7 @@ public class ExternalFileIO {
             emailFileChecked = ((RadioButton) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.radio_save_email)).isChecked();
             shareFileChecked = ((RadioButton) LiveLoggerActivity.getLiveLoggerInstance().findViewById(R.id.radio_save_share)).isChecked();
         } catch(NullPointerException npe) {
-            AndroidLogger.printStackTrace(npe);
+            npe.printStackTrace();
         }
         if(emailFileChecked || shareFileChecked) {
             Intent sendIntent = new Intent(Intent.ACTION_SEND);

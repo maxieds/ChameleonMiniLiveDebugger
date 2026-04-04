@@ -295,7 +295,7 @@ public class ScriptingGUIConsole {
                 tvCmdDataIsTmt.setText(String.format(BuildConfig.DEFAULT_LOCALE, "%s", scHashedArrayVar.getValueAt("isTimeout").getValueAsBoolean() ? "True" : "False"));
                 return newCmdRespMsgRecord;
             } catch(NullPointerException npe) {
-                AndroidLogger.printStackTrace(npe);
+                npe.printStackTrace();
                 return null;
             }
 

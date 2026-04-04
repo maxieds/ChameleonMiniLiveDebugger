@@ -17,6 +17,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -66,7 +67,7 @@ public class ChameleonPeripherals {
                 @Override
                 public void run() {
                     for (int i = 0; i < spinnerIDs.length; i++) {
-                        AndroidLogger.i(TAG, queryCmds[i]);
+                        Log.i(TAG, queryCmds[i]);
                         Spinner curSpinner = (Spinner) LiveLoggerActivity.getLiveLoggerInstance().findViewById(spinnerIDs[i]);
                         if (curSpinner == null) {
                             continue;

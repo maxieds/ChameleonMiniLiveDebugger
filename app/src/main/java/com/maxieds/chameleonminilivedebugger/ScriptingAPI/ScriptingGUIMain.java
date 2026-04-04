@@ -124,7 +124,7 @@ public class ScriptingGUIMain {
                     ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLineText)).setText("");
                     ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLineText)).setHint("@line");
                 } catch(Exception nfe) {
-                    AndroidLogger.printStackTrace(nfe);
+                    nfe.printStackTrace();
                     return;
                 }
             }
@@ -144,7 +144,7 @@ public class ScriptingGUIMain {
                     ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLabelText)).setText("");
                     ((TextView) cfgBaseLayout.findViewById(R.id.scriptingBPAddLabelText)).setHint("@label");
                 } catch(Exception nfe) {
-                    AndroidLogger.printStackTrace(nfe);
+                    nfe.printStackTrace();
                     return;
                 }
             }
@@ -346,7 +346,7 @@ public class ScriptingGUIMain {
             etView.setText(textValues[ScriptingFileIO.SHORTENED_PATH_INDEX]);
             etView.setTag(textValues[ScriptingFileIO.COMPLETE_PATH_INDEX]);
         } catch(Exception ex) {
-            AndroidLogger.printStackTrace(ex);
+            ex.printStackTrace();
             return false;
         }
         return true;

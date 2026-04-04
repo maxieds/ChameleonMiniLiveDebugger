@@ -261,7 +261,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                if(serialIOActionReceiver == null) {
                     serialIOActionReceiver = new BroadcastReceiver() {
                          public void onReceive(Context context, Intent intent) {
-                              AndroidLogger.i(TAG, intent.getAction());
+                              Log.i(TAG, intent.getAction());
                               if (intent.getAction() == null) {
                                    return;
                               } else {
@@ -321,23 +321,23 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
 
           super.onCreate(savedInstanceState);
           if(getInstance() == null) {
-               AndroidLogger.i(TAG, "Created new activity");
+               Log.i(TAG, "Created new activity");
           } else if(!isTaskRoot()) {
-               AndroidLogger.i(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
+               Log.i(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
                final Intent intent = getIntent();
                final String intentAction = intent != null ? intent.getAction() : null;
                if (intentAction != null && (intentAction.equals(UsbManager.ACTION_USB_DEVICE_DETACHED) || intentAction.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED))) {
                     if(LiveLoggerActivity.getLiveLoggerInstance() != null) {
                          LiveLoggerActivity.getLiveLoggerInstance().onNewIntent(intent);
                     }
-                    AndroidLogger.i(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead to handle USB connection instead of re-launching.");
+                    Log.i(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead to handle USB connection instead of re-launching.");
                     finish();
                     return;
                } else if (intentAction != null && (intentAction.equals(BluetoothDevice.ACTION_FOUND) || intentAction.equals(BluetoothDevice.ACTION_ACL_CONNECTED))) {
                     if(LiveLoggerActivity.getLiveLoggerInstance() != null) {
                          LiveLoggerActivity.getLiveLoggerInstance().onNewIntent(intent);
                     }
-                    AndroidLogger.i(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead to handle USB connection instead of re-launching.");
+                    Log.i(TAG, "onCreate(): Main Activity is not the root.  Finishing Main Activity instead to handle USB connection instead of re-launching.");
                     finish();
                     return;
                }
@@ -413,7 +413,9 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           clearStatusIcon(R.id.statusScriptingIsExec);
 
           if(BuildConfig.PAID_APP_VERSION) {
-               String userGreeting = getString(R.string.appInitialUserGreetingMsg);
+               String userGreeting = String.format(Locale.getDefault(), "%s\n\n%s",
+                                     getString(R.string.appPaidInitialUserGreetingMsg),
+                                     getString(R.string.appInitialUserGreetingMsg));
                GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("WELCOME", userGreeting));
                String disclaimerStmt = getString(R.string.appPaidFlavorDisclaimerEULA);
                GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("DISCLAIMER", disclaimerStmt));
@@ -557,7 +559,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           if(intent == null || intent.getAction() == null) {
                return;
           }
-          AndroidLogger.i(TAG, "NEW INTENT: " + intent.getAction());
+          Log.i(TAG, "NEW INTENT: " + intent.getAction());
           if (intent.getAction().equals(BluetoothDevice.ACTION_FOUND) ||
                   intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED) ||
                   intent.getAction().equals(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) ||
@@ -742,7 +744,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                          }
                          return groupPermsArray;
                     } catch (Exception expt) {
-                         AndroidLogger.printStackTrace(expt);
+                         expt.printStackTrace();
                     }
                }
           }
@@ -1209,8 +1211,8 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                AndroidSettingsStorage.updateValueByKey(AndroidSettingsStorage.LOGGING_MIN_DATA_BYTES);
           }
           catch(Exception ex) {
-               AndroidLogger.printStackTrace(ex);
-               AndroidLogger.i(TAG, ex.getMessage());
+               ex.printStackTrace();
+               Log.i(TAG, ex.getMessage());
                ChameleonLogUtils.LOGGING_MIN_DATA_BYTES = loggingMinDataLength;
           }
      }

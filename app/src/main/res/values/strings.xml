@@ -26,8 +26,14 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                \nChameleon Mini Live Debugger (CMLD) are on the WIKI:
                \nhttps://github.com/maxieds/ChameleonMiniLiveDebugger/wiki.
                \n\nThis FOSS project was developed in USA, North America,
-               \nEarth for hackers and hobbyists across the globe.
-               \n\nEnjoy the free software :-)
+               \nEarth by Dr. Maxie Dion Schmidt for hackers and hobbyists
+               \nacross the globe.
+               \n\nMake sure to enjoy the quality free software :-)
+    </string>
+    <string name="appPaidInitialUserGreetingMsg">
+               Thank you for supporting the ongoing development of the
+               \nCMLD logger for Android by purchasing this copy of the
+               \npaid version of the app!
     </string>
     <string name="appPaidFlavorDisclaimerEULA">
                This program is distributed in the hope that it will be useful,

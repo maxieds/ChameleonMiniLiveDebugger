@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
+import android.util.Log;
 import android.view.View;
 
 import static com.maxieds.chameleonminilivedebugger.TabFragment.TAB_CONFIG;
@@ -114,12 +115,12 @@ public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public void destroyItem(View collection, int position, Object view) {
-        AndroidLogger.w(TAG, "destroyItem called on tab #" + String.valueOf(position));
+        Log.w(TAG, "destroyItem called on tab #" + String.valueOf(position));
     }
 
     @Override
     public Object instantiateItem(View collection, int position) {
-        AndroidLogger.w(TAG, "instantiateItem called on tab #" + String.valueOf(position));
+        Log.w(TAG, "instantiateItem called on tab #" + String.valueOf(position));
         return null;
     }
 
