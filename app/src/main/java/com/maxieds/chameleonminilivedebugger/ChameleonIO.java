@@ -151,8 +151,8 @@ public class ChameleonIO {
     /**
      * Default timeout to use when communicating with the device.
      */
-    public static int TIMEOUT = 3000;
-    public static final int LOCK_TIMEOUT = 10;
+    public static int TIMEOUT = 3000; // 3 seconds
+    public static final int LOCK_TIMEOUT = 10; // ms
     public static final int LONG_USER_TIMEOUT = 5000;
     public static final long BLE_GATT_CHAR_WRITE_TIMEOUT = 2000;
     public static final long NOTHREAD_SLEEP_INTERVAL = 50;
@@ -397,6 +397,7 @@ public class ChameleonIO {
                         public void run() {
                             try {
                                 if (!statsVarsMutex.tryLock(ChameleonIO.LOCK_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                                    setToolbarStatsToDefault();
                                     return;
                                 }
                                 ((TextView) LiveLoggerActivity.getContentView(R.id.deviceConfigText)).setText(CONFIG);
@@ -442,6 +443,7 @@ public class ChameleonIO {
         public static boolean updateAllStatus() {
             try {
                 if (!statsVarsMutex.tryLock(ChameleonIO.LOCK_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                    updateAllStatusAndPost(true);
                     return false;
                 }
                 else if (!ChameleonIO.REVE_BOARD) {
@@ -520,7 +522,7 @@ public class ChameleonIO {
                                     String formattedUID = Utils.formatUIDString(UID, ":");
                                     ((TextView) LiveLoggerActivity.getContentView(R.id.deviceConfigUID)).setText(formattedUID);
                                 }
-                                String subStats1 = String.format(BuildConfig.DEFAULT_LOCALE, "REV%s | MEM-%dK | LOG-%s-%dK", ChameleonIO.REVE_BOARD ? "E" : "G", round(MEMSIZE / 1024), LOGMODE, round(LOGSIZE / 1024));
+                                String subStats1 = String.format(BuildConfig.DEFAULT_LOCALE, "REV%s | MEM-%dK | LOG-%s@%dK", ChameleonIO.REVE_BOARD ? "E" : "G", round(MEMSIZE / 1024), LOGMODE, round(LOGSIZE / 1024));
                                 ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats1)).setText(subStats1);
                                 String subStats2 = String.format(BuildConfig.DEFAULT_LOCALE, "SLOT-%d | %s | FLD-%s | CHRG-%s", DIP_SETTING, READONLY ? "RO" : "RW", FIELD ? "1" : "0", CHARGING ? "1" : "0");
                                 ((TextView) LiveLoggerActivity.getContentView(R.id.deviceStats2)).setText(subStats2);
@@ -586,6 +588,8 @@ public class ChameleonIO {
         }
     }
 
+    private static final String NONE = "NONE";
+
     /**
      * Queries the Chameleon device with the query command and returns its response
      * (sans the preceeding ascii status code).
@@ -603,10 +607,12 @@ public class ChameleonIO {
         ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
         if(serialIOPort == null) {
             Log.i(TAG, "Serial port is null");
+            ChameleonIO.DEVICE_RESPONSE[0] = NONE;
             return ChameleonIO.DEVICE_RESPONSE[0];
         }
         else if(!serialIOPort.tryAcquireSerialPort(LOCK_TIMEOUT)) {
             Log.i(TAG, "Unable to acquire serial port");
+            ChameleonIO.DEVICE_RESPONSE[0] = NONE;
             return ChameleonIO.DEVICE_RESPONSE[0];
         }
         ChameleonIO.WAITING_FOR_RESPONSE = true;
@@ -628,7 +634,8 @@ public class ChameleonIO {
         try {
             if(ChameleonIO.DEVICE_RESPONSE_CODE == null ||
                ChameleonIO.DEVICE_RESPONSE_CODE.length() == 0) {
-                ChameleonIO.DEVICE_RESPONSE_CODE = "-1";
+                ChameleonIO.DEVICE_RESPONSE[0] = NONE;
+                ChameleonIO.DEVICE_RESPONSE_CODE = NONE;
             }
             if(ChameleonIO.DEVICE_RESPONSE_CODE.length() >= 3) {
                 deviceRespCode = Integer.valueOf(ChameleonIO.DEVICE_RESPONSE_CODE.substring(0, 3));
@@ -639,6 +646,8 @@ public class ChameleonIO {
         } catch(NumberFormatException nfe) {
             nfe.printStackTrace();
             serialIOPort.releaseSerialPortLock();
+            ChameleonIO.DEVICE_RESPONSE[0] = NONE;
+            ChameleonIO.DEVICE_RESPONSE_CODE = NONE;
             return ChameleonIO.DEVICE_RESPONSE_CODE;
         }
         serialIOPort.releaseSerialPortLock();

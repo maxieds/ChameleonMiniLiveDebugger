@@ -111,7 +111,7 @@ public class Utils {
     public static byte hexString2Byte(String byteStr) {
         if (byteStr.length() != 2) {
             Log.e(TAG, "Invalid Byte String: " + byteStr);
-            return 0x00;
+            return ERROR_BYTE;
         }
         int lsb = Character.digit(byteStr.charAt(1), 16);
         int msb = Character.digit(byteStr.charAt(0), 16);

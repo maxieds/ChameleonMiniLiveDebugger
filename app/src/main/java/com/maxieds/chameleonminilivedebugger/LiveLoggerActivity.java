@@ -603,7 +603,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = -1;
                     int lastActiveSlotNumber = ChameleonIO.DeviceStatusSettings.DIP_SETTING;
                     if (lastActiveSlotNumber <= ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS.length) {
-                         ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[lastActiveSlotNumber - 1].disableLayout();
+                         ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[Math.max(0, lastActiveSlotNumber - 1)].disableLayout();
                     }
                     setStatusIcon(R.id.statusIconUSB, R.drawable.usbdisconnected16);
                     clearStatusIcon(R.id.statusIconUSB);
