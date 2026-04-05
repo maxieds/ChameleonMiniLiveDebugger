@@ -287,10 +287,21 @@ public class SerialUSBInterface extends SerialIOReceiver {
         } else if(!serialConfigured() || serialPort == null) {
             return STATUS_ERROR;
         }
+        byte[] serialDataErrorChecked = Utils.errorCheckByteBuffer(dataWriteBuffer);
+        Log.i(TAG, "sendDataBuffer: Passed full serialData as input:");
         Log.d(TAG, "USBReaderCallback Send Data: (HEX) " + Utils.bytes2Hex(dataWriteBuffer));
         Log.d(TAG, "USBReaderCallback Send Data: (TXT) " + Utils.bytes2Ascii(dataWriteBuffer));
-        serialPort.write(dataWriteBuffer);
-        return STATUS_TRUE;
+        printSerialDataForDebugging(dataWriteBuffer);
+        Log.i(TAG, "sendDataBuffer: Pruned serialData send buffer to:");
+        Log.d(TAG, "USBReaderCallback Send Data: (HEX) " + Utils.bytes2Hex(serialDataErrorChecked));
+        Log.d(TAG, "USBReaderCallback Send Data: (TXT) " + Utils.bytes2Ascii(serialDataErrorChecked));
+        printSerialDataForDebugging(serialDataErrorChecked);
+        if (serialDataErrorChecked.length > 0) {
+            serialPort.write(serialDataErrorChecked);
+            return STATUS_TRUE;
+        }
+        Log.i(TAG, "sendDataBuffer: Dropping write of bad byte values...");
+        return STATUS_FALSE;
     }
 
     /* Android 10 upgrades break the prior permissions scheme for USB devices ... */

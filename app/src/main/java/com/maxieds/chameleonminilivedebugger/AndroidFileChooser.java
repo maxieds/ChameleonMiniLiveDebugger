@@ -17,6 +17,8 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
 
 package com.maxieds.chameleonminilivedebugger;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Looper;
 import android.provider.Settings;
@@ -119,12 +121,13 @@ public class AndroidFileChooser {
             activityActionCode = ACTION_SELECT_FILE_ONLY;
         }
 
+        LiveLoggerActivity activityCtx = LiveLoggerActivity.getLiveLoggerInstance();
         CustomThemeBuilder customChooserTheme = getFileChooserCustomStyle()
                 .setPickerTitleText(pickerTitleTextResId)
-                .generateThemeColors(com.maxieds.androidfilepickerlightlibrary.R.color.__colorPrimary)
+                .generateThemeColors(Utils.getColorFromTheme(R.attr.colorPrimary))
                 .useToolbarGradients(true)
                 .setUseTintedDefaultIcons();
-        FileChooserBuilder fcBuilder = new FileChooserBuilder(LiveLoggerActivity.getLiveLoggerInstance())
+        FileChooserBuilder fcBuilder = new FileChooserBuilder(activityCtx)
                 .setActionCode(activityActionCode)
                 .setSelectMultiple(1)
                 .setSelectionMode(selectionMode)

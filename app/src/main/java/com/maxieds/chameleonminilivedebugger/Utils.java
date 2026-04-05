@@ -98,8 +98,8 @@ public class Utils {
     }
 
     private static final String NULL_STRING = "<NULL>";
-    private static final String EMPTY_STRING = "<EMPTY>";
-    private static final String ERROR_STRING = "<ERROR>";
+    private static final String EMPTY_STRING = "--";
+    private static final String ERROR_STRING = "XX";
 
     private static final byte ERROR_BYTE = (byte) 0x00;
 
@@ -152,15 +152,19 @@ public class Utils {
      * @return String ascii representation of the byte array
      */
     public static String bytes2Ascii(byte[] bytes) {
-        if (bytes == null) {
-            return NULL_STRING;
-        } else if (bytes.length == 0) {
+        if (bytes == null || bytes.length == 0) {
             return EMPTY_STRING;
         }
         try {
             StringBuilder byteStr = new StringBuilder();
             for (int b = 0; b < bytes.length; b++) {
-                byteStr.append(String.valueOf(byte2Ascii(bytes[b])));
+                byte transByte = byte2Ascii(bytes[b]);
+                String transByteStr = "XX";
+                if (transByte != ERROR_BYTE || bytes[b] == ERROR_BYTE) {
+                    String printDelim = (b + 1 < bytes.length) ? " " : "";
+                    transByteStr = String.format(Locale.getDefault(), "%02x%s", transByte, printDelim);
+                }
+                byteStr.append(transByteStr);
             }
             return byteStr.toString();
         } catch (NumberFormatException nfe) {
@@ -171,7 +175,7 @@ public class Utils {
 
     public static byte byteToHex(byte b) {
         try {
-            String byteStr = new String(new byte[]{ b }, StandardCharsets.UTF_8);
+            String byteStr = String.format(Locale.getDefault(), "0x%02x", b);
             return Byte.valueOf(byteStr);
         } catch (NumberFormatException nfe) {
             //nfe.printStackTrace();
@@ -197,7 +201,12 @@ public class Utils {
         StringBuilder hstr = new StringBuilder();
         hstr.append(String.format(BuildConfig.DEFAULT_LOCALE, "%02x", bytes[0]));
         for (int b = 1; b < bytes.length; b++) {
-            hstr.append(String.format(BuildConfig.DEFAULT_LOCALE, "%s%02x", printDelim, byteToHex(bytes[b])));
+            byte transByte = byteToHex(bytes[b]);
+            String transByteStr = printDelim + "XX";
+            if (transByte != ERROR_BYTE || bytes[b] == ERROR_BYTE) {
+                transByteStr = String.format(Locale.getDefault(), "%s%02x", printDelim, transByte);
+            }
+            hstr.append(String.format(BuildConfig.DEFAULT_LOCALE, "%s%s", printDelim, transByteStr));
         }
         return hstr.toString();
     }
@@ -205,6 +214,24 @@ public class Utils {
     public static String bytes2Hex(byte[] bytes) {
         final String printDelim = " ";
         return bytes2Hex(bytes, printDelim);
+    }
+
+    public static byte[] errorCheckByteBuffer(byte[] byteData) {
+        if (byteData == null || byteData.length == 0) {
+            return byteData;
+        }
+        byte[] ecBytesWorking = new byte[byteData.length];
+        int rarrLength = 0;
+        for (int b = 0; b < byteData.length; b++) {
+            byte transByte = byteToHex(byteData[b]);
+            if (transByte != ERROR_BYTE || byteData[b] == ERROR_BYTE) {
+                ecBytesWorking[rarrLength] = byteData[b];
+                rarrLength++;
+            }
+        }
+        byte[] ecBytes = new byte[rarrLength];
+        System.arraycopy(ecBytesWorking, 0, ecBytes, 0, rarrLength);
+        return ecBytes;
     }
 
     public static byte[] mergeBytes(byte[] arr1, byte[] arr2) {

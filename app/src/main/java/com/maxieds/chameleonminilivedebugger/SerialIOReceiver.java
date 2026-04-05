@@ -114,17 +114,21 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
         redirectSerialDataInterface = null;
     }
 
-    private void printSerialDataForDebugging(byte[] serialData) {
+    public static void printSerialDataForDebugging(byte[] serialData) {
         Log.d(TAG, "SERIALIO_LOGDATA_RECEIVED: (ASCII) " + Utils.bytes2Ascii(serialData));
         Log.d(TAG, "SERIALIO_LOGDATA_RECEIVED: (HEX)   " + Utils.bytes2Hex(serialData));
         Log.d(TAG, "SERIALIO_LOGDATA_RECEIVED: (LOG)   " + ChameleonLogUtils.ChameleonLogData.newInstance(serialData).toString());
     }
 
     public boolean notifySerialDataReceived(byte[] serialData) {
+        byte[] serialDataErrorChecked = Utils.errorCheckByteBuffer(serialData);
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED);
-        notifyIntent.putExtra(ChameleonSerialIOInterface.SERIALIO_BYTE_DATA, serialData);
+        notifyIntent.putExtra(ChameleonSerialIOInterface.SERIALIO_BYTE_DATA, serialDataErrorChecked);
         notifyContext.sendBroadcast(notifyIntent);
+        Log.i(TAG, "notifySerialDataReceived: Passed full serialData as input:");
         printSerialDataForDebugging(serialData);
+        Log.i(TAG, "notifySerialDataReceived: Pruned serialData buffer to:");
+        printSerialDataForDebugging(serialDataErrorChecked);
         return true;
     }
 
@@ -164,11 +168,9 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
             return;
         }
         int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData);
-        if (loggingRespSize > 0) {
-            Log.i(TAG, "Received new LogEntry @ " + String.format(BuildConfig.DEFAULT_LOCALE, "0x%02x", liveLogData[0]));
-            if(ChameleonLogUtils.LOGMODE_ENABLE_PRINTING_LIVE_LOGS) {
-                notifyLogDataReceived(liveLogData);
-            }
+        if (loggingRespSize > 0 && (liveLogData[0] != (byte) 0x00 || liveLogData.length == 1)) {
+            Log.i(TAG, "Received new LogEntry @ " + String.format(BuildConfig.DEFAULT_LOCALE, "%s", Utils.bytes2Hex(liveLogData)));
+            notifyLogDataReceived(liveLogData);
             byte logCode = liveLogData[0];
             if(ChameleonLogUtils.LOGMODE_NOTIFY_ENABLE_CODECRX_STATUS_INDICATOR &&
                     (ChameleonLogUtils.LogCode.LOG_CODE_MAP.get(logCode) == LOG_INFO_CODEC_RX_DATA ||
@@ -177,7 +179,11 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
             }
             return;
         }
-        if (ChameleonIO.PAUSED) {
+        else if (liveLogData[0] != (byte) 0x00 || liveLogData.length == 1) {
+            Log.i(TAG, "NOTE: Discarding frivolous zero byte buffer...");
+            return;
+        }
+        else if (ChameleonIO.PAUSED) {
             return;
         } else if (ChameleonIO.DOWNLOAD) {
             ExportTools.performXModemSerialDownload(liveLogData);

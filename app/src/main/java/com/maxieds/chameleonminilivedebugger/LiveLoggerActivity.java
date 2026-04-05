@@ -311,6 +311,8 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           configDeviceHandler.postDelayed(configDeviceRunnable, 0);
      }
 
+     public static boolean isGUIFullyInit = false;
+
      /**
       * Initializes the activity state and variables.
       * Called when the activity is created.
@@ -441,6 +443,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     if (onCreateActivityIntent != null) {
                          llActivity.onNewIntent(onCreateActivityIntent);
                     }
+                    llActivity.isGUIFullyInit = true;
                }
           };
           /* Waiting for more than a second to give the GUI time to display on launch
@@ -578,7 +581,8 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                }
           } else if(intent.getAction().equals(SerialUSBInterface.ACTION_USB_PERMISSION)) {
                SerialUSBInterface.usbPermissionsGranted = true;
-          } else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
+          } else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED) &&
+                    isGUIFullyInit) {
                SerialUSBInterface.registerUSBPermission(intent, this);
                if(ChameleonSettings.serialIOPorts[ChameleonSettings.USBIO_IFACE_INDEX].configureSerial() != 0) {
                     ChameleonSettings.stopSerialIOConnectionDiscovery();
@@ -591,7 +595,8 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     setStatusIcon(R.id.statusIconUSB, R.drawable.usbconnected16);
                }
           }
-          else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
+          else if(intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED) &&
+                  isGUIFullyInit) {
                ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
                if(serialIOPort != null && serialIOPort.isWiredUSB()) {
                     ChameleonIO.DeviceStatusSettings.stopPostingStats();
@@ -625,24 +630,18 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     clearStatusIcon(R.id.statusIconBT);
                     ChameleonSettings.initializeSerialIOConnections();
                }
-               /*else if (ChameleonSettings.getBluetoothIOInterface() != null) {
-                    ChameleonSettings.stopSerialIOConnectionDiscovery();
-                    ChameleonSettings.initializeSerialIOConnections();
-                    ChameleonSettings.getBluetoothIOInterface().stopScanningDevices();
-                    ChameleonSettings.getBluetoothIOInterface().startScanningDevices();
-               }*/
           } else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DEVICE_CONNECTION_LOST)) {
                /* Do nothing. This intent is only broadcast by the IO classes after calling shutdownSerial(). */
           }
           else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_DATA_RECEIVED)) {
                byte[] serialByteData = intent.getByteArrayExtra(ChameleonSerialIOInterface.SERIALIO_BYTE_DATA);
-               if (ChameleonLogUtils.ResponseIsLiveLoggingBytes(serialByteData) == 0) {
+               if (ChameleonLogUtils.ResponseIsLiveLoggingBytes(serialByteData) == 0 && isGUIFullyInit) {
                     String dataMsg = String.format(BuildConfig.DEFAULT_LOCALE, "Unexpected serial I/O data received (data as log below)");
                     GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("ERROR", dataMsg));
                     GUILogUtils.appendNewLog(LogEntryUI.newInstance(serialByteData, ""));
                }
           }
-          else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED)) {
+          else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED) && isGUIFullyInit) {
                byte[] logDataBytes = intent.getByteArrayExtra(ChameleonSerialIOInterface.SERIALIO_BYTE_DATA);
                boolean duplicateLogData = false;
                if(ChameleonLogUtils.CONFIG_COLLAPSE_COMMON_LOG_ENTRIES) {
@@ -661,11 +660,11 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                          }
                     }
                }
-               if (!duplicateLogData) {
+               if (!duplicateLogData && isGUIFullyInit) {
                     GUILogUtils.appendNewLog(LogEntryUI.newInstance(logDataBytes, ""));
                }
           }
-          else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_NOTIFY_STATUS)) {
+          else if(intent.getAction().equals(ChameleonSerialIOInterface.SERIALIO_NOTIFY_STATUS) && isGUIFullyInit) {
                String msgType = intent.getStringExtra(ChameleonSerialIOInterface.SERIALIO_STATUS_TYPE);
                String statusMsg = intent.getStringExtra(ChameleonSerialIOInterface.SERIALIO_STATUS_MSG);
                GUILogUtils.appendNewLog(new LogEntryMetadataRecord(defaultInflater, msgType, statusMsg));
@@ -678,6 +677,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       */
      @Override
      public void onPause() {
+          isGUIFullyInit = false;
           AndroidSettingsStorage.saveAllSettings();
           Utils.clearToastMessage();
           if(ChameleonSettings.getActiveSerialIOPort() != null) {
@@ -702,6 +702,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           Utils.clearToastMessage();
           AndroidSettingsStorage.loadPreviousSettings();
           BluetoothUtils.resetBluetoothAdapterAtStart(this);
+          isGUIFullyInit = true;
           if(ChameleonSettings.getActiveSerialIOPort() != null) {
                reconfigureSerialIODevices();
                ChameleonSettings.getActiveSerialIOPort().startScanningDevices();
@@ -715,6 +716,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
      public void onDestroy() {
           AndroidSettingsStorage.saveAllSettings();
           Utils.clearToastMessage();
+          isGUIFullyInit = false;
           if(ChameleonSettings.getActiveSerialIOPort() != null) {
                ChameleonSettings.getActiveSerialIOPort().stopScanningDevices();
                ChameleonSettings.getActiveSerialIOPort().shutdownSerial();

@@ -446,6 +446,11 @@ public class ChameleonIO {
                     updateAllStatusAndPost(true);
                     return false;
                 }
+                /* Below: Unlock the mutex every couple of queries for commands
+                 *        sent to the Chameleon. This should prevent the long (3 sec)
+                 *        command timeout from blocking other uses of the
+                 *        attached device.
+                 */
                 else if (!ChameleonIO.REVE_BOARD) {
                     CONFIG = ChameleonIO.getSettingFromDevice("CONFIG?", CONFIG);
                     UID = ChameleonIO.getSettingFromDevice("UID?", UID);
@@ -454,26 +459,71 @@ public class ChameleonIO {
                     }
                     UIDSIZE = Utils.parseInt(ChameleonIO.getSettingFromDevice("UIDSIZE?", String.format("%d", UIDSIZE)));
                     MEMSIZE = Utils.parseInt(ChameleonIO.getSettingFromDevice("MEMSIZE?", String.format("%d", MEMSIZE)));
+                    statsVarsMutex.unlock();
+                    if (!statsVarsMutex.tryLock(ChameleonIO.LOCK_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                        updateAllStatusAndPost(true);
+                        return false;
+                    }
                     LOGMODE = ChameleonIO.getSettingFromDevice("LOGMODE?", String.format("%d", LOGSIZE)).replaceAll(" \\(.*\\)", "");
                     LOGSIZE = Utils.parseInt(ChameleonIO.getSettingFromDevice("LOGMEM?", String.format("%d", LOGSIZE)).replaceAll(" \\(.*\\)", ""));
+                    statsVarsMutex.unlock();
+                    if (!statsVarsMutex.tryLock(ChameleonIO.LOCK_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                        updateAllStatusAndPost(true);
+                        return false;
+                    }
                     DIP_SETTING = Utils.parseInt(ChameleonIO.getSettingFromDevice("SETTING?", String.format("%d", DIP_SETTING)));
                     READONLY = ChameleonIO.getSettingFromDevice("READONLY?", String.format("%d", READONLY ? 1 : 0)).equals("1");
+                    statsVarsMutex.unlock();
+                    if (!statsVarsMutex.tryLock(ChameleonIO.LOCK_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                        updateAllStatusAndPost(true);
+                        return false;
+                    }
                     FIELD = ChameleonIO.getSettingFromDevice("FIELD?", String.format("%d", FIELD ? 1 : 0)).equals("1");
                     CHARGING = ChameleonIO.getSettingFromDevice("CHARGING?", String.format("%d", CHARGING ? 1 : 0)).equals("TRUE");
+                    statsVarsMutex.unlock();
+                    if (!statsVarsMutex.tryLock(ChameleonIO.LOCK_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                        updateAllStatusAndPost(true);
+                        return false;
+                    }
                     THRESHOLD = Utils.parseInt(ChameleonIO.getSettingFromDevice("THRESHOLD?", String.format("%d", THRESHOLD)));
                     TIMEOUT = ChameleonIO.getSettingFromDevice("TIMEOUT?", TIMEOUT);
                 }
                 else {
                     CONFIG = ChameleonIO.getSettingFromDevice("config?", CONFIG);
                     UID = ChameleonIO.getSettingFromDevice("uid?", UID);
+                    statsVarsMutex.unlock();
+                    if (!statsVarsMutex.tryLock(ChameleonIO.LOCK_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                        updateAllStatusAndPost(true);
+                        return false;
+                    }
                     UIDSIZE = Utils.parseInt(ChameleonIO.getSettingFromDevice("uidsize?", String.format("%d",UIDSIZE)));
                     MEMSIZE = Utils.parseInt(ChameleonIO.getSettingFromDevice("memsize?", String.format("%d",MEMSIZE)));
+                    statsVarsMutex.unlock();
+                    if (!statsVarsMutex.tryLock(ChameleonIO.LOCK_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                        updateAllStatusAndPost(true);
+                        return false;
+                    }
                     LOGMODE = UNSET_VALUE_NA;
                     LOGSIZE = 0;
+                    statsVarsMutex.unlock();
+                    if (!statsVarsMutex.tryLock(ChameleonIO.LOCK_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                        updateAllStatusAndPost(true);
+                        return false;
+                    }
                     DIP_SETTING = Utils.parseInt(ChameleonIO.getSettingFromDevice("setting?", String.format("%d", DIP_SETTING)));
                     READONLY = ChameleonIO.getSettingFromDevice("readonly?", String.format("%d", READONLY ? 1 : 0)).equals("1");
+                    statsVarsMutex.unlock();
+                    if (!statsVarsMutex.tryLock(ChameleonIO.LOCK_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                        updateAllStatusAndPost(true);
+                        return false;
+                    }
                     FIELD = false;
                     CHARGING = false;
+                    statsVarsMutex.unlock();
+                    if (!statsVarsMutex.tryLock(ChameleonIO.LOCK_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                        updateAllStatusAndPost(true);
+                        return false;
+                    }
                     THRESHOLD = 0;
                     TIMEOUT = UNSET_VALUE_NA;
                 }
@@ -513,6 +563,7 @@ public class ChameleonIO {
                         public void run() {
                             try {
                                 if (!statsVarsMutex.tryLock(ChameleonIO.LOCK_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                                    updateAllStatusAndPost(true);
                                     return;
                                 }
                                 else if(!CONFIG.equals("TIMEOUT") && !CONFIG.equals("")) {
@@ -600,6 +651,14 @@ public class ChameleonIO {
      * @ref LiveLoggerActivity.usbReaderCallback
      */
     public static String getSettingFromDevice(String query, String hint) {
+        final String NO_RESP_DATA = "";
+        final String NO_RESP_CODE = "0";
+        if (!LiveLoggerActivity.isGUIFullyInit) {
+            Log.i(TAG, "getSettingFromDevice: GUI not initialized: Dropping command request...");
+            ChameleonIO.DEVICE_RESPONSE[0] = NO_RESP_DATA;
+            ChameleonIO.DEVICE_RESPONSE_CODE = NO_RESP_CODE;
+            return ChameleonIO.DEVICE_RESPONSE[0];
+        }
         Log.d(TAG, String.format(Locale.getDefault(), "getSettingFromDevice: (query) == %s && (hint) == %s", query, hint));
         ChameleonIO.DEVICE_RESPONSE = new String[1];
         ChameleonIO.DEVICE_RESPONSE[0] = (hint == null) ? "TIMEOUT" : hint;
@@ -607,13 +666,15 @@ public class ChameleonIO {
         ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
         if(serialIOPort == null) {
             Log.i(TAG, "Serial port is null");
-            ChameleonIO.DEVICE_RESPONSE[0] = NONE;
+            ChameleonIO.DEVICE_RESPONSE[0] = NO_RESP_DATA;
+            ChameleonIO.DEVICE_RESPONSE_CODE = NO_RESP_CODE;
             return ChameleonIO.DEVICE_RESPONSE[0];
         }
         else if(!serialIOPort.tryAcquireSerialPort(LOCK_TIMEOUT)) {
-            Log.i(TAG, "Unable to acquire serial port");
-            ChameleonIO.DEVICE_RESPONSE[0] = NONE;
-            return ChameleonIO.DEVICE_RESPONSE[0];
+            Log.i(TAG, "Unable to acquire serial port lock");
+            ChameleonIO.DEVICE_RESPONSE[0] = NO_RESP_DATA;
+            ChameleonIO.DEVICE_RESPONSE_CODE = NO_RESP_CODE;
+            return ChameleonIO.DEVICE_RESPONSE_CODE;
         }
         ChameleonIO.WAITING_FOR_RESPONSE = true;
         ChameleonIO.executeChameleonMiniCommand(query, TIMEOUT);
@@ -628,14 +689,14 @@ public class ChameleonIO {
                 break;
             }
         }
-        String fullCmdResp = String.join(" [+++]", Arrays.asList(ChameleonIO.DEVICE_RESPONSE));
-        Log.d(TAG, String.format(Locale.getDefault(), "getSettingFromDevice: Returned == %s // %s", ChameleonIO.DEVICE_RESPONSE_CODE, fullCmdResp));
-        int deviceRespCode = -1;
+        String fullCmdResp = String.join("\n", Arrays.asList(ChameleonIO.DEVICE_RESPONSE));
+        Log.d(TAG, String.format(Locale.getDefault(), "getSettingFromDevice: Returned == %s // %s\n--------\n", ChameleonIO.DEVICE_RESPONSE_CODE, fullCmdResp));
+        int deviceRespCode = 0;
         try {
             if(ChameleonIO.DEVICE_RESPONSE_CODE == null ||
                ChameleonIO.DEVICE_RESPONSE_CODE.length() == 0) {
-                ChameleonIO.DEVICE_RESPONSE[0] = NONE;
-                ChameleonIO.DEVICE_RESPONSE_CODE = NONE;
+                ChameleonIO.DEVICE_RESPONSE[0] = NO_RESP_DATA;
+                ChameleonIO.DEVICE_RESPONSE_CODE = NO_RESP_CODE;
             }
             if(ChameleonIO.DEVICE_RESPONSE_CODE.length() >= 3) {
                 deviceRespCode = Integer.valueOf(ChameleonIO.DEVICE_RESPONSE_CODE.substring(0, 3));
@@ -646,8 +707,8 @@ public class ChameleonIO {
         } catch(NumberFormatException nfe) {
             nfe.printStackTrace();
             serialIOPort.releaseSerialPortLock();
-            ChameleonIO.DEVICE_RESPONSE[0] = NONE;
-            ChameleonIO.DEVICE_RESPONSE_CODE = NONE;
+            ChameleonIO.DEVICE_RESPONSE[0] = NO_RESP_DATA;
+            ChameleonIO.DEVICE_RESPONSE_CODE = NO_RESP_CODE;
             return ChameleonIO.DEVICE_RESPONSE_CODE;
         }
         serialIOPort.releaseSerialPortLock();
@@ -655,7 +716,7 @@ public class ChameleonIO {
                 deviceRespCode != ChameleonIO.SerialRespCode.OK_WITH_TEXT.toInteger()) {
             return ChameleonIO.DEVICE_RESPONSE_CODE;
         }
-        String retValue = ChameleonIO.DEVICE_RESPONSE[0] != null ? ChameleonIO.DEVICE_RESPONSE[0] : "";
+        String retValue = ChameleonIO.DEVICE_RESPONSE[0] != null ? ChameleonIO.DEVICE_RESPONSE[0] : NO_RESP_DATA;
         if(retValue.equals("201:INVALID COMMAND USAGE")) {
             retValue += " (Are you in READER mode?)";
         }
