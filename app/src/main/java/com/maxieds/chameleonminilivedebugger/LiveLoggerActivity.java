@@ -302,9 +302,9 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     }
                     ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
                     /* Call twice: Make sure the device returned the correct data to display */
-                    ChameleonIO.DeviceStatusSettings.updateAllStatusAndPost(false);
-                    ChameleonIO.DeviceStatusSettings.updateAllStatusAndPost(false);
-                    ChameleonIO.DeviceStatusSettings.startPostingStats(0);
+                    //ChameleonIO.DeviceStatusSettings.updateAllStatusAndPost(false);
+                    //ChameleonIO.DeviceStatusSettings.updateAllStatusAndPost(false);
+                    ChameleonIO.DeviceStatusSettings.startPostingStats(1000);
                }
           };
           ChameleonIO.DeviceStatusSettings.stopPostingStats();
@@ -706,7 +706,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           if(ChameleonSettings.getActiveSerialIOPort() != null) {
                reconfigureSerialIODevices();
                ChameleonSettings.getActiveSerialIOPort().startScanningDevices();
-               ChameleonIO.DeviceStatusSettings.startPostingStats(0);
+               ChameleonIO.DeviceStatusSettings.startPostingStats(1000);
           } else {
                ChameleonSettings.initializeSerialIOConnections();
           }

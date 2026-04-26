@@ -35,6 +35,8 @@ import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.F
 import static com.maxieds.chameleonminilivedebugger.ChameleonIO.SerialRespCode.OK;
 import static java.lang.Math.round;
 
+import com.maxieds.chameleonminilivedebugger.ScriptingAPI.ChameleonIOHandler;
+
 /**
  * <h1>Chameleon IO Wrapper</h1>
  * The ChameleonIO class provides subclasses storing status configurations of the
@@ -119,7 +121,7 @@ public class ChameleonIO {
         else {
             String firmwareVersion = getSettingFromDevice("VERSION?");
             String commandsList = getSettingFromDevice("HELP");
-            Log.i(TAG, "CHAMELEON DEVICE TYPE -- " + firmwareVersion + "------" + commandsList);
+            Log.i(TAG, "CHAMELEON DEVICE TYPE -- FWVERS:" + firmwareVersion + " -- CMDS: " + commandsList);
             if(firmwareVersion.contains("DESFire") ||
                     (deviceConnType.equals("USB") && deviceActiveSerialIOPort.getActiveDeviceInfo().contains("DESFireMod"))) {
                 CHAMELEON_MINI_BOARD_TYPE = CHAMELEON_TYPE_DESFIRE_FWMOD;
@@ -152,7 +154,7 @@ public class ChameleonIO {
      * Default timeout to use when communicating with the device.
      */
     public static int TIMEOUT = 3000; // 3 seconds
-    public static final int LOCK_TIMEOUT = 50; // ms
+    public static final int LOCK_TIMEOUT = 25; // ms
     public static final int LONG_USER_TIMEOUT = 5000;
     public static final long BLE_GATT_CHAR_WRITE_TIMEOUT = 2000;
     public static final long NOTHREAD_SLEEP_INTERVAL = 50;
@@ -429,7 +431,11 @@ public class ChameleonIO {
         }
 
         public static void startPostingStats(int msDelay) {
-            if(postingStatsInProgress || !ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) {
+            if(!LiveLoggerActivity.isGUIFullyInit) {
+                statsUpdateHandler.removeCallbacksAndMessages(statsUpdateRunnable);
+                return;
+            }
+            else if(postingStatsInProgress || !ChameleonLogUtils.CONFIG_ENABLE_LIVE_TOOLBAR_STATUS_UPDATES) {
                 statsUpdateHandler.removeCallbacksAndMessages(statsUpdateRunnable);
                 return;
             }
@@ -594,6 +600,7 @@ public class ChameleonIO {
                                 ex.printStackTrace();
                             }
                             statsVarsMutex.unlock();
+                            postingStatsInProgress = false;
                         }
                     });
                 }
@@ -641,6 +648,8 @@ public class ChameleonIO {
     }
 
     private static final String NONE = "NONE";
+    public static final String NO_RESP_DATA = "";
+    public static final String NO_RESP_CODE = "0";
 
     /**
      * Queries the Chameleon device with the query command and returns its response
@@ -652,35 +661,39 @@ public class ChameleonIO {
      * @ref LiveLoggerActivity.usbReaderCallback
      */
     public static String getSettingFromDevice(String query, String hint) {
-        final String NO_RESP_DATA = "";
-        final String NO_RESP_CODE = "0";
+        ChameleonIO.DEVICE_RESPONSE = new String[1];
+        Log.d(TAG, String.format(Locale.getDefault(), "getSettingFromDevice: (query) == %s && (hint) == %s", query, hint));
+        String defaultRespCode = String.format(Locale.getDefault(), "%d:%s",
+                                 SerialRespCode.TIMEOUT.toInteger(),
+                                 SerialRespCode.TIMEOUT.toString());
         if (!LiveLoggerActivity.isGUIFullyInit) {
             Log.i(TAG, "getSettingFromDevice: GUI not initialized: Dropping command request...");
-            ChameleonIO.DEVICE_RESPONSE[0] = NO_RESP_DATA;
-            ChameleonIO.DEVICE_RESPONSE_CODE = NO_RESP_CODE;
+            ChameleonIO.DEVICE_RESPONSE[0] = defaultRespCode;
+            ChameleonIO.DEVICE_RESPONSE_CODE = SerialRespCode.TIMEOUT.toString();
             ChameleonIO.WAITING_FOR_RESPONSE = false;
             return ChameleonIO.DEVICE_RESPONSE[0];
         }
-        Log.d(TAG, String.format(Locale.getDefault(), "getSettingFromDevice: (query) == %s && (hint) == %s", query, hint));
-        ChameleonIO.DEVICE_RESPONSE = new String[1];
-        ChameleonIO.DEVICE_RESPONSE[0] = (hint == null) ? "TIMEOUT" : hint;
-        ChameleonIO.LASTCMD = query;
         ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
         if (serialIOPort == null) {
             Log.i(TAG, "Serial port is null");
-            ChameleonIO.DEVICE_RESPONSE[0] = NO_RESP_DATA;
-            ChameleonIO.DEVICE_RESPONSE_CODE = NO_RESP_CODE;
+            ChameleonIO.DEVICE_RESPONSE[0] = defaultRespCode;
+            ChameleonIO.DEVICE_RESPONSE_CODE = SerialRespCode.TIMEOUT.toString();
+            ChameleonIO.WAITING_FOR_RESPONSE = false;
             return ChameleonIO.DEVICE_RESPONSE[0];
         } else if (!serialIOPort.tryAcquireSerialPort(LOCK_TIMEOUT)) {
             Log.i(TAG, "Unable to acquire serial port lock");
-            ChameleonIO.DEVICE_RESPONSE[0] = NO_RESP_DATA;
-            ChameleonIO.DEVICE_RESPONSE_CODE = NO_RESP_CODE;
-            return ChameleonIO.DEVICE_RESPONSE_CODE;
+            ChameleonIO.DEVICE_RESPONSE[0] = defaultRespCode;
+            ChameleonIO.DEVICE_RESPONSE_CODE = SerialRespCode.TIMEOUT.toString();
+            ChameleonIO.WAITING_FOR_RESPONSE = false;
+            return ChameleonIO.DEVICE_RESPONSE[0];
         }
+        ChameleonIO.DEVICE_RESPONSE[0] = (hint == null) ? defaultRespCode : hint;
+        ChameleonIO.DEVICE_RESPONSE_CODE = String.format(Locale.getDefault(), "%d", SerialRespCode.TIMEOUT.toInteger());
+        ChameleonIO.LASTCMD = query;
         ChameleonIO.WAITING_FOR_RESPONSE = true;
         try {
             ChameleonIO.executeChameleonMiniCommand(query, TIMEOUT);
-            for (int i = 0; i < ChameleonIO.TIMEOUT / 50; i++) {
+            for (int i = 0; i < ChameleonIO.TIMEOUT / ChameleonIOHandler.sleepDeltaMs; i++) {
                 if (!ChameleonIO.WAITING_FOR_RESPONSE) {
                     break;
                 }
@@ -688,37 +701,19 @@ public class ChameleonIO {
             }
         } catch (InterruptedException ie) {}
         ChameleonIO.WAITING_FOR_RESPONSE = false;
-        String fullCmdResp = String.join("\n", Arrays.asList(ChameleonIO.DEVICE_RESPONSE));
-        Log.d(TAG, String.format(Locale.getDefault(), "getSettingFromDevice: Returned == %s // %s\n--------\n",
-                   ChameleonIO.DEVICE_RESPONSE_CODE, fullCmdResp));
-        int deviceRespCode = 0;
-        try {
-            if(ChameleonIO.DEVICE_RESPONSE_CODE == null ||
-               ChameleonIO.DEVICE_RESPONSE_CODE.length() == 0) {
-                ChameleonIO.DEVICE_RESPONSE[0] = NO_RESP_DATA;
-                ChameleonIO.DEVICE_RESPONSE_CODE = NO_RESP_CODE;
-                deviceRespCode = Integer.valueOf(ChameleonIO.DEVICE_RESPONSE_CODE);
-            }
-            else if(ChameleonIO.DEVICE_RESPONSE_CODE.length() >= 3) {
-                deviceRespCode = Integer.valueOf(ChameleonIO.DEVICE_RESPONSE_CODE.substring(0, 3));
-            }
-            else {
-                deviceRespCode = Integer.valueOf(ChameleonIO.DEVICE_RESPONSE_CODE);
-            }
-            ChameleonIO.DEVICE_RESPONSE_CODE = String.format(Locale.getDefault(), "%d", deviceRespCode);
-        } catch(Exception nfe) {
-            nfe.printStackTrace();
-            serialIOPort.releaseSerialPortLock();
-            ChameleonIO.DEVICE_RESPONSE[0] = NO_RESP_DATA;
-            ChameleonIO.DEVICE_RESPONSE_CODE = NO_RESP_CODE;
-            return ChameleonIO.DEVICE_RESPONSE_CODE;
-        }
         serialIOPort.releaseSerialPortLock();
+        String fullCmdResp = String.join("\n", Arrays.asList(ChameleonIO.DEVICE_RESPONSE));
+        Log.d(TAG, String.format(Locale.getDefault(), "getSettingFromDevice: Returned == %s (from [0]=%s) // FULL-CMD-RESP: %s",
+                   ChameleonIO.DEVICE_RESPONSE_CODE, ChameleonIO.DEVICE_RESPONSE[0], fullCmdResp));
+        int deviceRespCode = SerialRespCode.TIMEOUT.toInteger();
+        try {
+            deviceRespCode = Integer.parseInt(ChameleonIO.DEVICE_RESPONSE_CODE);
+        } catch(Exception nfe) {}
         if(deviceRespCode != ChameleonIO.SerialRespCode.OK.toInteger() &&
                 deviceRespCode != ChameleonIO.SerialRespCode.OK_WITH_TEXT.toInteger()) {
-            return ChameleonIO.DEVICE_RESPONSE_CODE;
+            return ChameleonIO.DEVICE_RESPONSE[0];
         }
-        String retValue = ChameleonIO.DEVICE_RESPONSE[0] != null ? ChameleonIO.DEVICE_RESPONSE[0] : NO_RESP_DATA;
+        String retValue = ChameleonIO.DEVICE_RESPONSE[0];
         if(retValue.equals("201:INVALID COMMAND USAGE")) {
             retValue += " (Are you in READER mode?)";
         }

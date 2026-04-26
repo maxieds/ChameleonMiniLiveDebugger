@@ -31,6 +31,7 @@ import com.maxieds.chameleonminilivedebugger.Utils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Locale;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Lock;
@@ -111,14 +112,28 @@ public class ChameleonIOHandler implements ChameleonSerialIOInterface.SerialData
             final String chameleonCmdResponse = String.valueOf(dataBytes);
             ChameleonIO.DEVICE_RESPONSE = new String[1];
             ChameleonIO.DEVICE_RESPONSE[0] = chameleonCmdResponse;
-                    Handler execCmdResponseRtexHandler = new Handler();
+            int deviceRespCode = 0;
+            try {
+                if(ChameleonIO.DEVICE_RESPONSE[0].length() >= 3) {
+                    deviceRespCode = Integer.valueOf(ChameleonIO.DEVICE_RESPONSE[0].substring(0, 3));
+                }
+                else {
+                    deviceRespCode = Integer.valueOf(ChameleonIO.DEVICE_RESPONSE[0]);
+                }
+                ChameleonIO.DEVICE_RESPONSE_CODE = String.format(Locale.getDefault(), "%d", deviceRespCode);
+            } catch(Exception nfe) {
+                //nfe.printStackTrace();
+                ChameleonIO.DEVICE_RESPONSE[0] = ChameleonIO.NO_RESP_DATA;
+                ChameleonIO.DEVICE_RESPONSE_CODE = ChameleonIO.NO_RESP_CODE;
+            }
+            Handler execCmdResponseRtexHandler = new Handler();
             Runnable execCmdResponseRtexRunner = new Runnable() {
                 @Override
                 public void run() {
                     throw new RuntimeException(chameleonCmdResponse);
                 }
             };
-            execCmdResponseRtexHandler.postDelayed(execCmdResponseRtexRunner, 200);
+            execCmdResponseRtexHandler.postDelayed(execCmdResponseRtexRunner, 250);
             statusConfigLock.unlock();
         }
         else {
@@ -127,7 +142,7 @@ public class ChameleonIOHandler implements ChameleonSerialIOInterface.SerialData
     }
 
     private static int CHAMELEON_TIMEOUT = ChameleonIO.TIMEOUT;
-    private static final int sleepDeltaMs = 50;
+    public static final int sleepDeltaMs = 50;
 
     public static ScriptVariable executeChameleonCommandForResult(String cmdText) {
         return executeChameleonCommandForResult(cmdText, CHAMELEON_TIMEOUT);

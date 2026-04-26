@@ -89,7 +89,7 @@ public class Utils {
 
     public static String formatUIDString(String hexBytesStr, String delim) {
         if(hexBytesStr == null || hexBytesStr.length() == 0) {
-            return "DEVICE UID";
+            return "DEVICE-UID";
         }
         else if(hexBytesStr.equals("NO UID.")) {
             return hexBytesStr;

@@ -164,8 +164,6 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
             return;
         } else if(liveLogData == null || liveLogData.length == 0) {
             return;
-        } else if (liveLogData.length == 0) {
-            return;
         }
         int loggingRespSize = ChameleonLogUtils.ResponseIsLiveLoggingBytes(liveLogData);
         if (loggingRespSize > 0 && (liveLogData[0] != (byte) 0x00 || liveLogData.length == 1)) {
@@ -179,7 +177,7 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
             }
             return;
         }
-        else if (liveLogData[0] != (byte) 0x00 || liveLogData.length == 1) {
+        else if (liveLogData[0] != (byte) 0x00 && liveLogData.length == 1) {
             Log.i(TAG, "NOTE: Discarding frivolous zero byte buffer...");
             return;
         }
@@ -199,12 +197,11 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
             }
         } else if (ChameleonIO.isCommandResponse(liveLogData)) {
             String[] strLogData = (new String(liveLogData)).split("[\n\r\t][\n\r\t]+");
-            ChameleonIO.DEVICE_RESPONSE_CODE = strLogData[0];
             int respCodeStartIndex = Utils.getFirstResponseCodeIndex(ChameleonIO.DEVICE_RESPONSE_CODE);
-            ChameleonIO.DEVICE_RESPONSE_CODE = ChameleonIO.DEVICE_RESPONSE_CODE.substring(respCodeStartIndex);
+            ChameleonIO.DEVICE_RESPONSE_CODE = strLogData[0].substring(respCodeStartIndex);
             boolean respCodeHasPreText = respCodeStartIndex > 0;
             if (respCodeHasPreText) {
-                strLogData[0] = strLogData[0].substring(0, respCodeStartIndex - 1);
+                strLogData[0] = strLogData[0].substring(respCodeStartIndex + 1, strLogData[0].length() - respCodeStartIndex - 1);
             }
             if (strLogData.length >= 2) {
                 if (respCodeHasPreText) {

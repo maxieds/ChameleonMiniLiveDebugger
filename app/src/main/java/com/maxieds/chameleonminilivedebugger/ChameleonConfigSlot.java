@@ -143,6 +143,9 @@ public class ChameleonConfigSlot {
         if(ChameleonSettings.getActiveSerialIOPort() == null) {
             return false;
         }
+        else if(!LiveLoggerActivity.isGUIFullyInit) {
+            return false;
+        }
         try {
             tagConfigType = ChameleonIO.getSettingFromDevice("CONFIG?");
             uidHexBytes = ChameleonIO.getSettingFromDevice("UID?");
@@ -168,6 +171,9 @@ public class ChameleonConfigSlot {
             return false;
         }
         try {
+            if(!LiveLoggerActivity.isGUIFullyInit) {
+                return false;
+            }
             ChameleonIO.getSettingFromDevice(String.format(BuildConfig.DEFAULT_LOCALE, "SETTING=%d", nextSlot));
             readParametersFromChameleonSlot();
         } catch(Exception exe) {

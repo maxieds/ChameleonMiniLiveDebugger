@@ -178,8 +178,9 @@ public class UITabUtils {
                 try {
                     activeSlotNumber = Integer.parseInt(ChameleonIO.getSettingFromDevice("SETTING?"), 10);
                 } catch(NumberFormatException nfe) {
-                    nfe.printStackTrace();
+                    //nfe.printStackTrace();
                     errorOnInit = true;
+                    activeSlotNumber = 1;
                 }
             }
             LinearLayout slotConfigContainer = tabMainLayoutView.findViewById(R.id.slotConfigLayoutsContainer);
@@ -194,8 +195,10 @@ public class UITabUtils {
                     @Override
                     public void run() {
                         if(activeSlotNumberConst >=1 && activeSlotNumberConst <= ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOT_COUNT) {
-                            ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumberConst - 1].getTagConfigurationsListFromDevice();
-                            ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumberConst - 1].readParametersFromChameleonSlot();
+                            if(LiveLoggerActivity.isGUIFullyInit) {
+                                ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumberConst - 1].getTagConfigurationsListFromDevice();
+                                ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumberConst - 1].readParametersFromChameleonSlot();
+                            }
                             ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumberConst - 1].updateLayoutParameters();
                             ChameleonConfigSlot.CHAMELEON_DEVICE_CONFIG_SLOTS[activeSlotNumberConst - 1].enableLayout();
                             Switch swLockTag = (Switch) slotConfigContainer.findViewById(R.id.fieldOnOffSwitch);

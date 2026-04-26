@@ -191,7 +191,22 @@ public class SerialUSBInterface extends SerialIOReceiver {
         ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = ChameleonSettings.USBIO_IFACE_INDEX;
         LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUSB, R.drawable.usbconnected16);
         UITabUtils.updateConfigTabConnDeviceInfo(false);
-        notifyStatus("USB STATUS: ", "Chameleon:     " + getActiveDeviceInfo());
+        // Wait for the GUI to load, then post a log message with the
+        // USB device information:
+        final String usbDevInfoLogText = "Chameleon:     " + getActiveDeviceInfo();
+        Handler postUSBInfoLogHandler = new Handler();
+        Runnable postUSBInfoLogRunner = new Runnable() {
+            final String usbDevInfoLogTextLocal = usbDevInfoLogText;
+            @Override
+            public void run() {
+                if(!LiveLoggerActivity.isGUIFullyInit) {
+                    postUSBInfoLogHandler.postDelayed(this, 5000);
+                } else {
+                    notifyStatus("USB STATUS: ", usbDevInfoLogTextLocal);
+                }
+            }
+        };
+        postUSBInfoLogHandler.postDelayed(postUSBInfoLogRunner, 5000);
         return STATUS_TRUE;
     }
 
@@ -357,8 +372,8 @@ public class SerialUSBInterface extends SerialIOReceiver {
         }
         if (!ChameleonSettings.serialIOPorts[ChameleonSettings.BTIO_IFACE_INDEX].serialConfigured()) {
             if (ChameleonSettings.serialIOPorts[ChameleonSettings.USBIO_IFACE_INDEX].configureSerial() != 0) {
-                ChameleonIO.DeviceStatusSettings.stopPostingStats();
-                ChameleonIO.DeviceStatusSettings.startPostingStats(500);
+                //ChameleonIO.DeviceStatusSettings.stopPostingStats();
+                //ChameleonIO.DeviceStatusSettings.startPostingStats(500);
                 SerialUSBInterface.usbPermissionsGranted = true;
             }
         }
