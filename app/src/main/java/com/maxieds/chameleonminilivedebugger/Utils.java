@@ -174,11 +174,16 @@ public class Utils {
     }
 
     public static byte byteToHex(byte b) {
+        String byteStr = "";
         try {
-            String byteStr = String.format(Locale.getDefault(), "0x%02x", b);
-            return Byte.valueOf(byteStr);
+            //byteStr = String.format(Locale.getDefault(), "0x%02x", b);
+            //return Byte.valueOf(byteStr, 16);
+            byteStr = String.format(Locale.getDefault(), "%d", (int) b);
+            return (byte) Integer.parseInt(byteStr);
+
         } catch (NumberFormatException nfe) {
             //nfe.printStackTrace();
+            Log.i(TAG, "NFE for byte string \"" + byteStr + "\"");
             return ERROR_BYTE;
         }
     }
@@ -225,7 +230,7 @@ public class Utils {
         for (int b = 0; b < byteData.length; b++) {
             byte transByte = byteToHex(byteData[b]);
             if (transByte != ERROR_BYTE || byteData[b] == ERROR_BYTE) {
-                ecBytesWorking[rarrLength] = byteData[b];
+                ecBytesWorking[rarrLength] = transByte;
                 rarrLength++;
             }
         }

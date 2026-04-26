@@ -181,8 +181,10 @@ public class SerialUSBInterface extends SerialIOReceiver {
             return STATUS_ERROR;
         }
         activeDevice = device;
-        ChameleonSettings.chameleonDeviceSerialNumber = String.format(BuildConfig.DEFAULT_LOCALE, "%s-%s-%s",
-                activeDevice.getProductName(), activeDevice.getVersion(), activeDevice.getSerialNumber());
+        String usbDevSerialNo = activeDevice.getSerialNumber();
+        usbDevSerialNo = usbDevSerialNo != null ? "-" + usbDevSerialNo : "";
+        ChameleonSettings.chameleonDeviceSerialNumber = String.format(BuildConfig.DEFAULT_LOCALE, "%s-%s%s",
+                activeDevice.getProductName(), activeDevice.getVersion(), usbDevSerialNo);
         ChameleonIO.PAUSED = false;
         serialConfigured = true;
         receiversRegistered = true;
@@ -292,7 +294,7 @@ public class SerialUSBInterface extends SerialIOReceiver {
         Log.d(TAG, "USBReaderCallback Send Data: (HEX) " + Utils.bytes2Hex(dataWriteBuffer));
         Log.d(TAG, "USBReaderCallback Send Data: (TXT) " + Utils.bytes2Ascii(dataWriteBuffer));
         printSerialDataForDebugging(dataWriteBuffer);
-        Log.i(TAG, "sendDataBuffer: Pruned serialData send buffer to:");
+        Log.i(TAG, "sendDataBuffer: Pruned serialData send buffer to: " + Utils.bytes2Hex(serialDataErrorChecked));
         Log.d(TAG, "USBReaderCallback Send Data: (HEX) " + Utils.bytes2Hex(serialDataErrorChecked));
         Log.d(TAG, "USBReaderCallback Send Data: (TXT) " + Utils.bytes2Ascii(serialDataErrorChecked));
         printSerialDataForDebugging(serialDataErrorChecked);

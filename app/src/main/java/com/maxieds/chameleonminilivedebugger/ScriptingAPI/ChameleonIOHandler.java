@@ -109,7 +109,9 @@ public class ChameleonIOHandler implements ChameleonSerialIOInterface.SerialData
             statusConfigLock.lock();
             WAITING_FOR_RESPONSE = false;
             final String chameleonCmdResponse = String.valueOf(dataBytes);
-            Handler execCmdResponseRtexHandler = new Handler();
+            ChameleonIO.DEVICE_RESPONSE = new String[1];
+            ChameleonIO.DEVICE_RESPONSE[0] = chameleonCmdResponse;
+                    Handler execCmdResponseRtexHandler = new Handler();
             Runnable execCmdResponseRtexRunner = new Runnable() {
                 @Override
                 public void run() {
@@ -143,19 +145,18 @@ public class ChameleonIOHandler implements ChameleonSerialIOInterface.SerialData
         serialIOPort.sendDataBuffer(sendCmd.getBytes());
         String cmdResp = "";
         boolean isTimeout = true;
-        for(int i = 0; i < timeout / sleepDeltaMs; i++) {
-            if(!WAITING_FOR_RESPONSE) {
-                isTimeout = false;
-                break;
-            }
-            try {
+        try {
+            for(int i = 0; i < timeout / sleepDeltaMs; i++) {
+                if(!WAITING_FOR_RESPONSE) {
+                    isTimeout = false;
+                    break;
+                }
                 Thread.sleep(sleepDeltaMs);
-            } catch(InterruptedException ie) {
-                WAITING_FOR_RESPONSE = false;
-                isTimeout = false;
-                cmdResp = ie.getMessage().replace("java.lang.RuntimeException: ", "");
-                break;
             }
+        } catch(InterruptedException ie) {
+            WAITING_FOR_RESPONSE = false;
+            isTimeout = false;
+            cmdResp = ie.getMessage().replace("java.lang.RuntimeException: ", "");
         }
         return parseChameleonCommandResponse(cmdText, cmdResp, isTimeout);
     }
