@@ -185,12 +185,27 @@ public class SerialUSBInterface extends SerialIOReceiver {
         usbDevSerialNo = usbDevSerialNo != null ? "-" + usbDevSerialNo : "";
         ChameleonSettings.chameleonDeviceSerialNumber = String.format(BuildConfig.DEFAULT_LOCALE, "%s-%s%s",
                 activeDevice.getProductName(), activeDevice.getVersion(), usbDevSerialNo);
+        // NEXT ATTEMPT: Lock the serial port to prevent a race condition where
+        // we are still configuring the new device setup, but another thread
+        // tries to start using it and throwing data at it - this seems to
+        // cause deadlock starting the app when the USB device is already
+        // connected, but not configured yet. Really the library should know
+        // to block until we're ready to take data (it used to) - seems to be a
+        // new bug introduced in new Android SDK versions...
+        ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = ChameleonSettings.USBIO_IFACE_INDEX;
+        ChameleonSerialIOInterface serialIOPort = ChameleonSettings.getActiveSerialIOPort();
+        // TODO: If timeout happens locking the serial port for config, does the
+        //       system keep trying to send intents about the new, unconnected device ???
+        if(!serialIOPort.tryAcquireSerialPort(5000)) {
+            return STATUS_FALSE;
+        }
+        ////
         ChameleonIO.PAUSED = false;
         serialConfigured = true;
         receiversRegistered = true;
-        ChameleonSettings.SERIALIO_IFACE_ACTIVE_INDEX = ChameleonSettings.USBIO_IFACE_INDEX;
         LiveLoggerActivity.getLiveLoggerInstance().setStatusIcon(R.id.statusIconUSB, R.drawable.usbconnected16);
         UITabUtils.updateConfigTabConnDeviceInfo(false);
+        serialIOPort.releaseSerialPortLock();
         // Wait for the GUI to load, then post a log message with the
         // USB device information:
         final String usbDevInfoLogText = "Chameleon:     " + getActiveDeviceInfo();
