@@ -304,14 +304,73 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     /* Call twice: Make sure the device returned the correct data to display */
                     //ChameleonIO.DeviceStatusSettings.updateAllStatusAndPost(false);
                     //ChameleonIO.DeviceStatusSettings.updateAllStatusAndPost(false);
-                    ChameleonIO.DeviceStatusSettings.startPostingStats(1000);
+                    ChameleonIO.DeviceStatusSettings.startPostingStats(250);
                }
           };
           ChameleonIO.DeviceStatusSettings.stopPostingStats();
-          configDeviceHandler.postDelayed(configDeviceRunnable, 0);
+          configDeviceHandler.postDelayed(configDeviceRunnable, 50);
      }
 
      public static boolean isGUIFullyInit = false;
+     public static String usbDeviceInfo = null;
+
+     private void onCreateSetup() {
+
+          Log.d(TAG, "onCreateSetup: method invoked...");
+
+          setUnhandledExceptionHandler();
+          doFirstRunTasks();
+
+          AndroidSettingsStorage.loadPreviousSettings();
+          if(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT) {
+               GUILogUtils.clearAllLogs();
+          }
+          Utils.clearToastMessage();
+          ThemesConfiguration.setLocalTheme(ThemesConfiguration.storedAppTheme, true, this);
+
+          setContentView(R.layout.activity_live_logger);
+
+          Toolbar actionBar = (Toolbar) findViewById(R.id.toolbarActionBar);
+          actionBar.setSubtitle("Portable NFC logger | v" + String.valueOf(BuildConfig.VERSION_NAME));
+          getWindow().setTitleColor(ThemesConfiguration.getThemeColorVariant(R.attr.actionBarBackgroundColor));
+          getWindow().setStatusBarColor(ThemesConfiguration.getThemeColorVariant(R.attr.colorPrimaryDark));
+          getWindow().setNavigationBarColor(ThemesConfiguration.getThemeColorVariant(R.attr.colorPrimaryDark));
+
+          configureTabViewPager();
+
+          clearStatusIcon(R.id.statusIconUSB);
+          clearStatusIcon(R.id.statusIconBT);
+          clearStatusIcon(R.id.statusIconUlDl);
+          clearStatusIcon(R.id.statusIconNewMsg);
+          clearStatusIcon(R.id.statusIconNewXFer);
+          clearStatusIcon(R.id.signalStrength);
+          clearStatusIcon(R.id.statusCodecRXDataEvent);
+          clearStatusIcon(R.id.statusScriptingIsExec);
+
+          if(BuildConfig.PAID_APP_VERSION) {
+               String userGreeting = String.format(Locale.getDefault(), "%s\n\n%s",
+                       getString(R.string.appPaidInitialUserGreetingMsg),
+                       getString(R.string.appInitialUserGreetingMsg));
+               GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("WELCOME", userGreeting));
+               String disclaimerStmt = getString(R.string.appPaidFlavorDisclaimerEULA);
+               GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("DISCLAIMER", disclaimerStmt));
+          }
+          else {
+               String userGreeting = getString(R.string.appInitialUserGreetingMsg);
+               GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("WELCOME", userGreeting));
+          }
+          if(usbDeviceInfo != null && ChameleonSettings.getActiveSerialIOPort() != null) {
+               Log.i(TAG, String.format(Locale.getDefault(), "Posting new USB device info to Logs: (MSG) %s", usbDeviceInfo));
+               GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("USB STATUS", usbDeviceInfo));
+          }
+
+          //if(getIntent() != null && getIntent().getBooleanExtra(CrashReportActivity.INTENT_CMLD_RECOVERED_FROM_CRASH, false)) {
+          //     Utils.displayToastMessageLong("Chameleon Mini Live Debugger recovered from crash.");
+          //}
+
+          Log.d(TAG, "onCreateSetup: method returning...");
+
+     }
 
      /**
       * Initializes the activity state and variables.
@@ -321,7 +380,9 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
      @Override
      protected void onCreate(Bundle savedInstanceState) {
 
+          Log.d(TAG, "onCreate: method invoked...");
           super.onCreate(savedInstanceState);
+
           if(getInstance() == null) {
                Log.i(TAG, "Created new activity");
           } else if(!isTaskRoot()) {
@@ -345,29 +406,9 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                }
           }
 
-          setUnhandledExceptionHandler();
-          doFirstRunTasks();
+          onCreateSetup();
 
-          boolean completeRestart = (getLiveLoggerInstance() == null);
-
-          AndroidSettingsStorage.loadPreviousSettings();
-          if(ChameleonLogUtils.CONFIG_CLEAR_LOGS_NEW_DEVICE_CONNNECT) {
-               GUILogUtils.clearAllLogs();
-          }
-          Utils.clearToastMessage();
-          ThemesConfiguration.setLocalTheme(ThemesConfiguration.storedAppTheme, true, this);
-          //ThemesConfiguration.setThemeHandler.postDelayed(ThemesConfiguration.setThemeRunner, 400L);
-
-          setContentView(R.layout.activity_live_logger);
-
-          Toolbar actionBar = (Toolbar) findViewById(R.id.toolbarActionBar);
-          actionBar.setSubtitle("Portable NFC logger | v" + String.valueOf(BuildConfig.VERSION_NAME));
-          getWindow().setTitleColor(ThemesConfiguration.getThemeColorVariant(R.attr.actionBarBackgroundColor));
-          getWindow().setStatusBarColor(ThemesConfiguration.getThemeColorVariant(R.attr.colorPrimaryDark));
-          getWindow().setNavigationBarColor(ThemesConfiguration.getThemeColorVariant(R.attr.colorPrimaryDark));
-
-          configureTabViewPager();
-
+          boolean completeRestart = (savedInstanceState == null);
           if(completeRestart) {
                String[] permissions;
                if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
@@ -398,40 +439,14 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     for (int permIdx = 0; permIdx < permissions.length; permIdx++) {
                          String permission = permissions[permIdx];
                          ActivityCompat.shouldShowRequestPermissionRationale(this, permission);
-                         ActivityCompat.requestPermissions(this, new String[] { permission }, CMLD_PERMS_ALL_REQUEST_CODE);
+                         //ActivityCompat.requestPermissions(this, new String[] { permission }, CMLD_PERMS_ALL_REQUEST_CODE);
                     }
                }
                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR); /* Keep app from crashing when the screen rotates */
           }
 
-          clearStatusIcon(R.id.statusIconUSB);
-          clearStatusIcon(R.id.statusIconBT);
-          clearStatusIcon(R.id.statusIconUlDl);
-          clearStatusIcon(R.id.statusIconNewMsg);
-          clearStatusIcon(R.id.statusIconNewXFer);
-          clearStatusIcon(R.id.signalStrength);
-          clearStatusIcon(R.id.statusCodecRXDataEvent);
-          clearStatusIcon(R.id.statusScriptingIsExec);
-
-          if(BuildConfig.PAID_APP_VERSION) {
-               String userGreeting = String.format(Locale.getDefault(), "%s\n\n%s",
-                                     getString(R.string.appPaidInitialUserGreetingMsg),
-                                     getString(R.string.appInitialUserGreetingMsg));
-               GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("WELCOME", userGreeting));
-               String disclaimerStmt = getString(R.string.appPaidFlavorDisclaimerEULA);
-               GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("DISCLAIMER", disclaimerStmt));
-          }
-          else {
-               String userGreeting = getString(R.string.appInitialUserGreetingMsg);
-               GUILogUtils.appendNewLog(LogEntryMetadataRecord.createDefaultEventRecord("WELCOME", userGreeting));
-          }
-
-          if(getIntent() != null && getIntent().getBooleanExtra(CrashReportActivity.INTENT_CMLD_RECOVERED_FROM_CRASH, false)) {
-               Utils.displayToastMessageLong("Chameleon Mini Live Debugger recovered from crash.");
-          }
-
-          final LiveLoggerActivity llActivityFinal = this;
+          final LiveLoggerActivity llActivityFinal = getLiveLoggerInstance();
           final Intent onCreateActivityIntentFinal = getIntent();
           Handler runAfterGUIInitDeviceHandler = new Handler();
           Runnable runAfterGUIInitDeviceRunnable = new Runnable() {
@@ -446,27 +461,63 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     llActivity.isGUIFullyInit = true;
                }
           };
-          /* Waiting for more than a second to give the GUI time to display on launch
-           * before the BT scanning starts.
-           */
-          runAfterGUIInitDeviceHandler.postDelayed(runAfterGUIInitDeviceRunnable, 100);
+          runAfterGUIInitDeviceHandler.postDelayed(runAfterGUIInitDeviceRunnable, 500);
 
      }
 
+     @Override
+     public void onStart() {
+          Log.i(TAG, "onStart: method invoked...");
+          super.onStart();
+          //onCreateSetup();
+          Log.i(TAG, "onStart: method returning...");
+     }
+
+     @Override
+     public void onRestart() {
+          Log.i(TAG, "onRestart: method invoked...");
+          super.onRestart();
+          //onCreateSetup();
+          Log.i(TAG, "onRestart: method returning...");
+     }
+
+     @Override
+     public void onStop() {
+          Log.i(TAG, "onStop: method invoked...");
+          super.onStop();
+          onPause();
+          Log.i(TAG, "onStop: method returning...");
+     }
      private static String INTENT_RESTART_ACTIVITY = "LiveLoggerActivity.Intent.Category.RESTART_ACTIVITY";
 
      @Override
      public void recreate() {
+          Log.d(TAG, "recreate: method invoked...");
           Intent intent = getIntent();
           if (intent == null) {
                intent = new Intent(Intent.ACTION_MAIN);
           }
           intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
           intent.addCategory(INTENT_RESTART_ACTIVITY);
-          finish();
+          //finish();
+          isGUIFullyInit = false;
+          AndroidSettingsStorage.saveAllSettings();
+          Utils.clearToastMessage();
+          if(ChameleonSettings.getActiveSerialIOPort() != null) {
+               ChameleonSettings.getActiveSerialIOPort().stopScanningDevices();
+               ChameleonSettings.getActiveSerialIOPort().shutdownSerial();
+               ChameleonIO.deviceStatus.statsUpdateHandler.removeCallbacks(ChameleonIO.deviceStatus.statsUpdateRunnable);
+          } else {
+               ChameleonSettings.stopSerialIOConnectionDiscovery();
+          }
+          BluetoothUtils.resetBluetoothAdapterAtClose(this);
+          AndroidLogger.closeLogDataOutputFile();
+          Bundle savedInstState = intent.getExtras();
+          onCreate(savedInstState);
           overridePendingTransition(0, 0);
           startActivity(intent);
           overridePendingTransition(0, 0);
+          Log.d(TAG, "recreate: method returning...");
      }
 
      private static ViewPager.OnPageChangeListener tabChangeListener = null;
@@ -677,7 +728,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
       */
      @Override
      public void onPause() {
-          isGUIFullyInit = false;
+          //isGUIFullyInit = false;
           AndroidSettingsStorage.saveAllSettings();
           Utils.clearToastMessage();
           if(ChameleonSettings.getActiveSerialIOPort() != null) {
@@ -702,14 +753,14 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           Utils.clearToastMessage();
           AndroidSettingsStorage.loadPreviousSettings();
           BluetoothUtils.resetBluetoothAdapterAtStart(this);
-          isGUIFullyInit = true;
+          //isGUIFullyInit = true;
           if(ChameleonSettings.getActiveSerialIOPort() != null) {
                reconfigureSerialIODevices();
                ChameleonSettings.getActiveSerialIOPort().startScanningDevices();
-               ChameleonIO.DeviceStatusSettings.startPostingStats(1000);
           } else {
                ChameleonSettings.initializeSerialIOConnections();
           }
+          isGUIFullyInit = true;
      }
 
      @Override

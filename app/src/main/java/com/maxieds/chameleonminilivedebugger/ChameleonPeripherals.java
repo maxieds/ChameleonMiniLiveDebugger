@@ -72,7 +72,7 @@ public class ChameleonPeripherals {
                         if (curSpinner == null) {
                             continue;
                         }
-                        String deviceSetting = ChameleonIO.getSettingFromDevice(queryCmds[i]);
+                        String deviceSetting = ChameleonIO.getSettingFromDevice(queryCmds[i]); // TODO: pass hint ???
                         LiveLoggerActivity.getLiveLoggerInstance().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

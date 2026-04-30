@@ -73,7 +73,7 @@ https://github.com/maxieds/ChameleonMiniLiveDebugger
                 android:background="?deviceStatusBarBackgroundColor"
                 android:minWidth="100dp"
                 android:paddingRight="10dp"
-                android:text="NO-DEV"
+                android:text="NO-DEVICE"
                 android:textColor="?deviceStatusBarTextColor"
                 android:textSize="11sp"
                 android:textStyle="normal|bold"

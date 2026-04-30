@@ -147,13 +147,13 @@ public class ChameleonConfigSlot {
             return false;
         }
         try {
-            tagConfigType = ChameleonIO.getSettingFromDevice("CONFIG?");
-            uidHexBytes = ChameleonIO.getSettingFromDevice("UID?");
+            tagConfigType = ChameleonIO.getSettingFromDevice("CONFIG?", ChameleonIO.DeviceStatusSettings.DEFAULT_CONFIG);
+            uidHexBytes = ChameleonIO.getSettingFromDevice("UID?", ChameleonIO.DeviceStatusSettings.UID_NONE);
             uidHexDisplayStr = Utils.formatUIDString(uidHexBytes, " ");
-            uidSize = Integer.parseInt(ChameleonIO.getSettingFromDevice("UIDSIZE?"));
-            tagMemorySize = Integer.parseInt(ChameleonIO.getSettingFromDevice("MEMSIZE?"));
-            isLocked = ChameleonIO.getSettingFromDevice("READONLY?") == "1" ? true : false;
-            fieldSetting = ChameleonIO.getSettingFromDevice("FIELD?") == "1" ? true : false;
+            uidSize = Integer.parseInt(ChameleonIO.getSettingFromDevice("UIDSIZE?", "0"));
+            tagMemorySize = Integer.parseInt(ChameleonIO.getSettingFromDevice("MEMSIZE?", "0"));
+            isLocked = ChameleonIO.getSettingFromDevice("READONLY?", "0") == "1" ? true : false;
+            fieldSetting = ChameleonIO.getSettingFromDevice("FIELD?", "0") == "1" ? true : false;
         } catch(NumberFormatException nfe) {
             nfe.printStackTrace();
             return false;
@@ -174,7 +174,7 @@ public class ChameleonConfigSlot {
             if(!LiveLoggerActivity.isGUIFullyInit) {
                 return false;
             }
-            ChameleonIO.getSettingFromDevice(String.format(BuildConfig.DEFAULT_LOCALE, "SETTING=%d", nextSlot));
+            ChameleonIO.getSettingFromDevice(String.format(BuildConfig.DEFAULT_LOCALE, "SETTING=%d", nextSlot)); // TODO: pass hint ???
             readParametersFromChameleonSlot();
         } catch(Exception exe) {
             exe.printStackTrace();
@@ -188,9 +188,12 @@ public class ChameleonConfigSlot {
              return false;
          }
          String configModesList = ChameleonIO.getSettingFromDevice("CONFIG=?");
-         String[] configModesArray = configModesList.replace(" ", "").split(",");
+         String[] configModesArray = new String[0];
+         if(configModesList != null) {
+             configModesArray = configModesList.replace(" ", "").split(",");
+         }
          tagConfigModes = configModesArray;
-         String activeConfigMode = ChameleonIO.getSettingFromDevice("CONFIG?");
+         String activeConfigMode = ChameleonIO.getSettingFromDevice("CONFIG?", "NONE");
          tagConfigType = activeConfigMode;
          Spinner configModeSpinner = (Spinner) slotConfigLayout.findViewById(R.id.tagConfigModeSpinner);
          configModeSpinner.setAdapter(new ArrayAdapter<String>(slotConfigLayout.getContext(),
@@ -304,7 +307,7 @@ public class ChameleonConfigSlot {
                 }
                 else {
                     String lockCmd = String.format(BuildConfig.DEFAULT_LOCALE, "READONLY=%s", isChecked ? "1" : "0");
-                    ChameleonIO.getSettingFromDevice(lockCmd);
+                    ChameleonIO.getSettingFromDevice(lockCmd, "1");
                 }
             }
         });
@@ -315,8 +318,8 @@ public class ChameleonConfigSlot {
                     return;
                 }
                 else {
-                    String uidModeCmd = String.format(BuildConfig.DEFAULT_LOCALE, "FIELD=%s", isChecked ? "1" : "0");
-                    ChameleonIO.getSettingFromDevice(uidModeCmd);
+                    String fieldCmd = String.format(BuildConfig.DEFAULT_LOCALE, "FIELD=%s", isChecked ? "1" : "0");
+                    ChameleonIO.getSettingFromDevice(fieldCmd);
                 }
             }
         });

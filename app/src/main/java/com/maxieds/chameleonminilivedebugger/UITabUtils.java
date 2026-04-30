@@ -176,7 +176,7 @@ public class UITabUtils {
             int activeSlotNumber = settingsNumberPicker.getValue();
             if(ChameleonSettings.getActiveSerialIOPort() != null) {
                 try {
-                    activeSlotNumber = Integer.parseInt(ChameleonIO.getSettingFromDevice("SETTING?"), 10);
+                    activeSlotNumber = Integer.parseInt(ChameleonIO.getSettingFromDevice("SETTING?", "1"), 10);
                 } catch(NumberFormatException nfe) {
                     //nfe.printStackTrace();
                     errorOnInit = true;
@@ -249,7 +249,7 @@ public class UITabUtils {
                     if(thresholdSeekbar != null) {
                         if (ChameleonSettings.getActiveSerialIOPort() != null) {
                             try {
-                                threshold = Integer.parseInt(ChameleonIO.getSettingFromDevice("THRESHOLD?"));
+                                threshold = Integer.parseInt(ChameleonIO.getSettingFromDevice("THRESHOLD?", "0"));
                             } catch (NumberFormatException nfe) {
                             }
                             thresholdSeekbar.setProgress(threshold);
@@ -290,7 +290,7 @@ public class UITabUtils {
                     if(timeoutSeekbar != null) {
                         if (ChameleonSettings.getActiveSerialIOPort() != null) {
                             try {
-                                timeout = Integer.parseInt(ChameleonIO.getSettingFromDevice("TIMEOUT?"));
+                                timeout = Integer.parseInt(ChameleonIO.getSettingFromDevice("TIMEOUT?", "0"));
                             } catch (NumberFormatException nfe) {
                             }
                             timeoutSeekbar.setProgress(timeout);
@@ -767,7 +767,7 @@ public class UITabUtils {
         }
         spinner.setAdapter(spinnerAdapter);
         if(queryCmd != null && ChameleonSettings.getActiveSerialIOPort() != null) {
-            String deviceSetting = ChameleonIO.getSettingFromDevice(queryCmd);
+            String deviceSetting = ChameleonIO.getSettingFromDevice(queryCmd); // TODO: pass hint ???
             spinner.setSelection(((ArrayAdapter<String>) spinner.getAdapter()).getPosition(deviceSetting));
         }
         final Spinner localSpinnerRef = spinner;
@@ -797,7 +797,7 @@ public class UITabUtils {
             Thread cfgLogSettingsDataThread = new Thread() {
                 @Override
                 public void run() {
-                    String deviceSetting = ChameleonIO.getSettingFromDevice("LOGMODE?");
+                    String deviceSetting = ChameleonIO.getSettingFromDevice("LOGMODE?", "OFF");
                     if (ChameleonLogUtils.LOGMODE_NOTIFY_STATE && deviceSetting.equals(ChameleonLogUtils.LOGMODE_LIVE)) {
                         deviceSetting = ChameleonLogUtils.LOGMODE_LIVE_WITH_NOTIFY_SELECT_STATE;
                     } else if (ChameleonLogUtils.LOGMODE_NOTIFY_STATE && deviceSetting.equals(ChameleonLogUtils.LOGMODE_OFF)) {

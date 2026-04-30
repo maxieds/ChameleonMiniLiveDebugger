@@ -63,9 +63,9 @@ public class ChameleonSettings {
         if(SERIALIO_IFACE_ACTIVE_INDEX < 0) {
             return null;
         }
-        else if(!serialIOPorts[SERIALIO_IFACE_ACTIVE_INDEX].serialConfigured()) {
-            return null;
-        }
+        //else if(!serialIOPorts[SERIALIO_IFACE_ACTIVE_INDEX].serialConfigured()) {
+        //    return null;
+        //}
         return serialIOPorts[SERIALIO_IFACE_ACTIVE_INDEX];
     }
 

@@ -126,9 +126,9 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
         notifyIntent.putExtra(ChameleonSerialIOInterface.SERIALIO_BYTE_DATA, serialDataErrorChecked);
         notifyContext.sendBroadcast(notifyIntent);
         Log.i(TAG, "notifySerialDataReceived: Passed full serialData as input:");
-        printSerialDataForDebugging(serialData);
+        //printSerialDataForDebugging(serialData);
         Log.i(TAG, "notifySerialDataReceived: Pruned serialData buffer to:");
-        printSerialDataForDebugging(serialDataErrorChecked);
+        //printSerialDataForDebugging(serialDataErrorChecked);
         return true;
     }
 
@@ -139,7 +139,7 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
         Intent notifyIntent = new Intent(ChameleonSerialIOInterface.SERIALIO_LOGDATA_RECEIVED);
         notifyIntent.putExtra(ChameleonSerialIOInterface.SERIALIO_BYTE_DATA, serialData);
         notifyContext.sendBroadcast(notifyIntent);
-        printSerialDataForDebugging(serialData);
+        //printSerialDataForDebugging(serialData);
         return true;
     }
 
@@ -158,7 +158,7 @@ public class SerialIOReceiver implements ChameleonSerialIOInterface, ChameleonSe
     }
 
     public void onReceivedData(byte[] liveLogData) {
-        printSerialDataForDebugging(liveLogData);
+        //printSerialDataForDebugging(liveLogData);
         if(redirectSerialDataInterface != null) {
             redirectSerialDataInterface.onReceivedData(liveLogData);
             return;

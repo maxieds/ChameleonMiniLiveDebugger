@@ -164,7 +164,7 @@ public class ChameleonCommands {
             GUILogUtils.userInputStack = null;
         }
         else if(createCmd.equals("ONCLICK")) {
-            msgParam = "SYSTICK Millis := " + ChameleonIO.getSettingFromDevice("SYSTICK?");
+            msgParam = "SYSTICK Millis := " + ChameleonIO.getSettingFromDevice("SYSTICK?", "0");
         }
         else if(createCmd.equals("GETUID")) {
             String queryCmd = ChameleonIO.REVE_BOARD ? "uid?" : "GETUID";
@@ -172,7 +172,7 @@ public class ChameleonCommands {
             msgParam = "GETUID: " + rParam;
         }
         else if(createCmd.equals("AUTOCAL")) {
-            msgParam = ChameleonIO.getSettingFromDevice("AUTOCALIBRATE");
+            msgParam = ChameleonIO.getSettingFromDevice("AUTOCALIBRATE", "0");
         }
         else {
             msgParam = ChameleonIO.getSettingFromDevice(createCmd);
