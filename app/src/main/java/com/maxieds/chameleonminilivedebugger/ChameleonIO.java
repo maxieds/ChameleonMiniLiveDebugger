@@ -449,7 +449,7 @@ public class ChameleonIO {
                     CONFIG = ChameleonIO.getSettingFromDevice("CONFIG?", CONFIG);
                     UID = ChameleonIO.getSettingFromDevice("UID?", UID);
                     if(UID.equals("TIMEOUT")) {
-                        UID = UID_NONE;
+                        UID = DEFAULT_UID;
                     }
                     UIDSIZE = Utils.parseInt(ChameleonIO.getSettingFromDevice("UIDSIZE?", String.format("%d", UIDSIZE)));
                     MEMSIZE = Utils.parseInt(ChameleonIO.getSettingFromDevice("MEMSIZE?", String.format("%d", MEMSIZE)));

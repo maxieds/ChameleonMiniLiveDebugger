@@ -287,10 +287,16 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                }
           }
           ChameleonSettings.initializeSerialIOConnections();
-          Handler configDeviceHandler = new Handler();
+          final Handler configDeviceHandler = new Handler();
           Runnable configDeviceRunnable = new Runnable() {
+               final Handler callingHandler = configDeviceHandler;
                public void run() {
                     if (ChameleonSettings.getActiveSerialIOPort() == null) {
+                         return;
+                    }
+                    else if(!ChameleonSettings.getActiveSerialIOPort().serialConfigured()) {
+                         callingHandler.removeCallbacks(this);
+                         //callingHandler.postDelayed(this, 3000);
                          return;
                     }
                     ChameleonIO.detectChameleonType();
@@ -301,14 +307,11 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                          TabFragment.UITAB_DATA[TabFragment.TAB_CONFIG].changeMenuItemDisplay(TabFragment.TAB_CONFIG_MITEM_LOGGING, true);
                     }
                     ChameleonPeripherals.actionButtonRestorePeripheralDefaults(null);
-                    /* Call twice: Make sure the device returned the correct data to display */
-                    //ChameleonIO.DeviceStatusSettings.updateAllStatusAndPost(false);
-                    //ChameleonIO.DeviceStatusSettings.updateAllStatusAndPost(false);
-                    ChameleonIO.DeviceStatusSettings.startPostingStats(250);
+                    ChameleonIO.DeviceStatusSettings.startPostingStats(0);
                }
           };
           ChameleonIO.DeviceStatusSettings.stopPostingStats();
-          configDeviceHandler.postDelayed(configDeviceRunnable, 50);
+          configDeviceHandler.postDelayed(configDeviceRunnable, 250);
      }
 
      public static boolean isGUIFullyInit = false;
@@ -383,7 +386,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
           Log.d(TAG, "onCreate: method invoked...");
           super.onCreate(savedInstanceState);
 
-          if(getInstance() == null) {
+          /*if(getInstance() == null) {
                Log.i(TAG, "Created new activity");
           } else if(!isTaskRoot()) {
                Log.i(TAG, "ReLaunch Intent Action: " + getIntent().getAction());
@@ -404,7 +407,7 @@ public class LiveLoggerActivity extends ChameleonMiniLiveDebuggerActivity implem
                     finish();
                     return;
                }
-          }
+          }*/
 
           onCreateSetup();
 

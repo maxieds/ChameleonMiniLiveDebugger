@@ -70,7 +70,7 @@ public class ChameleonCommands {
         }
         ChameleonIO.executeChameleonMiniCommand("CONFIG=" + chipType, ChameleonIO.TIMEOUT);
         ExportTools.uploadCardFromRawByXModem(cardFilePath);
-        ChameleonIO.deviceStatus.startPostingStats(250);
+        ChameleonIO.deviceStatus.startPostingStats(500);
     }
 
     public static void uploadCardImageByXModem() {
